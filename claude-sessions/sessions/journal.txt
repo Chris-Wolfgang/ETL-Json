@@ -1,0 +1,8 @@
+# Wolfgang.Etl.Json — Claude Session Journal
+
+## Sessions
+
+| Date       | Session | File                                                  | Summary                                              |
+|------------|---------|-------------------------------------------------------|------------------------------------------------------|
+| 2026-03-17 | 001     | 2026-03-17-session-001-initial-json-library.md        | Initial library creation: 3 extractor/loader pairs, test project, 251 tests passing |
+| 2026-03-17 | 002     | 2026-03-17-session-002-add-coverage-tests.md          | Added 28 coverage tests (279 total), 95.8% line coverage, 100% method coverage |
