@@ -2,40 +2,41 @@
 _layout: landing
 ---
 
-# {{PROJECT_NAME}} Documentation
+# Wolfgang.Etl.Json Documentation
 
-Welcome to the {{PROJECT_NAME}} documentation. This site contains comprehensive guides, API reference, and examples to help you get started.
+Welcome to the Wolfgang.Etl.Json documentation. This site contains comprehensive guides, API reference, and examples to help you get started.
 
 ## Quick Links
 
 - [Getting Started](docs/getting-started.md) - Learn the basics
-- [API Reference](xref:{{PROJECT_NAME}}) - Complete API documentation
-- [GitHub Repository]({{GITHUB_REPO_URL}}) - View source code
+- [API Reference](xref:Wolfgang.Etl.Json) - Complete API documentation
+- [GitHub Repository](https://github.com/Chris-Wolfgang/ETL-Json) - View source code
 
-## About {{PROJECT_NAME}}
+## About Wolfgang.Etl.Json
 
-{{PROJECT_DESCRIPTION}}
+Extractors and Loaders for reading and writing JSON files when buildig ETLs using Wolfgang.Etl pattern
 
 ## Installation
 
 ```bash
-dotnet add package {{PACKAGE_NAME}}
+dotnet add package Wolfgang.Etl.Json
 ```
 
 ## Documentation Sections
 
 ### 📖 [Documentation](docs/getting-started.md)
-Step-by-step guides and tutorials to help you use {{PROJECT_NAME}} effectively.
+Step-by-step guides and tutorials to help you use Wolfgang.Etl.Json effectively.
 
-### 📚 [API Reference](xref:{{PROJECT_NAME}})
+### 📚 [API Reference](xref:Wolfgang.Etl.Json)
 Complete API documentation automatically generated from source code XML comments.
 
 ## Additional Resources
 
-- [Contributing Guidelines]({{GITHUB_REPO_URL}}/blob/main/CONTRIBUTING.md)
-- [Code of Conduct]({{GITHUB_REPO_URL}}/blob/main/CODE_OF_CONDUCT.md)
-- [License]({{GITHUB_REPO_URL}}/blob/main/LICENSE)
+- [Contributing Guidelines](https://github.com/Chris-Wolfgang/ETL-Json/blob/main/CONTRIBUTING.md)
+- [Code of Conduct](https://github.com/Chris-Wolfgang/ETL-Json/blob/main/CODE_OF_CONDUCT.md)
+- [License](https://github.com/Chris-Wolfgang/ETL-Json/blob/main/LICENSE)
 
 ---
 
 *Documentation built with [DocFX](https://dotnet.github.io/docfx/)*
+
