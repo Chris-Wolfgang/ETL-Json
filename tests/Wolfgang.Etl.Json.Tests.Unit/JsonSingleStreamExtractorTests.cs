@@ -17,7 +17,7 @@ namespace Wolfgang.Etl.Json.Tests.Unit;
 public class JsonSingleStreamExtractorTests
     : ExtractorBaseContractTests
     <
-        JsonSingleStreamExtractor<PersonRecord, JsonReport>,
+        JsonSingleStreamExtractor<PersonRecord>,
         PersonRecord,
         JsonReport
     >
@@ -33,15 +33,15 @@ public class JsonSingleStreamExtractorTests
 
 
 
-    protected override JsonSingleStreamExtractor<PersonRecord, JsonReport> CreateSut(int itemCount)
+    protected override JsonSingleStreamExtractor<PersonRecord> CreateSut(int itemCount)
     {
         var items = ExpectedItems.Take(itemCount).ToList();
         var json = JsonSerializer.Serialize(items);
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
-        return new JsonSingleStreamExtractor<PersonRecord, JsonReport>
+        return new JsonSingleStreamExtractor<PersonRecord>
         (
             stream,
-            NullLogger<JsonSingleStreamExtractor<PersonRecord, JsonReport>>.Instance
+            NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance
         );
     }
 
@@ -51,18 +51,18 @@ public class JsonSingleStreamExtractorTests
 
 
 
-    protected override JsonSingleStreamExtractor<PersonRecord, JsonReport> CreateSutWithTimer
+    protected override JsonSingleStreamExtractor<PersonRecord> CreateSutWithTimer
     (
         IProgressTimer timer
     )
     {
         var json = JsonSerializer.Serialize(ExpectedItems);
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
-        return new JsonSingleStreamExtractor<PersonRecord, JsonReport>
+        return new JsonSingleStreamExtractor<PersonRecord>
         (
             stream,
             null,
-            NullLogger<JsonSingleStreamExtractor<PersonRecord, JsonReport>>.Instance,
+            NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance,
             timer
         );
     }
@@ -85,11 +85,11 @@ public class JsonSingleStreamExtractorTests
         var json = JsonSerializer.Serialize(items, options);
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
 
-        var sut = new JsonSingleStreamExtractor<PersonRecord, JsonReport>
+        var sut = new JsonSingleStreamExtractor<PersonRecord>
         (
             stream,
             new JsonSerializerOptions { PropertyNameCaseInsensitive = true },
-            NullLogger<JsonSingleStreamExtractor<PersonRecord, JsonReport>>.Instance
+            NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance
         );
 
         var results = new List<PersonRecord>();
@@ -110,10 +110,10 @@ public class JsonSingleStreamExtractorTests
         var json = "[{\"FirstName\":\"Alice\",\"LastName\":\"Smith\",\"Age\":30},null,{\"FirstName\":\"Bob\",\"LastName\":\"Jones\",\"Age\":25}]";
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
 
-        var sut = new JsonSingleStreamExtractor<PersonRecord, JsonReport>
+        var sut = new JsonSingleStreamExtractor<PersonRecord>
         (
             stream,
-            NullLogger<JsonSingleStreamExtractor<PersonRecord, JsonReport>>.Instance
+            NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance
         );
 
         var results = new List<PersonRecord>();
@@ -134,10 +134,10 @@ public class JsonSingleStreamExtractorTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonSingleStreamExtractor<PersonRecord, JsonReport>
+            () => new JsonSingleStreamExtractor<PersonRecord>
             (
                 null!,
-                NullLogger<JsonSingleStreamExtractor<PersonRecord, JsonReport>>.Instance
+                NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance
             )
         );
     }
@@ -149,10 +149,10 @@ public class JsonSingleStreamExtractorTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonSingleStreamExtractor<PersonRecord, JsonReport>
+            () => new JsonSingleStreamExtractor<PersonRecord>
             (
                 new MemoryStream(),
-                (ILogger<JsonSingleStreamExtractor<PersonRecord, JsonReport>>)null!
+                (ILogger<JsonSingleStreamExtractor<PersonRecord>>)null!
             )
         );
     }
@@ -164,11 +164,11 @@ public class JsonSingleStreamExtractorTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonSingleStreamExtractor<PersonRecord, JsonReport>
+            () => new JsonSingleStreamExtractor<PersonRecord>
             (
                 new MemoryStream(),
                 (JsonSerializerOptions)null!,
-                NullLogger<JsonSingleStreamExtractor<PersonRecord, JsonReport>>.Instance
+                NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance
             )
         );
     }
@@ -180,11 +180,11 @@ public class JsonSingleStreamExtractorTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonSingleStreamExtractor<PersonRecord, JsonReport>
+            () => new JsonSingleStreamExtractor<PersonRecord>
             (
                 null!,
                 null,
-                NullLogger<JsonSingleStreamExtractor<PersonRecord, JsonReport>>.Instance,
+                NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance,
                 new ManualProgressTimer()
             )
         );
@@ -197,7 +197,7 @@ public class JsonSingleStreamExtractorTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonSingleStreamExtractor<PersonRecord, JsonReport>
+            () => new JsonSingleStreamExtractor<PersonRecord>
             (
                 new MemoryStream(),
                 null,
@@ -214,11 +214,11 @@ public class JsonSingleStreamExtractorTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonSingleStreamExtractor<PersonRecord, JsonReport>
+            () => new JsonSingleStreamExtractor<PersonRecord>
             (
                 new MemoryStream(),
                 null,
-                NullLogger<JsonSingleStreamExtractor<PersonRecord, JsonReport>>.Instance,
+                NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance,
                 null!
             )
         );

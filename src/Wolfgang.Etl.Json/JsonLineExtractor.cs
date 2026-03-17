@@ -13,7 +13,6 @@ namespace Wolfgang.Etl.Json;
 /// Extracts items of type <typeparamref name="TRecord"/> from a JSONL (JSON Lines / NDJSON) stream.
 /// </summary>
 /// <typeparam name="TRecord">The type of items to extract. Must be <c>notnull</c>.</typeparam>
-/// <typeparam name="TProgress">The progress report type.</typeparam>
 /// <remarks>
 /// Reads a stream line by line, deserializing each non-empty line as a single JSON object.
 /// Blank lines are skipped with a warning logged.
@@ -22,16 +21,15 @@ namespace Wolfgang.Etl.Json;
 /// <example>
 /// <code>
 /// using var stream = File.OpenRead("data.jsonl");
-/// var extractor = new JsonLineExtractor&lt;Person, JsonReport&gt;(stream, logger);
+/// var extractor = new JsonLineExtractor&lt;Person&gt;(stream, logger);
 /// await foreach (var person in extractor.ExtractAsync(cancellationToken))
 /// {
 ///     Console.WriteLine(person.Name);
 /// }
 /// </code>
 /// </example>
-public class JsonLineExtractor<TRecord, TProgress> : ExtractorBase<TRecord, TProgress>
+public class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonReport>
     where TRecord : notnull
-    where TProgress : notnull
 {
     private readonly Stream _stream;
     private readonly JsonSerializerOptions? _options;
@@ -43,7 +41,7 @@ public class JsonLineExtractor<TRecord, TProgress> : ExtractorBase<TRecord, TPro
 
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="JsonLineExtractor{TRecord, TProgress}"/> class.
+    /// Initializes a new instance of the <see cref="JsonLineExtractor{TRecord}"/> class.
     /// </summary>
     /// <param name="stream">The stream containing JSONL data to read from.</param>
     /// <param name="logger">The logger instance for diagnostic output.</param>
@@ -53,7 +51,7 @@ public class JsonLineExtractor<TRecord, TProgress> : ExtractorBase<TRecord, TPro
     public JsonLineExtractor
     (
         Stream stream,
-        ILogger<JsonLineExtractor<TRecord, TProgress>> logger
+        ILogger<JsonLineExtractor<TRecord>> logger
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
@@ -64,7 +62,7 @@ public class JsonLineExtractor<TRecord, TProgress> : ExtractorBase<TRecord, TPro
 
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="JsonLineExtractor{TRecord, TProgress}"/> class
+    /// Initializes a new instance of the <see cref="JsonLineExtractor{TRecord}"/> class
     /// with custom serialization options.
     /// </summary>
     /// <param name="stream">The stream containing JSONL data to read from.</param>
@@ -77,7 +75,7 @@ public class JsonLineExtractor<TRecord, TProgress> : ExtractorBase<TRecord, TPro
     (
         Stream stream,
         JsonSerializerOptions options,
-        ILogger<JsonLineExtractor<TRecord, TProgress>> logger
+        ILogger<JsonLineExtractor<TRecord>> logger
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
@@ -88,7 +86,7 @@ public class JsonLineExtractor<TRecord, TProgress> : ExtractorBase<TRecord, TPro
 
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="JsonLineExtractor{TRecord, TProgress}"/> class
+    /// Initializes a new instance of the <see cref="JsonLineExtractor{TRecord}"/> class
     /// with an injected progress timer for testing.
     /// </summary>
     /// <param name="stream">The stream containing JSONL data to read from.</param>
@@ -183,27 +181,19 @@ public class JsonLineExtractor<TRecord, TProgress> : ExtractorBase<TRecord, TPro
 
 
     /// <inheritdoc />
-    protected override TProgress CreateProgressReport()
+    protected override JsonReport CreateProgressReport()
     {
-        if (typeof(TProgress) == typeof(JsonReport) || typeof(TProgress) == typeof(Report))
-        {
-            return (TProgress)(object)new JsonReport
-            (
-                CurrentItemCount,
-                CurrentSkippedItemCount
-            );
-        }
-
-        throw new NotSupportedException
+        return new JsonReport
         (
-            $"Override {nameof(CreateProgressReport)} to supply a {typeof(TProgress).Name} instance."
+            CurrentItemCount,
+            CurrentSkippedItemCount
         );
     }
 
 
 
     /// <inheritdoc />
-    protected override IProgressTimer CreateProgressTimer(IProgress<TProgress> progress)
+    protected override IProgressTimer CreateProgressTimer(IProgress<JsonReport> progress)
     {
         if (_progressTimer is not null)
         {

@@ -17,7 +17,7 @@ namespace Wolfgang.Etl.Json.Tests.Unit;
 public class JsonMultiStreamExtractorTests
     : ExtractorBaseContractTests
     <
-        JsonMultiStreamExtractor<PersonRecord, JsonReport>,
+        JsonMultiStreamExtractor<PersonRecord>,
         PersonRecord,
         JsonReport
     >
@@ -46,12 +46,12 @@ public class JsonMultiStreamExtractorTests
 
 
 
-    protected override JsonMultiStreamExtractor<PersonRecord, JsonReport> CreateSut(int itemCount)
+    protected override JsonMultiStreamExtractor<PersonRecord> CreateSut(int itemCount)
     {
-        return new JsonMultiStreamExtractor<PersonRecord, JsonReport>
+        return new JsonMultiStreamExtractor<PersonRecord>
         (
             CreateStreams(itemCount),
-            NullLogger<JsonMultiStreamExtractor<PersonRecord, JsonReport>>.Instance
+            NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
         );
     }
 
@@ -61,16 +61,16 @@ public class JsonMultiStreamExtractorTests
 
 
 
-    protected override JsonMultiStreamExtractor<PersonRecord, JsonReport> CreateSutWithTimer
+    protected override JsonMultiStreamExtractor<PersonRecord> CreateSutWithTimer
     (
         IProgressTimer timer
     )
     {
-        return new JsonMultiStreamExtractor<PersonRecord, JsonReport>
+        return new JsonMultiStreamExtractor<PersonRecord>
         (
             CreateStreams(ExpectedItems.Count),
             null,
-            NullLogger<JsonMultiStreamExtractor<PersonRecord, JsonReport>>.Instance,
+            NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance,
             timer
         );
     }
@@ -86,10 +86,10 @@ public class JsonMultiStreamExtractorTests
             new(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(ExpectedItems[1]))),
         };
 
-        var sut = new JsonMultiStreamExtractor<PersonRecord, JsonReport>
+        var sut = new JsonMultiStreamExtractor<PersonRecord>
         (
             streams,
-            NullLogger<JsonMultiStreamExtractor<PersonRecord, JsonReport>>.Instance
+            NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
         );
 
         var results = new List<PersonRecord>();
@@ -122,11 +122,11 @@ public class JsonMultiStreamExtractorTests
             new MemoryStream(Encoding.UTF8.GetBytes(json)),
         };
 
-        var sut = new JsonMultiStreamExtractor<PersonRecord, JsonReport>
+        var sut = new JsonMultiStreamExtractor<PersonRecord>
         (
             streams,
             new JsonSerializerOptions { PropertyNameCaseInsensitive = true },
-            NullLogger<JsonMultiStreamExtractor<PersonRecord, JsonReport>>.Instance
+            NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
         );
 
         var results = new List<PersonRecord>();
@@ -146,10 +146,10 @@ public class JsonMultiStreamExtractorTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonMultiStreamExtractor<PersonRecord, JsonReport>
+            () => new JsonMultiStreamExtractor<PersonRecord>
             (
                 null!,
-                NullLogger<JsonMultiStreamExtractor<PersonRecord, JsonReport>>.Instance
+                NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
             )
         );
     }
@@ -161,10 +161,10 @@ public class JsonMultiStreamExtractorTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonMultiStreamExtractor<PersonRecord, JsonReport>
+            () => new JsonMultiStreamExtractor<PersonRecord>
             (
                 Array.Empty<Stream>(),
-                (ILogger<JsonMultiStreamExtractor<PersonRecord, JsonReport>>)null!
+                (ILogger<JsonMultiStreamExtractor<PersonRecord>>)null!
             )
         );
     }
@@ -176,11 +176,11 @@ public class JsonMultiStreamExtractorTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonMultiStreamExtractor<PersonRecord, JsonReport>
+            () => new JsonMultiStreamExtractor<PersonRecord>
             (
                 Array.Empty<Stream>(),
                 (JsonSerializerOptions)null!,
-                NullLogger<JsonMultiStreamExtractor<PersonRecord, JsonReport>>.Instance
+                NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
             )
         );
     }
@@ -192,11 +192,11 @@ public class JsonMultiStreamExtractorTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonMultiStreamExtractor<PersonRecord, JsonReport>
+            () => new JsonMultiStreamExtractor<PersonRecord>
             (
                 null!,
                 null,
-                NullLogger<JsonMultiStreamExtractor<PersonRecord, JsonReport>>.Instance,
+                NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance,
                 new ManualProgressTimer()
             )
         );
@@ -209,7 +209,7 @@ public class JsonMultiStreamExtractorTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonMultiStreamExtractor<PersonRecord, JsonReport>
+            () => new JsonMultiStreamExtractor<PersonRecord>
             (
                 Array.Empty<Stream>(),
                 null,
@@ -226,11 +226,11 @@ public class JsonMultiStreamExtractorTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonMultiStreamExtractor<PersonRecord, JsonReport>
+            () => new JsonMultiStreamExtractor<PersonRecord>
             (
                 Array.Empty<Stream>(),
                 null,
-                NullLogger<JsonMultiStreamExtractor<PersonRecord, JsonReport>>.Instance,
+                NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance,
                 null!
             )
         );
@@ -249,10 +249,10 @@ public class JsonMultiStreamExtractorTests
             new MemoryStream(Encoding.UTF8.GetBytes(validJson)),
         };
 
-        var sut = new JsonMultiStreamExtractor<PersonRecord, JsonReport>
+        var sut = new JsonMultiStreamExtractor<PersonRecord>
         (
             streams,
-            NullLogger<JsonMultiStreamExtractor<PersonRecord, JsonReport>>.Instance
+            NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
         );
 
         var results = new List<PersonRecord>();

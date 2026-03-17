@@ -17,7 +17,7 @@ namespace Wolfgang.Etl.Json.Tests.Unit;
 public class JsonSingleStreamLoaderTests
     : LoaderBaseContractTests
     <
-        JsonSingleStreamLoader<PersonRecord, JsonReport>,
+        JsonSingleStreamLoader<PersonRecord>,
         PersonRecord,
         JsonReport
     >
@@ -33,13 +33,13 @@ public class JsonSingleStreamLoaderTests
 
 
 
-    protected override JsonSingleStreamLoader<PersonRecord, JsonReport> CreateSut(int itemCount)
+    protected override JsonSingleStreamLoader<PersonRecord> CreateSut(int itemCount)
     {
         var stream = new MemoryStream();
-        return new JsonSingleStreamLoader<PersonRecord, JsonReport>
+        return new JsonSingleStreamLoader<PersonRecord>
         (
             stream,
-            NullLogger<JsonSingleStreamLoader<PersonRecord, JsonReport>>.Instance
+            NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance
         );
     }
 
@@ -49,17 +49,17 @@ public class JsonSingleStreamLoaderTests
 
 
 
-    protected override JsonSingleStreamLoader<PersonRecord, JsonReport> CreateSutWithTimer
+    protected override JsonSingleStreamLoader<PersonRecord> CreateSutWithTimer
     (
         IProgressTimer timer
     )
     {
         var stream = new MemoryStream();
-        return new JsonSingleStreamLoader<PersonRecord, JsonReport>
+        return new JsonSingleStreamLoader<PersonRecord>
         (
             stream,
             null,
-            NullLogger<JsonSingleStreamLoader<PersonRecord, JsonReport>>.Instance,
+            NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance,
             timer
         );
     }
@@ -70,10 +70,10 @@ public class JsonSingleStreamLoaderTests
     public async Task LoadAsync_writes_valid_json_array_to_stream()
     {
         var stream = new MemoryStream();
-        var sut = new JsonSingleStreamLoader<PersonRecord, JsonReport>
+        var sut = new JsonSingleStreamLoader<PersonRecord>
         (
             stream,
-            NullLogger<JsonSingleStreamLoader<PersonRecord, JsonReport>>.Instance
+            NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance
         );
 
         var items = new List<PersonRecord>
@@ -105,11 +105,11 @@ public class JsonSingleStreamLoaderTests
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         };
 
-        var sut = new JsonSingleStreamLoader<PersonRecord, JsonReport>
+        var sut = new JsonSingleStreamLoader<PersonRecord>
         (
             stream,
             options,
-            NullLogger<JsonSingleStreamLoader<PersonRecord, JsonReport>>.Instance
+            NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance
         );
 
         var items = new List<PersonRecord>
@@ -134,10 +134,10 @@ public class JsonSingleStreamLoaderTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonSingleStreamLoader<PersonRecord, JsonReport>
+            () => new JsonSingleStreamLoader<PersonRecord>
             (
                 null!,
-                NullLogger<JsonSingleStreamLoader<PersonRecord, JsonReport>>.Instance
+                NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance
             )
         );
     }
@@ -149,10 +149,10 @@ public class JsonSingleStreamLoaderTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonSingleStreamLoader<PersonRecord, JsonReport>
+            () => new JsonSingleStreamLoader<PersonRecord>
             (
                 new MemoryStream(),
-                (ILogger<JsonSingleStreamLoader<PersonRecord, JsonReport>>)null!
+                (ILogger<JsonSingleStreamLoader<PersonRecord>>)null!
             )
         );
     }
@@ -164,11 +164,11 @@ public class JsonSingleStreamLoaderTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonSingleStreamLoader<PersonRecord, JsonReport>
+            () => new JsonSingleStreamLoader<PersonRecord>
             (
                 new MemoryStream(),
                 (JsonSerializerOptions)null!,
-                NullLogger<JsonSingleStreamLoader<PersonRecord, JsonReport>>.Instance
+                NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance
             )
         );
     }
@@ -180,11 +180,11 @@ public class JsonSingleStreamLoaderTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonSingleStreamLoader<PersonRecord, JsonReport>
+            () => new JsonSingleStreamLoader<PersonRecord>
             (
                 null!,
                 null,
-                NullLogger<JsonSingleStreamLoader<PersonRecord, JsonReport>>.Instance,
+                NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance,
                 new ManualProgressTimer()
             )
         );
@@ -197,7 +197,7 @@ public class JsonSingleStreamLoaderTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonSingleStreamLoader<PersonRecord, JsonReport>
+            () => new JsonSingleStreamLoader<PersonRecord>
             (
                 new MemoryStream(),
                 null,
@@ -214,11 +214,11 @@ public class JsonSingleStreamLoaderTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonSingleStreamLoader<PersonRecord, JsonReport>
+            () => new JsonSingleStreamLoader<PersonRecord>
             (
                 new MemoryStream(),
                 null,
-                NullLogger<JsonSingleStreamLoader<PersonRecord, JsonReport>>.Instance,
+                NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance,
                 null!
             )
         );
@@ -230,10 +230,10 @@ public class JsonSingleStreamLoaderTests
     public async Task LoadAsync_when_empty_sequence_writes_valid_empty_json_array()
     {
         var stream = new MemoryStream();
-        var sut = new JsonSingleStreamLoader<PersonRecord, JsonReport>
+        var sut = new JsonSingleStreamLoader<PersonRecord>
         (
             stream,
-            NullLogger<JsonSingleStreamLoader<PersonRecord, JsonReport>>.Instance
+            NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance
         );
 
         await sut.LoadAsync(AsyncEnumerable.Empty<PersonRecord>());

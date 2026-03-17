@@ -44,7 +44,7 @@ All components support:
 
 ```csharp
 using var stream = File.OpenRead("people.json");
-var extractor = new JsonSingleStreamExtractor<Person, JsonReport>(stream, logger);
+var extractor = new JsonSingleStreamExtractor<Person>(stream, logger);
 
 await foreach (var person in extractor.ExtractAsync(cancellationToken))
 {
@@ -56,7 +56,7 @@ await foreach (var person in extractor.ExtractAsync(cancellationToken))
 
 ```csharp
 using var stream = File.Create("output.json");
-var loader = new JsonSingleStreamLoader<Person, JsonReport>(stream, logger);
+var loader = new JsonSingleStreamLoader<Person>(stream, logger);
 
 await loader.LoadAsync(items, cancellationToken);
 ```
@@ -65,7 +65,7 @@ await loader.LoadAsync(items, cancellationToken);
 
 ```csharp
 var streams = Directory.GetFiles("data/", "*.json").Select(File.OpenRead);
-var extractor = new JsonMultiStreamExtractor<Person, JsonReport>(streams, logger);
+var extractor = new JsonMultiStreamExtractor<Person>(streams, logger);
 
 await foreach (var person in extractor.ExtractAsync(cancellationToken))
 {
@@ -76,7 +76,7 @@ await foreach (var person in extractor.ExtractAsync(cancellationToken))
 ### Load to multiple files (one object per file)
 
 ```csharp
-var loader = new JsonMultiStreamLoader<Person, JsonReport>
+var loader = new JsonMultiStreamLoader<Person>
 (
     person => File.Create($"output/{person.Id}.json"),
     logger
@@ -89,7 +89,7 @@ await loader.LoadAsync(items, cancellationToken);
 
 ```csharp
 using var stream = File.OpenRead("data.jsonl");
-var extractor = new JsonLineExtractor<Person, JsonReport>(stream, logger);
+var extractor = new JsonLineExtractor<Person>(stream, logger);
 
 await foreach (var person in extractor.ExtractAsync(cancellationToken))
 {
@@ -101,7 +101,7 @@ await foreach (var person in extractor.ExtractAsync(cancellationToken))
 
 ```csharp
 using var stream = File.Create("output.jsonl");
-var loader = new JsonLineLoader<Person, JsonReport>(stream, logger);
+var loader = new JsonLineLoader<Person>(stream, logger);
 
 await loader.LoadAsync(items, cancellationToken);
 ```
@@ -117,7 +117,7 @@ var options = new JsonSerializerOptions
     PropertyNameCaseInsensitive = true,
 };
 
-var extractor = new JsonSingleStreamExtractor<Person, JsonReport>(stream, options, logger);
+var extractor = new JsonSingleStreamExtractor<Person>(stream, options, logger);
 ```
 
 ---

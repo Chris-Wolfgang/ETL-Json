@@ -17,7 +17,7 @@ namespace Wolfgang.Etl.Json.Tests.Unit;
 public class JsonLineLoaderTests
     : LoaderBaseContractTests
     <
-        JsonLineLoader<PersonRecord, JsonReport>,
+        JsonLineLoader<PersonRecord>,
         PersonRecord,
         JsonReport
     >
@@ -33,13 +33,13 @@ public class JsonLineLoaderTests
 
 
 
-    protected override JsonLineLoader<PersonRecord, JsonReport> CreateSut(int itemCount)
+    protected override JsonLineLoader<PersonRecord> CreateSut(int itemCount)
     {
         var stream = new MemoryStream();
-        return new JsonLineLoader<PersonRecord, JsonReport>
+        return new JsonLineLoader<PersonRecord>
         (
             stream,
-            NullLogger<JsonLineLoader<PersonRecord, JsonReport>>.Instance
+            NullLogger<JsonLineLoader<PersonRecord>>.Instance
         );
     }
 
@@ -49,17 +49,17 @@ public class JsonLineLoaderTests
 
 
 
-    protected override JsonLineLoader<PersonRecord, JsonReport> CreateSutWithTimer
+    protected override JsonLineLoader<PersonRecord> CreateSutWithTimer
     (
         IProgressTimer timer
     )
     {
         var stream = new MemoryStream();
-        return new JsonLineLoader<PersonRecord, JsonReport>
+        return new JsonLineLoader<PersonRecord>
         (
             stream,
             null,
-            NullLogger<JsonLineLoader<PersonRecord, JsonReport>>.Instance,
+            NullLogger<JsonLineLoader<PersonRecord>>.Instance,
             timer
         );
     }
@@ -70,10 +70,10 @@ public class JsonLineLoaderTests
     public async Task LoadAsync_writes_one_json_object_per_line()
     {
         var stream = new MemoryStream();
-        var sut = new JsonLineLoader<PersonRecord, JsonReport>
+        var sut = new JsonLineLoader<PersonRecord>
         (
             stream,
-            NullLogger<JsonLineLoader<PersonRecord, JsonReport>>.Instance
+            NullLogger<JsonLineLoader<PersonRecord>>.Instance
         );
 
         var items = new List<PersonRecord>
@@ -111,11 +111,11 @@ public class JsonLineLoaderTests
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         };
 
-        var sut = new JsonLineLoader<PersonRecord, JsonReport>
+        var sut = new JsonLineLoader<PersonRecord>
         (
             stream,
             options,
-            NullLogger<JsonLineLoader<PersonRecord, JsonReport>>.Instance
+            NullLogger<JsonLineLoader<PersonRecord>>.Instance
         );
 
         var items = new List<PersonRecord>
@@ -140,10 +140,10 @@ public class JsonLineLoaderTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonLineLoader<PersonRecord, JsonReport>
+            () => new JsonLineLoader<PersonRecord>
             (
                 null!,
-                NullLogger<JsonLineLoader<PersonRecord, JsonReport>>.Instance
+                NullLogger<JsonLineLoader<PersonRecord>>.Instance
             )
         );
     }
@@ -155,10 +155,10 @@ public class JsonLineLoaderTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonLineLoader<PersonRecord, JsonReport>
+            () => new JsonLineLoader<PersonRecord>
             (
                 new MemoryStream(),
-                (ILogger<JsonLineLoader<PersonRecord, JsonReport>>)null!
+                (ILogger<JsonLineLoader<PersonRecord>>)null!
             )
         );
     }
@@ -170,11 +170,11 @@ public class JsonLineLoaderTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonLineLoader<PersonRecord, JsonReport>
+            () => new JsonLineLoader<PersonRecord>
             (
                 new MemoryStream(),
                 (JsonSerializerOptions)null!,
-                NullLogger<JsonLineLoader<PersonRecord, JsonReport>>.Instance
+                NullLogger<JsonLineLoader<PersonRecord>>.Instance
             )
         );
     }
@@ -186,11 +186,11 @@ public class JsonLineLoaderTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonLineLoader<PersonRecord, JsonReport>
+            () => new JsonLineLoader<PersonRecord>
             (
                 null!,
                 null,
-                NullLogger<JsonLineLoader<PersonRecord, JsonReport>>.Instance,
+                NullLogger<JsonLineLoader<PersonRecord>>.Instance,
                 new ManualProgressTimer()
             )
         );
@@ -203,7 +203,7 @@ public class JsonLineLoaderTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonLineLoader<PersonRecord, JsonReport>
+            () => new JsonLineLoader<PersonRecord>
             (
                 new MemoryStream(),
                 null,
@@ -220,11 +220,11 @@ public class JsonLineLoaderTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonLineLoader<PersonRecord, JsonReport>
+            () => new JsonLineLoader<PersonRecord>
             (
                 new MemoryStream(),
                 null,
-                NullLogger<JsonLineLoader<PersonRecord, JsonReport>>.Instance,
+                NullLogger<JsonLineLoader<PersonRecord>>.Instance,
                 null!
             )
         );
@@ -236,10 +236,10 @@ public class JsonLineLoaderTests
     public async Task LoadAsync_when_empty_sequence_writes_no_json_lines()
     {
         var stream = new MemoryStream();
-        var sut = new JsonLineLoader<PersonRecord, JsonReport>
+        var sut = new JsonLineLoader<PersonRecord>
         (
             stream,
-            NullLogger<JsonLineLoader<PersonRecord, JsonReport>>.Instance
+            NullLogger<JsonLineLoader<PersonRecord>>.Instance
         );
 
         await sut.LoadAsync(AsyncEnumerable.Empty<PersonRecord>());

@@ -13,7 +13,6 @@ namespace Wolfgang.Etl.Json;
 /// Loads items of type <typeparamref name="TRecord"/> into a JSONL (JSON Lines / NDJSON) stream.
 /// </summary>
 /// <typeparam name="TRecord">The type of items to load. Must be <c>notnull</c>.</typeparam>
-/// <typeparam name="TProgress">The progress report type.</typeparam>
 /// <remarks>
 /// Writes each item as a single line of JSON to the output stream,
 /// with each line separated by a newline character.
@@ -22,13 +21,12 @@ namespace Wolfgang.Etl.Json;
 /// <example>
 /// <code>
 /// using var stream = File.Create("output.jsonl");
-/// var loader = new JsonLineLoader&lt;Person, JsonReport&gt;(stream, logger);
+/// var loader = new JsonLineLoader&lt;Person&gt;(stream, logger);
 /// await loader.LoadAsync(items, cancellationToken);
 /// </code>
 /// </example>
-public class JsonLineLoader<TRecord, TProgress> : LoaderBase<TRecord, TProgress>
+public class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     where TRecord : notnull
-    where TProgress : notnull
 {
     private readonly Stream _stream;
     private readonly JsonSerializerOptions? _options;
@@ -40,7 +38,7 @@ public class JsonLineLoader<TRecord, TProgress> : LoaderBase<TRecord, TProgress>
 
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="JsonLineLoader{TRecord, TProgress}"/> class.
+    /// Initializes a new instance of the <see cref="JsonLineLoader{TRecord}"/> class.
     /// </summary>
     /// <param name="stream">The stream to write JSONL data to.</param>
     /// <param name="logger">The logger instance for diagnostic output.</param>
@@ -50,7 +48,7 @@ public class JsonLineLoader<TRecord, TProgress> : LoaderBase<TRecord, TProgress>
     public JsonLineLoader
     (
         Stream stream,
-        ILogger<JsonLineLoader<TRecord, TProgress>> logger
+        ILogger<JsonLineLoader<TRecord>> logger
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
@@ -61,7 +59,7 @@ public class JsonLineLoader<TRecord, TProgress> : LoaderBase<TRecord, TProgress>
 
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="JsonLineLoader{TRecord, TProgress}"/> class
+    /// Initializes a new instance of the <see cref="JsonLineLoader{TRecord}"/> class
     /// with custom serialization options.
     /// </summary>
     /// <param name="stream">The stream to write JSONL data to.</param>
@@ -74,7 +72,7 @@ public class JsonLineLoader<TRecord, TProgress> : LoaderBase<TRecord, TProgress>
     (
         Stream stream,
         JsonSerializerOptions options,
-        ILogger<JsonLineLoader<TRecord, TProgress>> logger
+        ILogger<JsonLineLoader<TRecord>> logger
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
@@ -85,7 +83,7 @@ public class JsonLineLoader<TRecord, TProgress> : LoaderBase<TRecord, TProgress>
 
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="JsonLineLoader{TRecord, TProgress}"/> class
+    /// Initializes a new instance of the <see cref="JsonLineLoader{TRecord}"/> class
     /// with an injected progress timer for testing.
     /// </summary>
     /// <param name="stream">The stream to write JSONL data to.</param>
@@ -165,27 +163,19 @@ public class JsonLineLoader<TRecord, TProgress> : LoaderBase<TRecord, TProgress>
 
 
     /// <inheritdoc />
-    protected override TProgress CreateProgressReport()
+    protected override JsonReport CreateProgressReport()
     {
-        if (typeof(TProgress) == typeof(JsonReport) || typeof(TProgress) == typeof(Report))
-        {
-            return (TProgress)(object)new JsonReport
-            (
-                CurrentItemCount,
-                CurrentSkippedItemCount
-            );
-        }
-
-        throw new NotSupportedException
+        return new JsonReport
         (
-            $"Override {nameof(CreateProgressReport)} to supply a {typeof(TProgress).Name} instance."
+            CurrentItemCount,
+            CurrentSkippedItemCount
         );
     }
 
 
 
     /// <inheritdoc />
-    protected override IProgressTimer CreateProgressTimer(IProgress<TProgress> progress)
+    protected override IProgressTimer CreateProgressTimer(IProgress<JsonReport> progress)
     {
         if (_progressTimer is not null)
         {

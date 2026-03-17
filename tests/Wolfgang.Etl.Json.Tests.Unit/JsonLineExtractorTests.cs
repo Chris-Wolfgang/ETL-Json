@@ -17,7 +17,7 @@ namespace Wolfgang.Etl.Json.Tests.Unit;
 public class JsonLineExtractorTests
     : ExtractorBaseContractTests
     <
-        JsonLineExtractor<PersonRecord, JsonReport>,
+        JsonLineExtractor<PersonRecord>,
         PersonRecord,
         JsonReport
     >
@@ -44,12 +44,12 @@ public class JsonLineExtractorTests
 
 
 
-    protected override JsonLineExtractor<PersonRecord, JsonReport> CreateSut(int itemCount)
+    protected override JsonLineExtractor<PersonRecord> CreateSut(int itemCount)
     {
-        return new JsonLineExtractor<PersonRecord, JsonReport>
+        return new JsonLineExtractor<PersonRecord>
         (
             CreateJsonlStream(itemCount),
-            NullLogger<JsonLineExtractor<PersonRecord, JsonReport>>.Instance
+            NullLogger<JsonLineExtractor<PersonRecord>>.Instance
         );
     }
 
@@ -59,16 +59,16 @@ public class JsonLineExtractorTests
 
 
 
-    protected override JsonLineExtractor<PersonRecord, JsonReport> CreateSutWithTimer
+    protected override JsonLineExtractor<PersonRecord> CreateSutWithTimer
     (
         IProgressTimer timer
     )
     {
-        return new JsonLineExtractor<PersonRecord, JsonReport>
+        return new JsonLineExtractor<PersonRecord>
         (
             CreateJsonlStream(ExpectedItems.Count),
             null,
-            NullLogger<JsonLineExtractor<PersonRecord, JsonReport>>.Instance,
+            NullLogger<JsonLineExtractor<PersonRecord>>.Instance,
             timer
         );
     }
@@ -83,10 +83,10 @@ public class JsonLineExtractorTests
         var content = $"{line1}\n\n  \n{line2}\n";
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
 
-        var sut = new JsonLineExtractor<PersonRecord, JsonReport>
+        var sut = new JsonLineExtractor<PersonRecord>
         (
             stream,
-            NullLogger<JsonLineExtractor<PersonRecord, JsonReport>>.Instance
+            NullLogger<JsonLineExtractor<PersonRecord>>.Instance
         );
 
         var results = new List<PersonRecord>();
@@ -113,11 +113,11 @@ public class JsonLineExtractorTests
         var json = JsonSerializer.Serialize(ExpectedItems[0], options);
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
 
-        var sut = new JsonLineExtractor<PersonRecord, JsonReport>
+        var sut = new JsonLineExtractor<PersonRecord>
         (
             stream,
             new JsonSerializerOptions { PropertyNameCaseInsensitive = true },
-            NullLogger<JsonLineExtractor<PersonRecord, JsonReport>>.Instance
+            NullLogger<JsonLineExtractor<PersonRecord>>.Instance
         );
 
         var results = new List<PersonRecord>();
@@ -137,10 +137,10 @@ public class JsonLineExtractorTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonLineExtractor<PersonRecord, JsonReport>
+            () => new JsonLineExtractor<PersonRecord>
             (
                 null!,
-                NullLogger<JsonLineExtractor<PersonRecord, JsonReport>>.Instance
+                NullLogger<JsonLineExtractor<PersonRecord>>.Instance
             )
         );
     }
@@ -152,10 +152,10 @@ public class JsonLineExtractorTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonLineExtractor<PersonRecord, JsonReport>
+            () => new JsonLineExtractor<PersonRecord>
             (
                 new MemoryStream(),
-                (ILogger<JsonLineExtractor<PersonRecord, JsonReport>>)null!
+                (ILogger<JsonLineExtractor<PersonRecord>>)null!
             )
         );
     }
@@ -167,11 +167,11 @@ public class JsonLineExtractorTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonLineExtractor<PersonRecord, JsonReport>
+            () => new JsonLineExtractor<PersonRecord>
             (
                 new MemoryStream(),
                 (JsonSerializerOptions)null!,
-                NullLogger<JsonLineExtractor<PersonRecord, JsonReport>>.Instance
+                NullLogger<JsonLineExtractor<PersonRecord>>.Instance
             )
         );
     }
@@ -183,11 +183,11 @@ public class JsonLineExtractorTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonLineExtractor<PersonRecord, JsonReport>
+            () => new JsonLineExtractor<PersonRecord>
             (
                 null!,
                 null,
-                NullLogger<JsonLineExtractor<PersonRecord, JsonReport>>.Instance,
+                NullLogger<JsonLineExtractor<PersonRecord>>.Instance,
                 new ManualProgressTimer()
             )
         );
@@ -200,7 +200,7 @@ public class JsonLineExtractorTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonLineExtractor<PersonRecord, JsonReport>
+            () => new JsonLineExtractor<PersonRecord>
             (
                 new MemoryStream(),
                 null,
@@ -217,11 +217,11 @@ public class JsonLineExtractorTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonLineExtractor<PersonRecord, JsonReport>
+            () => new JsonLineExtractor<PersonRecord>
             (
                 new MemoryStream(),
                 null,
-                NullLogger<JsonLineExtractor<PersonRecord, JsonReport>>.Instance,
+                NullLogger<JsonLineExtractor<PersonRecord>>.Instance,
                 null!
             )
         );
@@ -235,10 +235,10 @@ public class JsonLineExtractorTests
         var content = "null\n" + JsonSerializer.Serialize(ExpectedItems[0]);
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
 
-        var sut = new JsonLineExtractor<PersonRecord, JsonReport>
+        var sut = new JsonLineExtractor<PersonRecord>
         (
             stream,
-            NullLogger<JsonLineExtractor<PersonRecord, JsonReport>>.Instance
+            NullLogger<JsonLineExtractor<PersonRecord>>.Instance
         );
 
         var results = new List<PersonRecord>();

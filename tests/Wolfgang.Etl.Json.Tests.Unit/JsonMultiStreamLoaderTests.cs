@@ -17,7 +17,7 @@ namespace Wolfgang.Etl.Json.Tests.Unit;
 public class JsonMultiStreamLoaderTests
     : LoaderBaseContractTests
     <
-        JsonMultiStreamLoader<PersonRecord, JsonReport>,
+        JsonMultiStreamLoader<PersonRecord>,
         PersonRecord,
         JsonReport
     >
@@ -33,12 +33,12 @@ public class JsonMultiStreamLoaderTests
 
 
 
-    protected override JsonMultiStreamLoader<PersonRecord, JsonReport> CreateSut(int itemCount)
+    protected override JsonMultiStreamLoader<PersonRecord> CreateSut(int itemCount)
     {
-        return new JsonMultiStreamLoader<PersonRecord, JsonReport>
+        return new JsonMultiStreamLoader<PersonRecord>
         (
             _ => new MemoryStream(),
-            NullLogger<JsonMultiStreamLoader<PersonRecord, JsonReport>>.Instance
+            NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
         );
     }
 
@@ -48,16 +48,16 @@ public class JsonMultiStreamLoaderTests
 
 
 
-    protected override JsonMultiStreamLoader<PersonRecord, JsonReport> CreateSutWithTimer
+    protected override JsonMultiStreamLoader<PersonRecord> CreateSutWithTimer
     (
         IProgressTimer timer
     )
     {
-        return new JsonMultiStreamLoader<PersonRecord, JsonReport>
+        return new JsonMultiStreamLoader<PersonRecord>
         (
             _ => new MemoryStream(),
             null,
-            NullLogger<JsonMultiStreamLoader<PersonRecord, JsonReport>>.Instance,
+            NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance,
             timer
         );
     }
@@ -69,7 +69,7 @@ public class JsonMultiStreamLoaderTests
     {
         var streams = new List<MemoryStream>();
 
-        var sut = new JsonMultiStreamLoader<PersonRecord, JsonReport>
+        var sut = new JsonMultiStreamLoader<PersonRecord>
         (
             _ =>
             {
@@ -77,7 +77,7 @@ public class JsonMultiStreamLoaderTests
                 streams.Add(ms);
                 return ms;
             },
-            NullLogger<JsonMultiStreamLoader<PersonRecord, JsonReport>>.Instance
+            NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
         );
 
         var items = new List<PersonRecord>
@@ -102,7 +102,7 @@ public class JsonMultiStreamLoaderTests
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         };
 
-        var sut = new JsonMultiStreamLoader<PersonRecord, JsonReport>
+        var sut = new JsonMultiStreamLoader<PersonRecord>
         (
             _ =>
             {
@@ -111,7 +111,7 @@ public class JsonMultiStreamLoaderTests
                 return ms;
             },
             options,
-            NullLogger<JsonMultiStreamLoader<PersonRecord, JsonReport>>.Instance
+            NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
         );
 
         var items = new List<PersonRecord>
@@ -133,10 +133,10 @@ public class JsonMultiStreamLoaderTests
     [Fact]
     public async Task LoadAsync_when_stream_factory_returns_null_throws_InvalidOperationException()
     {
-        var sut = new JsonMultiStreamLoader<PersonRecord, JsonReport>
+        var sut = new JsonMultiStreamLoader<PersonRecord>
         (
             _ => null!,
-            NullLogger<JsonMultiStreamLoader<PersonRecord, JsonReport>>.Instance
+            NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
         );
 
         var items = new List<PersonRecord>
@@ -157,7 +157,7 @@ public class JsonMultiStreamLoaderTests
     {
         var streams = new List<MemoryStream>();
 
-        var sut = new JsonMultiStreamLoader<PersonRecord, JsonReport>
+        var sut = new JsonMultiStreamLoader<PersonRecord>
         (
             _ =>
             {
@@ -165,7 +165,7 @@ public class JsonMultiStreamLoaderTests
                 streams.Add(ms);
                 return ms;
             },
-            NullLogger<JsonMultiStreamLoader<PersonRecord, JsonReport>>.Instance
+            NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
         );
 
         var items = new List<PersonRecord>
@@ -191,10 +191,10 @@ public class JsonMultiStreamLoaderTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonMultiStreamLoader<PersonRecord, JsonReport>
+            () => new JsonMultiStreamLoader<PersonRecord>
             (
                 null!,
-                NullLogger<JsonMultiStreamLoader<PersonRecord, JsonReport>>.Instance
+                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
             )
         );
     }
@@ -206,10 +206,10 @@ public class JsonMultiStreamLoaderTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonMultiStreamLoader<PersonRecord, JsonReport>
+            () => new JsonMultiStreamLoader<PersonRecord>
             (
                 _ => new MemoryStream(),
-                (ILogger<JsonMultiStreamLoader<PersonRecord, JsonReport>>)null!
+                (ILogger<JsonMultiStreamLoader<PersonRecord>>)null!
             )
         );
     }
@@ -221,11 +221,11 @@ public class JsonMultiStreamLoaderTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonMultiStreamLoader<PersonRecord, JsonReport>
+            () => new JsonMultiStreamLoader<PersonRecord>
             (
                 _ => new MemoryStream(),
                 (JsonSerializerOptions)null!,
-                NullLogger<JsonMultiStreamLoader<PersonRecord, JsonReport>>.Instance
+                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
             )
         );
     }
@@ -237,11 +237,11 @@ public class JsonMultiStreamLoaderTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonMultiStreamLoader<PersonRecord, JsonReport>
+            () => new JsonMultiStreamLoader<PersonRecord>
             (
                 null!,
                 null,
-                NullLogger<JsonMultiStreamLoader<PersonRecord, JsonReport>>.Instance,
+                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance,
                 new ManualProgressTimer()
             )
         );
@@ -254,7 +254,7 @@ public class JsonMultiStreamLoaderTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonMultiStreamLoader<PersonRecord, JsonReport>
+            () => new JsonMultiStreamLoader<PersonRecord>
             (
                 _ => new MemoryStream(),
                 null,
@@ -271,11 +271,11 @@ public class JsonMultiStreamLoaderTests
     {
         Assert.Throws<ArgumentNullException>
         (
-            () => new JsonMultiStreamLoader<PersonRecord, JsonReport>
+            () => new JsonMultiStreamLoader<PersonRecord>
             (
                 _ => new MemoryStream(),
                 null,
-                NullLogger<JsonMultiStreamLoader<PersonRecord, JsonReport>>.Instance,
+                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance,
                 null!
             )
         );
@@ -288,14 +288,14 @@ public class JsonMultiStreamLoaderTests
     {
         var streamCount = 0;
 
-        var sut = new JsonMultiStreamLoader<PersonRecord, JsonReport>
+        var sut = new JsonMultiStreamLoader<PersonRecord>
         (
             _ =>
             {
                 streamCount++;
                 return new MemoryStream();
             },
-            NullLogger<JsonMultiStreamLoader<PersonRecord, JsonReport>>.Instance
+            NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
         );
 
         await sut.LoadAsync(AsyncEnumerable.Empty<PersonRecord>());
