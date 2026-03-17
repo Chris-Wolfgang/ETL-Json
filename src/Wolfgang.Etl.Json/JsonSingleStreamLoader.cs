@@ -111,7 +111,7 @@ public class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonReport>
         CancellationToken token
     )
     {
-        _logger.LogDebug("Starting JSON single-stream loading of {RecordType}.", typeof(TRecord).Name);
+        JsonLogMessages.StartingOperation(_logger, $"JSON single-stream loading of {typeof(TRecord).Name}", null);
 
 #pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
         await using var writer = new Utf8JsonWriter(_stream);
@@ -126,40 +126,26 @@ public class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonReport>
             if (CurrentSkippedItemCount < SkipItemCount)
             {
                 IncrementCurrentSkippedItemCount();
-                _logger.LogDebug
-                (
-                    "Skipped item {SkippedCount} of {SkipTotal}.",
-                    CurrentSkippedItemCount,
-                    SkipItemCount
-                );
+                JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
                 continue;
             }
 
             if (CurrentItemCount >= MaximumItemCount)
             {
-                _logger.LogDebug
-                (
-                    "Reached MaximumItemCount of {MaximumItemCount}. Stopping loading.",
-                    MaximumItemCount
-                );
+                JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
                 break;
             }
 
             JsonSerializer.Serialize(writer, item, _options);
             IncrementCurrentItemCount();
 
-            _logger.LogDebug("Loaded item {CurrentItemCount}.", CurrentItemCount);
+            JsonLogMessages.LoadedItem(_logger, CurrentItemCount, null);
         }
 
         writer.WriteEndArray();
         await writer.FlushAsync(token).ConfigureAwait(false);
 
-        _logger.LogInformation
-        (
-            "JSON single-stream loading completed. Items loaded: {ItemCount}, items skipped: {SkippedCount}.",
-            CurrentItemCount,
-            CurrentSkippedItemCount
-        );
+        JsonLogMessages.SingleStreamLoadingCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, null);
     }
 
 

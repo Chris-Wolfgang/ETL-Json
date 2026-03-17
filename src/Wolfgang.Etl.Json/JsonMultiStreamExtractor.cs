@@ -117,7 +117,7 @@ public class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
         [EnumeratorCancellation] CancellationToken token
     )
     {
-        _logger.LogDebug("Starting JSON multi-stream extraction of {RecordType}.", typeof(TRecord).Name);
+        JsonLogMessages.StartingOperation(_logger, $"JSON multi-stream extraction of {typeof(TRecord).Name}", null);
 
         var skipBudget = SkipItemCount;
         var itemsYielded = 0;
@@ -126,7 +126,7 @@ public class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
         foreach (var stream in _streams)
         {
             token.ThrowIfCancellationRequested();
-            _logger.LogDebug("Reading stream {StreamIndex}.", streamIndex);
+            JsonLogMessages.ReadingStream(_logger, streamIndex, null);
 
             TRecord? item;
             try
@@ -146,7 +146,7 @@ public class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 
             if (item is null)
             {
-                _logger.LogWarning("Stream {StreamIndex} deserialized to null.", streamIndex - 1);
+                JsonLogMessages.StreamDeserializedToNull(_logger, streamIndex - 1, null);
                 continue;
             }
 
@@ -154,28 +154,24 @@ public class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
             {
                 skipBudget--;
                 IncrementCurrentSkippedItemCount();
-                _logger.LogDebug("Skipped item {SkippedCount} of {SkipTotal}.", CurrentSkippedItemCount, SkipItemCount);
+                JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
                 continue;
             }
 
             if (itemsYielded >= MaximumItemCount)
             {
-                _logger.LogDebug("Reached MaximumItemCount of {MaximumItemCount}. Stopping.", MaximumItemCount);
+                JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
                 break;
             }
 
             IncrementCurrentItemCount();
             itemsYielded++;
-            _logger.LogDebug("Extracted item {CurrentItemCount} from stream {StreamIndex}.", CurrentItemCount, streamIndex - 1);
+            JsonLogMessages.ExtractedItemFromStream(_logger, CurrentItemCount, streamIndex - 1, null);
 
             yield return item;
         }
 
-        _logger.LogInformation
-        (
-            "Multi-stream extraction completed. Extracted: {ItemCount}, skipped: {SkippedCount}, streams: {StreamCount}.",
-            CurrentItemCount, CurrentSkippedItemCount, streamIndex
-        );
+        JsonLogMessages.MultiStreamExtractionCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, streamIndex, null);
     }
 
 

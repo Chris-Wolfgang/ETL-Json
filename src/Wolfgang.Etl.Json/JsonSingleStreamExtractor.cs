@@ -115,7 +115,7 @@ public class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonRep
         [EnumeratorCancellation] CancellationToken token
     )
     {
-        _logger.LogDebug("Starting JSON single-stream extraction of {RecordType}.", typeof(TRecord).Name);
+        JsonLogMessages.StartingOperation(_logger, $"JSON single-stream extraction of {typeof(TRecord).Name}", null);
 
         var skipBudget = SkipItemCount;
         var itemsYielded = 0;
@@ -131,7 +131,7 @@ public class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonRep
 
             if (item is null)
             {
-                _logger.LogDebug("Skipping null item encountered in JSON array.");
+                JsonLogMessages.SkippingNullArrayItem(_logger, null);
                 continue;
             }
 
@@ -139,29 +139,24 @@ public class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonRep
             {
                 skipBudget--;
                 IncrementCurrentSkippedItemCount();
-                _logger.LogDebug("Skipped item {SkippedCount} of {SkipTotal}.", CurrentSkippedItemCount, SkipItemCount);
+                JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
                 continue;
             }
 
             if (itemsYielded >= MaximumItemCount)
             {
-                _logger.LogDebug("Reached MaximumItemCount of {MaximumItemCount}. Stopping.", MaximumItemCount);
+                JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
                 break;
             }
 
             IncrementCurrentItemCount();
             itemsYielded++;
-            _logger.LogDebug("Extracted item {CurrentItemCount}.", CurrentItemCount);
+            JsonLogMessages.ExtractedItem(_logger, CurrentItemCount, null);
 
             yield return item;
         }
 
-        _logger.LogInformation
-        (
-            "JSON single-stream extraction completed. Extracted: {ItemCount}, skipped: {SkippedCount}.",
-            CurrentItemCount,
-            CurrentSkippedItemCount
-        );
+        JsonLogMessages.SingleStreamExtractionCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, null);
     }
 
 

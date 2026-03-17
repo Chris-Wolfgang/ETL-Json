@@ -115,7 +115,7 @@ public class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonReport>
         [EnumeratorCancellation] CancellationToken token
     )
     {
-        _logger.LogDebug("Starting JSONL extraction of {RecordType}.", typeof(TRecord).Name);
+        JsonLogMessages.StartingOperation(_logger, $"JSONL extraction of {typeof(TRecord).Name}", null);
 
         var skipBudget = SkipItemCount;
         var itemsYielded = 0;
@@ -139,14 +139,14 @@ public class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonReport>
 
             if (string.IsNullOrWhiteSpace(line))
             {
-                _logger.LogDebug("Skipping blank line at {LineNumber}.", lineNum);
+                JsonLogMessages.SkippingBlankLine(_logger, lineNum, null);
                 continue;
             }
 
             var item = JsonSerializer.Deserialize<TRecord>(line, _options);
             if (item is null)
             {
-                _logger.LogWarning("Line {LineNumber} deserialized to null.", lineNum);
+                JsonLogMessages.LineDeserializedToNull(_logger, lineNum, null);
                 continue;
             }
 
@@ -154,28 +154,24 @@ public class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonReport>
             {
                 skipBudget--;
                 IncrementCurrentSkippedItemCount();
-                _logger.LogDebug("Skipped item {SkippedCount} of {SkipTotal} at line {LineNumber}.", CurrentSkippedItemCount, SkipItemCount, lineNum);
+                JsonLogMessages.SkippedItemAtLine(_logger, CurrentSkippedItemCount, SkipItemCount, lineNum, null);
                 continue;
             }
 
             if (itemsYielded >= MaximumItemCount)
             {
-                _logger.LogDebug("Reached MaximumItemCount of {MaximumItemCount}. Stopping.", MaximumItemCount);
+                JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
                 break;
             }
 
             IncrementCurrentItemCount();
             itemsYielded++;
-            _logger.LogDebug("Extracted item {CurrentItemCount} from line {LineNumber}.", CurrentItemCount, lineNum);
+            JsonLogMessages.ExtractedItemFromLine(_logger, CurrentItemCount, lineNum, null);
 
             yield return item;
         }
 
-        _logger.LogInformation
-        (
-            "JSONL extraction completed. Extracted: {ItemCount}, skipped: {SkippedCount}, lines: {LineCount}.",
-            CurrentItemCount, CurrentSkippedItemCount, System.Threading.Interlocked.Read(ref _currentLineNumber)
-        );
+        JsonLogMessages.JsonlExtractionCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, System.Threading.Interlocked.Read(ref _currentLineNumber), null);
     }
 
 

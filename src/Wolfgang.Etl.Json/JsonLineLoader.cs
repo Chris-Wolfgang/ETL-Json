@@ -113,7 +113,7 @@ public class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
         CancellationToken token
     )
     {
-        _logger.LogDebug("Starting JSONL loading of {RecordType}.", typeof(TRecord).Name);
+        JsonLogMessages.StartingOperation(_logger, $"JSONL loading of {typeof(TRecord).Name}", null);
 
 #if NETSTANDARD2_0 || NET462 || NET481
         using var writer = new StreamWriter(_stream, System.Text.Encoding.UTF8, 1024, true);
@@ -128,13 +128,13 @@ public class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
             if (CurrentSkippedItemCount < SkipItemCount)
             {
                 IncrementCurrentSkippedItemCount();
-                _logger.LogDebug("Skipped item {SkippedCount} of {SkipTotal}.", CurrentSkippedItemCount, SkipItemCount);
+                JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
                 continue;
             }
 
             if (CurrentItemCount >= MaximumItemCount)
             {
-                _logger.LogDebug("Reached MaximumItemCount of {MaximumItemCount}. Stopping.", MaximumItemCount);
+                JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
                 break;
             }
 
@@ -148,16 +148,12 @@ public class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
 #endif
 
             IncrementCurrentItemCount();
-            _logger.LogDebug("Loaded item {CurrentItemCount} at line {LineNumber}.", CurrentItemCount, System.Threading.Interlocked.Read(ref _currentLineNumber));
+            JsonLogMessages.LoadedItemAtLine(_logger, CurrentItemCount, System.Threading.Interlocked.Read(ref _currentLineNumber), null);
         }
 
         await writer.FlushAsync().ConfigureAwait(false);
 
-        _logger.LogInformation
-        (
-            "JSONL loading completed. Loaded: {ItemCount}, skipped: {SkippedCount}, lines: {LineCount}.",
-            CurrentItemCount, CurrentSkippedItemCount, System.Threading.Interlocked.Read(ref _currentLineNumber)
-        );
+        JsonLogMessages.JsonlLoadingCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, System.Threading.Interlocked.Read(ref _currentLineNumber), null);
     }
 
 

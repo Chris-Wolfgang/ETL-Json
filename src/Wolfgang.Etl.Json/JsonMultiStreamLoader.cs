@@ -125,7 +125,7 @@ public class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonReport>
         CancellationToken token
     )
     {
-        _logger.LogDebug("Starting JSON multi-stream loading of {RecordType}.", typeof(TRecord).Name);
+        JsonLogMessages.StartingOperation(_logger, $"JSON multi-stream loading of {typeof(TRecord).Name}", null);
 
         var streamIndex = 0;
 
@@ -136,20 +136,20 @@ public class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonReport>
             if (CurrentSkippedItemCount < SkipItemCount)
             {
                 IncrementCurrentSkippedItemCount();
-                _logger.LogDebug("Skipped item {SkippedCount} of {SkipTotal}.", CurrentSkippedItemCount, SkipItemCount);
+                JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
                 continue;
             }
 
             if (CurrentItemCount >= MaximumItemCount)
             {
-                _logger.LogDebug("Reached MaximumItemCount of {MaximumItemCount}. Stopping.", MaximumItemCount);
+                JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
                 break;
             }
 
             var stream = _streamFactory(item);
             if (stream is null)
             {
-                _logger.LogError("Stream factory returned null for item at index {StreamIndex}.", streamIndex);
+                JsonLogMessages.StreamFactoryReturnedNull(_logger, streamIndex, null);
                 throw new InvalidOperationException($"Stream factory returned null for item at index {streamIndex}.");
             }
 
@@ -163,7 +163,7 @@ public class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonReport>
 #endif
                 IncrementCurrentItemCount();
                 streamIndex++;
-                _logger.LogDebug("Loaded item {CurrentItemCount} to stream {StreamIndex}.", CurrentItemCount, streamIndex - 1);
+                JsonLogMessages.LoadedItemToStream(_logger, CurrentItemCount, streamIndex - 1, null);
             }
             finally
             {
@@ -175,11 +175,7 @@ public class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonReport>
             }
         }
 
-        _logger.LogInformation
-        (
-            "Multi-stream loading completed. Loaded: {ItemCount}, skipped: {SkippedCount}, streams: {StreamCount}.",
-            CurrentItemCount, CurrentSkippedItemCount, streamIndex
-        );
+        JsonLogMessages.MultiStreamLoadingCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, streamIndex, null);
     }
 
 
