@@ -264,4 +264,63 @@ public class JsonMultiStreamExtractorTests
         Assert.Single(results);
         Assert.Equal("Alice", results[0].FirstName);
     }
+
+
+
+    [Fact]
+    public async Task ExtractAsync_when_property_names_differ_with_JsonPropertyName_maps_correctly()
+    {
+        var json = "{\"first_name\":\"Alice\",\"last_name\":\"Smith\",\"age\":30}";
+        var streams = new List<Stream>
+        {
+            new MemoryStream(Encoding.UTF8.GetBytes(json)),
+        };
+
+        var sut = new JsonMultiStreamExtractor<SnakeCasePersonRecord>
+        (
+            streams,
+            NullLogger<JsonMultiStreamExtractor<SnakeCasePersonRecord>>.Instance
+        );
+
+        var results = new List<SnakeCasePersonRecord>();
+        await foreach (var item in sut.ExtractAsync())
+        {
+            results.Add(item);
+        }
+
+        Assert.Single(results);
+        Assert.Equal("Alice", results[0].FirstName);
+        Assert.Equal("Smith", results[0].LastName);
+        Assert.Equal(30, results[0].Age);
+    }
+
+
+
+    [Fact]
+    public async Task ExtractAsync_when_camelCase_json_with_case_insensitive_option_maps_correctly()
+    {
+        var json = "{\"firstName\":\"Bob\",\"lastName\":\"Jones\",\"age\":25}";
+        var streams = new List<Stream>
+        {
+            new MemoryStream(Encoding.UTF8.GetBytes(json)),
+        };
+
+        var sut = new JsonMultiStreamExtractor<PersonRecord>
+        (
+            streams,
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true },
+            NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
+        );
+
+        var results = new List<PersonRecord>();
+        await foreach (var item in sut.ExtractAsync())
+        {
+            results.Add(item);
+        }
+
+        Assert.Single(results);
+        Assert.Equal("Bob", results[0].FirstName);
+        Assert.Equal("Jones", results[0].LastName);
+        Assert.Equal(25, results[0].Age);
+    }
 }

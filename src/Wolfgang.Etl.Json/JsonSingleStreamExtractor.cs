@@ -102,7 +102,7 @@ public class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonRep
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _options = options;
+        _options = options ?? throw new ArgumentNullException(nameof(options));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
@@ -149,6 +149,7 @@ public class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonRep
                 break;
             }
 
+            // TODO Isn't itemsYield redundant with CurrentItemCount
             IncrementCurrentItemCount();
             itemsYielded++;
             JsonLogMessages.ExtractedItem(_logger, CurrentItemCount, null);
@@ -162,20 +163,19 @@ public class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonRep
 
 
     /// <inheritdoc />
-    protected override JsonReport CreateProgressReport()
-    {
-        return new JsonReport
+    protected override JsonReport CreateProgressReport() =>
+        new
         (
             CurrentItemCount,
             CurrentSkippedItemCount
         );
-    }
 
 
 
     /// <inheritdoc />
     protected override IProgressTimer CreateProgressTimer(IProgress<JsonReport> progress)
     {
+        // TODO This logic doesn't seem correct
         if (_progressTimer is not null)
         {
             if (!_progressTimerWired)
@@ -187,6 +187,7 @@ public class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonRep
             return _progressTimer;
         }
 
+        // TODO should CreateProgressTimer be virtual or abstract?
         return base.CreateProgressTimer(progress);
     }
 }

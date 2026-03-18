@@ -91,13 +91,13 @@ public class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     internal JsonSingleStreamLoader
     (
         Stream stream,
-        JsonSerializerOptions? options,
+        JsonSerializerOptions options,
         ILogger logger,
         IProgressTimer timer
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _options = options;
+        _options = options ?? throw new ArgumentNullException(nameof(options));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
@@ -113,6 +113,7 @@ public class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     {
         JsonLogMessages.StartingOperation(_logger, $"JSON single-stream loading of {typeof(TRecord).Name}", null);
 
+        // TODO Why is this warning disabled? can we use configure await
 #pragma warning disable CA2007 // Consider calling ConfigureAwait on the awaited task
         await using var writer = new Utf8JsonWriter(_stream);
 #pragma warning restore CA2007
@@ -151,20 +152,18 @@ public class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonReport>
 
 
     /// <inheritdoc />
-    protected override JsonReport CreateProgressReport()
-    {
-        return new JsonReport
+    protected override JsonReport CreateProgressReport() =>
+        new
         (
             CurrentItemCount,
             CurrentSkippedItemCount
         );
-    }
-
 
 
     /// <inheritdoc />
     protected override IProgressTimer CreateProgressTimer(IProgress<JsonReport> progress)
     {
+        // TODO is this logic correct
         if (_progressTimer is not null)
         {
             if (!_progressTimerWired)

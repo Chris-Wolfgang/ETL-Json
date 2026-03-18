@@ -302,4 +302,78 @@ public class JsonMultiStreamLoaderTests
 
         Assert.Equal(0, streamCount);
     }
+
+
+
+    [Fact]
+    public async Task LoadAsync_when_custom_options_output_round_trips_correctly()
+    {
+        var streams = new List<MemoryStream>();
+        var options = new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        };
+
+        var sut = new JsonMultiStreamLoader<PersonRecord>
+        (
+            _ =>
+            {
+                var ms = new MemoryStream();
+                streams.Add(ms);
+                return ms;
+            },
+            options,
+            NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
+        );
+
+        var items = new List<PersonRecord>
+        {
+            new() { FirstName = "Alice", LastName = "Smith", Age = 30 },
+        };
+
+        await sut.LoadAsync(items.ToAsyncEnumerable());
+
+        Assert.Single(streams);
+        var readOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        var deserialized = JsonSerializer.Deserialize<PersonRecord>(streams[0].ToArray(), readOptions);
+
+        Assert.NotNull(deserialized);
+        Assert.Equal("Alice", deserialized!.FirstName);
+        Assert.Equal("Smith", deserialized.LastName);
+        Assert.Equal(30, deserialized.Age);
+    }
+
+
+
+    [Fact]
+    public async Task LoadAsync_when_JsonPropertyName_attributes_writes_mapped_names()
+    {
+        var streams = new List<MemoryStream>();
+
+        var sut = new JsonMultiStreamLoader<SnakeCasePersonRecord>
+        (
+            _ =>
+            {
+                var ms = new MemoryStream();
+                streams.Add(ms);
+                return ms;
+            },
+            NullLogger<JsonMultiStreamLoader<SnakeCasePersonRecord>>.Instance
+        );
+
+        var items = new List<SnakeCasePersonRecord>
+        {
+            new() { FirstName = "Alice", LastName = "Smith", Age = 30 },
+        };
+
+        await sut.LoadAsync(items.ToAsyncEnumerable());
+
+        Assert.Single(streams);
+        var json = Encoding.UTF8.GetString(streams[0].ToArray());
+
+        Assert.Contains("first_name", json);
+        Assert.Contains("last_name", json);
+        Assert.DoesNotContain("FirstName", json);
+        Assert.DoesNotContain("LastName", json);
+    }
 }
