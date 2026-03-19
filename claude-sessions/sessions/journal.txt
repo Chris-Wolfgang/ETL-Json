@@ -8,3 +8,4 @@
 | 2026-03-17 | 002     | 2026-03-17-session-002-add-coverage-tests.md          | Added 28 coverage tests (279 total), 95.8% line coverage, 100% method coverage |
 | 2026-03-17 | 003     | 2026-03-17-session-003-remove-tprogress.md            | Removed TProgress generic param, hardcoded JsonReport — cleaner API, 279 tests passing |
 | 2026-03-17 | 004     | 2026-03-17-session-004-loggermessage-and-serialization-tests.md | LoggerMessage.Define delegates (CA1848), 12 serialization/mapping tests, 291 total |
+| 2026-03-18 | 005     | 2026-03-18-session-005-todos-cleanup-pr.md                     | Resolved TODOs, non-nullable internal ctors, code cleanup, icons, PR #2 created |
