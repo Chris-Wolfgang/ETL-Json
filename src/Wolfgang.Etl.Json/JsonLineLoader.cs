@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -30,6 +31,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
 {
     private readonly Stream _stream;
     private readonly JsonSerializerOptions? _options;
+    private readonly JsonTypeInfo<TRecord>? _typeInfo;
     private readonly ILogger _logger;
     private readonly IProgressTimer? _progressTimer;
     private bool _progressTimerWired;
@@ -106,6 +108,54 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
 
 
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonLineLoader{TRecord}"/> class
+    /// with source-generated type metadata for AOT-friendly, reflection-free serialization.
+    /// </summary>
+    /// <param name="stream">The stream to write JSONL data to.</param>
+    /// <param name="typeInfo">The source-generated type metadata for <typeparamref name="TRecord"/>.</param>
+    /// <param name="logger">The logger instance for diagnostic output.</param>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="stream"/>, <paramref name="typeInfo"/>, or <paramref name="logger"/> is <c>null</c>.
+    /// </exception>
+    public JsonLineLoader
+    (
+        Stream stream,
+        JsonTypeInfo<TRecord> typeInfo,
+        ILogger<JsonLineLoader<TRecord>> logger
+    )
+    {
+        _stream = stream ?? throw new ArgumentNullException(nameof(stream));
+        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonLineLoader{TRecord}"/> class
+    /// with source-generated type metadata and an injected progress timer for testing.
+    /// </summary>
+    /// <param name="stream">The stream to write JSONL data to.</param>
+    /// <param name="typeInfo">The source-generated type metadata for <typeparamref name="TRecord"/>.</param>
+    /// <param name="logger">The logger instance for diagnostic output.</param>
+    /// <param name="timer">The progress timer to inject.</param>
+    internal JsonLineLoader
+    (
+        Stream stream,
+        JsonTypeInfo<TRecord> typeInfo,
+        ILogger logger,
+        IProgressTimer timer
+    )
+    {
+        _stream = stream ?? throw new ArgumentNullException(nameof(stream));
+        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
+    }
+
+
+
     /// <inheritdoc />
     protected override async Task LoadWorkerAsync
     (
@@ -138,7 +188,9 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
                 break;
             }
 
-            var json = JsonSerializer.Serialize(item, _options);
+            var json = _typeInfo is not null
+                ? JsonSerializer.Serialize(item, _typeInfo)
+                : JsonSerializer.Serialize(item, _options);
             Interlocked.Increment(ref _currentLineNumber);
 
 #pragma warning disable CA1849, VSTHRD103, AsyncFixer02 // Sync WriteLine avoids async state machine allocation per item
