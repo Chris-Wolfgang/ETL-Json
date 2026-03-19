@@ -120,7 +120,7 @@ public class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonReport>
         var skipBudget = SkipItemCount;
 
 #if NETSTANDARD2_0 || NET462 || NET481
-        using var reader = new StreamReader(_stream, System.Text.Encoding.UTF8, true, 1024, true);
+        using var reader = new StreamReader(_stream, System.Text.Encoding.UTF8, detectEncodingFromByteOrderMarks: true, bufferSize: 1024, leaveOpen: true);
 #else
         using var reader = new StreamReader(_stream, leaveOpen: true);
 #endif

@@ -116,7 +116,7 @@ public class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
         JsonLogMessages.StartingOperation(_logger, $"JSONL loading of {typeof(TRecord).Name}", null);
 
 #if NETSTANDARD2_0 || NET462 || NET481
-        using var writer = new StreamWriter(_stream, System.Text.Encoding.UTF8, 1024, true);
+        using var writer = new StreamWriter(_stream, System.Text.Encoding.UTF8, bufferSize: 1024, leaveOpen: true);
 #else
         using var writer = new StreamWriter(_stream, leaveOpen: true);
 #endif
@@ -151,7 +151,13 @@ public class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
             JsonLogMessages.LoadedItemAtLine(_logger, CurrentItemCount, Interlocked.Read(ref _currentLineNumber), null);
         }
 
+#if NETSTANDARD2_0 || NET462 || NET481
+#pragma warning disable CA2016, MA0040 // FlushAsync(CancellationToken) not available on this TFM
         await writer.FlushAsync().ConfigureAwait(false);
+#pragma warning restore CA2016, MA0040
+#else
+        await writer.FlushAsync(token).ConfigureAwait(false);
+#endif
 
         JsonLogMessages.JsonlLoadingCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, Interlocked.Read(ref _currentLineNumber), null);
     }
