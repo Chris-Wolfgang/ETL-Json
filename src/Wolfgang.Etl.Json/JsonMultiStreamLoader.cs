@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -35,6 +36,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
 {
     private readonly Func<TRecord, Stream> _streamFactory;
     private readonly JsonSerializerOptions? _options;
+    private readonly JsonTypeInfo<TRecord>? _typeInfo;
     private readonly ILogger _logger;
     private readonly IProgressTimer? _progressTimer;
     private bool _progressTimerWired;
@@ -118,6 +120,59 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
 
 
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonMultiStreamLoader{TRecord}"/> class
+    /// with source-generated type metadata for AOT-friendly, reflection-free serialization.
+    /// </summary>
+    /// <param name="streamFactory">
+    /// A factory function that receives the item to be written and returns a <see cref="Stream"/> to write it to.
+    /// The loader will dispose the stream after writing.
+    /// </param>
+    /// <param name="typeInfo">The source-generated type metadata for <typeparamref name="TRecord"/>.</param>
+    /// <param name="logger">The logger instance for diagnostic output.</param>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="streamFactory"/>, <paramref name="typeInfo"/>, or <paramref name="logger"/> is <c>null</c>.
+    /// </exception>
+    public JsonMultiStreamLoader
+    (
+        Func<TRecord, Stream> streamFactory,
+        JsonTypeInfo<TRecord> typeInfo,
+        ILogger<JsonMultiStreamLoader<TRecord>> logger
+    )
+    {
+        _streamFactory = streamFactory ?? throw new ArgumentNullException(nameof(streamFactory));
+        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonMultiStreamLoader{TRecord}"/> class
+    /// with source-generated type metadata and an injected progress timer for testing.
+    /// </summary>
+    /// <param name="streamFactory">
+    /// A factory function that receives the item to be written and returns a <see cref="Stream"/> to write it to.
+    /// </param>
+    /// <param name="typeInfo">The source-generated type metadata for <typeparamref name="TRecord"/>.</param>
+    /// <param name="logger">The logger instance for diagnostic output.</param>
+    /// <param name="timer">The progress timer to inject.</param>
+    internal JsonMultiStreamLoader
+    (
+        Func<TRecord, Stream> streamFactory,
+        JsonTypeInfo<TRecord> typeInfo,
+        ILogger logger,
+        IProgressTimer timer
+    )
+    {
+        _streamFactory = streamFactory ?? throw new ArgumentNullException(nameof(streamFactory));
+        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
+    }
+
+
+
     /// <inheritdoc />
     protected override async Task LoadWorkerAsync
     (
@@ -155,7 +210,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
 
             try
             {
-                await JsonSerializer.SerializeAsync(stream, item, _options, token).ConfigureAwait(false);
+                await SerializeToStreamAsync(stream, item, token).ConfigureAwait(false);
 #if NETSTANDARD2_0 || NET462 || NET481
 #pragma warning disable CA2016, MA0040 // FlushAsync(CancellationToken) not available on this TFM
                 await stream.FlushAsync().ConfigureAwait(false);
@@ -179,6 +234,13 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
 
         JsonLogMessages.MultiStreamLoadingCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, streamIndex, null);
     }
+
+
+
+    private Task SerializeToStreamAsync(Stream stream, TRecord item, CancellationToken token) =>
+        _typeInfo is not null
+            ? JsonSerializer.SerializeAsync(stream, item, _typeInfo, token)
+            : JsonSerializer.SerializeAsync(stream, item, _options, token);
 
 
 
