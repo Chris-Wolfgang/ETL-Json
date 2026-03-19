@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Wolfgang.Etl.Abstractions;
 using Wolfgang.Etl.Json.Tests.Unit.TestModels;
@@ -56,7 +55,7 @@ public class JsonMultiStreamLoaderTests
         return new JsonMultiStreamLoader<PersonRecord>
         (
             _ => new MemoryStream(),
-            null,
+            new JsonSerializerOptions(),
             NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance,
             timer
         );
@@ -209,7 +208,7 @@ public class JsonMultiStreamLoaderTests
             () => new JsonMultiStreamLoader<PersonRecord>
             (
                 _ => new MemoryStream(),
-                (ILogger<JsonMultiStreamLoader<PersonRecord>>)null!
+                logger: null!
             )
         );
     }
@@ -224,7 +223,7 @@ public class JsonMultiStreamLoaderTests
             () => new JsonMultiStreamLoader<PersonRecord>
             (
                 _ => new MemoryStream(),
-                (JsonSerializerOptions)null!,
+                options: null!,
                 NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
             )
         );
@@ -240,7 +239,7 @@ public class JsonMultiStreamLoaderTests
             () => new JsonMultiStreamLoader<PersonRecord>
             (
                 null!,
-                null,
+                new JsonSerializerOptions(),
                 NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance,
                 new ManualProgressTimer()
             )
@@ -257,8 +256,8 @@ public class JsonMultiStreamLoaderTests
             () => new JsonMultiStreamLoader<PersonRecord>
             (
                 _ => new MemoryStream(),
-                null,
-                null!,
+                new JsonSerializerOptions(),
+                logger: null!,
                 new ManualProgressTimer()
             )
         );
@@ -274,7 +273,7 @@ public class JsonMultiStreamLoaderTests
             () => new JsonMultiStreamLoader<PersonRecord>
             (
                 _ => new MemoryStream(),
-                null,
+                new JsonSerializerOptions(),
                 NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance,
                 null!
             )
@@ -338,7 +337,7 @@ public class JsonMultiStreamLoaderTests
         var deserialized = JsonSerializer.Deserialize<PersonRecord>(streams[0].ToArray(), readOptions);
 
         Assert.NotNull(deserialized);
-        Assert.Equal("Alice", deserialized!.FirstName);
+        Assert.Equal("Alice", deserialized.FirstName);
         Assert.Equal("Smith", deserialized.LastName);
         Assert.Equal(30, deserialized.Age);
     }

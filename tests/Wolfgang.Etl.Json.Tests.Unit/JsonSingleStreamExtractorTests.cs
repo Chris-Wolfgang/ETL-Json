@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Wolfgang.Etl.Abstractions;
 using Wolfgang.Etl.Json.Tests.Unit.TestModels;
@@ -152,7 +151,7 @@ public class JsonSingleStreamExtractorTests
             () => new JsonSingleStreamExtractor<PersonRecord>
             (
                 new MemoryStream(),
-                (ILogger<JsonSingleStreamExtractor<PersonRecord>>)null!
+                logger: null!
             )
         );
     }
@@ -167,7 +166,7 @@ public class JsonSingleStreamExtractorTests
             () => new JsonSingleStreamExtractor<PersonRecord>
             (
                 new MemoryStream(),
-                (JsonSerializerOptions)null!,
+                options: null!,
                 NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance
             )
         );

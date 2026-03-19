@@ -37,24 +37,21 @@ public class JsonMultiStreamExtractorTests
     {
         return ExpectedItems
             .Take(itemCount)
-            .Select(item =>
+            .Select(Stream (item) =>
             {
                 var json = JsonSerializer.Serialize(item);
-                return (Stream)new MemoryStream(Encoding.UTF8.GetBytes(json));
+                return new MemoryStream(Encoding.UTF8.GetBytes(json));
             });
     }
 
 
 
-    protected override JsonMultiStreamExtractor<PersonRecord> CreateSut(int itemCount)
-    {
-        return new JsonMultiStreamExtractor<PersonRecord>
+    protected override JsonMultiStreamExtractor<PersonRecord> CreateSut(int itemCount) =>
+        new
         (
             CreateStreams(itemCount),
             NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
         );
-    }
-
 
 
     protected override IReadOnlyList<PersonRecord> CreateExpectedItems() => ExpectedItems;
@@ -64,17 +61,14 @@ public class JsonMultiStreamExtractorTests
     protected override JsonMultiStreamExtractor<PersonRecord> CreateSutWithTimer
     (
         IProgressTimer timer
-    )
-    {
-        return new JsonMultiStreamExtractor<PersonRecord>
+    ) =>
+        new
         (
             CreateStreams(ExpectedItems.Count),
-            null,
+            new JsonSerializerOptions(),
             NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance,
             timer
         );
-    }
-
 
 
     [Fact]
@@ -163,8 +157,8 @@ public class JsonMultiStreamExtractorTests
         (
             () => new JsonMultiStreamExtractor<PersonRecord>
             (
-                Array.Empty<Stream>(),
-                (ILogger<JsonMultiStreamExtractor<PersonRecord>>)null!
+                streams: [],
+                logger: null!
             )
         );
     }
@@ -178,8 +172,8 @@ public class JsonMultiStreamExtractorTests
         (
             () => new JsonMultiStreamExtractor<PersonRecord>
             (
-                Array.Empty<Stream>(),
-                (JsonSerializerOptions)null!,
+                streams: [],
+                options: null!,
                 NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
             )
         );
@@ -194,8 +188,8 @@ public class JsonMultiStreamExtractorTests
         (
             () => new JsonMultiStreamExtractor<PersonRecord>
             (
-                null!,
-                null,
+                streams: null!,
+                new JsonSerializerOptions(),
                 NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance,
                 new ManualProgressTimer()
             )
@@ -211,9 +205,9 @@ public class JsonMultiStreamExtractorTests
         (
             () => new JsonMultiStreamExtractor<PersonRecord>
             (
-                Array.Empty<Stream>(),
-                null,
-                null!,
+                streams: [],
+                new JsonSerializerOptions(),
+                logger: null!,
                 new ManualProgressTimer()
             )
         );
@@ -228,10 +222,10 @@ public class JsonMultiStreamExtractorTests
         (
             () => new JsonMultiStreamExtractor<PersonRecord>
             (
-                Array.Empty<Stream>(),
-                null,
+                streams: [],
+                new JsonSerializerOptions(),
                 NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance,
-                null!
+                timer: null!
             )
         );
     }
@@ -241,7 +235,7 @@ public class JsonMultiStreamExtractorTests
     [Fact]
     public async Task ExtractAsync_when_stream_deserializes_to_null_skips_item()
     {
-        var nullJson = "null";
+        const string nullJson = "null";
         var validJson = JsonSerializer.Serialize(ExpectedItems[0]);
         var streams = new List<Stream>
         {
@@ -270,7 +264,7 @@ public class JsonMultiStreamExtractorTests
     [Fact]
     public async Task ExtractAsync_when_property_names_differ_with_JsonPropertyName_maps_correctly()
     {
-        var json = "{\"first_name\":\"Alice\",\"last_name\":\"Smith\",\"age\":30}";
+        const string json = /*lang=json,strict*/ "{\"first_name\":\"Alice\",\"last_name\":\"Smith\",\"age\":30}";
         var streams = new List<Stream>
         {
             new MemoryStream(Encoding.UTF8.GetBytes(json)),
@@ -299,7 +293,7 @@ public class JsonMultiStreamExtractorTests
     [Fact]
     public async Task ExtractAsync_when_camelCase_json_with_case_insensitive_option_maps_correctly()
     {
-        var json = "{\"firstName\":\"Bob\",\"lastName\":\"Jones\",\"age\":25}";
+        const string json = /*lang=json,strict*/ "{\"firstName\":\"Bob\",\"lastName\":\"Jones\",\"age\":25}";
         var streams = new List<Stream>
         {
             new MemoryStream(Encoding.UTF8.GetBytes(json)),

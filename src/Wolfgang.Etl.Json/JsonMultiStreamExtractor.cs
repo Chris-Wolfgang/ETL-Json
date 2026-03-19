@@ -4,7 +4,6 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Wolfgang.Etl.Abstractions;
 
@@ -45,7 +44,7 @@ public class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonMultiStreamExtractor{TRecord}"/> class.
     /// </summary>
-    /// <param name="streams">The enumerable of streams, each containing a single JSON object.</param>
+    /// <param name="streams">An enumerable of streams, each containing a single JSON object.</param>
     /// <param name="logger">The logger instance for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="streams"/> or <paramref name="logger"/> is <c>null</c>.
@@ -67,7 +66,7 @@ public class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// Initializes a new instance of the <see cref="JsonMultiStreamExtractor{TRecord}"/> class
     /// with custom serialization options.
     /// </summary>
-    /// <param name="streams">The enumerable of streams, each containing a single JSON object.</param>
+    /// <param name="streams">An enumerable of streams, each containing a single JSON object.</param>
     /// <param name="options">The JSON serializer options to use for deserialization.</param>
     /// <param name="logger">The logger instance for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">
@@ -91,20 +90,20 @@ public class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// Initializes a new instance of the <see cref="JsonMultiStreamExtractor{TRecord}"/> class
     /// with an injected progress timer for testing.
     /// </summary>
-    /// <param name="streams">The enumerable of streams, each containing a single JSON object.</param>
+    /// <param name="streams">An enumerable of streams, each containing a single JSON object.</param>
     /// <param name="options">The JSON serializer options, or <c>null</c> for defaults.</param>
     /// <param name="logger">The logger instance for diagnostic output.</param>
     /// <param name="timer">The progress timer to inject.</param>
     internal JsonMultiStreamExtractor
     (
         IEnumerable<Stream> streams,
-        JsonSerializerOptions? options,
+        JsonSerializerOptions options,
         ILogger logger,
         IProgressTimer timer
     )
     {
         _streams = streams ?? throw new ArgumentNullException(nameof(streams));
-        _options = options;
+        _options = options ?? throw new ArgumentNullException(nameof(options));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
@@ -120,7 +119,6 @@ public class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
         JsonLogMessages.StartingOperation(_logger, $"JSON multi-stream extraction of {typeof(TRecord).Name}", null);
 
         var skipBudget = SkipItemCount;
-        var itemsYielded = 0;
         var streamIndex = 0;
 
         foreach (var stream in _streams)
@@ -158,14 +156,13 @@ public class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
                 continue;
             }
 
-            if (itemsYielded >= MaximumItemCount)
+            if (CurrentItemCount >= MaximumItemCount)
             {
                 JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
                 break;
             }
 
             IncrementCurrentItemCount();
-            itemsYielded++;
             JsonLogMessages.ExtractedItemFromStream(_logger, CurrentItemCount, streamIndex - 1, null);
 
             yield return item;
@@ -177,15 +174,12 @@ public class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 
 
     /// <inheritdoc />
-    protected override JsonReport CreateProgressReport()
-    {
-        return new JsonReport
+    protected override JsonReport CreateProgressReport() =>
+        new
         (
             CurrentItemCount,
             CurrentSkippedItemCount
         );
-    }
-
 
 
     /// <inheritdoc />

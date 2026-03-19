@@ -93,13 +93,13 @@ public class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     internal JsonLineLoader
     (
         Stream stream,
-        JsonSerializerOptions? options,
+        JsonSerializerOptions options,
         ILogger logger,
         IProgressTimer timer
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _options = options;
+        _options = options ?? throw new ArgumentNullException(nameof(options));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
@@ -139,7 +139,7 @@ public class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
             }
 
             var json = JsonSerializer.Serialize(item, _options);
-            System.Threading.Interlocked.Increment(ref _currentLineNumber);
+            Interlocked.Increment(ref _currentLineNumber);
 
 #if NETSTANDARD2_0 || NET462 || NET481
             await writer.WriteLineAsync(json).ConfigureAwait(false);
@@ -148,26 +148,23 @@ public class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
 #endif
 
             IncrementCurrentItemCount();
-            JsonLogMessages.LoadedItemAtLine(_logger, CurrentItemCount, System.Threading.Interlocked.Read(ref _currentLineNumber), null);
+            JsonLogMessages.LoadedItemAtLine(_logger, CurrentItemCount, Interlocked.Read(ref _currentLineNumber), null);
         }
 
         await writer.FlushAsync().ConfigureAwait(false);
 
-        JsonLogMessages.JsonlLoadingCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, System.Threading.Interlocked.Read(ref _currentLineNumber), null);
+        JsonLogMessages.JsonlLoadingCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, Interlocked.Read(ref _currentLineNumber), null);
     }
 
 
 
     /// <inheritdoc />
-    protected override JsonReport CreateProgressReport()
-    {
-        return new JsonReport
+    protected override JsonReport CreateProgressReport() =>
+        new
         (
             CurrentItemCount,
             CurrentSkippedItemCount
         );
-    }
-
 
 
     /// <inheritdoc />

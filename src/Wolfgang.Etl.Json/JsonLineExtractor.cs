@@ -14,7 +14,7 @@ namespace Wolfgang.Etl.Json;
 /// </summary>
 /// <typeparam name="TRecord">The type of items to extract. Must be <c>notnull</c>.</typeparam>
 /// <remarks>
-/// Reads a stream line by line, deserializing each non-empty line as a single JSON object.
+/// Reads a stream, line by line, deserializing each non-empty line as a single JSON object.
 /// Blank lines are skipped with a warning logged.
 /// Compatible with both JSONL and NDJSON formats.
 /// </remarks>
@@ -96,13 +96,13 @@ public class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonReport>
     internal JsonLineExtractor
     (
         Stream stream,
-        JsonSerializerOptions? options,
+        JsonSerializerOptions options,
         ILogger logger,
         IProgressTimer timer
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _options = options;
+        _options = options ?? throw new ArgumentNullException(nameof(options));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
@@ -118,7 +118,6 @@ public class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonReport>
         JsonLogMessages.StartingOperation(_logger, $"JSONL extraction of {typeof(TRecord).Name}", null);
 
         var skipBudget = SkipItemCount;
-        var itemsYielded = 0;
 
 #if NETSTANDARD2_0 || NET462 || NET481
         using var reader = new StreamReader(_stream, System.Text.Encoding.UTF8, true, 1024, true);
@@ -134,8 +133,8 @@ public class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonReport>
 #endif
         {
             token.ThrowIfCancellationRequested();
-            System.Threading.Interlocked.Increment(ref _currentLineNumber);
-            var lineNum = System.Threading.Interlocked.Read(ref _currentLineNumber);
+            Interlocked.Increment(ref _currentLineNumber);
+            var lineNum = Interlocked.Read(ref _currentLineNumber);
 
             if (string.IsNullOrWhiteSpace(line))
             {
@@ -158,33 +157,30 @@ public class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonReport>
                 continue;
             }
 
-            if (itemsYielded >= MaximumItemCount)
+            if (CurrentItemCount >= MaximumItemCount)
             {
                 JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
                 break;
             }
 
             IncrementCurrentItemCount();
-            itemsYielded++;
             JsonLogMessages.ExtractedItemFromLine(_logger, CurrentItemCount, lineNum, null);
 
             yield return item;
         }
 
-        JsonLogMessages.JsonlExtractionCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, System.Threading.Interlocked.Read(ref _currentLineNumber), null);
+        JsonLogMessages.JsonlExtractionCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, Interlocked.Read(ref _currentLineNumber), null);
     }
 
 
 
     /// <inheritdoc />
-    protected override JsonReport CreateProgressReport()
-    {
-        return new JsonReport
+    protected override JsonReport CreateProgressReport() =>
+        new
         (
             CurrentItemCount,
             CurrentSkippedItemCount
         );
-    }
 
 
 

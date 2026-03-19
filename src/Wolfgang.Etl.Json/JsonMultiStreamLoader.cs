@@ -105,13 +105,13 @@ public class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     internal JsonMultiStreamLoader
     (
         Func<TRecord, Stream> streamFactory,
-        JsonSerializerOptions? options,
+        JsonSerializerOptions options,
         ILogger logger,
         IProgressTimer timer
     )
     {
         _streamFactory = streamFactory ?? throw new ArgumentNullException(nameof(streamFactory));
-        _options = options;
+        _options = options ?? throw new ArgumentNullException(nameof(options));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
@@ -181,15 +181,12 @@ public class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonReport>
 
 
     /// <inheritdoc />
-    protected override JsonReport CreateProgressReport()
-    {
-        return new JsonReport
+    protected override JsonReport CreateProgressReport() =>
+        new
         (
             CurrentItemCount,
             CurrentSkippedItemCount
         );
-    }
-
 
 
     /// <inheritdoc />

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Wolfgang.Etl.Abstractions;
 using Wolfgang.Etl.Json.Tests.Unit.TestModels;
@@ -33,7 +32,7 @@ public class JsonLineExtractorTests
 
 
 
-    private static Stream CreateJsonlStream(int itemCount)
+    private static MemoryStream CreateJsonlStream(int itemCount)
     {
         var lines = ExpectedItems
             .Take(itemCount)
@@ -44,14 +43,12 @@ public class JsonLineExtractorTests
 
 
 
-    protected override JsonLineExtractor<PersonRecord> CreateSut(int itemCount)
-    {
-        return new JsonLineExtractor<PersonRecord>
+    protected override JsonLineExtractor<PersonRecord> CreateSut(int itemCount) =>
+        new
         (
             CreateJsonlStream(itemCount),
             NullLogger<JsonLineExtractor<PersonRecord>>.Instance
         );
-    }
 
 
 
@@ -62,16 +59,14 @@ public class JsonLineExtractorTests
     protected override JsonLineExtractor<PersonRecord> CreateSutWithTimer
     (
         IProgressTimer timer
-    )
-    {
-        return new JsonLineExtractor<PersonRecord>
+    ) =>
+        new
         (
             CreateJsonlStream(ExpectedItems.Count),
-            null,
+            new JsonSerializerOptions(),
             NullLogger<JsonLineExtractor<PersonRecord>>.Instance,
             timer
         );
-    }
 
 
 
@@ -155,7 +150,7 @@ public class JsonLineExtractorTests
             () => new JsonLineExtractor<PersonRecord>
             (
                 new MemoryStream(),
-                (ILogger<JsonLineExtractor<PersonRecord>>)null!
+                logger: null!
             )
         );
     }
@@ -170,7 +165,7 @@ public class JsonLineExtractorTests
             () => new JsonLineExtractor<PersonRecord>
             (
                 new MemoryStream(),
-                (JsonSerializerOptions)null!,
+                options: null!,
                 NullLogger<JsonLineExtractor<PersonRecord>>.Instance
             )
         );
@@ -186,7 +181,7 @@ public class JsonLineExtractorTests
             () => new JsonLineExtractor<PersonRecord>
             (
                 null!,
-                null,
+                new JsonSerializerOptions(),
                 NullLogger<JsonLineExtractor<PersonRecord>>.Instance,
                 new ManualProgressTimer()
             )
@@ -203,8 +198,8 @@ public class JsonLineExtractorTests
             () => new JsonLineExtractor<PersonRecord>
             (
                 new MemoryStream(),
-                null,
-                null!,
+                new JsonSerializerOptions(),
+                logger: null!,
                 new ManualProgressTimer()
             )
         );
@@ -220,9 +215,9 @@ public class JsonLineExtractorTests
             () => new JsonLineExtractor<PersonRecord>
             (
                 new MemoryStream(),
-                null,
+                new JsonSerializerOptions(),
                 NullLogger<JsonLineExtractor<PersonRecord>>.Instance,
-                null!
+                timer: null!
             )
         );
     }
@@ -256,7 +251,7 @@ public class JsonLineExtractorTests
     [Fact]
     public async Task ExtractAsync_when_property_names_differ_with_JsonPropertyName_maps_correctly()
     {
-        var content = "{\"first_name\":\"Alice\",\"last_name\":\"Smith\",\"age\":30}";
+        const string content = /*lang=json,strict*/ "{\"first_name\":\"Alice\",\"last_name\":\"Smith\",\"age\":30}";
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
 
         var sut = new JsonLineExtractor<SnakeCasePersonRecord>
@@ -282,7 +277,7 @@ public class JsonLineExtractorTests
     [Fact]
     public async Task ExtractAsync_when_camelCase_json_with_case_insensitive_option_maps_correctly()
     {
-        var content = "{\"firstName\":\"Bob\",\"lastName\":\"Jones\",\"age\":25}";
+        const string content = /*lang=json,strict*/ "{\"firstName\":\"Bob\",\"lastName\":\"Jones\",\"age\":25}";
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
 
         var sut = new JsonLineExtractor<PersonRecord>

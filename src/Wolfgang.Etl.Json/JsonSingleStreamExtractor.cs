@@ -118,7 +118,6 @@ public class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonRep
         JsonLogMessages.StartingOperation(_logger, $"JSON single-stream extraction of {typeof(TRecord).Name}", null);
 
         var skipBudget = SkipItemCount;
-        var itemsYielded = 0;
 
         await foreach (var item in JsonSerializer.DeserializeAsyncEnumerable<TRecord>
         (
@@ -143,15 +142,13 @@ public class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonRep
                 continue;
             }
 
-            if (itemsYielded >= MaximumItemCount)
+            if (CurrentItemCount >= MaximumItemCount)
             {
                 JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
                 break;
             }
 
-            // TODO Isn't itemsYield redundant with CurrentItemCount
             IncrementCurrentItemCount();
-            itemsYielded++;
             JsonLogMessages.ExtractedItem(_logger, CurrentItemCount, null);
 
             yield return item;
@@ -175,7 +172,6 @@ public class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonRep
     /// <inheritdoc />
     protected override IProgressTimer CreateProgressTimer(IProgress<JsonReport> progress)
     {
-        // TODO This logic doesn't seem correct
         if (_progressTimer is not null)
         {
             if (!_progressTimerWired)
@@ -187,7 +183,6 @@ public class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonRep
             return _progressTimer;
         }
 
-        // TODO should CreateProgressTimer be virtual or abstract?
         return base.CreateProgressTimer(progress);
     }
 }

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Wolfgang.Etl.Abstractions;
 using Wolfgang.Etl.Json.Tests.Unit.TestModels;
@@ -58,7 +57,7 @@ public class JsonLineLoaderTests
         return new JsonLineLoader<PersonRecord>
         (
             stream,
-            null,
+            new JsonSerializerOptions(),
             NullLogger<JsonLineLoader<PersonRecord>>.Instance,
             timer
         );
@@ -86,8 +85,8 @@ public class JsonLineLoaderTests
 
         stream.Position = 0;
         using var reader = new StreamReader(stream);
-        var content = reader.ReadToEnd();
-        var lines = content.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        var content = await reader.ReadToEndAsync();
+        var lines = content.Split(['\n'], StringSplitOptions.RemoveEmptyEntries);
 
         Assert.Equal(2, lines.Length);
 
@@ -95,9 +94,9 @@ public class JsonLineLoaderTests
         var person2 = JsonSerializer.Deserialize<PersonRecord>(lines[1]);
 
         Assert.NotNull(person1);
-        Assert.Equal("Alice", person1!.FirstName);
+        Assert.Equal("Alice", person1.FirstName);
         Assert.NotNull(person2);
-        Assert.Equal("Bob", person2!.FirstName);
+        Assert.Equal("Bob", person2.FirstName);
     }
 
 
@@ -158,7 +157,7 @@ public class JsonLineLoaderTests
             () => new JsonLineLoader<PersonRecord>
             (
                 new MemoryStream(),
-                (ILogger<JsonLineLoader<PersonRecord>>)null!
+                logger: null!
             )
         );
     }
@@ -173,7 +172,7 @@ public class JsonLineLoaderTests
             () => new JsonLineLoader<PersonRecord>
             (
                 new MemoryStream(),
-                (JsonSerializerOptions)null!,
+                options: null!,
                 NullLogger<JsonLineLoader<PersonRecord>>.Instance
             )
         );
@@ -189,7 +188,7 @@ public class JsonLineLoaderTests
             () => new JsonLineLoader<PersonRecord>
             (
                 null!,
-                null,
+                new JsonSerializerOptions(),
                 NullLogger<JsonLineLoader<PersonRecord>>.Instance,
                 new ManualProgressTimer()
             )
@@ -206,8 +205,8 @@ public class JsonLineLoaderTests
             () => new JsonLineLoader<PersonRecord>
             (
                 new MemoryStream(),
-                null,
-                null!,
+                new JsonSerializerOptions(),
+                logger: null!,
                 new ManualProgressTimer()
             )
         );
@@ -223,9 +222,9 @@ public class JsonLineLoaderTests
             () => new JsonLineLoader<PersonRecord>
             (
                 new MemoryStream(),
-                null,
+                new JsonSerializerOptions(),
                 NullLogger<JsonLineLoader<PersonRecord>>.Instance,
-                null!
+                timer: null!
             )
         );
     }
@@ -246,7 +245,7 @@ public class JsonLineLoaderTests
 
         stream.Position = 0;
         using var reader = new StreamReader(stream);
-        var content = reader.ReadToEnd().Trim();
+        var content = (await reader.ReadToEndAsync()).Trim();
 
         Assert.Equal(string.Empty, content);
     }
@@ -278,14 +277,14 @@ public class JsonLineLoaderTests
 
         stream.Position = 0;
         using var reader = new StreamReader(stream);
-        var line = reader.ReadLine();
+        var line = await reader.ReadLineAsync();
 
         Assert.NotNull(line);
         var readOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-        var deserialized = JsonSerializer.Deserialize<PersonRecord>(line!, readOptions);
+        var deserialized = JsonSerializer.Deserialize<PersonRecord>(line, readOptions);
 
         Assert.NotNull(deserialized);
-        Assert.Equal("Alice", deserialized!.FirstName);
+        Assert.Equal("Alice", deserialized.FirstName);
         Assert.Equal("Smith", deserialized.LastName);
         Assert.Equal(30, deserialized.Age);
     }

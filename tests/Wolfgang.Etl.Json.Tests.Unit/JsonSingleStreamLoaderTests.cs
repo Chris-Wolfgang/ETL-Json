@@ -89,7 +89,7 @@ public class JsonSingleStreamLoaderTests
         var deserialized = JsonSerializer.Deserialize<List<PersonRecord>>(json);
 
         Assert.NotNull(deserialized);
-        Assert.Equal(2, deserialized!.Count);
+        Assert.Equal(2, deserialized.Count);
         Assert.Equal("Alice", deserialized[0].FirstName);
         Assert.Equal("Bob", deserialized[1].FirstName);
     }
@@ -152,7 +152,7 @@ public class JsonSingleStreamLoaderTests
             () => new JsonSingleStreamLoader<PersonRecord>
             (
                 new MemoryStream(),
-                (ILogger<JsonSingleStreamLoader<PersonRecord>>)null!
+                logger: null!
             )
         );
     }
@@ -167,7 +167,7 @@ public class JsonSingleStreamLoaderTests
             () => new JsonSingleStreamLoader<PersonRecord>
             (
                 new MemoryStream(),
-                (JsonSerializerOptions)null!,
+                options: null!,
                 NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance
             )
         );
@@ -182,8 +182,8 @@ public class JsonSingleStreamLoaderTests
         (
             () => new JsonSingleStreamLoader<PersonRecord>
             (
-                null!,
-                null,
+                stream: null!,
+                new JsonSerializerOptions(),
                 NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance,
                 new ManualProgressTimer()
             )
@@ -200,8 +200,8 @@ public class JsonSingleStreamLoaderTests
             () => new JsonSingleStreamLoader<PersonRecord>
             (
                 new MemoryStream(),
-                null,
-                null!,
+                new JsonSerializerOptions(),
+                logger: null!,
                 new ManualProgressTimer()
             )
         );
@@ -217,9 +217,9 @@ public class JsonSingleStreamLoaderTests
             () => new JsonSingleStreamLoader<PersonRecord>
             (
                 new MemoryStream(),
-                null,
+                new JsonSerializerOptions(),
                 NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance,
-                null!
+                timer: null!
             )
         );
     }
@@ -274,7 +274,7 @@ public class JsonSingleStreamLoaderTests
         var deserialized = JsonSerializer.Deserialize<List<PersonRecord>>(stream, readOptions);
 
         Assert.NotNull(deserialized);
-        Assert.Single(deserialized!);
+        Assert.Single(deserialized);
         Assert.Equal("Alice", deserialized[0].FirstName);
         Assert.Equal("Smith", deserialized[0].LastName);
         Assert.Equal(30, deserialized[0].Age);
