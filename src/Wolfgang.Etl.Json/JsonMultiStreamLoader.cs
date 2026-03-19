@@ -33,6 +33,7 @@ namespace Wolfgang.Etl.Json;
 public class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     where TRecord : notnull
 {
+    private static readonly string OperationName = $"JSON multi-stream loading of {typeof(TRecord).Name}";
     private readonly Func<TRecord, Stream> _streamFactory;
     private readonly JsonSerializerOptions? _options;
     private readonly ILogger _logger;
@@ -125,7 +126,7 @@ public class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonReport>
         CancellationToken token
     )
     {
-        JsonLogMessages.StartingOperation(_logger, $"JSON multi-stream loading of {typeof(TRecord).Name}", null);
+        JsonLogMessages.StartingOperation(_logger, OperationName, null);
 
         var streamIndex = 0;
 

@@ -32,6 +32,7 @@ namespace Wolfgang.Etl.Json;
 public class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonReport>
     where TRecord : notnull
 {
+    private static readonly string OperationName = $"JSON single-stream extraction of {typeof(TRecord).Name}";
     private readonly Stream _stream;
     private readonly JsonSerializerOptions? _options;
     private readonly ILogger _logger;
@@ -115,7 +116,7 @@ public class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonRep
         [EnumeratorCancellation] CancellationToken token
     )
     {
-        JsonLogMessages.StartingOperation(_logger, $"JSON single-stream extraction of {typeof(TRecord).Name}", null);
+        JsonLogMessages.StartingOperation(_logger, OperationName, null);
 
         var skipBudget = SkipItemCount;
 
