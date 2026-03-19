@@ -28,7 +28,7 @@ namespace Wolfgang.Etl.Json;
 /// }
 /// </code>
 /// </example>
-public class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonReport>
+public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonReport>
     where TRecord : notnull
 {
     private readonly Stream _stream;

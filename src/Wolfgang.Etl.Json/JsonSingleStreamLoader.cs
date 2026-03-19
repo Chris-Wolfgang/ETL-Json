@@ -24,7 +24,7 @@ namespace Wolfgang.Etl.Json;
 /// await loader.LoadAsync(items, cancellationToken);
 /// </code>
 /// </example>
-public class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonReport>
+public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     where TRecord : notnull
 {
     private readonly Stream _stream;

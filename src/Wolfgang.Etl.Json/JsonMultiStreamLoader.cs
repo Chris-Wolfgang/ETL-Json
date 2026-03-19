@@ -30,7 +30,7 @@ namespace Wolfgang.Etl.Json;
 /// await loader.LoadAsync(items, cancellationToken);
 /// </code>
 /// </example>
-public class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonReport>
+public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     where TRecord : notnull
 {
     private readonly Func<TRecord, Stream> _streamFactory;

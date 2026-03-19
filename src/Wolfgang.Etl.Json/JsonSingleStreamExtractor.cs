@@ -29,7 +29,7 @@ namespace Wolfgang.Etl.Json;
 /// }
 /// </code>
 /// </example>
-public class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonReport>
+public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonReport>
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSON single-stream extraction of {typeof(TRecord).Name}";

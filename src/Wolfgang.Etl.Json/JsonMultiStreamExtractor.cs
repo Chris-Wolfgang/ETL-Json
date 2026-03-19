@@ -30,7 +30,7 @@ namespace Wolfgang.Etl.Json;
 /// }
 /// </code>
 /// </example>
-public class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonReport>
+public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonReport>
     where TRecord : notnull
 {
     private readonly IEnumerable<Stream> _streams;
