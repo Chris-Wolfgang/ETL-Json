@@ -54,11 +54,16 @@
 [CmdletBinding()]
 param(
     [Parameter()]
-    [string]$Repository = "@Chris-Wolfgang/ETL-Json",
+    [string]$Repository = "Chris-Wolfgang/ETL-Json",
     
     [Parameter()]
     [string]$BranchName = "main"
 )
+
+# Normalize repository format: strip leading '@' if provided
+if ($Repository -and $Repository.StartsWith('@')) {
+    $Repository = $Repository.Substring(1)
+}
 
 # Check if gh CLI is installed
 try {

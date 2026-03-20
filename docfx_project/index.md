@@ -14,7 +14,7 @@ Welcome to the Wolfgang.Etl.Json documentation. This site contains comprehensive
 
 ## About Wolfgang.Etl.Json
 
-Extractors and Loaders for reading and writing JSON files when buildig ETLs using Wolfgang.Etl pattern
+Extractors and Loaders for reading and writing JSON files when building ETLs using Wolfgang.Etl pattern
 
 ## Installation
 
