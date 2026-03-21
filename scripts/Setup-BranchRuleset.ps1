@@ -88,19 +88,15 @@ try {
 }
 
 # Determine repository
-if ($Repository -eq "@Chris-Wolfgang/ETL-Json" -or -not $Repository) {
-    # Placeholders not replaced or no repository specified - auto-detect
+if (-not $Repository) {
+    # No repository specified - auto-detect
     Write-Host "🔍 Detecting current repository..." -ForegroundColor Cyan
     try {
         $repoInfo = gh repo view --json nameWithOwner | ConvertFrom-Json
         $Repository = $repoInfo.nameWithOwner
         Write-Host "✅ Using repository: $Repository" -ForegroundColor Green
     } catch {
-        if ($Repository -eq "@Chris-Wolfgang/ETL-Json") {
-            Write-Error "❌ Could not detect repository. Please run the setup script (pwsh ./scripts/setup.ps1) first to replace placeholders, or specify -Repository parameter."
-        } else {
-            Write-Error "❌ Could not detect repository. Please run from within a git repository or specify -Repository parameter."
-        }
+        Write-Error "❌ Could not detect repository. Please run from within a git repository or specify -Repository parameter."
         exit 1
     }
 } else {
