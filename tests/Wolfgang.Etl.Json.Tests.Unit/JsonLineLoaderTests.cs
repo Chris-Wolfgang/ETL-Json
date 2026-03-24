@@ -317,4 +317,151 @@ public class JsonLineLoaderTests
         Assert.DoesNotContain("FirstName", json);
         Assert.DoesNotContain("LastName", json);
     }
+
+
+
+    [Fact]
+    public async Task LoadAsync_when_typeInfo_constructor_serializes_items()
+    {
+        var stream = new MemoryStream();
+
+        var sut = new JsonLineLoader<PersonRecord>
+        (
+            stream,
+            TestJsonContext.Default.PersonRecord,
+            NullLogger<JsonLineLoader<PersonRecord>>.Instance
+        );
+
+        var items = new List<PersonRecord>
+        {
+            new() { FirstName = "Alice", LastName = "Smith", Age = 30 },
+        };
+
+        await sut.LoadAsync(items.ToAsyncEnumerable());
+
+        stream.Position = 0;
+        using var reader = new StreamReader(stream);
+        var line = await reader.ReadLineAsync();
+
+        Assert.NotNull(line);
+        var deserialized = JsonSerializer.Deserialize<PersonRecord>(line);
+        Assert.NotNull(deserialized);
+        Assert.Equal("Alice", deserialized.FirstName);
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_typeInfo_when_stream_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonLineLoader<PersonRecord>
+            (
+                null!,
+                TestJsonContext.Default.PersonRecord,
+                NullLogger<JsonLineLoader<PersonRecord>>.Instance
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_typeInfo_when_typeInfo_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonLineLoader<PersonRecord>
+            (
+                new MemoryStream(),
+                typeInfo: null!,
+                NullLogger<JsonLineLoader<PersonRecord>>.Instance
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_typeInfo_when_logger_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonLineLoader<PersonRecord>
+            (
+                new MemoryStream(),
+                TestJsonContext.Default.PersonRecord,
+                logger: null!
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Internal_constructor_with_typeInfo_when_stream_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonLineLoader<PersonRecord>
+            (
+                null!,
+                TestJsonContext.Default.PersonRecord,
+                NullLogger<JsonLineLoader<PersonRecord>>.Instance,
+                new ManualProgressTimer()
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Internal_constructor_with_typeInfo_when_typeInfo_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonLineLoader<PersonRecord>
+            (
+                new MemoryStream(),
+                typeInfo: null!,
+                NullLogger<JsonLineLoader<PersonRecord>>.Instance,
+                new ManualProgressTimer()
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Internal_constructor_with_typeInfo_when_logger_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonLineLoader<PersonRecord>
+            (
+                new MemoryStream(),
+                TestJsonContext.Default.PersonRecord,
+                logger: null!,
+                new ManualProgressTimer()
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Internal_constructor_with_typeInfo_when_timer_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonLineLoader<PersonRecord>
+            (
+                new MemoryStream(),
+                TestJsonContext.Default.PersonRecord,
+                NullLogger<JsonLineLoader<PersonRecord>>.Instance,
+                timer: null!
+            )
+        );
+    }
 }

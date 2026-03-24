@@ -298,4 +298,149 @@ public class JsonLineExtractorTests
         Assert.Equal("Jones", results[0].LastName);
         Assert.Equal(25, results[0].Age);
     }
+
+
+
+    [Fact]
+    public async Task ExtractAsync_when_typeInfo_constructor_deserializes_items()
+    {
+        var lines = ExpectedItems
+            .Take(2)
+            .Select(item => JsonSerializer.Serialize(item, TestJsonContext.Default.PersonRecord));
+        var content = string.Join("\n", lines);
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
+
+        var sut = new JsonLineExtractor<PersonRecord>
+        (
+            stream,
+            TestJsonContext.Default.PersonRecord,
+            NullLogger<JsonLineExtractor<PersonRecord>>.Instance
+        );
+
+        var results = new List<PersonRecord>();
+        await foreach (var item in sut.ExtractAsync())
+        {
+            results.Add(item);
+        }
+
+        Assert.Equal(2, results.Count);
+        Assert.Equal("Alice", results[0].FirstName);
+        Assert.Equal("Bob", results[1].FirstName);
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_typeInfo_when_stream_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonLineExtractor<PersonRecord>
+            (
+                null!,
+                TestJsonContext.Default.PersonRecord,
+                NullLogger<JsonLineExtractor<PersonRecord>>.Instance
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_typeInfo_when_typeInfo_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonLineExtractor<PersonRecord>
+            (
+                new MemoryStream(),
+                typeInfo: null!,
+                NullLogger<JsonLineExtractor<PersonRecord>>.Instance
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_typeInfo_when_logger_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonLineExtractor<PersonRecord>
+            (
+                new MemoryStream(),
+                TestJsonContext.Default.PersonRecord,
+                logger: null!
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Internal_constructor_with_typeInfo_when_stream_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonLineExtractor<PersonRecord>
+            (
+                null!,
+                TestJsonContext.Default.PersonRecord,
+                NullLogger<JsonLineExtractor<PersonRecord>>.Instance,
+                new ManualProgressTimer()
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Internal_constructor_with_typeInfo_when_typeInfo_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonLineExtractor<PersonRecord>
+            (
+                new MemoryStream(),
+                typeInfo: null!,
+                NullLogger<JsonLineExtractor<PersonRecord>>.Instance,
+                new ManualProgressTimer()
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Internal_constructor_with_typeInfo_when_logger_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonLineExtractor<PersonRecord>
+            (
+                new MemoryStream(),
+                TestJsonContext.Default.PersonRecord,
+                logger: null!,
+                new ManualProgressTimer()
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Internal_constructor_with_typeInfo_when_timer_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonLineExtractor<PersonRecord>
+            (
+                new MemoryStream(),
+                TestJsonContext.Default.PersonRecord,
+                NullLogger<JsonLineExtractor<PersonRecord>>.Instance,
+                timer: null!
+            )
+        );
+    }
 }
