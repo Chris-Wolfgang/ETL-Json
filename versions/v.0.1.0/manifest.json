@@ -1,0 +1,240 @@
+{
+  "source_base_path": "D:/a/ETL-Json/ETL-Json/docfx_project",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "Resource",
+      "output": {
+        "resource": {
+          "relative_path": "index.json"
+        }
+      }
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/README.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/README.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.Etl.Json.JsonLineExtractor-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.Etl.Json.JsonLineExtractor-1.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.Etl.Json.JsonLineExtractor<TRecord>",
+      "Summary": "<p sourcefile=\"api/Wolfgang.Etl.Json.JsonLineExtractor-1.yml\" sourcestartlinenumber=\"1\">Extracts items of type <code class=\"typeparamref\">TRecord</code> from a JSONL (JSON Lines / NDJSON) stream.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.Etl.Json.JsonLineLoader-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.Etl.Json.JsonLineLoader-1.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.Etl.Json.JsonLineLoader<TRecord>",
+      "Summary": "<p sourcefile=\"api/Wolfgang.Etl.Json.JsonLineLoader-1.yml\" sourcestartlinenumber=\"1\">Loads items of type <code class=\"typeparamref\">TRecord</code> into a JSONL (JSON Lines / NDJSON) stream.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>",
+      "Summary": "<p sourcefile=\"api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.yml\" sourcestartlinenumber=\"1\">Extracts items of type <code class=\"typeparamref\">TRecord</code> from multiple streams,\nreading one JSON object per stream.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.Etl.Json.JsonMultiStreamLoader-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>",
+      "Summary": "<p sourcefile=\"api/Wolfgang.Etl.Json.JsonMultiStreamLoader-1.yml\" sourcestartlinenumber=\"1\">Loads items of type <code class=\"typeparamref\">TRecord</code> into multiple streams,\nwriting one JSON object per stream.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.Etl.Json.JsonReport.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.Etl.Json.JsonReport.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.Etl.Json.JsonReport",
+      "Summary": "<p sourcefile=\"api/Wolfgang.Etl.Json.JsonReport.yml\" sourcestartlinenumber=\"1\">Progress report for JSON extraction and loading operations.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.Etl.Json.JsonSingleStreamExtractor-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.Etl.Json.JsonSingleStreamExtractor-1.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>",
+      "Summary": "<p sourcefile=\"api/Wolfgang.Etl.Json.JsonSingleStreamExtractor-1.yml\" sourcestartlinenumber=\"1\">Extracts items of type <code class=\"typeparamref\">TRecord</code> from a single JSON array stream.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.Etl.Json.JsonSingleStreamLoader-1.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.Etl.Json.JsonSingleStreamLoader-1.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>",
+      "Summary": "<p sourcefile=\"api/Wolfgang.Etl.Json.JsonSingleStreamLoader-1.yml\" sourcestartlinenumber=\"1\">Loads items of type <code class=\"typeparamref\">TRecord</code> into a single JSON array stream.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.Etl.Json.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.Etl.Json.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.Etl.Json",
+      "Summary": null
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/index.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/index.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "api/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/toc.html"
+        },
+        ".json": {
+          "relative_path": "api/toc.json"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/getting-started.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/getting-started.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/index.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/index.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "docs/introduction.md",
+      "output": {
+        ".html": {
+          "relative_path": "docs/introduction.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "docs/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "docs/toc.html"
+        },
+        ".json": {
+          "relative_path": "docs/toc.json"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Resource",
+      "source_relative_path": "logo.svg",
+      "output": {
+        "resource": {
+          "relative_path": "logo.svg"
+        }
+      },
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "toc.html"
+        },
+        ".json": {
+          "relative_path": "toc.json"
+        }
+      },
+      "version": ""
+    }
+  ],
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}
