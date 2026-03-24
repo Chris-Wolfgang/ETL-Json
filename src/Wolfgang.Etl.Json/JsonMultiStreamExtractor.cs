@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using Wolfgang.Etl.Abstractions;
@@ -30,12 +31,13 @@ namespace Wolfgang.Etl.Json;
 /// }
 /// </code>
 /// </example>
-public class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonReport>
+public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonReport>
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSON multi-stream extraction of {typeof(TRecord).Name}";
     private readonly IEnumerable<Stream> _streams;
     private readonly JsonSerializerOptions? _options;
+    private readonly JsonTypeInfo<TRecord>? _typeInfo;
     private readonly ILogger _logger;
     private readonly IProgressTimer? _progressTimer;
     private bool _progressTimerWired;
@@ -111,6 +113,54 @@ public class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 
 
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonMultiStreamExtractor{TRecord}"/> class
+    /// with source-generated type metadata for AOT-friendly, reflection-free deserialization.
+    /// </summary>
+    /// <param name="streams">An enumerable of streams, each containing a single JSON object.</param>
+    /// <param name="typeInfo">The source-generated type metadata for <typeparamref name="TRecord"/>.</param>
+    /// <param name="logger">The logger instance for diagnostic output.</param>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="streams"/>, <paramref name="typeInfo"/>, or <paramref name="logger"/> is <c>null</c>.
+    /// </exception>
+    public JsonMultiStreamExtractor
+    (
+        IEnumerable<Stream> streams,
+        JsonTypeInfo<TRecord> typeInfo,
+        ILogger<JsonMultiStreamExtractor<TRecord>> logger
+    )
+    {
+        _streams = streams ?? throw new ArgumentNullException(nameof(streams));
+        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonMultiStreamExtractor{TRecord}"/> class
+    /// with source-generated type metadata and an injected progress timer for testing.
+    /// </summary>
+    /// <param name="streams">An enumerable of streams, each containing a single JSON object.</param>
+    /// <param name="typeInfo">The source-generated type metadata for <typeparamref name="TRecord"/>.</param>
+    /// <param name="logger">The logger instance for diagnostic output.</param>
+    /// <param name="timer">The progress timer to inject.</param>
+    internal JsonMultiStreamExtractor
+    (
+        IEnumerable<Stream> streams,
+        JsonTypeInfo<TRecord> typeInfo,
+        ILogger logger,
+        IProgressTimer timer
+    )
+    {
+        _streams = streams ?? throw new ArgumentNullException(nameof(streams));
+        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
+    }
+
+
+
     /// <inheritdoc />
     protected override async IAsyncEnumerable<TRecord> ExtractWorkerAsync
     (
@@ -130,7 +180,9 @@ public class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
             TRecord? item;
             try
             {
-                item = await JsonSerializer.DeserializeAsync<TRecord>(stream, _options, token).ConfigureAwait(false);
+                item = _typeInfo is not null
+                    ? await JsonSerializer.DeserializeAsync(stream, _typeInfo, token).ConfigureAwait(false)
+                    : await JsonSerializer.DeserializeAsync<TRecord>(stream, _options, token).ConfigureAwait(false);
             }
             finally
             {

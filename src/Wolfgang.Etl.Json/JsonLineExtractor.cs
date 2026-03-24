@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 using System.Threading;
 using Microsoft.Extensions.Logging;
 using Wolfgang.Etl.Abstractions;
@@ -28,12 +29,13 @@ namespace Wolfgang.Etl.Json;
 /// }
 /// </code>
 /// </example>
-public class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonReport>
+public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonReport>
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSONL extraction of {typeof(TRecord).Name}";
     private readonly Stream _stream;
     private readonly JsonSerializerOptions? _options;
+    private readonly JsonTypeInfo<TRecord>? _typeInfo;
     private readonly ILogger _logger;
     private readonly IProgressTimer? _progressTimer;
     private bool _progressTimerWired;
@@ -110,6 +112,54 @@ public class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonReport>
 
 
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonLineExtractor{TRecord}"/> class
+    /// with source-generated type metadata for AOT-friendly, reflection-free deserialization.
+    /// </summary>
+    /// <param name="stream">The stream containing JSONL data to read from.</param>
+    /// <param name="typeInfo">The source-generated type metadata for <typeparamref name="TRecord"/>.</param>
+    /// <param name="logger">The logger instance for diagnostic output.</param>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="stream"/>, <paramref name="typeInfo"/>, or <paramref name="logger"/> is <c>null</c>.
+    /// </exception>
+    public JsonLineExtractor
+    (
+        Stream stream,
+        JsonTypeInfo<TRecord> typeInfo,
+        ILogger<JsonLineExtractor<TRecord>> logger
+    )
+    {
+        _stream = stream ?? throw new ArgumentNullException(nameof(stream));
+        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonLineExtractor{TRecord}"/> class
+    /// with source-generated type metadata and an injected progress timer for testing.
+    /// </summary>
+    /// <param name="stream">The stream containing JSONL data to read from.</param>
+    /// <param name="typeInfo">The source-generated type metadata for <typeparamref name="TRecord"/>.</param>
+    /// <param name="logger">The logger instance for diagnostic output.</param>
+    /// <param name="timer">The progress timer to inject.</param>
+    internal JsonLineExtractor
+    (
+        Stream stream,
+        JsonTypeInfo<TRecord> typeInfo,
+        ILogger logger,
+        IProgressTimer timer
+    )
+    {
+        _stream = stream ?? throw new ArgumentNullException(nameof(stream));
+        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
+    }
+
+
+
     /// <inheritdoc />
     protected override async IAsyncEnumerable<TRecord> ExtractWorkerAsync
     (
@@ -143,7 +193,9 @@ public class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonReport>
                 continue;
             }
 
-            var item = JsonSerializer.Deserialize<TRecord>(line, _options);
+            var item = _typeInfo is not null
+                ? JsonSerializer.Deserialize(line, _typeInfo)
+                : JsonSerializer.Deserialize<TRecord>(line, _options);
             if (item is null)
             {
                 JsonLogMessages.LineDeserializedToNull(_logger, lineNum, null);

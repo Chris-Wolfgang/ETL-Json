@@ -375,4 +375,152 @@ public class JsonMultiStreamLoaderTests
         Assert.DoesNotContain("FirstName", json);
         Assert.DoesNotContain("LastName", json);
     }
+
+
+
+    [Fact]
+    public async Task LoadAsync_when_typeInfo_constructor_serializes_items()
+    {
+        var streams = new List<MemoryStream>();
+
+        var sut = new JsonMultiStreamLoader<PersonRecord>
+        (
+            _ =>
+            {
+                var ms = new MemoryStream();
+                streams.Add(ms);
+                return ms;
+            },
+            TestJsonContext.Default.PersonRecord,
+            NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
+        );
+
+        var items = new List<PersonRecord>
+        {
+            new() { FirstName = "Alice", LastName = "Smith", Age = 30 },
+        };
+
+        await sut.LoadAsync(items.ToAsyncEnumerable());
+
+        Assert.Single(streams);
+        var deserialized = JsonSerializer.Deserialize<PersonRecord>(streams[0].ToArray());
+        Assert.NotNull(deserialized);
+        Assert.Equal("Alice", deserialized.FirstName);
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_typeInfo_when_streamFactory_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamLoader<PersonRecord>
+            (
+                null!,
+                TestJsonContext.Default.PersonRecord,
+                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_typeInfo_when_typeInfo_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamLoader<PersonRecord>
+            (
+                _ => new MemoryStream(),
+                typeInfo: null!,
+                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_typeInfo_when_logger_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamLoader<PersonRecord>
+            (
+                _ => new MemoryStream(),
+                TestJsonContext.Default.PersonRecord,
+                logger: null!
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Internal_constructor_with_typeInfo_when_streamFactory_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamLoader<PersonRecord>
+            (
+                streamFactory: null!,
+                TestJsonContext.Default.PersonRecord,
+                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance,
+                new ManualProgressTimer()
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Internal_constructor_with_typeInfo_when_typeInfo_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamLoader<PersonRecord>
+            (
+                _ => new MemoryStream(),
+                typeInfo: null!,
+                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance,
+                new ManualProgressTimer()
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Internal_constructor_with_typeInfo_when_logger_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamLoader<PersonRecord>
+            (
+                _ => new MemoryStream(),
+                TestJsonContext.Default.PersonRecord,
+                logger: null!,
+                new ManualProgressTimer()
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Internal_constructor_with_typeInfo_when_timer_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamLoader<PersonRecord>
+            (
+                _ => new MemoryStream(),
+                TestJsonContext.Default.PersonRecord,
+                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance,
+                timer: null!
+            )
+        );
+    }
 }

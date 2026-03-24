@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -24,12 +25,13 @@ namespace Wolfgang.Etl.Json;
 /// await loader.LoadAsync(items, cancellationToken);
 /// </code>
 /// </example>
-public class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonReport>
+public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSON single-stream loading of {typeof(TRecord).Name}";
     private readonly Stream _stream;
     private readonly JsonSerializerOptions? _options;
+    private readonly JsonTypeInfo<TRecord>? _typeInfo;
     private readonly ILogger _logger;
     private readonly IProgressTimer? _progressTimer;
     private bool _progressTimerWired;
@@ -105,6 +107,54 @@ public class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonReport>
 
 
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonSingleStreamLoader{TRecord}"/> class
+    /// with source-generated type metadata for AOT-friendly, reflection-free serialization.
+    /// </summary>
+    /// <param name="stream">The stream to write the JSON array to.</param>
+    /// <param name="typeInfo">The source-generated type metadata for <typeparamref name="TRecord"/>.</param>
+    /// <param name="logger">The logger instance for diagnostic output.</param>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="stream"/>, <paramref name="typeInfo"/>, or <paramref name="logger"/> is <c>null</c>.
+    /// </exception>
+    public JsonSingleStreamLoader
+    (
+        Stream stream,
+        JsonTypeInfo<TRecord> typeInfo,
+        ILogger<JsonSingleStreamLoader<TRecord>> logger
+    )
+    {
+        _stream = stream ?? throw new ArgumentNullException(nameof(stream));
+        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonSingleStreamLoader{TRecord}"/> class
+    /// with source-generated type metadata and an injected progress timer for testing.
+    /// </summary>
+    /// <param name="stream">The stream to write the JSON array to.</param>
+    /// <param name="typeInfo">The source-generated type metadata for <typeparamref name="TRecord"/>.</param>
+    /// <param name="logger">The logger instance for diagnostic output.</param>
+    /// <param name="timer">The progress timer to inject.</param>
+    internal JsonSingleStreamLoader
+    (
+        Stream stream,
+        JsonTypeInfo<TRecord> typeInfo,
+        ILogger logger,
+        IProgressTimer timer
+    )
+    {
+        _stream = stream ?? throw new ArgumentNullException(nameof(stream));
+        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
+    }
+
+
+
     /// <inheritdoc />
     protected override async Task LoadWorkerAsync
     (
@@ -138,7 +188,14 @@ public class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonReport>
                 break;
             }
 
-            JsonSerializer.Serialize(writer, item, _options);
+            if (_typeInfo is not null)
+            {
+                JsonSerializer.Serialize(writer, item, _typeInfo);
+            }
+            else
+            {
+                JsonSerializer.Serialize(writer, item, _options);
+            }
             IncrementCurrentItemCount();
 
             JsonLogMessages.LoadedItem(_logger, CurrentItemCount, null);

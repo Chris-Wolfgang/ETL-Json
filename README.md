@@ -2,6 +2,7 @@
 
 Extractors and Loaders for reading and writing JSON, JSONL, and multi-stream JSON files, built on [Wolfgang.Etl.Abstractions](https://github.com/Chris-Wolfgang/ETL-Abstractions).
 
+[![NuGet](https://img.shields.io/nuget/v/Wolfgang.Etl.Json.svg)](https://www.nuget.org/packages/Wolfgang.Etl.Json)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![.NET](https://img.shields.io/badge/.NET-Multi--Targeted-purple.svg)](https://dotnet.microsoft.com/)
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?logo=github)](https://github.com/Chris-Wolfgang/ETL-Json)
@@ -14,7 +15,7 @@ Extractors and Loaders for reading and writing JSON, JSONL, and multi-stream JSO
 dotnet add package Wolfgang.Etl.Json
 ```
 
-**NuGet Package:** Coming soon to NuGet.org
+**NuGet Package:** [Wolfgang.Etl.Json](https://www.nuget.org/packages/Wolfgang.Etl.Json)
 
 ---
 
@@ -118,6 +119,19 @@ var options = new JsonSerializerOptions
 };
 
 var extractor = new JsonSingleStreamExtractor<Person>(stream, options, logger);
+```
+
+### Source generation (AOT-friendly)
+
+All extractors and loaders accept a `JsonTypeInfo<T>` for reflection-free serialization:
+
+```csharp
+[JsonSerializable(typeof(Person))]
+internal partial class AppJsonContext : JsonSerializerContext { }
+
+// Use the source-generated type info instead of JsonSerializerOptions
+var extractor = new JsonSingleStreamExtractor<Person>(stream, AppJsonContext.Default.Person, logger);
+var loader = new JsonLineLoader<Person>(stream, AppJsonContext.Default.Person, logger);
 ```
 
 ---
