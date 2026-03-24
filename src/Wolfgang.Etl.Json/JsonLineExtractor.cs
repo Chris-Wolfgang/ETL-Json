@@ -32,6 +32,7 @@ namespace Wolfgang.Etl.Json;
 public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonReport>
     where TRecord : notnull
 {
+    private static readonly string OperationName = $"JSONL extraction of {typeof(TRecord).Name}";
     private readonly Stream _stream;
     private readonly JsonSerializerOptions? _options;
     private readonly JsonTypeInfo<TRecord>? _typeInfo;
@@ -165,7 +166,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
         [EnumeratorCancellation] CancellationToken token
     )
     {
-        JsonLogMessages.StartingOperation(_logger, $"JSONL extraction of {typeof(TRecord).Name}", null);
+        JsonLogMessages.StartingOperation(_logger, OperationName, null);
 
         var skipBudget = SkipItemCount;
 

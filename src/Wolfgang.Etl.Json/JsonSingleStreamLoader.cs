@@ -28,6 +28,7 @@ namespace Wolfgang.Etl.Json;
 public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     where TRecord : notnull
 {
+    private static readonly string OperationName = $"JSON single-stream loading of {typeof(TRecord).Name}";
     private readonly Stream _stream;
     private readonly JsonSerializerOptions? _options;
     private readonly JsonTypeInfo<TRecord>? _typeInfo;
@@ -161,7 +162,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
         CancellationToken token
     )
     {
-        JsonLogMessages.StartingOperation(_logger, $"JSON single-stream loading of {typeof(TRecord).Name}", null);
+        JsonLogMessages.StartingOperation(_logger, OperationName, null);
 
         // CA2007: await using declarations do not support ConfigureAwait in C#
 #pragma warning disable CA2007

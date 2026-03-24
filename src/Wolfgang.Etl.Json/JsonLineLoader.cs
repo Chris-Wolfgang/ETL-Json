@@ -29,6 +29,7 @@ namespace Wolfgang.Etl.Json;
 public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     where TRecord : notnull
 {
+    private static readonly string OperationName = $"JSONL loading of {typeof(TRecord).Name}";
     private readonly Stream _stream;
     private readonly JsonSerializerOptions? _options;
     private readonly JsonTypeInfo<TRecord>? _typeInfo;
@@ -163,7 +164,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
         CancellationToken token
     )
     {
-        JsonLogMessages.StartingOperation(_logger, $"JSONL loading of {typeof(TRecord).Name}", null);
+        JsonLogMessages.StartingOperation(_logger, OperationName, null);
 
 #if NETSTANDARD2_0 || NET462 || NET481
         using var writer = new StreamWriter(_stream, System.Text.Encoding.UTF8, bufferSize: 1024, leaveOpen: true);

@@ -34,6 +34,7 @@ namespace Wolfgang.Etl.Json;
 public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, JsonReport>
     where TRecord : notnull
 {
+    private static readonly string OperationName = $"JSON multi-stream extraction of {typeof(TRecord).Name}";
     private readonly IEnumerable<Stream> _streams;
     private readonly JsonSerializerOptions? _options;
     private readonly JsonTypeInfo<TRecord>? _typeInfo;
@@ -166,7 +167,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
         [EnumeratorCancellation] CancellationToken token
     )
     {
-        JsonLogMessages.StartingOperation(_logger, $"JSON multi-stream extraction of {typeof(TRecord).Name}", null);
+        JsonLogMessages.StartingOperation(_logger, OperationName, null);
 
         var skipBudget = SkipItemCount;
         var streamIndex = 0;
