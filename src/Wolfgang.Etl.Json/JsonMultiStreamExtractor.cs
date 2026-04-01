@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Wolfgang.Etl.Abstractions;
 
 namespace Wolfgang.Etl.Json;
@@ -48,18 +49,18 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// Initializes a new instance of the <see cref="JsonMultiStreamExtractor{TRecord}"/> class.
     /// </summary>
     /// <param name="streams">An enumerable of streams, each containing a single JSON object.</param>
-    /// <param name="logger">The logger instance for diagnostic output.</param>
+    /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="streams"/> or <paramref name="logger"/> is <c>null</c>.
+    /// Thrown when <paramref name="streams"/> is <c>null</c>.
     /// </exception>
     public JsonMultiStreamExtractor
     (
         IEnumerable<Stream> streams,
-        ILogger<JsonMultiStreamExtractor<TRecord>> logger
+        ILogger<JsonMultiStreamExtractor<TRecord>>? logger = null
     )
     {
         _streams = streams ?? throw new ArgumentNullException(nameof(streams));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _logger = logger ?? (ILogger)NullLogger.Instance;
         _options = null;
     }
 
@@ -71,20 +72,20 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// </summary>
     /// <param name="streams">An enumerable of streams, each containing a single JSON object.</param>
     /// <param name="options">The JSON serializer options to use for deserialization.</param>
-    /// <param name="logger">The logger instance for diagnostic output.</param>
+    /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="streams"/>, <paramref name="options"/>, or <paramref name="logger"/> is <c>null</c>.
+    /// Thrown when <paramref name="streams"/> or <paramref name="options"/> is <c>null</c>.
     /// </exception>
     public JsonMultiStreamExtractor
     (
         IEnumerable<Stream> streams,
         JsonSerializerOptions options,
-        ILogger<JsonMultiStreamExtractor<TRecord>> logger
+        ILogger<JsonMultiStreamExtractor<TRecord>>? logger = null
     )
     {
         _streams = streams ?? throw new ArgumentNullException(nameof(streams));
         _options = options ?? throw new ArgumentNullException(nameof(options));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
 
@@ -95,19 +96,19 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// </summary>
     /// <param name="streams">An enumerable of streams, each containing a single JSON object.</param>
     /// <param name="options">The JSON serializer options, or <c>null</c> for defaults.</param>
-    /// <param name="logger">The logger instance for diagnostic output.</param>
+    /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <param name="timer">The progress timer to inject.</param>
     internal JsonMultiStreamExtractor
     (
         IEnumerable<Stream> streams,
         JsonSerializerOptions options,
-        ILogger logger,
+        ILogger? logger,
         IProgressTimer timer
     )
     {
         _streams = streams ?? throw new ArgumentNullException(nameof(streams));
         _options = options ?? throw new ArgumentNullException(nameof(options));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _logger = logger ?? (ILogger)NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
 
@@ -119,20 +120,20 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// </summary>
     /// <param name="streams">An enumerable of streams, each containing a single JSON object.</param>
     /// <param name="typeInfo">The source-generated type metadata for <typeparamref name="TRecord"/>.</param>
-    /// <param name="logger">The logger instance for diagnostic output.</param>
+    /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="streams"/>, <paramref name="typeInfo"/>, or <paramref name="logger"/> is <c>null</c>.
+    /// Thrown when <paramref name="streams"/> or <paramref name="typeInfo"/> is <c>null</c>.
     /// </exception>
     public JsonMultiStreamExtractor
     (
         IEnumerable<Stream> streams,
         JsonTypeInfo<TRecord> typeInfo,
-        ILogger<JsonMultiStreamExtractor<TRecord>> logger
+        ILogger<JsonMultiStreamExtractor<TRecord>>? logger = null
     )
     {
         _streams = streams ?? throw new ArgumentNullException(nameof(streams));
         _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
 
@@ -143,19 +144,19 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// </summary>
     /// <param name="streams">An enumerable of streams, each containing a single JSON object.</param>
     /// <param name="typeInfo">The source-generated type metadata for <typeparamref name="TRecord"/>.</param>
-    /// <param name="logger">The logger instance for diagnostic output.</param>
+    /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <param name="timer">The progress timer to inject.</param>
     internal JsonMultiStreamExtractor
     (
         IEnumerable<Stream> streams,
         JsonTypeInfo<TRecord> typeInfo,
-        ILogger logger,
+        ILogger? logger,
         IProgressTimer timer
     )
     {
         _streams = streams ?? throw new ArgumentNullException(nameof(streams));
         _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _logger = logger ?? (ILogger)NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
 
