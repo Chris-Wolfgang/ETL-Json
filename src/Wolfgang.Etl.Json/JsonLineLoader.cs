@@ -194,9 +194,9 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
                 : JsonSerializer.Serialize(item, _options);
             Interlocked.Increment(ref _currentLineNumber);
 
-#pragma warning disable CA1849, VSTHRD103, AsyncFixer02 // Sync WriteLine avoids async state machine allocation per item
+#pragma warning disable CA1849, S6966, VSTHRD103, AsyncFixer02 // Sync WriteLine avoids async state machine allocation per item
             writer.WriteLine(json);
-#pragma warning restore CA1849, VSTHRD103, AsyncFixer02
+#pragma warning restore CA1849, S6966, VSTHRD103, AsyncFixer02
 
             IncrementCurrentItemCount();
             JsonLogMessages.LoadedItemAtLine(_logger, CurrentItemCount, Interlocked.Read(ref _currentLineNumber), null);

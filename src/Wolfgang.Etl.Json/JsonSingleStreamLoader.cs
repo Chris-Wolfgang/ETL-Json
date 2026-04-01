@@ -164,10 +164,10 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     {
         JsonLogMessages.StartingOperation(_logger, OperationName, null);
 
-        // CA2007: await using declarations do not support ConfigureAwait in C#
-#pragma warning disable CA2007
+        // CA2007/MA0004: await using declarations do not support ConfigureAwait in C#
+#pragma warning disable CA2007, MA0004
         await using var writer = new Utf8JsonWriter(_stream);
-#pragma warning restore CA2007
+#pragma warning restore CA2007, MA0004
 
         writer.WriteStartArray();
 
