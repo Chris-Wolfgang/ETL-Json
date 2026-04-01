@@ -145,16 +145,15 @@ public class JsonSingleStreamLoaderTests
 
 
     [Fact]
-    public void Constructor_when_logger_is_null_throws_ArgumentNullException()
+    public void Constructor_when_logger_is_null_does_not_throw()
     {
-        Assert.Throws<ArgumentNullException>
+        var sut = new JsonSingleStreamLoader<PersonRecord>
         (
-            () => new JsonSingleStreamLoader<PersonRecord>
-            (
-                new MemoryStream(),
-                logger: null!
-            )
+            new MemoryStream(),
+            logger: null
         );
+
+        Assert.NotNull(sut);
     }
 
 
@@ -193,18 +192,17 @@ public class JsonSingleStreamLoaderTests
 
 
     [Fact]
-    public void Internal_constructor_when_logger_is_null_throws_ArgumentNullException()
+    public void Internal_constructor_when_logger_is_null_does_not_throw()
     {
-        Assert.Throws<ArgumentNullException>
+        var sut = new JsonSingleStreamLoader<PersonRecord>
         (
-            () => new JsonSingleStreamLoader<PersonRecord>
-            (
-                new MemoryStream(),
-                new JsonSerializerOptions(),
-                logger: null!,
-                new ManualProgressTimer()
-            )
+            new MemoryStream(),
+            new JsonSerializerOptions(),
+            logger: null,
+            new ManualProgressTimer()
         );
+
+        Assert.NotNull(sut);
     }
 
 
@@ -374,17 +372,16 @@ public class JsonSingleStreamLoaderTests
 
 
     [Fact]
-    public void Constructor_with_typeInfo_when_logger_is_null_throws_ArgumentNullException()
+    public void Constructor_with_typeInfo_when_logger_is_null_does_not_throw()
     {
-        Assert.Throws<ArgumentNullException>
+        var sut = new JsonSingleStreamLoader<PersonRecord>
         (
-            () => new JsonSingleStreamLoader<PersonRecord>
-            (
-                new MemoryStream(),
-                TestJsonContext.Default.PersonRecord,
-                logger: null!
-            )
+            new MemoryStream(),
+            TestJsonContext.Default.PersonRecord,
+            logger: null
         );
+
+        Assert.NotNull(sut);
     }
 
 
@@ -424,18 +421,17 @@ public class JsonSingleStreamLoaderTests
 
 
     [Fact]
-    public void Internal_constructor_with_typeInfo_when_logger_is_null_throws_ArgumentNullException()
+    public void Internal_constructor_with_typeInfo_when_logger_is_null_does_not_throw()
     {
-        Assert.Throws<ArgumentNullException>
+        var sut = new JsonSingleStreamLoader<PersonRecord>
         (
-            () => new JsonSingleStreamLoader<PersonRecord>
-            (
-                new MemoryStream(),
-                TestJsonContext.Default.PersonRecord,
-                logger: null!,
-                new ManualProgressTimer()
-            )
+            new MemoryStream(),
+            TestJsonContext.Default.PersonRecord,
+            logger: null,
+            new ManualProgressTimer()
         );
+
+        Assert.NotNull(sut);
     }
 
 

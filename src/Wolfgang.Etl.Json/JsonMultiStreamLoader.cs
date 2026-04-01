@@ -6,6 +6,7 @@ using System.Text.Json.Serialization.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Wolfgang.Etl.Abstractions;
 
 namespace Wolfgang.Etl.Json;
@@ -51,18 +52,18 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     /// A factory function that receives the item to be written and returns a <see cref="Stream"/> to write it to.
     /// The loader will dispose the stream after writing.
     /// </param>
-    /// <param name="logger">The logger instance for diagnostic output.</param>
+    /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="streamFactory"/> or <paramref name="logger"/> is <c>null</c>.
+    /// Thrown when <paramref name="streamFactory"/> is <c>null</c>.
     /// </exception>
     public JsonMultiStreamLoader
     (
         Func<TRecord, Stream> streamFactory,
-        ILogger<JsonMultiStreamLoader<TRecord>> logger
+        ILogger<JsonMultiStreamLoader<TRecord>>? logger = null
     )
     {
         _streamFactory = streamFactory ?? throw new ArgumentNullException(nameof(streamFactory));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _logger = logger ?? (ILogger)NullLogger.Instance;
         _options = null;
     }
 
@@ -77,20 +78,20 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     /// The loader will dispose the stream after writing.
     /// </param>
     /// <param name="options">The JSON serializer options to use for serialization.</param>
-    /// <param name="logger">The logger instance for diagnostic output.</param>
+    /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="streamFactory"/>, <paramref name="options"/>, or <paramref name="logger"/> is <c>null</c>.
+    /// Thrown when <paramref name="streamFactory"/> or <paramref name="options"/> is <c>null</c>.
     /// </exception>
     public JsonMultiStreamLoader
     (
         Func<TRecord, Stream> streamFactory,
         JsonSerializerOptions options,
-        ILogger<JsonMultiStreamLoader<TRecord>> logger
+        ILogger<JsonMultiStreamLoader<TRecord>>? logger = null
     )
     {
         _streamFactory = streamFactory ?? throw new ArgumentNullException(nameof(streamFactory));
         _options = options ?? throw new ArgumentNullException(nameof(options));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
 
@@ -103,19 +104,19 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     /// A factory function that receives the item to be written and returns a <see cref="Stream"/> to write it to.
     /// </param>
     /// <param name="options">The JSON serializer options, or <c>null</c> for defaults.</param>
-    /// <param name="logger">The logger instance for diagnostic output.</param>
+    /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <param name="timer">The progress timer to inject.</param>
     internal JsonMultiStreamLoader
     (
         Func<TRecord, Stream> streamFactory,
         JsonSerializerOptions options,
-        ILogger logger,
+        ILogger? logger,
         IProgressTimer timer
     )
     {
         _streamFactory = streamFactory ?? throw new ArgumentNullException(nameof(streamFactory));
         _options = options ?? throw new ArgumentNullException(nameof(options));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _logger = logger ?? (ILogger)NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
 
@@ -130,20 +131,20 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     /// The loader will dispose the stream after writing.
     /// </param>
     /// <param name="typeInfo">The source-generated type metadata for <typeparamref name="TRecord"/>.</param>
-    /// <param name="logger">The logger instance for diagnostic output.</param>
+    /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="streamFactory"/>, <paramref name="typeInfo"/>, or <paramref name="logger"/> is <c>null</c>.
+    /// Thrown when <paramref name="streamFactory"/> or <paramref name="typeInfo"/> is <c>null</c>.
     /// </exception>
     public JsonMultiStreamLoader
     (
         Func<TRecord, Stream> streamFactory,
         JsonTypeInfo<TRecord> typeInfo,
-        ILogger<JsonMultiStreamLoader<TRecord>> logger
+        ILogger<JsonMultiStreamLoader<TRecord>>? logger = null
     )
     {
         _streamFactory = streamFactory ?? throw new ArgumentNullException(nameof(streamFactory));
         _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
 
@@ -156,19 +157,19 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     /// A factory function that receives the item to be written and returns a <see cref="Stream"/> to write it to.
     /// </param>
     /// <param name="typeInfo">The source-generated type metadata for <typeparamref name="TRecord"/>.</param>
-    /// <param name="logger">The logger instance for diagnostic output.</param>
+    /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <param name="timer">The progress timer to inject.</param>
     internal JsonMultiStreamLoader
     (
         Func<TRecord, Stream> streamFactory,
         JsonTypeInfo<TRecord> typeInfo,
-        ILogger logger,
+        ILogger? logger,
         IProgressTimer timer
     )
     {
         _streamFactory = streamFactory ?? throw new ArgumentNullException(nameof(streamFactory));
         _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _logger = logger ?? (ILogger)NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
 
