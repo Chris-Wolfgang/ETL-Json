@@ -120,9 +120,11 @@ public class JsonSingleStreamLoaderTests
         stream.Position = 0;
         var json = Encoding.UTF8.GetString(stream.ToArray());
 
+#pragma warning disable MA0074
         Assert.Contains("firstName", json);
         Assert.Contains("lastName", json);
         Assert.Contains("age", json);
+#pragma warning restore MA0074
     }
 
 
@@ -266,7 +268,9 @@ public class JsonSingleStreamLoaderTests
 
         stream.Position = 0;
         var readOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+#pragma warning disable S6966, AsyncFixer02
         var deserialized = JsonSerializer.Deserialize<List<PersonRecord>>(stream, readOptions);
+#pragma warning restore S6966, AsyncFixer02
 
         Assert.NotNull(deserialized);
         Assert.Single(deserialized);
@@ -297,10 +301,12 @@ public class JsonSingleStreamLoaderTests
         stream.Position = 0;
         var json = Encoding.UTF8.GetString(stream.ToArray());
 
+#pragma warning disable MA0074
         Assert.Contains("first_name", json);
         Assert.Contains("last_name", json);
         Assert.DoesNotContain("FirstName", json);
         Assert.DoesNotContain("LastName", json);
+#pragma warning restore MA0074
     }
 
 
