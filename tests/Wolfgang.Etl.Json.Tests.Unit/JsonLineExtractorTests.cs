@@ -46,8 +46,7 @@ public class JsonLineExtractorTests
     protected override JsonLineExtractor<PersonRecord> CreateSut(int itemCount) =>
         new
         (
-            CreateJsonlStream(itemCount),
-            NullLogger<JsonLineExtractor<PersonRecord>>.Instance
+            CreateJsonlStream(itemCount)
         );
 
 
@@ -80,8 +79,7 @@ public class JsonLineExtractorTests
 
         var sut = new JsonLineExtractor<PersonRecord>
         (
-            stream,
-            NullLogger<JsonLineExtractor<PersonRecord>>.Instance
+            stream
         );
 
         var results = new List<PersonRecord>();
@@ -134,8 +132,7 @@ public class JsonLineExtractorTests
         (
             () => new JsonLineExtractor<PersonRecord>
             (
-                null!,
-                NullLogger<JsonLineExtractor<PersonRecord>>.Instance
+                null!
             )
         );
     }
@@ -148,6 +145,7 @@ public class JsonLineExtractorTests
         var sut = new JsonLineExtractor<PersonRecord>
         (
             new MemoryStream(),
+            new JsonSerializerOptions(),
             logger: null
         );
 
@@ -230,8 +228,7 @@ public class JsonLineExtractorTests
 
         var sut = new JsonLineExtractor<PersonRecord>
         (
-            stream,
-            NullLogger<JsonLineExtractor<PersonRecord>>.Instance
+            stream
         );
 
         var results = new List<PersonRecord>();
@@ -254,8 +251,7 @@ public class JsonLineExtractorTests
 
         var sut = new JsonLineExtractor<SnakeCasePersonRecord>
         (
-            stream,
-            NullLogger<JsonLineExtractor<SnakeCasePersonRecord>>.Instance
+            stream
         );
 
         var results = new List<SnakeCasePersonRecord>();

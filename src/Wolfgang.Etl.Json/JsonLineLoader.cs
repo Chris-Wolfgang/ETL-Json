@@ -23,7 +23,7 @@ namespace Wolfgang.Etl.Json;
 /// <example>
 /// <code>
 /// using var stream = File.Create("output.jsonl");
-/// var loader = new JsonLineLoader&lt;Person&gt;(stream, logger);
+/// var loader = new JsonLineLoader&lt;Person&gt;(stream);
 /// await loader.LoadAsync(items, cancellationToken);
 /// </code>
 /// </example>
@@ -45,18 +45,16 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     /// Initializes a new instance of the <see cref="JsonLineLoader{TRecord}"/> class.
     /// </summary>
     /// <param name="stream">The stream to write JSONL data to.</param>
-    /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="stream"/> is <c>null</c>.
     /// </exception>
     public JsonLineLoader
     (
-        Stream stream,
-        ILogger<JsonLineLoader<TRecord>>? logger = null
+        Stream stream
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _logger = logger ?? (ILogger)NullLogger.Instance;
+        _logger = NullLogger.Instance;
         _options = null;
     }
 

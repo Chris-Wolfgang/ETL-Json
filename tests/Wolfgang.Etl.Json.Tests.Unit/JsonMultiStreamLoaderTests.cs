@@ -36,8 +36,7 @@ public class JsonMultiStreamLoaderTests
     {
         return new JsonMultiStreamLoader<PersonRecord>
         (
-            _ => new MemoryStream(),
-            NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
+            _ => new MemoryStream()
         );
     }
 
@@ -75,8 +74,7 @@ public class JsonMultiStreamLoaderTests
                 var ms = new MemoryStream();
                 streams.Add(ms);
                 return ms;
-            },
-            NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
+            }
         );
 
         var items = new List<PersonRecord>
@@ -134,8 +132,7 @@ public class JsonMultiStreamLoaderTests
     {
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
-            _ => null!,
-            NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
+            _ => null!
         );
 
         var items = new List<PersonRecord>
@@ -163,8 +160,7 @@ public class JsonMultiStreamLoaderTests
                 var ms = new MemoryStream();
                 streams.Add(ms);
                 return ms;
-            },
-            NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
+            }
         );
 
         var items = new List<PersonRecord>
@@ -192,8 +188,7 @@ public class JsonMultiStreamLoaderTests
         (
             () => new JsonMultiStreamLoader<PersonRecord>
             (
-                null!,
-                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
+                null!
             )
         );
     }
@@ -206,6 +201,7 @@ public class JsonMultiStreamLoaderTests
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
             _ => new MemoryStream(),
+            new JsonSerializerOptions(),
             logger: null
         );
 
@@ -291,8 +287,7 @@ public class JsonMultiStreamLoaderTests
             {
                 streamCount++;
                 return new MemoryStream();
-            },
-            NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
+            }
         );
 
         await sut.LoadAsync(AsyncEnumerable.Empty<PersonRecord>());
@@ -354,8 +349,7 @@ public class JsonMultiStreamLoaderTests
                 var ms = new MemoryStream();
                 streams.Add(ms);
                 return ms;
-            },
-            NullLogger<JsonMultiStreamLoader<SnakeCasePersonRecord>>.Instance
+            }
         );
 
         var items = new List<SnakeCasePersonRecord>

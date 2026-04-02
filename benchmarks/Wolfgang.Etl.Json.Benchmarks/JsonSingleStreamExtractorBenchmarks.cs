@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
-using Microsoft.Extensions.Logging.Abstractions;
+
 
 namespace Wolfgang.Etl.Json.Benchmarks;
 
@@ -42,11 +42,7 @@ public class JsonSingleStreamExtractorBenchmarks
     public async Task<int> ExtractAsync()
     {
         var stream = new MemoryStream(_jsonData);
-        var extractor = new JsonSingleStreamExtractor<BenchmarkPerson>
-        (
-            stream,
-            NullLogger<JsonSingleStreamExtractor<BenchmarkPerson>>.Instance
-        );
+        var extractor = new JsonSingleStreamExtractor<BenchmarkPerson>(stream);
 
         var count = 0;
         await foreach (var _ in extractor.ExtractAsync())

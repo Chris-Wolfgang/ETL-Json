@@ -49,8 +49,7 @@ public class JsonMultiStreamExtractorTests
     protected override JsonMultiStreamExtractor<PersonRecord> CreateSut(int itemCount) =>
         new
         (
-            CreateStreams(itemCount),
-            NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
+            CreateStreams(itemCount)
         );
 
 
@@ -82,8 +81,7 @@ public class JsonMultiStreamExtractorTests
 
         var sut = new JsonMultiStreamExtractor<PersonRecord>
         (
-            streams,
-            NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
+            streams
         );
 
         var results = new List<PersonRecord>();
@@ -142,8 +140,7 @@ public class JsonMultiStreamExtractorTests
         (
             () => new JsonMultiStreamExtractor<PersonRecord>
             (
-                null!,
-                NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
+                null!
             )
         );
     }
@@ -156,6 +153,7 @@ public class JsonMultiStreamExtractorTests
         var sut = new JsonMultiStreamExtractor<PersonRecord>
         (
             streams: [],
+            new JsonSerializerOptions(),
             logger: null
         );
 
@@ -243,8 +241,7 @@ public class JsonMultiStreamExtractorTests
 
         var sut = new JsonMultiStreamExtractor<PersonRecord>
         (
-            streams,
-            NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
+            streams
         );
 
         var results = new List<PersonRecord>();
@@ -270,8 +267,7 @@ public class JsonMultiStreamExtractorTests
 
         var sut = new JsonMultiStreamExtractor<SnakeCasePersonRecord>
         (
-            streams,
-            NullLogger<JsonMultiStreamExtractor<SnakeCasePersonRecord>>.Instance
+            streams
         );
 
         var results = new List<SnakeCasePersonRecord>();

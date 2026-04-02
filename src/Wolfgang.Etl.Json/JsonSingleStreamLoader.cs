@@ -22,7 +22,7 @@ namespace Wolfgang.Etl.Json;
 /// <example>
 /// <code>
 /// using var stream = File.Create("output.json");
-/// var loader = new JsonSingleStreamLoader&lt;Person&gt;(stream, logger);
+/// var loader = new JsonSingleStreamLoader&lt;Person&gt;(stream);
 /// await loader.LoadAsync(items, cancellationToken);
 /// </code>
 /// </example>
@@ -43,18 +43,16 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     /// Initializes a new instance of the <see cref="JsonSingleStreamLoader{TRecord}"/> class.
     /// </summary>
     /// <param name="stream">The stream to write the JSON array to.</param>
-    /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="stream"/> is <c>null</c>.
     /// </exception>
     public JsonSingleStreamLoader
     (
-        Stream stream,
-        ILogger<JsonSingleStreamLoader<TRecord>>? logger = null
+        Stream stream
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _logger = logger ?? (ILogger)NullLogger.Instance;
+        _logger = NullLogger.Instance;
         _options = null;
     }
 
