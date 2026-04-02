@@ -129,8 +129,8 @@ public class JsonMultiStreamLoaderTests
 
 
 
-    [Fact]
 #pragma warning disable AsyncFixer01
+    [Fact]
     public async Task LoadAsync_when_stream_factory_returns_null_throws_InvalidOperationException()
     {
         var sut = new JsonMultiStreamLoader<PersonRecord>
