@@ -95,7 +95,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// with an injected progress timer for testing.
     /// </summary>
     /// <param name="streams">An enumerable of streams, each containing a single JSON object.</param>
-    /// <param name="options">The JSON serializer options, or <c>null</c> for defaults.</param>
+    /// <param name="options">The JSON serializer options to use for deserialization.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <param name="timer">The progress timer to inject.</param>
     internal JsonMultiStreamExtractor

@@ -91,7 +91,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     /// with an injected progress timer for testing.
     /// </summary>
     /// <param name="stream">The stream to write JSONL data to.</param>
-    /// <param name="options">The JSON serializer options, or <c>null</c> for defaults.</param>
+    /// <param name="options">The JSON serializer options to use for serialization.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <param name="timer">The progress timer to inject.</param>
     internal JsonLineLoader

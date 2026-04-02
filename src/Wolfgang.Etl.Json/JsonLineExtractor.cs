@@ -94,7 +94,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// with an injected progress timer for testing.
     /// </summary>
     /// <param name="stream">The stream containing JSONL data to read from.</param>
-    /// <param name="options">The JSON serializer options, or <c>null</c> for defaults.</param>
+    /// <param name="options">The JSON serializer options to use for deserialization.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <param name="timer">The progress timer to inject.</param>
     internal JsonLineExtractor

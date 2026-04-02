@@ -103,7 +103,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     /// <param name="streamFactory">
     /// A factory function that receives the item to be written and returns a <see cref="Stream"/> to write it to.
     /// </param>
-    /// <param name="options">The JSON serializer options, or <c>null</c> for defaults.</param>
+    /// <param name="options">The JSON serializer options to use for serialization.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <param name="timer">The progress timer to inject.</param>
     internal JsonMultiStreamLoader
