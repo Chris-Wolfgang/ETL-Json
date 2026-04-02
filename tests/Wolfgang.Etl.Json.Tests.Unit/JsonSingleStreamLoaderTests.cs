@@ -38,8 +38,7 @@ public class JsonSingleStreamLoaderTests
         var stream = new MemoryStream();
         return new JsonSingleStreamLoader<PersonRecord>
         (
-            stream,
-            NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance
+            stream
         );
     }
 
@@ -72,8 +71,7 @@ public class JsonSingleStreamLoaderTests
         var stream = new MemoryStream();
         var sut = new JsonSingleStreamLoader<PersonRecord>
         (
-            stream,
-            NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance
+            stream
         );
 
         var items = new List<PersonRecord>
@@ -122,9 +120,11 @@ public class JsonSingleStreamLoaderTests
         stream.Position = 0;
         var json = Encoding.UTF8.GetString(stream.ToArray());
 
+#pragma warning disable MA0074
         Assert.Contains("firstName", json);
         Assert.Contains("lastName", json);
         Assert.Contains("age", json);
+#pragma warning restore MA0074
     }
 
 
@@ -136,8 +136,7 @@ public class JsonSingleStreamLoaderTests
         (
             () => new JsonSingleStreamLoader<PersonRecord>
             (
-                null!,
-                NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance
+                null!
             )
         );
     }
@@ -145,16 +144,16 @@ public class JsonSingleStreamLoaderTests
 
 
     [Fact]
-    public void Constructor_when_logger_is_null_throws_ArgumentNullException()
+    public void Constructor_when_logger_is_null_does_not_throw()
     {
-        Assert.Throws<ArgumentNullException>
+        var sut = new JsonSingleStreamLoader<PersonRecord>
         (
-            () => new JsonSingleStreamLoader<PersonRecord>
-            (
-                new MemoryStream(),
-                logger: null!
-            )
+            new MemoryStream(),
+            new JsonSerializerOptions(),
+            logger: null
         );
+
+        Assert.NotNull(sut);
     }
 
 
@@ -193,18 +192,17 @@ public class JsonSingleStreamLoaderTests
 
 
     [Fact]
-    public void Internal_constructor_when_logger_is_null_throws_ArgumentNullException()
+    public void Internal_constructor_when_logger_is_null_does_not_throw()
     {
-        Assert.Throws<ArgumentNullException>
+        var sut = new JsonSingleStreamLoader<PersonRecord>
         (
-            () => new JsonSingleStreamLoader<PersonRecord>
-            (
-                new MemoryStream(),
-                new JsonSerializerOptions(),
-                logger: null!,
-                new ManualProgressTimer()
-            )
+            new MemoryStream(),
+            new JsonSerializerOptions(),
+            logger: null,
+            new ManualProgressTimer()
         );
+
+        Assert.NotNull(sut);
     }
 
 
@@ -232,8 +230,7 @@ public class JsonSingleStreamLoaderTests
         var stream = new MemoryStream();
         var sut = new JsonSingleStreamLoader<PersonRecord>
         (
-            stream,
-            NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance
+            stream
         );
 
         await sut.LoadAsync(AsyncEnumerable.Empty<PersonRecord>());
@@ -271,7 +268,9 @@ public class JsonSingleStreamLoaderTests
 
         stream.Position = 0;
         var readOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+#pragma warning disable S6966, AsyncFixer02
         var deserialized = JsonSerializer.Deserialize<List<PersonRecord>>(stream, readOptions);
+#pragma warning restore S6966, AsyncFixer02
 
         Assert.NotNull(deserialized);
         Assert.Single(deserialized);
@@ -289,8 +288,7 @@ public class JsonSingleStreamLoaderTests
 
         var sut = new JsonSingleStreamLoader<SnakeCasePersonRecord>
         (
-            stream,
-            NullLogger<JsonSingleStreamLoader<SnakeCasePersonRecord>>.Instance
+            stream
         );
 
         var items = new List<SnakeCasePersonRecord>
@@ -303,10 +301,12 @@ public class JsonSingleStreamLoaderTests
         stream.Position = 0;
         var json = Encoding.UTF8.GetString(stream.ToArray());
 
+#pragma warning disable MA0074
         Assert.Contains("first_name", json);
         Assert.Contains("last_name", json);
         Assert.DoesNotContain("FirstName", json);
         Assert.DoesNotContain("LastName", json);
+#pragma warning restore MA0074
     }
 
 
@@ -374,17 +374,16 @@ public class JsonSingleStreamLoaderTests
 
 
     [Fact]
-    public void Constructor_with_typeInfo_when_logger_is_null_throws_ArgumentNullException()
+    public void Constructor_with_typeInfo_when_logger_is_null_does_not_throw()
     {
-        Assert.Throws<ArgumentNullException>
+        var sut = new JsonSingleStreamLoader<PersonRecord>
         (
-            () => new JsonSingleStreamLoader<PersonRecord>
-            (
-                new MemoryStream(),
-                TestJsonContext.Default.PersonRecord,
-                logger: null!
-            )
+            new MemoryStream(),
+            TestJsonContext.Default.PersonRecord,
+            logger: null
         );
+
+        Assert.NotNull(sut);
     }
 
 
@@ -424,18 +423,17 @@ public class JsonSingleStreamLoaderTests
 
 
     [Fact]
-    public void Internal_constructor_with_typeInfo_when_logger_is_null_throws_ArgumentNullException()
+    public void Internal_constructor_with_typeInfo_when_logger_is_null_does_not_throw()
     {
-        Assert.Throws<ArgumentNullException>
+        var sut = new JsonSingleStreamLoader<PersonRecord>
         (
-            () => new JsonSingleStreamLoader<PersonRecord>
-            (
-                new MemoryStream(),
-                TestJsonContext.Default.PersonRecord,
-                logger: null!,
-                new ManualProgressTimer()
-            )
+            new MemoryStream(),
+            TestJsonContext.Default.PersonRecord,
+            logger: null,
+            new ManualProgressTimer()
         );
+
+        Assert.NotNull(sut);
     }
 
 

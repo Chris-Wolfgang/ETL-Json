@@ -37,8 +37,7 @@ public class JsonLineLoaderTests
         var stream = new MemoryStream();
         return new JsonLineLoader<PersonRecord>
         (
-            stream,
-            NullLogger<JsonLineLoader<PersonRecord>>.Instance
+            stream
         );
     }
 
@@ -71,8 +70,7 @@ public class JsonLineLoaderTests
         var stream = new MemoryStream();
         var sut = new JsonLineLoader<PersonRecord>
         (
-            stream,
-            NullLogger<JsonLineLoader<PersonRecord>>.Instance
+            stream
         );
 
         var items = new List<PersonRecord>
@@ -127,9 +125,11 @@ public class JsonLineLoaderTests
         stream.Position = 0;
         var content = Encoding.UTF8.GetString(stream.ToArray());
 
+#pragma warning disable MA0074
         Assert.Contains("firstName", content);
         Assert.Contains("lastName", content);
         Assert.Contains("age", content);
+#pragma warning restore MA0074
     }
 
 
@@ -141,8 +141,7 @@ public class JsonLineLoaderTests
         (
             () => new JsonLineLoader<PersonRecord>
             (
-                null!,
-                NullLogger<JsonLineLoader<PersonRecord>>.Instance
+                null!
             )
         );
     }
@@ -150,16 +149,16 @@ public class JsonLineLoaderTests
 
 
     [Fact]
-    public void Constructor_when_logger_is_null_throws_ArgumentNullException()
+    public void Constructor_when_logger_is_null_does_not_throw()
     {
-        Assert.Throws<ArgumentNullException>
+        var sut = new JsonLineLoader<PersonRecord>
         (
-            () => new JsonLineLoader<PersonRecord>
-            (
-                new MemoryStream(),
-                logger: null!
-            )
+            new MemoryStream(),
+            new JsonSerializerOptions(),
+            logger: null
         );
+
+        Assert.NotNull(sut);
     }
 
 
@@ -198,18 +197,17 @@ public class JsonLineLoaderTests
 
 
     [Fact]
-    public void Internal_constructor_when_logger_is_null_throws_ArgumentNullException()
+    public void Internal_constructor_when_logger_is_null_does_not_throw()
     {
-        Assert.Throws<ArgumentNullException>
+        var sut = new JsonLineLoader<PersonRecord>
         (
-            () => new JsonLineLoader<PersonRecord>
-            (
-                new MemoryStream(),
-                new JsonSerializerOptions(),
-                logger: null!,
-                new ManualProgressTimer()
-            )
+            new MemoryStream(),
+            new JsonSerializerOptions(),
+            logger: null,
+            new ManualProgressTimer()
         );
+
+        Assert.NotNull(sut);
     }
 
 
@@ -237,8 +235,7 @@ public class JsonLineLoaderTests
         var stream = new MemoryStream();
         var sut = new JsonLineLoader<PersonRecord>
         (
-            stream,
-            NullLogger<JsonLineLoader<PersonRecord>>.Instance
+            stream
         );
 
         await sut.LoadAsync(AsyncEnumerable.Empty<PersonRecord>());
@@ -298,8 +295,7 @@ public class JsonLineLoaderTests
 
         var sut = new JsonLineLoader<SnakeCasePersonRecord>
         (
-            stream,
-            NullLogger<JsonLineLoader<SnakeCasePersonRecord>>.Instance
+            stream
         );
 
         var items = new List<SnakeCasePersonRecord>
@@ -312,10 +308,12 @@ public class JsonLineLoaderTests
         stream.Position = 0;
         var json = Encoding.UTF8.GetString(stream.ToArray());
 
+#pragma warning disable MA0074
         Assert.Contains("first_name", json);
         Assert.Contains("last_name", json);
         Assert.DoesNotContain("FirstName", json);
         Assert.DoesNotContain("LastName", json);
+#pragma warning restore MA0074
     }
 
 
@@ -384,17 +382,16 @@ public class JsonLineLoaderTests
 
 
     [Fact]
-    public void Constructor_with_typeInfo_when_logger_is_null_throws_ArgumentNullException()
+    public void Constructor_with_typeInfo_when_logger_is_null_does_not_throw()
     {
-        Assert.Throws<ArgumentNullException>
+        var sut = new JsonLineLoader<PersonRecord>
         (
-            () => new JsonLineLoader<PersonRecord>
-            (
-                new MemoryStream(),
-                TestJsonContext.Default.PersonRecord,
-                logger: null!
-            )
+            new MemoryStream(),
+            TestJsonContext.Default.PersonRecord,
+            logger: null
         );
+
+        Assert.NotNull(sut);
     }
 
 
@@ -434,18 +431,17 @@ public class JsonLineLoaderTests
 
 
     [Fact]
-    public void Internal_constructor_with_typeInfo_when_logger_is_null_throws_ArgumentNullException()
+    public void Internal_constructor_with_typeInfo_when_logger_is_null_does_not_throw()
     {
-        Assert.Throws<ArgumentNullException>
+        var sut = new JsonLineLoader<PersonRecord>
         (
-            () => new JsonLineLoader<PersonRecord>
-            (
-                new MemoryStream(),
-                TestJsonContext.Default.PersonRecord,
-                logger: null!,
-                new ManualProgressTimer()
-            )
+            new MemoryStream(),
+            TestJsonContext.Default.PersonRecord,
+            logger: null,
+            new ManualProgressTimer()
         );
+
+        Assert.NotNull(sut);
     }
 
 

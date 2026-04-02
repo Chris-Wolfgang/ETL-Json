@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
-using Microsoft.Extensions.Logging.Abstractions;
+
 
 namespace Wolfgang.Etl.Json.Benchmarks;
 
@@ -37,11 +37,7 @@ public class JsonMultiStreamLoaderBenchmarks
     [Benchmark]
     public async Task LoadAsync()
     {
-        var loader = new JsonMultiStreamLoader<BenchmarkPerson>
-        (
-            _ => new MemoryStream(),
-            NullLogger<JsonMultiStreamLoader<BenchmarkPerson>>.Instance
-        );
+        var loader = new JsonMultiStreamLoader<BenchmarkPerson>(_ => new MemoryStream());
 
         await loader.LoadAsync(_items.ToAsyncEnumerable());
     }

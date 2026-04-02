@@ -46,8 +46,7 @@ public class JsonLineExtractorTests
     protected override JsonLineExtractor<PersonRecord> CreateSut(int itemCount) =>
         new
         (
-            CreateJsonlStream(itemCount),
-            NullLogger<JsonLineExtractor<PersonRecord>>.Instance
+            CreateJsonlStream(itemCount)
         );
 
 
@@ -80,8 +79,7 @@ public class JsonLineExtractorTests
 
         var sut = new JsonLineExtractor<PersonRecord>
         (
-            stream,
-            NullLogger<JsonLineExtractor<PersonRecord>>.Instance
+            stream
         );
 
         var results = new List<PersonRecord>();
@@ -134,8 +132,7 @@ public class JsonLineExtractorTests
         (
             () => new JsonLineExtractor<PersonRecord>
             (
-                null!,
-                NullLogger<JsonLineExtractor<PersonRecord>>.Instance
+                null!
             )
         );
     }
@@ -143,16 +140,16 @@ public class JsonLineExtractorTests
 
 
     [Fact]
-    public void Constructor_when_logger_is_null_throws_ArgumentNullException()
+    public void Constructor_when_logger_is_null_does_not_throw()
     {
-        Assert.Throws<ArgumentNullException>
+        var sut = new JsonLineExtractor<PersonRecord>
         (
-            () => new JsonLineExtractor<PersonRecord>
-            (
-                new MemoryStream(),
-                logger: null!
-            )
+            new MemoryStream(),
+            new JsonSerializerOptions(),
+            logger: null
         );
+
+        Assert.NotNull(sut);
     }
 
 
@@ -191,18 +188,17 @@ public class JsonLineExtractorTests
 
 
     [Fact]
-    public void Internal_constructor_when_logger_is_null_throws_ArgumentNullException()
+    public void Internal_constructor_when_logger_is_null_does_not_throw()
     {
-        Assert.Throws<ArgumentNullException>
+        var sut = new JsonLineExtractor<PersonRecord>
         (
-            () => new JsonLineExtractor<PersonRecord>
-            (
-                new MemoryStream(),
-                new JsonSerializerOptions(),
-                logger: null!,
-                new ManualProgressTimer()
-            )
+            new MemoryStream(),
+            new JsonSerializerOptions(),
+            logger: null,
+            new ManualProgressTimer()
         );
+
+        Assert.NotNull(sut);
     }
 
 
@@ -232,8 +228,7 @@ public class JsonLineExtractorTests
 
         var sut = new JsonLineExtractor<PersonRecord>
         (
-            stream,
-            NullLogger<JsonLineExtractor<PersonRecord>>.Instance
+            stream
         );
 
         var results = new List<PersonRecord>();
@@ -256,8 +251,7 @@ public class JsonLineExtractorTests
 
         var sut = new JsonLineExtractor<SnakeCasePersonRecord>
         (
-            stream,
-            NullLogger<JsonLineExtractor<SnakeCasePersonRecord>>.Instance
+            stream
         );
 
         var results = new List<SnakeCasePersonRecord>();
@@ -363,17 +357,16 @@ public class JsonLineExtractorTests
 
 
     [Fact]
-    public void Constructor_with_typeInfo_when_logger_is_null_throws_ArgumentNullException()
+    public void Constructor_with_typeInfo_when_logger_is_null_does_not_throw()
     {
-        Assert.Throws<ArgumentNullException>
+        var sut = new JsonLineExtractor<PersonRecord>
         (
-            () => new JsonLineExtractor<PersonRecord>
-            (
-                new MemoryStream(),
-                TestJsonContext.Default.PersonRecord,
-                logger: null!
-            )
+            new MemoryStream(),
+            TestJsonContext.Default.PersonRecord,
+            logger: null
         );
+
+        Assert.NotNull(sut);
     }
 
 
@@ -413,18 +406,17 @@ public class JsonLineExtractorTests
 
 
     [Fact]
-    public void Internal_constructor_with_typeInfo_when_logger_is_null_throws_ArgumentNullException()
+    public void Internal_constructor_with_typeInfo_when_logger_is_null_does_not_throw()
     {
-        Assert.Throws<ArgumentNullException>
+        var sut = new JsonLineExtractor<PersonRecord>
         (
-            () => new JsonLineExtractor<PersonRecord>
-            (
-                new MemoryStream(),
-                TestJsonContext.Default.PersonRecord,
-                logger: null!,
-                new ManualProgressTimer()
-            )
+            new MemoryStream(),
+            TestJsonContext.Default.PersonRecord,
+            logger: null,
+            new ManualProgressTimer()
         );
+
+        Assert.NotNull(sut);
     }
 
 

@@ -39,8 +39,7 @@ public class JsonSingleStreamExtractorTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
         return new JsonSingleStreamExtractor<PersonRecord>
         (
-            stream,
-            NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance
+            stream
         );
     }
 
@@ -111,8 +110,7 @@ public class JsonSingleStreamExtractorTests
 
         var sut = new JsonSingleStreamExtractor<PersonRecord>
         (
-            stream,
-            NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance
+            stream
         );
 
         var results = new List<PersonRecord>();
@@ -135,8 +133,7 @@ public class JsonSingleStreamExtractorTests
         (
             () => new JsonSingleStreamExtractor<PersonRecord>
             (
-                null!,
-                NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance
+                null!
             )
         );
     }
@@ -144,16 +141,16 @@ public class JsonSingleStreamExtractorTests
 
 
     [Fact]
-    public void Constructor_when_logger_is_null_throws_ArgumentNullException()
+    public void Constructor_when_logger_is_null_does_not_throw()
     {
-        Assert.Throws<ArgumentNullException>
+        var sut = new JsonSingleStreamExtractor<PersonRecord>
         (
-            () => new JsonSingleStreamExtractor<PersonRecord>
-            (
-                new MemoryStream(),
-                logger: null!
-            )
+            new MemoryStream(),
+            new JsonSerializerOptions(),
+            logger: null
         );
+
+        Assert.NotNull(sut);
     }
 
 
@@ -192,18 +189,17 @@ public class JsonSingleStreamExtractorTests
 
 
     [Fact]
-    public void Internal_constructor_when_logger_is_null_throws_ArgumentNullException()
+    public void Internal_constructor_when_logger_is_null_does_not_throw()
     {
-        Assert.Throws<ArgumentNullException>
+        var sut = new JsonSingleStreamExtractor<PersonRecord>
         (
-            () => new JsonSingleStreamExtractor<PersonRecord>
-            (
-                new MemoryStream(),
-                new JsonSerializerOptions(),
-                null!,
-                new ManualProgressTimer()
-            )
+            new MemoryStream(),
+            new JsonSerializerOptions(),
+            logger: null,
+            new ManualProgressTimer()
         );
+
+        Assert.NotNull(sut);
     }
 
 
@@ -233,8 +229,7 @@ public class JsonSingleStreamExtractorTests
 
         var sut = new JsonSingleStreamExtractor<SnakeCasePersonRecord>
         (
-            stream,
-            NullLogger<JsonSingleStreamExtractor<SnakeCasePersonRecord>>.Instance
+            stream
         );
 
         var results = new List<SnakeCasePersonRecord>();
@@ -337,17 +332,16 @@ public class JsonSingleStreamExtractorTests
 
 
     [Fact]
-    public void Constructor_with_typeInfo_when_logger_is_null_throws_ArgumentNullException()
+    public void Constructor_with_typeInfo_when_logger_is_null_does_not_throw()
     {
-        Assert.Throws<ArgumentNullException>
+        var sut = new JsonSingleStreamExtractor<PersonRecord>
         (
-            () => new JsonSingleStreamExtractor<PersonRecord>
-            (
-                new MemoryStream(),
-                TestJsonContext.Default.PersonRecord,
-                logger: null!
-            )
+            new MemoryStream(),
+            TestJsonContext.Default.PersonRecord,
+            logger: null
         );
+
+        Assert.NotNull(sut);
     }
 
 
@@ -387,18 +381,17 @@ public class JsonSingleStreamExtractorTests
 
 
     [Fact]
-    public void Internal_constructor_with_typeInfo_when_logger_is_null_throws_ArgumentNullException()
+    public void Internal_constructor_with_typeInfo_when_logger_is_null_does_not_throw()
     {
-        Assert.Throws<ArgumentNullException>
+        var sut = new JsonSingleStreamExtractor<PersonRecord>
         (
-            () => new JsonSingleStreamExtractor<PersonRecord>
-            (
-                new MemoryStream(),
-                TestJsonContext.Default.PersonRecord,
-                logger: null!,
-                new ManualProgressTimer()
-            )
+            new MemoryStream(),
+            TestJsonContext.Default.PersonRecord,
+            logger: null,
+            new ManualProgressTimer()
         );
+
+        Assert.NotNull(sut);
     }
 
 
