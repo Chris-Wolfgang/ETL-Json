@@ -16,21 +16,21 @@ using var loggerFactory = LoggerFactory.Create(builder =>
     builder.SetMinimumLevel(LogLevel.Information);
 });
 
-await SingleStreamExample(loggerFactory);
+await SingleStreamExample();
 Console.WriteLine();
-await JsonLineExample(loggerFactory);
+await JsonLineExample();
 Console.WriteLine();
-await MultiStreamExample(loggerFactory);
+await MultiStreamExample();
 Console.WriteLine();
-await MultiStreamLoaderExample(loggerFactory);
+await MultiStreamLoaderExample();
 Console.WriteLine();
 await CustomOptionsExample(loggerFactory);
 Console.WriteLine();
-await SkipAndMaxExample(loggerFactory);
+await SkipAndMaxExample();
 
 
 
-static async Task SingleStreamExample(ILoggerFactory loggerFactory)
+static async Task SingleStreamExample()
 {
     Console.WriteLine("=== JSON Array (Single Stream) Example ===");
     Console.WriteLine();
@@ -44,11 +44,7 @@ static async Task SingleStreamExample(ILoggerFactory loggerFactory)
 
     // --- Load to JSON array ---
     var stream = new MemoryStream();
-    var loader = new JsonSingleStreamLoader<Person>
-    (
-        stream,
-        loggerFactory.CreateLogger<JsonSingleStreamLoader<Person>>()
-    );
+    var loader = new JsonSingleStreamLoader<Person>(stream);
 
     await loader.LoadAsync(people.ToAsyncEnumerable());
     Console.WriteLine($"Loaded {loader.CurrentItemCount} items to JSON array.");
@@ -61,11 +57,7 @@ static async Task SingleStreamExample(ILoggerFactory loggerFactory)
 
     // --- Extract back ---
     stream.Position = 0;
-    var extractor = new JsonSingleStreamExtractor<Person>
-    (
-        stream,
-        loggerFactory.CreateLogger<JsonSingleStreamExtractor<Person>>()
-    );
+    var extractor = new JsonSingleStreamExtractor<Person>(stream);
 
     Console.WriteLine("Extracted items:");
     await foreach (var person in extractor.ExtractAsync())
@@ -76,7 +68,7 @@ static async Task SingleStreamExample(ILoggerFactory loggerFactory)
 
 
 
-static async Task JsonLineExample(ILoggerFactory loggerFactory)
+static async Task JsonLineExample()
 {
     Console.WriteLine("=== JSONL (JSON Lines) Example ===");
     Console.WriteLine();
@@ -89,11 +81,7 @@ static async Task JsonLineExample(ILoggerFactory loggerFactory)
 
     // --- Load as JSONL (one JSON object per line) ---
     var stream = new MemoryStream();
-    var loader = new JsonLineLoader<Person>
-    (
-        stream,
-        loggerFactory.CreateLogger<JsonLineLoader<Person>>()
-    );
+    var loader = new JsonLineLoader<Person>(stream);
 
     await loader.LoadAsync(people.ToAsyncEnumerable());
     Console.WriteLine($"Loaded {loader.CurrentItemCount} items as JSONL.");
@@ -105,11 +93,7 @@ static async Task JsonLineExample(ILoggerFactory loggerFactory)
 
     // --- Extract back ---
     stream.Position = 0;
-    var extractor = new JsonLineExtractor<Person>
-    (
-        stream,
-        loggerFactory.CreateLogger<JsonLineExtractor<Person>>()
-    );
+    var extractor = new JsonLineExtractor<Person>(stream);
 
     Console.WriteLine("Extracted items:");
     await foreach (var person in extractor.ExtractAsync())
@@ -120,7 +104,7 @@ static async Task JsonLineExample(ILoggerFactory loggerFactory)
 
 
 
-static async Task MultiStreamExample(ILoggerFactory loggerFactory)
+static async Task MultiStreamExample()
 {
     Console.WriteLine("=== Multi-Stream Extractor Example ===");
     Console.WriteLine("Reads one JSON object per stream — like reading one .json file per record.");
@@ -147,11 +131,7 @@ static async Task MultiStreamExample(ILoggerFactory loggerFactory)
 
     // Create streams from the simulated files
     var streams = jsonFiles.Values.Select(data => (Stream)new MemoryStream(data));
-    var extractor = new JsonMultiStreamExtractor<Person>
-    (
-        streams,
-        loggerFactory.CreateLogger<JsonMultiStreamExtractor<Person>>()
-    );
+    var extractor = new JsonMultiStreamExtractor<Person>(streams);
 
     Console.WriteLine("Extracted items:");
     await foreach (var person in extractor.ExtractAsync())
@@ -162,7 +142,7 @@ static async Task MultiStreamExample(ILoggerFactory loggerFactory)
 
 
 
-static async Task MultiStreamLoaderExample(ILoggerFactory loggerFactory)
+static async Task MultiStreamLoaderExample()
 {
     Console.WriteLine("=== Multi-Stream Loader Example ===");
     Console.WriteLine("Writes one JSON object per stream — like creating one .json file per record.");
@@ -186,8 +166,7 @@ static async Task MultiStreamLoaderExample(ILoggerFactory loggerFactory)
             var ms = new MemoryStream();
             files[fileName] = ms;
             return ms;
-        },
-        loggerFactory.CreateLogger<JsonMultiStreamLoader<Person>>()
+        }
     );
 
     await loader.LoadAsync(people.ToAsyncEnumerable());
@@ -237,7 +216,7 @@ static async Task CustomOptionsExample(ILoggerFactory loggerFactory)
 
 
 
-static async Task SkipAndMaxExample(ILoggerFactory loggerFactory)
+static async Task SkipAndMaxExample()
 {
     Console.WriteLine("=== Skip and Maximum Item Count Example ===");
     Console.WriteLine();
@@ -251,22 +230,14 @@ static async Task SkipAndMaxExample(ILoggerFactory loggerFactory)
     }).ToList();
 
     var stream = new MemoryStream();
-    var loader = new JsonLineLoader<Person>
-    (
-        stream,
-        loggerFactory.CreateLogger<JsonLineLoader<Person>>()
-    );
+    var loader = new JsonLineLoader<Person>(stream);
 
     await loader.LoadAsync(people.ToAsyncEnumerable());
     Console.WriteLine($"Loaded {loader.CurrentItemCount} items as JSONL.");
 
     // Extract with skip and max
     stream.Position = 0;
-    var extractor = new JsonLineExtractor<Person>
-    (
-        stream,
-        loggerFactory.CreateLogger<JsonLineExtractor<Person>>()
-    );
+    var extractor = new JsonLineExtractor<Person>(stream);
     extractor.SkipItemCount = 5;      // Skip first 5
     extractor.MaximumItemCount = 3;   // Then take 3
 
