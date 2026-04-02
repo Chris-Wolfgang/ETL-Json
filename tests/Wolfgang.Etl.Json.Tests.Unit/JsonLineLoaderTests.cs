@@ -125,9 +125,11 @@ public class JsonLineLoaderTests
         stream.Position = 0;
         var content = Encoding.UTF8.GetString(stream.ToArray());
 
+#pragma warning disable MA0074
         Assert.Contains("firstName", content);
         Assert.Contains("lastName", content);
         Assert.Contains("age", content);
+#pragma warning restore MA0074
     }
 
 
@@ -306,10 +308,12 @@ public class JsonLineLoaderTests
         stream.Position = 0;
         var json = Encoding.UTF8.GetString(stream.ToArray());
 
+#pragma warning disable MA0074
         Assert.Contains("first_name", json);
         Assert.Contains("last_name", json);
         Assert.DoesNotContain("FirstName", json);
         Assert.DoesNotContain("LastName", json);
+#pragma warning restore MA0074
     }
 
 
