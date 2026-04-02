@@ -39,8 +39,7 @@ public class JsonSingleStreamExtractorTests
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
         return new JsonSingleStreamExtractor<PersonRecord>
         (
-            stream,
-            NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance
+            stream
         );
     }
 
@@ -111,8 +110,7 @@ public class JsonSingleStreamExtractorTests
 
         var sut = new JsonSingleStreamExtractor<PersonRecord>
         (
-            stream,
-            NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance
+            stream
         );
 
         var results = new List<PersonRecord>();
@@ -135,8 +133,7 @@ public class JsonSingleStreamExtractorTests
         (
             () => new JsonSingleStreamExtractor<PersonRecord>
             (
-                null!,
-                NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance
+                null!
             )
         );
     }
@@ -149,6 +146,7 @@ public class JsonSingleStreamExtractorTests
         var sut = new JsonSingleStreamExtractor<PersonRecord>
         (
             new MemoryStream(),
+            new JsonSerializerOptions(),
             logger: null
         );
 
@@ -231,8 +229,7 @@ public class JsonSingleStreamExtractorTests
 
         var sut = new JsonSingleStreamExtractor<SnakeCasePersonRecord>
         (
-            stream,
-            NullLogger<JsonSingleStreamExtractor<SnakeCasePersonRecord>>.Instance
+            stream
         );
 
         var results = new List<SnakeCasePersonRecord>();

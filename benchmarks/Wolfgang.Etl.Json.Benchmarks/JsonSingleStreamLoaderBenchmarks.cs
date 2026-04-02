@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
-using Microsoft.Extensions.Logging.Abstractions;
+
 
 namespace Wolfgang.Etl.Json.Benchmarks;
 
@@ -39,11 +39,7 @@ public class JsonSingleStreamLoaderBenchmarks
     public async Task LoadAsync()
     {
         var stream = new MemoryStream();
-        var loader = new JsonSingleStreamLoader<BenchmarkPerson>
-        (
-            stream,
-            NullLogger<JsonSingleStreamLoader<BenchmarkPerson>>.Instance
-        );
+        var loader = new JsonSingleStreamLoader<BenchmarkPerson>(stream);
 
         await loader.LoadAsync(_items.ToAsyncEnumerable());
     }
@@ -58,12 +54,7 @@ public class JsonSingleStreamLoaderBenchmarks
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         };
-        var loader = new JsonSingleStreamLoader<BenchmarkPerson>
-        (
-            stream,
-            options,
-            NullLogger<JsonSingleStreamLoader<BenchmarkPerson>>.Instance
-        );
+        var loader = new JsonSingleStreamLoader<BenchmarkPerson>(stream, options);
 
         await loader.LoadAsync(_items.ToAsyncEnumerable());
     }

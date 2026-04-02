@@ -37,8 +37,7 @@ public class JsonLineLoaderTests
         var stream = new MemoryStream();
         return new JsonLineLoader<PersonRecord>
         (
-            stream,
-            NullLogger<JsonLineLoader<PersonRecord>>.Instance
+            stream
         );
     }
 
@@ -71,8 +70,7 @@ public class JsonLineLoaderTests
         var stream = new MemoryStream();
         var sut = new JsonLineLoader<PersonRecord>
         (
-            stream,
-            NullLogger<JsonLineLoader<PersonRecord>>.Instance
+            stream
         );
 
         var items = new List<PersonRecord>
@@ -141,8 +139,7 @@ public class JsonLineLoaderTests
         (
             () => new JsonLineLoader<PersonRecord>
             (
-                null!,
-                NullLogger<JsonLineLoader<PersonRecord>>.Instance
+                null!
             )
         );
     }
@@ -155,6 +152,7 @@ public class JsonLineLoaderTests
         var sut = new JsonLineLoader<PersonRecord>
         (
             new MemoryStream(),
+            new JsonSerializerOptions(),
             logger: null
         );
 
@@ -235,8 +233,7 @@ public class JsonLineLoaderTests
         var stream = new MemoryStream();
         var sut = new JsonLineLoader<PersonRecord>
         (
-            stream,
-            NullLogger<JsonLineLoader<PersonRecord>>.Instance
+            stream
         );
 
         await sut.LoadAsync(AsyncEnumerable.Empty<PersonRecord>());
@@ -296,8 +293,7 @@ public class JsonLineLoaderTests
 
         var sut = new JsonLineLoader<SnakeCasePersonRecord>
         (
-            stream,
-            NullLogger<JsonLineLoader<SnakeCasePersonRecord>>.Instance
+            stream
         );
 
         var items = new List<SnakeCasePersonRecord>

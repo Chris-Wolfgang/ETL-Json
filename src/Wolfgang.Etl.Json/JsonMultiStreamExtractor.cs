@@ -49,18 +49,16 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// Initializes a new instance of the <see cref="JsonMultiStreamExtractor{TRecord}"/> class.
     /// </summary>
     /// <param name="streams">An enumerable of streams, each containing a single JSON object.</param>
-    /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="streams"/> is <c>null</c>.
     /// </exception>
     public JsonMultiStreamExtractor
     (
-        IEnumerable<Stream> streams,
-        ILogger<JsonMultiStreamExtractor<TRecord>>? logger = null
+        IEnumerable<Stream> streams
     )
     {
         _streams = streams ?? throw new ArgumentNullException(nameof(streams));
-        _logger = logger ?? (ILogger)NullLogger.Instance;
+        _logger = NullLogger.Instance;
         _options = null;
     }
 

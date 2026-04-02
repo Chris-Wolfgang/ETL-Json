@@ -38,8 +38,7 @@ public class JsonSingleStreamLoaderTests
         var stream = new MemoryStream();
         return new JsonSingleStreamLoader<PersonRecord>
         (
-            stream,
-            NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance
+            stream
         );
     }
 
@@ -72,8 +71,7 @@ public class JsonSingleStreamLoaderTests
         var stream = new MemoryStream();
         var sut = new JsonSingleStreamLoader<PersonRecord>
         (
-            stream,
-            NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance
+            stream
         );
 
         var items = new List<PersonRecord>
@@ -136,8 +134,7 @@ public class JsonSingleStreamLoaderTests
         (
             () => new JsonSingleStreamLoader<PersonRecord>
             (
-                null!,
-                NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance
+                null!
             )
         );
     }
@@ -150,6 +147,7 @@ public class JsonSingleStreamLoaderTests
         var sut = new JsonSingleStreamLoader<PersonRecord>
         (
             new MemoryStream(),
+            new JsonSerializerOptions(),
             logger: null
         );
 
@@ -230,8 +228,7 @@ public class JsonSingleStreamLoaderTests
         var stream = new MemoryStream();
         var sut = new JsonSingleStreamLoader<PersonRecord>
         (
-            stream,
-            NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance
+            stream
         );
 
         await sut.LoadAsync(AsyncEnumerable.Empty<PersonRecord>());
@@ -287,8 +284,7 @@ public class JsonSingleStreamLoaderTests
 
         var sut = new JsonSingleStreamLoader<SnakeCasePersonRecord>
         (
-            stream,
-            NullLogger<JsonSingleStreamLoader<SnakeCasePersonRecord>>.Instance
+            stream
         );
 
         var items = new List<SnakeCasePersonRecord>

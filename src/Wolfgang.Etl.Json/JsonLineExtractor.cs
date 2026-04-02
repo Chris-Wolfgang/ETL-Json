@@ -23,7 +23,7 @@ namespace Wolfgang.Etl.Json;
 /// <example>
 /// <code>
 /// using var stream = File.OpenRead("data.jsonl");
-/// var extractor = new JsonLineExtractor&lt;Person&gt;(stream, logger);
+/// var extractor = new JsonLineExtractor&lt;Person&gt;(stream);
 /// await foreach (var person in extractor.ExtractAsync(cancellationToken))
 /// {
 ///     Console.WriteLine(person.Name);
@@ -48,18 +48,16 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// Initializes a new instance of the <see cref="JsonLineExtractor{TRecord}"/> class.
     /// </summary>
     /// <param name="stream">The stream containing JSONL data to read from.</param>
-    /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="stream"/> is <c>null</c>.
     /// </exception>
     public JsonLineExtractor
     (
-        Stream stream,
-        ILogger<JsonLineExtractor<TRecord>>? logger = null
+        Stream stream
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _logger = logger ?? (ILogger)NullLogger.Instance;
+        _logger = NullLogger.Instance;
         _options = null;
     }
 
