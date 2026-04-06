@@ -41,7 +41,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     private readonly JsonTypeInfo<TRecord>? _typeInfo;
     private readonly ILogger _logger;
     private readonly IProgressTimer? _progressTimer;
-    private bool _progressTimerWired;
+    private int _progressTimerWired;
 
 
 
@@ -239,9 +239,8 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     {
         if (_progressTimer is not null)
         {
-            if (!_progressTimerWired)
+            if (Interlocked.CompareExchange(ref _progressTimerWired, 1, 0) == 0)
             {
-                _progressTimerWired = true;
                 _progressTimer.Elapsed += () => progress.Report(CreateProgressReport());
             }
 
