@@ -120,11 +120,9 @@ public class JsonSingleStreamLoaderTests
         stream.Position = 0;
         var json = Encoding.UTF8.GetString(stream.ToArray());
 
-#pragma warning disable MA0074
-        Assert.Contains("firstName", json);
-        Assert.Contains("lastName", json);
-        Assert.Contains("age", json);
-#pragma warning restore MA0074
+        Assert.Contains("firstName", json, StringComparison.Ordinal);
+        Assert.Contains("lastName", json, StringComparison.Ordinal);
+        Assert.Contains("age", json, StringComparison.Ordinal);
     }
 
 
@@ -301,12 +299,10 @@ public class JsonSingleStreamLoaderTests
         stream.Position = 0;
         var json = Encoding.UTF8.GetString(stream.ToArray());
 
-#pragma warning disable MA0074
-        Assert.Contains("first_name", json);
-        Assert.Contains("last_name", json);
-        Assert.DoesNotContain("FirstName", json);
-        Assert.DoesNotContain("LastName", json);
-#pragma warning restore MA0074
+        Assert.Contains("first_name", json, StringComparison.Ordinal);
+        Assert.Contains("last_name", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("FirstName", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("LastName", json, StringComparison.Ordinal);
     }
 
 
