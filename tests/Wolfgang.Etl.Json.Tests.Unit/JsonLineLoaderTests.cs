@@ -125,11 +125,9 @@ public class JsonLineLoaderTests
         stream.Position = 0;
         var content = Encoding.UTF8.GetString(stream.ToArray());
 
-#pragma warning disable MA0074
-        Assert.Contains("firstName", content);
-        Assert.Contains("lastName", content);
-        Assert.Contains("age", content);
-#pragma warning restore MA0074
+        Assert.Contains("firstName", content, StringComparison.Ordinal);
+        Assert.Contains("lastName", content, StringComparison.Ordinal);
+        Assert.Contains("age", content, StringComparison.Ordinal);
     }
 
 
@@ -142,6 +140,21 @@ public class JsonLineLoaderTests
             () => new JsonLineLoader<PersonRecord>
             (
                 null!
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_logger_when_logger_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonLineLoader<PersonRecord>
+            (
+                new MemoryStream(),
+                logger: null!
             )
         );
     }
@@ -308,12 +321,10 @@ public class JsonLineLoaderTests
         stream.Position = 0;
         var json = Encoding.UTF8.GetString(stream.ToArray());
 
-#pragma warning disable MA0074
-        Assert.Contains("first_name", json);
-        Assert.Contains("last_name", json);
-        Assert.DoesNotContain("FirstName", json);
-        Assert.DoesNotContain("LastName", json);
-#pragma warning restore MA0074
+        Assert.Contains("first_name", json, StringComparison.Ordinal);
+        Assert.Contains("last_name", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("FirstName", json, StringComparison.Ordinal);
+        Assert.DoesNotContain("LastName", json, StringComparison.Ordinal);
     }
 
 

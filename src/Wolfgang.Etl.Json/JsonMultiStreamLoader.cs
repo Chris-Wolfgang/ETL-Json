@@ -41,7 +41,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     private readonly JsonTypeInfo<TRecord>? _typeInfo;
     private readonly ILogger _logger;
     private readonly IProgressTimer? _progressTimer;
-    private bool _progressTimerWired;
+    private int _progressTimerWired;
 
 
 
@@ -62,6 +62,31 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     {
         _streamFactory = streamFactory ?? throw new ArgumentNullException(nameof(streamFactory));
         _logger = NullLogger.Instance;
+        _options = null;
+    }
+
+
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonMultiStreamLoader{TRecord}"/> class
+    /// with diagnostic logging.
+    /// </summary>
+    /// <param name="streamFactory">
+    /// A factory function that receives the item to be written and returns a <see cref="Stream"/> to write it to.
+    /// The loader will dispose the stream after writing.
+    /// </param>
+    /// <param name="logger">The logger instance for diagnostic output.</param>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="streamFactory"/> or <paramref name="logger"/> is <c>null</c>.
+    /// </exception>
+    public JsonMultiStreamLoader
+    (
+        Func<TRecord, Stream> streamFactory,
+        ILogger<JsonMultiStreamLoader<TRecord>> logger
+    )
+    {
+        _streamFactory = streamFactory ?? throw new ArgumentNullException(nameof(streamFactory));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _options = null;
     }
 
@@ -258,9 +283,8 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     {
         if (_progressTimer is not null)
         {
-            if (!_progressTimerWired)
+            if (Interlocked.CompareExchange(ref _progressTimerWired, 1, 0) == 0)
             {
-                _progressTimerWired = true;
                 _progressTimer.Elapsed += () => progress.Report(CreateProgressReport());
             }
 

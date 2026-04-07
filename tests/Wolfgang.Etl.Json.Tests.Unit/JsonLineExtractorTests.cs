@@ -140,6 +140,21 @@ public class JsonLineExtractorTests
 
 
     [Fact]
+    public void Constructor_with_logger_when_logger_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonLineExtractor<PersonRecord>
+            (
+                new MemoryStream(),
+                logger: null!
+            )
+        );
+    }
+
+
+
+    [Fact]
     public void Constructor_when_logger_is_null_does_not_throw()
     {
         var sut = new JsonLineExtractor<PersonRecord>
@@ -434,5 +449,41 @@ public class JsonLineExtractorTests
                 timer: null!
             )
         );
+    }
+
+
+
+    [Fact]
+    public async Task ExtractAsync_with_progress_wires_timer_callback_exactly_once()
+    {
+        var callbackCount = 0;
+        var timer = new ManualProgressTimer();
+        var sut = new JsonLineExtractor<PersonRecord>
+        (
+            CreateJsonlStream(ExpectedItems.Count),
+            new JsonSerializerOptions(),
+            NullLogger<JsonLineExtractor<PersonRecord>>.Instance,
+            timer
+        );
+
+        var progress = new SynchronousProgress<JsonReport>(_ => callbackCount++);
+
+        // Start extraction but don't complete — fire timer mid-flight
+        var enumerator = sut.ExtractAsync(progress).GetAsyncEnumerator();
+
+        try
+        {
+            await enumerator.MoveNextAsync();
+
+            // The Interlocked guard ensures exactly one Elapsed handler was wired.
+            // If double-wiring occurred, Fire would invoke the callback more than once.
+            timer.Fire();
+
+            Assert.Equal(1, callbackCount);
+        }
+        finally
+        {
+            await enumerator.DisposeAsync();
+        }
     }
 }

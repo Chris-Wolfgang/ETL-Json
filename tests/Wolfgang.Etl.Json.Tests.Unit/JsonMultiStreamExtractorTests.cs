@@ -148,6 +148,21 @@ public class JsonMultiStreamExtractorTests
 
 
     [Fact]
+    public void Constructor_with_logger_when_logger_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamExtractor<PersonRecord>
+            (
+                Array.Empty<Stream>(),
+                logger: null!
+            )
+        );
+    }
+
+
+
+    [Fact]
     public void Constructor_when_logger_is_null_does_not_throw()
     {
         var sut = new JsonMultiStreamExtractor<PersonRecord>
