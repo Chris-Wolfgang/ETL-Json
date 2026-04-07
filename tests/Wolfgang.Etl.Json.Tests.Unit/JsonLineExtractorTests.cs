@@ -473,7 +473,7 @@ public class JsonLineExtractorTests
 
         try
         {
-            await enumerator.MoveNextAsync().ConfigureAwait(false);
+            await enumerator.MoveNextAsync();
 
             // The Interlocked guard ensures exactly one Elapsed handler was wired.
             // If double-wiring occurred, Fire would invoke the callback more than once.
@@ -483,7 +483,7 @@ public class JsonLineExtractorTests
         }
         finally
         {
-            await enumerator.DisposeAsync().ConfigureAwait(false);
+            await enumerator.DisposeAsync();
         }
     }
 }
