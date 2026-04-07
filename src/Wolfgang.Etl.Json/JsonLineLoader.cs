@@ -62,6 +62,28 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonLineLoader{TRecord}"/> class
+    /// with diagnostic logging.
+    /// </summary>
+    /// <param name="stream">The stream to write JSONL data to.</param>
+    /// <param name="logger">The logger instance for diagnostic output.</param>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="stream"/> or <paramref name="logger"/> is <c>null</c>.
+    /// </exception>
+    public JsonLineLoader
+    (
+        Stream stream,
+        ILogger<JsonLineLoader<TRecord>> logger
+    )
+    {
+        _stream = stream ?? throw new ArgumentNullException(nameof(stream));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _options = null;
+    }
+
+
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonLineLoader{TRecord}"/> class
     /// with custom serialization options.
     /// </summary>
     /// <param name="stream">The stream to write JSONL data to.</param>

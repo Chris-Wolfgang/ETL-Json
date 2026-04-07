@@ -69,6 +69,31 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonMultiStreamLoader{TRecord}"/> class
+    /// with diagnostic logging.
+    /// </summary>
+    /// <param name="streamFactory">
+    /// A factory function that receives the item to be written and returns a <see cref="Stream"/> to write it to.
+    /// The loader will dispose the stream after writing.
+    /// </param>
+    /// <param name="logger">The logger instance for diagnostic output.</param>
+    /// <exception cref="ArgumentNullException">
+    /// Thrown when <paramref name="streamFactory"/> or <paramref name="logger"/> is <c>null</c>.
+    /// </exception>
+    public JsonMultiStreamLoader
+    (
+        Func<TRecord, Stream> streamFactory,
+        ILogger<JsonMultiStreamLoader<TRecord>> logger
+    )
+    {
+        _streamFactory = streamFactory ?? throw new ArgumentNullException(nameof(streamFactory));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _options = null;
+    }
+
+
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonMultiStreamLoader{TRecord}"/> class
     /// with custom serialization options.
     /// </summary>
     /// <param name="streamFactory">

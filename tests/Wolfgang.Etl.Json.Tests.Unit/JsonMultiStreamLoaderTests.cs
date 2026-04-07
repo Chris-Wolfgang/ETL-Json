@@ -198,6 +198,21 @@ public class JsonMultiStreamLoaderTests
 
 
     [Fact]
+    public void Constructor_with_logger_when_logger_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamLoader<PersonRecord>
+            (
+                _ => new MemoryStream(),
+                logger: null!
+            )
+        );
+    }
+
+
+
+    [Fact]
     public void Constructor_when_logger_is_null_does_not_throw()
     {
         var sut = new JsonMultiStreamLoader<PersonRecord>
