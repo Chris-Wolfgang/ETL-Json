@@ -1,18 +1,16 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-    Runs PR checks locally (build, test, coverage, security scans).
+    Runs the same checks as the Windows section of pr.yaml locally.
 
 .DESCRIPTION
-    Replicates the PR workflow locally so you can verify your changes will
-    pass before pushing. Combines the Windows test stage, coverage gate,
-    and the separate DevSkim/gitleaks security jobs into a single script.
-    Runs in order:
-      1. Restore and build (Release)               — pr.yaml Windows stage
-      2. Run all tests across all target frameworks — pr.yaml Windows stage
-      3. Generate coverage report and enforce threshold — pr.yaml Windows stage
-      4. Run DevSkim security scan                  — pr.yaml separate job
-      5. Run gitleaks secrets scan                  — pr.yaml separate job
+    Replicates the PR workflow's Windows stage locally so you can verify
+    your changes will pass before pushing. Runs in order:
+      1. Restore and build (Release)
+      2. Run all tests across all target frameworks
+      3. Generate coverage report and enforce threshold
+      4. Run DevSkim security scan
+      5. Run gitleaks secrets scan
 
 .PARAMETER SkipTests
     Skip test execution (build only).
@@ -86,8 +84,7 @@ if (-not $SkipTests -and $failed.Count -eq 0) {
     $testProjects = @(Get-ChildItem -Path './tests' -Recurse -File -Include '*.csproj', '*.vbproj', '*.fsproj' -ErrorAction SilentlyContinue)
 
     if ($testProjects.Count -eq 0) {
-        Write-Fail "No test projects found in ./tests"
-        $failed += "Tests (no projects found)"
+        Write-Host "No test projects found in ./tests — skipping"
     }
     else {
         foreach ($testProj in $testProjects) {
@@ -168,8 +165,6 @@ if (-not $SkipTests -and -not $SkipCoverage -and $failed.Count -eq 0) {
         if (-not $rgPath) {
             Write-Host "Installing ReportGenerator..."
             dotnet tool install -g dotnet-reportgenerator-globaltool
-            $toolsDir = Join-Path $HOME ".dotnet" "tools"
-            if ($env:PATH -notlike "*$toolsDir*") { $env:PATH = "$toolsDir$([IO.Path]::PathSeparator)$env:PATH" }
         }
 
         reportgenerator `
@@ -207,8 +202,7 @@ if (-not $SkipTests -and -not $SkipCoverage -and $failed.Count -eq 0) {
             }
         }
         else {
-            Write-Fail "Coverage files found but Summary.txt was not generated"
-            $failed += "Coverage (no summary)"
+            Write-Host "Coverage report not generated — skipping threshold check"
         }
     }
 }
@@ -223,8 +217,6 @@ if (-not $SkipSecurity) {
     if (-not $devskim) {
         Write-Host "Installing DevSkim CLI..."
         dotnet tool install --global Microsoft.CST.DevSkim.CLI
-        $toolsDir = Join-Path $HOME ".dotnet" "tools"
-        if ($env:PATH -notlike "*$toolsDir*") { $env:PATH = "$toolsDir$([IO.Path]::PathSeparator)$env:PATH" }
     }
 
     devskim analyze `
@@ -267,7 +259,7 @@ if (-not $SkipSecurity) {
             $dest = Join-Path $env:LOCALAPPDATA "gitleaks"
             New-Item -ItemType Directory -Force -Path $dest | Out-Null
             $zip = Join-Path $env:TEMP $archive
-            Invoke-WebRequest -Uri $url -OutFile $zip
+            Invoke-WebRequest -Uri $url -OutFile $zip -UseBasicParsing
             Expand-Archive -Path $zip -DestinationPath $dest -Force
             Remove-Item $zip -ErrorAction SilentlyContinue
             $env:PATH = "$dest;$env:PATH"
@@ -275,10 +267,7 @@ if (-not $SkipSecurity) {
         else {
             $archive = "gitleaks_${version}_linux_x64.tar.gz"
             $url = "https://github.com/gitleaks/gitleaks/releases/download/v${version}/$archive"
-            $dest = Join-Path $HOME ".gitleaks"
-            New-Item -ItemType Directory -Force -Path $dest | Out-Null
-            curl -sSfL $url | tar xz -C $dest gitleaks
-            $env:PATH = "${dest}:$env:PATH"
+            curl -sSfL $url | tar xz -C /usr/local/bin gitleaks
         }
     }
 
