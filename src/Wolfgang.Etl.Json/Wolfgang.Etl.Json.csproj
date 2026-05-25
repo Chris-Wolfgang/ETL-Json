@@ -10,7 +10,6 @@
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
     <Title>Wolfgang.Etl.Json</Title>
     <Description>Extractor and Loader implementations for reading and writing JSON, JSONL, and multi-stream JSON files, built on Wolfgang.Etl.Abstractions.</Description>
-    <Copyright>Copyright 2026 Chris Wolfgang</Copyright>
     <PackageProjectUrl>https://github.com/Chris-Wolfgang/ETL-Json</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Chris-Wolfgang/ETL-Json</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
