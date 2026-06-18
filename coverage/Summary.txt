@@ -1,0 +1,30 @@
+Summary
+  Generated on: 6/18/2026 - 10:41:27 PM
+  Coverage date: 6/18/2026 - 10:41:24 PM
+  Parser: Cobertura
+  Assemblies: 1
+  Classes: 8
+  Files: 8
+  Line coverage: 98%
+  Covered lines: 618
+  Uncovered lines: 12
+  Coverable lines: 630
+  Total lines: 1764
+  Branch coverage: 89.5% (258 of 288)
+  Covered branches: 258
+  Total branches: 288
+  Method coverage: 100% (64 of 64)
+  Full method coverage: 90.6% (58 of 64)
+  Covered methods: 64
+  Fully covered methods: 58
+  Total methods: 64
+
+Wolfgang.Etl.Json                                    98%
+  Wolfgang.Etl.Json.JsonLineExtractor<T>             98%
+  Wolfgang.Etl.Json.JsonLineLoader<T>              97.8%
+  Wolfgang.Etl.Json.JsonLogMessages                 100%
+  Wolfgang.Etl.Json.JsonMultiStreamExtractor<T>      98%
+  Wolfgang.Etl.Json.JsonMultiStreamLoader<T>       97.9%
+  Wolfgang.Etl.Json.JsonReport                      100%
+  Wolfgang.Etl.Json.JsonSingleStreamExtractor<T>   97.9%
+  Wolfgang.Etl.Json.JsonSingleStreamLoader<T>      97.8%
