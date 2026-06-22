@@ -1,18 +1,16 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-    Runs PR checks locally (build, test, coverage, security scans).
+    Runs the same checks as the Windows section of pr.yaml locally.
 
 .DESCRIPTION
-    Replicates the PR workflow locally so you can verify your changes will
-    pass before pushing. Combines the Windows test stage, coverage gate,
-    and the separate DevSkim/gitleaks security jobs into a single script.
-    Runs in order:
-      1. Restore and build (Release)               — pr.yaml Windows stage
-      2. Run all tests across all target frameworks — pr.yaml Windows stage
-      3. Generate coverage report and enforce threshold — pr.yaml Windows stage
-      4. Run DevSkim security scan                  — pr.yaml separate job
-      5. Run gitleaks secrets scan                  — pr.yaml separate job
+    Replicates the PR workflow's Windows stage locally so you can verify
+    your changes will pass before pushing. Runs in order:
+      1. Restore and build (Release)
+      2. Run all tests across all target frameworks
+      3. Generate coverage report and enforce threshold
+      4. Run DevSkim security scan
+      5. Run gitleaks secrets scan
 
 .PARAMETER SkipTests
     Skip test execution (build only).
@@ -86,8 +84,17 @@ if (-not $SkipTests -and $failed.Count -eq 0) {
     $testProjects = @(Get-ChildItem -Path './tests' -Recurse -File -Include '*.csproj', '*.vbproj', '*.fsproj' -ErrorAction SilentlyContinue)
 
     if ($testProjects.Count -eq 0) {
-        Write-Fail "No test projects found in ./tests"
-        $failed += "Tests (no projects found)"
+        # If ./src has projects, fail — silent skip would diverge from CI's
+        # strict gate. If neither ./src nor ./tests has projects (template-pack
+        # / in-dev repos), the skip is legitimate.
+        $srcHasProjects = @(Get-ChildItem -Path './src' -Recurse -File -Include '*.csproj','*.vbproj','*.fsproj' -ErrorAction SilentlyContinue).Count -gt 0
+        if ($srcHasProjects) {
+            Write-Fail "./tests has no test projects but ./src contains projects — refusing to silently skip the coverage gate."
+            $failed += "Tests"
+        }
+        else {
+            Write-Host "No test projects found in ./tests and no ./src projects — skipping (template-pack / in-dev shape)."
+        }
     }
     else {
         foreach ($testProj in $testProjects) {
@@ -167,9 +174,23 @@ if (-not $SkipTests -and -not $SkipCoverage -and $failed.Count -eq 0) {
         $rgPath = Get-Command reportgenerator -ErrorAction SilentlyContinue
         if (-not $rgPath) {
             Write-Host "Installing ReportGenerator..."
-            dotnet tool install -g dotnet-reportgenerator-globaltool
-            $toolsDir = Join-Path $HOME ".dotnet" "tools"
-            if ($env:PATH -notlike "*$toolsDir*") { $env:PATH = "$toolsDir$([IO.Path]::PathSeparator)$env:PATH" }
+            dotnet tool update -g dotnet-reportgenerator-globaltool 2>$null
+            if ($LASTEXITCODE -ne 0) { dotnet tool install -g dotnet-reportgenerator-globaltool }
+            # Ensure global tools dir is on PATH for this session. The .NET
+            # installer normally adds it to the user's profile, but a fresh
+            # shell or a pwsh-invoked-from-script session may not have it yet.
+            $globalToolsDir = if ($IsWindows -or $env:OS -eq 'Windows_NT') {
+                Join-Path $env:USERPROFILE '.dotnet\tools'
+            } else {
+                Join-Path $HOME '.dotnet/tools'
+            }
+            if (Test-Path $globalToolsDir -PathType Container) {
+                $sep = [IO.Path]::PathSeparator
+                $pathSegments = $env:PATH -split [regex]::Escape($sep)
+                if ($pathSegments -notcontains $globalToolsDir) {
+                    $env:PATH = "$globalToolsDir$sep$env:PATH"
+                }
+            }
         }
 
         reportgenerator `
@@ -207,8 +228,11 @@ if (-not $SkipTests -and -not $SkipCoverage -and $failed.Count -eq 0) {
             }
         }
         else {
-            Write-Fail "Coverage files found but Summary.txt was not generated"
-            $failed += "Coverage (no summary)"
+            # Diverged from pr.yaml behavior in the past — that would let a local
+            # "All checks passed" silently hide ReportGenerator failures while CI
+            # rejected the same situation. Fail loudly here too, so local matches CI.
+            Write-Fail "Coverage report not generated (CoverageReport/Summary.txt missing) — ReportGenerator likely failed."
+            $failed += "Coverage"
         }
     }
 }
@@ -223,8 +247,6 @@ if (-not $SkipSecurity) {
     if (-not $devskim) {
         Write-Host "Installing DevSkim CLI..."
         dotnet tool install --global Microsoft.CST.DevSkim.CLI
-        $toolsDir = Join-Path $HOME ".dotnet" "tools"
-        if ($env:PATH -notlike "*$toolsDir*") { $env:PATH = "$toolsDir$([IO.Path]::PathSeparator)$env:PATH" }
     }
 
     devskim analyze `
@@ -275,10 +297,15 @@ if (-not $SkipSecurity) {
         else {
             $archive = "gitleaks_${version}_linux_x64.tar.gz"
             $url = "https://github.com/gitleaks/gitleaks/releases/download/v${version}/$archive"
-            $dest = Join-Path $HOME ".gitleaks"
-            New-Item -ItemType Directory -Force -Path $dest | Out-Null
-            curl -sSfL $url | tar xz -C $dest gitleaks
-            $env:PATH = "${dest}:$env:PATH"
+            # Install to a user-writable location instead of /usr/local/bin
+            # (which would require sudo for most local dev shells). $HOME/.local/bin
+            # is on PATH by default on most Linux distros and macOS; if not, prepend it.
+            $localBin = Join-Path $HOME ".local/bin"
+            New-Item -ItemType Directory -Force -Path $localBin | Out-Null
+            curl -sSfL $url | tar xz -C $localBin gitleaks
+            if (-not ($env:PATH -split [IO.Path]::PathSeparator | Where-Object { $_ -eq $localBin })) {
+                $env:PATH = "$localBin$([IO.Path]::PathSeparator)$env:PATH"
+            }
         }
     }
 
