@@ -2,60 +2,33 @@
 Wolfgang.Etl.Json.JsonLineExtractor<TRecord>
 Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.JsonLineExtractor(System.IO.Stream stream) -> void
 Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.JsonLineExtractor(System.IO.Stream stream, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonLineExtractor<TRecord>> logger) -> void
-Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.JsonLineExtractor(System.IO.Stream stream, System.Text.Json.JsonSerializerOptions options, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonLineExtractor<TRecord>>? logger = null) -> void
-Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.JsonLineExtractor(System.IO.Stream stream, System.Text.Json.Serialization.Metadata.JsonTypeInfo<TRecord> typeInfo, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonLineExtractor<TRecord>>? logger = null) -> void
+Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.JsonLineExtractor(System.IO.Stream stream, System.Text.Json.JsonSerializerOptions options, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonLineExtractor<TRecord>> logger = null) -> void
+Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.JsonLineExtractor(System.IO.Stream stream, System.Text.Json.Serialization.Metadata.JsonTypeInfo<TRecord> typeInfo, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonLineExtractor<TRecord>> logger = null) -> void
 Wolfgang.Etl.Json.JsonLineLoader<TRecord>
 Wolfgang.Etl.Json.JsonLineLoader<TRecord>.JsonLineLoader(System.IO.Stream stream) -> void
 Wolfgang.Etl.Json.JsonLineLoader<TRecord>.JsonLineLoader(System.IO.Stream stream, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonLineLoader<TRecord>> logger) -> void
-Wolfgang.Etl.Json.JsonLineLoader<TRecord>.JsonLineLoader(System.IO.Stream stream, System.Text.Json.JsonSerializerOptions options, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonLineLoader<TRecord>>? logger = null) -> void
-Wolfgang.Etl.Json.JsonLineLoader<TRecord>.JsonLineLoader(System.IO.Stream stream, System.Text.Json.Serialization.Metadata.JsonTypeInfo<TRecord> typeInfo, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonLineLoader<TRecord>>? logger = null) -> void
+Wolfgang.Etl.Json.JsonLineLoader<TRecord>.JsonLineLoader(System.IO.Stream stream, System.Text.Json.JsonSerializerOptions options, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonLineLoader<TRecord>> logger = null) -> void
+Wolfgang.Etl.Json.JsonLineLoader<TRecord>.JsonLineLoader(System.IO.Stream stream, System.Text.Json.Serialization.Metadata.JsonTypeInfo<TRecord> typeInfo, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonLineLoader<TRecord>> logger = null) -> void
 Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>
 Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(System.Collections.Generic.IEnumerable<System.IO.Stream> streams) -> void
 Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(System.Collections.Generic.IEnumerable<System.IO.Stream> streams, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>> logger) -> void
-Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(System.Collections.Generic.IEnumerable<System.IO.Stream> streams, System.Text.Json.JsonSerializerOptions options, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>>? logger = null) -> void
-Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(System.Collections.Generic.IEnumerable<System.IO.Stream> streams, System.Text.Json.Serialization.Metadata.JsonTypeInfo<TRecord> typeInfo, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>>? logger = null) -> void
+Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(System.Collections.Generic.IEnumerable<System.IO.Stream> streams, System.Text.Json.JsonSerializerOptions options, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>> logger = null) -> void
+Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(System.Collections.Generic.IEnumerable<System.IO.Stream> streams, System.Text.Json.Serialization.Metadata.JsonTypeInfo<TRecord> typeInfo, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>> logger = null) -> void
 Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>
 Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(System.Func<TRecord, System.IO.Stream> streamFactory) -> void
 Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(System.Func<TRecord, System.IO.Stream> streamFactory, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>> logger) -> void
-Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(System.Func<TRecord, System.IO.Stream> streamFactory, System.Text.Json.JsonSerializerOptions options, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>>? logger = null) -> void
-Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(System.Func<TRecord, System.IO.Stream> streamFactory, System.Text.Json.Serialization.Metadata.JsonTypeInfo<TRecord> typeInfo, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>>? logger = null) -> void
+Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(System.Func<TRecord, System.IO.Stream> streamFactory, System.Text.Json.JsonSerializerOptions options, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>> logger = null) -> void
+Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(System.Func<TRecord, System.IO.Stream> streamFactory, System.Text.Json.Serialization.Metadata.JsonTypeInfo<TRecord> typeInfo, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>> logger = null) -> void
 Wolfgang.Etl.Json.JsonReport
 Wolfgang.Etl.Json.JsonReport.CurrentSkippedItemCount.get -> int
 Wolfgang.Etl.Json.JsonReport.JsonReport(int currentItemCount, int currentSkippedItemCount) -> void
 Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>
 Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.JsonSingleStreamExtractor(System.IO.Stream stream) -> void
 Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.JsonSingleStreamExtractor(System.IO.Stream stream, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>> logger) -> void
-Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.JsonSingleStreamExtractor(System.IO.Stream stream, System.Text.Json.JsonSerializerOptions options, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>>? logger = null) -> void
-Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.JsonSingleStreamExtractor(System.IO.Stream stream, System.Text.Json.Serialization.Metadata.JsonTypeInfo<TRecord> typeInfo, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>>? logger = null) -> void
+Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.JsonSingleStreamExtractor(System.IO.Stream stream, System.Text.Json.JsonSerializerOptions options, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>> logger = null) -> void
+Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.JsonSingleStreamExtractor(System.IO.Stream stream, System.Text.Json.Serialization.Metadata.JsonTypeInfo<TRecord> typeInfo, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>> logger = null) -> void
 Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>
 Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>.JsonSingleStreamLoader(System.IO.Stream stream) -> void
 Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>.JsonSingleStreamLoader(System.IO.Stream stream, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>> logger) -> void
-Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>.JsonSingleStreamLoader(System.IO.Stream stream, System.Text.Json.JsonSerializerOptions options, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>>? logger = null) -> void
-Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>.JsonSingleStreamLoader(System.IO.Stream stream, System.Text.Json.Serialization.Metadata.JsonTypeInfo<TRecord> typeInfo, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>>? logger = null) -> void
-override Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.CreateProgressReport() -> Wolfgang.Etl.Json.JsonReport
-override Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.CreateProgressTimer(System.IProgress<Wolfgang.Etl.Json.JsonReport> progress) -> Wolfgang.Etl.Abstractions.IProgressTimer
-override Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.ExtractWorkerAsync(System.Threading.CancellationToken token) -> System.Collections.Generic.IAsyncEnumerable<TRecord>
-override Wolfgang.Etl.Json.JsonLineLoader<TRecord>.CreateProgressReport() -> Wolfgang.Etl.Json.JsonReport
-override Wolfgang.Etl.Json.JsonLineLoader<TRecord>.CreateProgressTimer(System.IProgress<Wolfgang.Etl.Json.JsonReport> progress) -> Wolfgang.Etl.Abstractions.IProgressTimer
-override Wolfgang.Etl.Json.JsonLineLoader<TRecord>.LoadWorkerAsync(System.Collections.Generic.IAsyncEnumerable<TRecord> items, System.Threading.CancellationToken token) -> System.Threading.Tasks.Task
-override Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.CreateProgressReport() -> Wolfgang.Etl.Json.JsonReport
-override Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.CreateProgressTimer(System.IProgress<Wolfgang.Etl.Json.JsonReport> progress) -> Wolfgang.Etl.Abstractions.IProgressTimer
-override Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.ExtractWorkerAsync(System.Threading.CancellationToken token) -> System.Collections.Generic.IAsyncEnumerable<TRecord>
-override Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.CreateProgressReport() -> Wolfgang.Etl.Json.JsonReport
-override Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.CreateProgressTimer(System.IProgress<Wolfgang.Etl.Json.JsonReport> progress) -> Wolfgang.Etl.Abstractions.IProgressTimer
-override Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.LoadWorkerAsync(System.Collections.Generic.IAsyncEnumerable<TRecord> items, System.Threading.CancellationToken token) -> System.Threading.Tasks.Task
-override Wolfgang.Etl.Json.JsonReport.<Clone>$() -> Wolfgang.Etl.Abstractions.Report
-override Wolfgang.Etl.Json.JsonReport.Equals(object? obj) -> bool
-override Wolfgang.Etl.Json.JsonReport.GetHashCode() -> int
-override Wolfgang.Etl.Json.JsonReport.PrintMembers(System.Text.StringBuilder builder) -> bool
-override Wolfgang.Etl.Json.JsonReport.ToString() -> string
-override Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.CreateProgressReport() -> Wolfgang.Etl.Json.JsonReport
-override Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.CreateProgressTimer(System.IProgress<Wolfgang.Etl.Json.JsonReport> progress) -> Wolfgang.Etl.Abstractions.IProgressTimer
-override Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.ExtractWorkerAsync(System.Threading.CancellationToken token) -> System.Collections.Generic.IAsyncEnumerable<TRecord>
-override Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>.CreateProgressReport() -> Wolfgang.Etl.Json.JsonReport
-override Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>.CreateProgressTimer(System.IProgress<Wolfgang.Etl.Json.JsonReport> progress) -> Wolfgang.Etl.Abstractions.IProgressTimer
-override Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>.LoadWorkerAsync(System.Collections.Generic.IAsyncEnumerable<TRecord> items, System.Threading.CancellationToken token) -> System.Threading.Tasks.Task
-override sealed Wolfgang.Etl.Json.JsonReport.Equals(Wolfgang.Etl.Abstractions.Report? other) -> bool
-static Wolfgang.Etl.Json.JsonReport.operator !=(Wolfgang.Etl.Json.JsonReport? left, Wolfgang.Etl.Json.JsonReport? right) -> bool
-static Wolfgang.Etl.Json.JsonReport.operator ==(Wolfgang.Etl.Json.JsonReport? left, Wolfgang.Etl.Json.JsonReport? right) -> bool
-virtual Wolfgang.Etl.Json.JsonReport.Equals(Wolfgang.Etl.Json.JsonReport? other) -> bool
+Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>.JsonSingleStreamLoader(System.IO.Stream stream, System.Text.Json.JsonSerializerOptions options, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>> logger = null) -> void
+Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>.JsonSingleStreamLoader(System.IO.Stream stream, System.Text.Json.Serialization.Metadata.JsonTypeInfo<TRecord> typeInfo, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>> logger = null) -> void
