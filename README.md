@@ -148,9 +148,9 @@ Test coverage spans: .NET Framework 4.6.2 through 4.8.1, .NET Core 3.1, .NET 5.0
 
 ---
 
-## 🔍 Code Quality ## Code Quality & Static Analysis Static Analysis
+## 🔍 Code Quality & Static Analysis
 
-This project enforces strict code quality standards through 7 specialized analyzers and custom async-first rules:
+This project enforces strict code quality standards through 8 specialized analyzers and custom async-first rules:
 
 ### Analyzers in Use
 
@@ -161,6 +161,7 @@ This project enforces strict code quality standards through 7 specialized analyz
 5. **Microsoft.CodeAnalysis.BannedApiAnalyzers** - Prevents usage of banned synchronous APIs
 6. **Meziantou.Analyzer** - Comprehensive code quality rules
 7. **SonarAnalyzer.CSharp** - Industry-standard code analysis
+8. **Microsoft.CodeAnalysis.PublicApiAnalyzers** - Tracks the public API surface to catch unintended breaking changes
 
 ### Async-First Enforcement
 
