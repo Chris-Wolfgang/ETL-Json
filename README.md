@@ -9,7 +9,7 @@ Extractors and Loaders for reading and writing JSON, JSONL, and multi-stream JSO
 
 ---
 
-## Installation
+## 📦 Installation
 
 ```bash
 dotnet add package Wolfgang.Etl.Json
@@ -19,7 +19,7 @@ dotnet add package Wolfgang.Etl.Json
 
 ---
 
-## Features
+## ✨ Features
 
 | Component | Description |
 |-----------|-------------|
@@ -39,7 +39,7 @@ All components support:
 
 ---
 
-## Quick Start
+## 🚀 Quick Start
 
 ### Extract from a JSON array
 
@@ -136,7 +136,7 @@ var loader = new JsonLineLoader<Person>(stream, AppJsonContext.Default.Person, l
 
 ---
 
-## Target Frameworks
+## 🎯 Target Frameworks
 
 | Platform | Versions |
 |----------|----------|
@@ -148,7 +148,7 @@ Test coverage spans: .NET Framework 4.6.2 through 4.8.1, .NET Core 3.1, .NET 5.0
 
 ---
 
-## Code Quality & Static Analysis
+## 🔍 Code Quality ## Code Quality & Static Analysis Static Analysis
 
 This project enforces strict code quality standards through 7 specialized analyzers and custom async-first rules:
 
@@ -235,7 +235,7 @@ docfx build --serve
 
 ---
 
-## Contributing
+## 🤝 Contributing
 
 Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for:
 - Code quality standards
@@ -245,13 +245,13 @@ Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for:
 
 ---
 
-## License
+## 📄 License
 
 This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
 
 ---
 
-## Documentation
+## 📚 Documentation
 
 - **GitHub Repository:** [https://github.com/Chris-Wolfgang/ETL-Json](https://github.com/Chris-Wolfgang/ETL-Json)
 - **API Documentation:** https://Chris-Wolfgang.github.io/ETL-Json/
