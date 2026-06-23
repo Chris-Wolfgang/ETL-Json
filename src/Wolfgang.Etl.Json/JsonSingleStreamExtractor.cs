@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading;
+using System.Threading.Tasks;
 using System.IO;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -197,7 +198,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
             ? JsonSerializer.DeserializeAsyncEnumerable(_stream, _typeInfo, token)
             : JsonSerializer.DeserializeAsyncEnumerable<TRecord>(_stream, _options ?? DefaultOptions, token);
 
-        await foreach (var item in enumerable)
+        await foreach (var item in enumerable.WithCancellation(token).ConfigureAwait(false))
         {
             token.ThrowIfCancellationRequested();
 
