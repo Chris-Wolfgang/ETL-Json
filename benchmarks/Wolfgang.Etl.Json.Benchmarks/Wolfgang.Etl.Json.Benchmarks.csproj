@@ -6,7 +6,6 @@
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>disable</ImplicitUsings>
     <IsPackable>false</IsPackable>
-    <NoWarn>MA0004;AsyncFixer01;VSTHRD200</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
