@@ -296,7 +296,7 @@ var assemblies = [
       { "name": "Wolfgang.Etl.Json.JsonMultiStreamExtractor\u003CT\u003E", "rp": "Wolfgang.Etl.Json_JsonMultiStreamExtractor_1.html", "cl": 98, "ucl": 2, "cal": 100, "tl": 274, "cb": 43, "tb": 48, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "Wolfgang.Etl.Json.JsonMultiStreamLoader\u003CT\u003E", "rp": "Wolfgang.Etl.Json_JsonMultiStreamLoader_1.html", "cl": 97, "ucl": 2, "cal": 99, "tl": 296, "cb": 43, "tb": 48, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "Wolfgang.Etl.Json.JsonReport", "rp": "Wolfgang.Etl.Json_JsonReport.html", "cl": 4, "ucl": 0, "cal": 4, "tl": 35, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "Wolfgang.Etl.Json.JsonSingleStreamExtractor\u003CT\u003E", "rp": "Wolfgang.Etl.Json_JsonSingleStreamExtractor_1.html", "cl": 94, "ucl": 2, "cal": 96, "tl": 260, "cb": 45, "tb": 50, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "Wolfgang.Etl.Json.JsonSingleStreamExtractor\u003CT\u003E", "rp": "Wolfgang.Etl.Json_JsonSingleStreamExtractor_1.html", "cl": 94, "ucl": 2, "cal": 96, "tl": 261, "cb": 45, "tb": 50, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "Wolfgang.Etl.Json.JsonSingleStreamLoader\u003CT\u003E", "rp": "Wolfgang.Etl.Json_JsonSingleStreamLoader_1.html", "cl": 91, "ucl": 2, "cal": 93, "tl": 257, "cb": 41, "tb": 46, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
     ]},
 ];

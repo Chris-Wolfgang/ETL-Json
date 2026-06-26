@@ -1,7 +1,7 @@
 Summary
-  Generated on: 6/19/2026 - 12:11:24 PM
-  Coverage date: 6/19/2026 - 12:11:21 PM
-  Parser: Cobertura
+  Generated on: 6/26/2026 - 2:39:10 AM
+  Coverage date: 6/26/2026 - 2:39:06 AM
+  Parser: MultiReport (2x Cobertura)
   Assemblies: 1
   Classes: 8
   Files: 8
@@ -9,7 +9,7 @@ Summary
   Covered lines: 618
   Uncovered lines: 12
   Coverable lines: 630
-  Total lines: 1764
+  Total lines: 1765
   Branch coverage: 89.5% (258 of 288)
   Covered branches: 258
   Total branches: 288

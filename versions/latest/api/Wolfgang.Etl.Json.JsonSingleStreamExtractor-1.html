@@ -16,7 +16,7 @@
       <meta name="docfx:rel" content="../">
       
       
-      <meta name="docfx:docurl" content="https://github.com/Chris-Wolfgang/ETL-Json/new/main/apiSpec/new?filename=Wolfgang_Etl_Json_JsonSingleStreamExtractor_1.md&amp;value=---%0Auid%3A%20Wolfgang.Etl.Json.JsonSingleStreamExtractor%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
+      <meta name="docfx:docurl" content="https://github.com/Chris-Wolfgang/ETL-Json/new/bdd75fdb10d932382b98b08fe6187dddcde21924/apiSpec/new?filename=Wolfgang_Etl_Json_JsonSingleStreamExtractor_1.md&amp;value=---%0Auid%3A%20Wolfgang.Etl.Json.JsonSingleStreamExtractor%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
       <meta name="loc:inThisArticle" content="In this article">
       <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
       <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
@@ -75,7 +75,7 @@
 
 
   <h1 id="Wolfgang_Etl_Json_JsonSingleStreamExtractor_1" data-uid="Wolfgang.Etl.Json.JsonSingleStreamExtractor`1" class="text-break">
-Class JsonSingleStreamExtractor&lt;TRecord&gt;  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/main/src/Wolfgang.Etl.Json/JsonSingleStreamExtractor.cs/#L34"><i class="bi bi-code-slash"></i></a>
+Class JsonSingleStreamExtractor&lt;TRecord&gt;  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/bdd75fdb10d932382b98b08fe6187dddcde21924/src/Wolfgang.Etl.Json/JsonSingleStreamExtractor.cs/#L35"><i class="bi bi-code-slash"></i></a>
   </h1>
 
   <div class="facts text-secondary">
@@ -88,7 +88,7 @@ Class JsonSingleStreamExtractor&lt;TRecord&gt;  <a class="header-action link-sec
   <div class="markdown conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class JsonSingleStreamExtractor&lt;TRecord&gt; : ExtractorBase&lt;TRecord, JsonReport&gt;, IExtractWithProgressAndCancellationAsync&lt;TRecord, JsonReport&gt;, IExtractWithCancellationAsync&lt;TRecord&gt;, IExtractWithProgressAsync&lt;TRecord, JsonReport&gt;, IExtractAsync&lt;TRecord&gt; where TRecord : notnull</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class JsonSingleStreamExtractor&lt;TRecord&gt; : ExtractorBase&lt;TRecord, JsonReport&gt;, IExtractWithProgressAndCancellationAsync&lt;TRecord, JsonReport&gt;, IExtractWithCancellationAsync&lt;TRecord&gt;, IExtractWithProgressAsync&lt;TRecord, JsonReport&gt;, IExtractAsync&lt;TRecord&gt;, IAsyncDisposable, IDisposable where TRecord : notnull</code></pre>
   </div>
 
 
@@ -116,6 +116,8 @@ Class JsonSingleStreamExtractor&lt;TRecord&gt;  <a class="header-action link-sec
       <div><span class="xref">IExtractWithCancellationAsync</span>&lt;TRecord&gt;</div>
       <div><span class="xref">IExtractWithProgressAsync</span>&lt;TRecord, <a class="xref" href="Wolfgang.Etl.Json.JsonReport.html">JsonReport</a>&gt;</div>
       <div><span class="xref">IExtractAsync</span>&lt;TRecord&gt;</div>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a></div>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
     </dd>
   </dl>
 
@@ -134,6 +136,12 @@ Class JsonSingleStreamExtractor&lt;TRecord&gt;  <a class="header-action link-sec
     </div>
     <div>
       <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iprogress-1">ExtractorBase&lt;TRecord, JsonReport&gt;.ExtractAsync(IProgress&lt;JsonReport&gt;, CancellationToken)</a>
+    </div>
+    <div>
+      <span class="xref">ExtractorBase&lt;TRecord, JsonReport&gt;.DisposeAsync()</span>
+    </div>
+    <div>
+      <span class="xref">ExtractorBase&lt;TRecord, JsonReport&gt;.Dispose()</span>
     </div>
     <div>
       <span class="xref">ExtractorBase&lt;TRecord, JsonReport&gt;.ReportingInterval</span>
@@ -197,7 +205,7 @@ for true streaming deserialization.</p>
 
   <h3 id="Wolfgang_Etl_Json_JsonSingleStreamExtractor_1__ctor_System_IO_Stream_" data-uid="Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.#ctor(System.IO.Stream)">
   JsonSingleStreamExtractor(Stream)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/main/src/Wolfgang.Etl.Json/JsonSingleStreamExtractor.cs/#L56"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/bdd75fdb10d932382b98b08fe6187dddcde21924/src/Wolfgang.Etl.Json/JsonSingleStreamExtractor.cs/#L57"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonSingleStreamExtractor-1.html">JsonSingleStreamExtractor&lt;TRecord&gt;</a> class.</p>
@@ -236,7 +244,7 @@ for true streaming deserialization.</p>
 
   <h3 id="Wolfgang_Etl_Json_JsonSingleStreamExtractor_1__ctor_System_IO_Stream_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonSingleStreamExtractor__0___" data-uid="Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.#ctor(System.IO.Stream,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonSingleStreamExtractor{`0}})">
   JsonSingleStreamExtractor(Stream, ILogger&lt;JsonSingleStreamExtractor&lt;TRecord&gt;&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/main/src/Wolfgang.Etl.Json/JsonSingleStreamExtractor.cs/#L77"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/bdd75fdb10d932382b98b08fe6187dddcde21924/src/Wolfgang.Etl.Json/JsonSingleStreamExtractor.cs/#L78"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonSingleStreamExtractor-1.html">JsonSingleStreamExtractor&lt;TRecord&gt;</a> class
@@ -279,7 +287,7 @@ with diagnostic logging.</p>
 
   <h3 id="Wolfgang_Etl_Json_JsonSingleStreamExtractor_1__ctor_System_IO_Stream_System_Text_Json_JsonSerializerOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonSingleStreamExtractor__0___" data-uid="Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.#ctor(System.IO.Stream,System.Text.Json.JsonSerializerOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonSingleStreamExtractor{`0}})">
   JsonSingleStreamExtractor(Stream, JsonSerializerOptions, ILogger&lt;JsonSingleStreamExtractor&lt;TRecord&gt;&gt;?)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/main/src/Wolfgang.Etl.Json/JsonSingleStreamExtractor.cs/#L100"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/bdd75fdb10d932382b98b08fe6187dddcde21924/src/Wolfgang.Etl.Json/JsonSingleStreamExtractor.cs/#L101"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonSingleStreamExtractor-1.html">JsonSingleStreamExtractor&lt;TRecord&gt;</a> class
@@ -325,7 +333,7 @@ with custom serialization options.</p>
 
   <h3 id="Wolfgang_Etl_Json_JsonSingleStreamExtractor_1__ctor_System_IO_Stream_System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonSingleStreamExtractor__0___" data-uid="Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.#ctor(System.IO.Stream,System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonSingleStreamExtractor{`0}})">
   JsonSingleStreamExtractor(Stream, JsonTypeInfo&lt;TRecord&gt;, ILogger&lt;JsonSingleStreamExtractor&lt;TRecord&gt;&gt;?)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/main/src/Wolfgang.Etl.Json/JsonSingleStreamExtractor.cs/#L148"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/bdd75fdb10d932382b98b08fe6187dddcde21924/src/Wolfgang.Etl.Json/JsonSingleStreamExtractor.cs/#L149"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonSingleStreamExtractor-1.html">JsonSingleStreamExtractor&lt;TRecord&gt;</a> class
@@ -375,7 +383,7 @@ with source-generated type metadata for AOT-friendly, reflection-free deserializ
 
   <h3 id="Wolfgang_Etl_Json_JsonSingleStreamExtractor_1_CreateProgressReport" data-uid="Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.CreateProgressReport">
   CreateProgressReport()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/main/src/Wolfgang.Etl.Json/JsonSingleStreamExtractor.cs/#L236"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/bdd75fdb10d932382b98b08fe6187dddcde21924/src/Wolfgang.Etl.Json/JsonSingleStreamExtractor.cs/#L237"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Creates a progress report of type TProgress. This gives the derived class the opportunity to
@@ -409,7 +417,7 @@ implement a custom progress report that is specific to the extraction process.</
 
   <h3 id="Wolfgang_Etl_Json_JsonSingleStreamExtractor_1_CreateProgressTimer_System_IProgress_Wolfgang_Etl_Json_JsonReport__" data-uid="Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.CreateProgressTimer(System.IProgress{Wolfgang.Etl.Json.JsonReport})">
   CreateProgressTimer(IProgress&lt;JsonReport&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/main/src/Wolfgang.Etl.Json/JsonSingleStreamExtractor.cs/#L246"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/bdd75fdb10d932382b98b08fe6187dddcde21924/src/Wolfgang.Etl.Json/JsonSingleStreamExtractor.cs/#L247"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Creates the <span class="xref">Wolfgang.Etl.Abstractions.IProgressTimer</span> used to drive progress callbacks.
@@ -450,7 +458,7 @@ Override this method in a derived class to inject a custom timer
 
   <h3 id="Wolfgang_Etl_Json_JsonSingleStreamExtractor_1_ExtractWorkerAsync_System_Threading_CancellationToken_" data-uid="Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.ExtractWorkerAsync(System.Threading.CancellationToken)">
   ExtractWorkerAsync(CancellationToken)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/main/src/Wolfgang.Etl.Json/JsonSingleStreamExtractor.cs/#L187"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/bdd75fdb10d932382b98b08fe6187dddcde21924/src/Wolfgang.Etl.Json/JsonSingleStreamExtractor.cs/#L188"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>This method is the core implementation of the extraction logic and should be
@@ -491,7 +499,7 @@ The result may be an empty sequence if no data is available or if the extraction
 </article>
 
         <div class="contribution d-print-none">
-          <a href="https://github.com/Chris-Wolfgang/ETL-Json/blob/main/src/Wolfgang.Etl.Json/JsonSingleStreamExtractor.cs/#L34" class="edit-link">Edit this page</a>
+          <a href="https://github.com/Chris-Wolfgang/ETL-Json/blob/bdd75fdb10d932382b98b08fe6187dddcde21924/src/Wolfgang.Etl.Json/JsonSingleStreamExtractor.cs/#L35" class="edit-link">Edit this page</a>
         </div>
 
 
