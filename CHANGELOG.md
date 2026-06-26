@@ -7,9 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-> Targets the next release (`0.2.1`). Library public API and runtime behavior
-> are unchanged from `0.2.0`; this round is canonical CI/docs/metadata work plus
-> a binding-stability fix.
+## [0.2.1] - 2026-06-26
+
+> Library public API is unchanged from `0.2.0`. This release is canonical
+> CI/docs/metadata work plus a binding-stability fix and an async-context fix.
 
 ### Added
 
@@ -35,6 +36,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   for .NET Framework binding stability.
 - `scripts/build-pr.ps1` now pipes the gitleaks tarball to `tar -xz -f -` to
   avoid a silent CI hang on GNU tar's default `/dev/tape`.
+- `JsonSingleStreamExtractor` now suppresses the synchronization context on its
+  `await foreach` (`ConfigureAwait(false)`), avoiding a potential deadlock for
+  consumers on the `net462` / `netstandard2.0` targets.
 
 ### Removed
 
@@ -68,6 +72,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cached the default `JsonSerializerOptions` and log operation-name strings as
   static fields; sealed the extractor and loader classes.
 
-[Unreleased]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v.0.1.0...v0.2.0
 [0.1.0]: https://github.com/Chris-Wolfgang/ETL-Json/releases/tag/v.0.1.0
