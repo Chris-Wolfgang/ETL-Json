@@ -175,7 +175,7 @@ This library uses `BannedSymbols.txt` to prohibit synchronous APIs:
 
 ---
 
-## Building from Source
+## 🛠️ Building from Source
 
 ### Prerequisites
 - [.NET 10.0 SDK](https://dotnet.microsoft.com/download) or later
