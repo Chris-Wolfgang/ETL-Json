@@ -1,1 +1,19 @@
 #nullable enable
+Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(System.Collections.Generic.IEnumerable<Wolfgang.Etl.Json.JsonNamedStream> sources) -> void
+Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(System.Collections.Generic.IEnumerable<Wolfgang.Etl.Json.JsonNamedStream> sources, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>> logger) -> void
+Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(System.Collections.Generic.IEnumerable<Wolfgang.Etl.Json.JsonNamedStream> sources, System.Text.Json.JsonSerializerOptions options, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>> logger = null) -> void
+Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(System.Collections.Generic.IEnumerable<Wolfgang.Etl.Json.JsonNamedStream> sources, System.Text.Json.Serialization.Metadata.JsonTypeInfo<TRecord> typeInfo, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>> logger = null) -> void
+Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(System.Func<TRecord, Wolfgang.Etl.Json.JsonNamedDestination> destinationFactory) -> void
+Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(System.Func<TRecord, Wolfgang.Etl.Json.JsonNamedDestination> destinationFactory, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>> logger) -> void
+Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(System.Func<TRecord, Wolfgang.Etl.Json.JsonNamedDestination> destinationFactory, System.Text.Json.JsonSerializerOptions options, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>> logger = null) -> void
+Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(System.Func<TRecord, Wolfgang.Etl.Json.JsonNamedDestination> destinationFactory, System.Text.Json.Serialization.Metadata.JsonTypeInfo<TRecord> typeInfo, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>> logger = null) -> void
+Wolfgang.Etl.Json.JsonNamedDestination
+Wolfgang.Etl.Json.JsonNamedDestination.JsonNamedDestination(System.IO.Stream Stream, string Name = null) -> void
+Wolfgang.Etl.Json.JsonNamedDestination.Name.get -> string
+Wolfgang.Etl.Json.JsonNamedDestination.Stream.get -> System.IO.Stream
+Wolfgang.Etl.Json.JsonNamedStream
+Wolfgang.Etl.Json.JsonNamedStream.JsonNamedStream(System.IO.Stream Stream, string Name = null) -> void
+Wolfgang.Etl.Json.JsonNamedStream.Name.get -> string
+Wolfgang.Etl.Json.JsonNamedStream.Stream.get -> System.IO.Stream
+Wolfgang.Etl.Json.JsonReport.JsonReport(int currentItemCount, int currentSkippedItemCount, string currentSourceName) -> void
+Wolfgang.Etl.Json.JsonReport.CurrentSourceName.get -> string

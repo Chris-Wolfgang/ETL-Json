@@ -140,7 +140,7 @@ public class JsonMultiStreamExtractorTests
         (
             () => new JsonMultiStreamExtractor<PersonRecord>
             (
-                null!
+                (IEnumerable<Stream>)null!
             )
         );
     }
@@ -368,7 +368,7 @@ public class JsonMultiStreamExtractorTests
         (
             () => new JsonMultiStreamExtractor<PersonRecord>
             (
-                null!,
+                (IEnumerable<Stream>)null!,
                 TestJsonContext.Default.PersonRecord,
                 NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
             )
@@ -471,5 +471,92 @@ public class JsonMultiStreamExtractorTests
                 timer: null!
             )
         );
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_named_sources_when_sources_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamExtractor<PersonRecord>
+            (
+                (IEnumerable<JsonNamedStream>)null!
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public async Task ExtractAsync_when_named_sources_progress_report_includes_source_name()
+    {
+        var timer = new ManualProgressTimer();
+        JsonReport? capturedReport = null;
+        var progress = new SynchronousProgress<JsonReport>(r => capturedReport = r);
+
+        var item = new PersonRecord { FirstName = "Alice", LastName = "Smith", Age = 30 };
+        var stream = new MemoryStream();
+        JsonSerializer.Serialize(stream, item);
+        stream.Position = 0;
+
+        var sources = new[] { new JsonNamedStream(stream, "my-source.json") };
+        var sut = new JsonMultiStreamExtractor<PersonRecord>
+        (
+            sources,
+            new JsonSerializerOptions(),
+            logger: null,
+            timer
+        );
+
+        var enumerator = sut.ExtractAsync(progress).GetAsyncEnumerator();
+        try
+        {
+            await enumerator.MoveNextAsync();
+            timer.Fire();
+        }
+        finally
+        {
+            await enumerator.DisposeAsync();
+        }
+
+        Assert.Equal("my-source.json", capturedReport?.CurrentSourceName);
+    }
+
+
+
+    [Fact]
+    public async Task ExtractAsync_when_unnamed_streams_progress_report_CurrentSourceName_is_null()
+    {
+        var timer = new ManualProgressTimer();
+        JsonReport? capturedReport = null;
+        var progress = new SynchronousProgress<JsonReport>(r => capturedReport = r);
+
+        var item = new PersonRecord { FirstName = "Alice", LastName = "Smith", Age = 30 };
+        var stream = new MemoryStream();
+        JsonSerializer.Serialize(stream, item);
+        stream.Position = 0;
+
+        var sut = new JsonMultiStreamExtractor<PersonRecord>
+        (
+            new[] { stream },
+            new JsonSerializerOptions(),
+            logger: null,
+            timer
+        );
+
+        var enumerator = sut.ExtractAsync(progress).GetAsyncEnumerator();
+        try
+        {
+            await enumerator.MoveNextAsync();
+            timer.Fire();
+        }
+        finally
+        {
+            await enumerator.DisposeAsync();
+        }
+
+        Assert.Null(capturedReport?.CurrentSourceName);
     }
 }

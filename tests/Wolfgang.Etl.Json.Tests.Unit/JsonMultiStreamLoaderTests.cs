@@ -133,7 +133,7 @@ public class JsonMultiStreamLoaderTests
     {
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
-            _ => null!
+            (Func<PersonRecord, Stream>)(_ => null!)
         );
 
         var items = new List<PersonRecord>
@@ -190,7 +190,7 @@ public class JsonMultiStreamLoaderTests
         (
             () => new JsonMultiStreamLoader<PersonRecord>
             (
-                null!
+                (Func<PersonRecord, Stream>)null!
             )
         );
     }
@@ -250,7 +250,7 @@ public class JsonMultiStreamLoaderTests
         (
             () => new JsonMultiStreamLoader<PersonRecord>
             (
-                null!,
+                (Func<PersonRecord, Stream>)null!,
                 new JsonSerializerOptions(),
                 NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance,
                 new ManualProgressTimer()
@@ -426,7 +426,7 @@ public class JsonMultiStreamLoaderTests
         (
             () => new JsonMultiStreamLoader<PersonRecord>
             (
-                null!,
+                (Func<PersonRecord, Stream>)null!,
                 TestJsonContext.Default.PersonRecord,
                 NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
             )
@@ -529,5 +529,72 @@ public class JsonMultiStreamLoaderTests
                 timer: null!
             )
         );
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_named_destination_factory_when_factory_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamLoader<PersonRecord>
+            (
+                (Func<PersonRecord, JsonNamedDestination>)null!
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public async Task LoadAsync_when_named_destination_factory_writes_correct_item_count()
+    {
+        var streamsCreated = 0;
+        var items = new List<PersonRecord>
+        {
+            new() { FirstName = "Alice", LastName = "Smith", Age = 30 },
+            new() { FirstName = "Bob", LastName = "Jones", Age = 25 },
+        };
+
+        var sut = new JsonMultiStreamLoader<PersonRecord>
+        (
+            _ =>
+            {
+                streamsCreated++;
+                return new JsonNamedDestination(new MemoryStream(), $"output/item-{streamsCreated}.json");
+            }
+        );
+
+        await sut.LoadAsync(items.ToAsyncEnumerable());
+
+        Assert.Equal(items.Count, sut.CurrentItemCount);
+    }
+
+
+
+    [Fact]
+    public async Task LoadAsync_when_named_destination_factory_invokes_factory_once_per_item()
+    {
+        var namesReceived = new List<string>();
+        var items = new List<PersonRecord>
+        {
+            new() { FirstName = "Alice", LastName = "Smith", Age = 30 },
+            new() { FirstName = "Bob", LastName = "Jones", Age = 25 },
+        };
+
+        var sut = new JsonMultiStreamLoader<PersonRecord>
+        (
+            item =>
+            {
+                var name = $"output/{item.FirstName}.json";
+                namesReceived.Add(name);
+                return new JsonNamedDestination(new MemoryStream(), name);
+            }
+        );
+
+        await sut.LoadAsync(items.ToAsyncEnumerable());
+
+        Assert.Equal(new[] { "output/Alice.json", "output/Bob.json" }, namesReceived);
     }
 }
