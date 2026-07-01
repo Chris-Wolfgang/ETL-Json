@@ -1,1 +1,7 @@
 #nullable enable
+Wolfgang.Etl.Json.JsonLineLoader<TRecord>.IsDryRun.get -> bool
+Wolfgang.Etl.Json.JsonLineLoader<TRecord>.IsDryRun.set -> void
+Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.IsDryRun.get -> bool
+Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.IsDryRun.set -> void
+Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>.IsDryRun.get -> bool
+Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>.IsDryRun.set -> void

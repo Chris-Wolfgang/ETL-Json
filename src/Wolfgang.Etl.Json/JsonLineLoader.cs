@@ -27,7 +27,7 @@ namespace Wolfgang.Etl.Json;
 /// await loader.LoadAsync(items, cancellationToken);
 /// </code>
 /// </example>
-public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
+public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, ISupportDryRun
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSONL loading of {typeof(TRecord).Name}";
@@ -38,6 +38,15 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     private readonly IProgressTimer? _progressTimer;
     private int _progressTimerWired;
     private long _currentLineNumber;
+
+
+
+    /// <inheritdoc />
+    /// <remarks>
+    /// When <see langword="true"/>, the loader enumerates the source and increments
+    /// progress counters as usual but does not write any JSON to the output stream.
+    /// </remarks>
+    public bool IsDryRun { get; set; }
 
 
 
@@ -210,14 +219,18 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
                 break;
             }
 
-            var json = _typeInfo is not null
-                ? JsonSerializer.Serialize(item, _typeInfo)
-                : JsonSerializer.Serialize(item, _options);
             Interlocked.Increment(ref _currentLineNumber);
 
+            if (!IsDryRun)
+            {
+                var json = _typeInfo is not null
+                    ? JsonSerializer.Serialize(item, _typeInfo)
+                    : JsonSerializer.Serialize(item, _options);
+
 #pragma warning disable CA1849, S6966, VSTHRD103, AsyncFixer02 // Sync WriteLine avoids async state machine allocation per item
-            writer.WriteLine(json);
+                writer.WriteLine(json);
 #pragma warning restore CA1849, S6966, VSTHRD103, AsyncFixer02
+            }
 
             IncrementCurrentItemCount();
             JsonLogMessages.LoadedItemAtLine(_logger, CurrentItemCount, Interlocked.Read(ref _currentLineNumber), null);
