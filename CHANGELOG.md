@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - unreleased
+
+### Added
+
+- `JsonNamedStream` record: pairs a `Stream` with an optional name for use with `JsonMultiStreamExtractor`.
+- `JsonNamedDestination` record: pairs a `Stream` with an optional name for use with `JsonMultiStreamLoader`.
+- `JsonMultiStreamExtractor<TRecord>` now accepts `IEnumerable<JsonNamedStream>` sources; the current source name surfaces in `JsonReport.CurrentSourceName` during progress reporting.
+- `JsonMultiStreamLoader<TRecord>` now accepts `Func<TRecord, JsonNamedDestination>` factory; the current destination name surfaces in `JsonReport.CurrentSourceName` during progress reporting.
+- `JsonReport.CurrentSourceName` property: the name of the stream currently being processed (`null` when not supplied or for non-multi-stream operations).
+- `JsonReport(int, int, string?)` constructor overload exposing `currentSourceName`.
+
 ## [0.2.1] - 2026-06-26
 
 > Library public API is unchanged from `0.2.0`. This release is canonical
