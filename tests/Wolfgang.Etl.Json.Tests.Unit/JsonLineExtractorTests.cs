@@ -486,4 +486,33 @@ public class JsonLineExtractorTests
             await enumerator.DisposeAsync();
         }
     }
+
+
+
+    [Fact]
+    public void Encoding_defaults_to_null()
+    {
+        var sut = new JsonLineExtractor<PersonRecord>(new MemoryStream());
+        Assert.Null(sut.Encoding);
+    }
+
+
+
+    [Fact]
+    public async Task ExtractAsync_when_Encoding_is_set_reads_stream_with_that_encoding()
+    {
+        var item = ExpectedItems[0];
+        var json = JsonSerializer.Serialize(item);
+        var content = json + "\n";
+        var stream = new MemoryStream(Encoding.GetEncoding("iso-8859-1").GetBytes(content));
+
+        var sut = new JsonLineExtractor<PersonRecord>(stream)
+        {
+            Encoding = Encoding.GetEncoding("iso-8859-1"),
+        };
+
+        var results = await sut.ExtractAsync().ToListAsync();
+
+        Assert.Equal(item, results[0]);
+    }
 }

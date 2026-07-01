@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - unreleased
+
+### Added
+
+- `JsonLineExtractor<TRecord>.Encoding` and `JsonLineLoader<TRecord>.Encoding` settable properties
+  (`System.Text.Encoding?`) that control the character encoding used when reading or writing the
+  JSONL stream. When `null` (the default), existing behavior is preserved: the extractor infers
+  encoding from the stream's BOM (falling back to UTF-8) and the loader writes UTF-8. Closes #12.
+
 ## [0.2.1] - 2026-06-26
 
 > Library public API is unchanged from `0.2.0`. This release is canonical
