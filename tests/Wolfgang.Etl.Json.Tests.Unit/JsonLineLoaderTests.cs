@@ -471,4 +471,37 @@ public class JsonLineLoaderTests
             )
         );
     }
+
+
+
+    [Fact]
+    public void Encoding_defaults_to_null()
+    {
+        var sut = new JsonLineLoader<PersonRecord>(new MemoryStream());
+        Assert.Null(sut.Encoding);
+    }
+
+
+
+    [Fact]
+    public async Task LoadAsync_when_Encoding_is_set_writes_stream_with_that_encoding()
+    {
+        var stream = new MemoryStream();
+        var sut = new JsonLineLoader<PersonRecord>(stream)
+        {
+            Encoding = Encoding.GetEncoding("iso-8859-1"),
+        };
+
+        var items = new List<PersonRecord>
+        {
+            new() { FirstName = "Alice", LastName = "Smith", Age = 30 },
+        };
+
+        await sut.LoadAsync(items.ToAsyncEnumerable());
+
+        stream.Position = 0;
+        using var reader = new StreamReader(stream, Encoding.GetEncoding("iso-8859-1"));
+        var content = await reader.ReadToEndAsync();
+        Assert.Contains("Alice", content);
+    }
 }

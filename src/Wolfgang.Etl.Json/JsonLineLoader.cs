@@ -42,6 +42,14 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
 
 
     /// <summary>
+    /// Gets or sets the character encoding to use when writing the JSONL stream.
+    /// When <see langword="null"/> (the default), UTF-8 without a byte-order mark (BOM) is used.
+    /// </summary>
+    public System.Text.Encoding? Encoding { get; set; }
+
+
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="JsonLineLoader{TRecord}"/> class.
     /// </summary>
     /// <param name="stream">The stream to write JSONL data to.</param>
@@ -188,9 +196,13 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
         JsonLogMessages.StartingOperation(_logger, OperationName, null);
 
 #if NETSTANDARD2_0 || NET462 || NET481
-        using var writer = new StreamWriter(_stream, System.Text.Encoding.UTF8, bufferSize: 1024, leaveOpen: true);
+        using var writer = Encoding is null
+            ? new StreamWriter(_stream, System.Text.Encoding.UTF8, bufferSize: 1024, leaveOpen: true)
+            : new StreamWriter(_stream, Encoding, bufferSize: 1024, leaveOpen: true);
 #else
-        using var writer = new StreamWriter(_stream, leaveOpen: true);
+        using var writer = Encoding is null
+            ? new StreamWriter(_stream, leaveOpen: true)
+            : new StreamWriter(_stream, Encoding, bufferSize: 1024, leaveOpen: true);
 #endif
 
         await foreach (var item in items.WithCancellation(token).ConfigureAwait(false))

@@ -1,1 +1,5 @@
 #nullable enable
+Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.Encoding.get -> System.Text.Encoding?
+Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.Encoding.set -> void
+Wolfgang.Etl.Json.JsonLineLoader<TRecord>.Encoding.get -> System.Text.Encoding?
+Wolfgang.Etl.Json.JsonLineLoader<TRecord>.Encoding.set -> void
