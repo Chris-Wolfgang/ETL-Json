@@ -422,13 +422,12 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
             }
 
             var destination = _destinationFactory(item);
+            _currentDestinationName = destination?.Name;
             if (destination?.Stream is null)
             {
                 JsonLogMessages.StreamFactoryReturnedNull(_logger, streamIndex, null);
                 throw new InvalidOperationException($"Destination factory returned null or a null stream for item at index {streamIndex}.");
             }
-
-            _currentDestinationName = destination.Name;
             await WriteItemToStreamAsync(destination.Stream, item, streamIndex, token).ConfigureAwait(false);
             IncrementCurrentItemCount();
             streamIndex++;
