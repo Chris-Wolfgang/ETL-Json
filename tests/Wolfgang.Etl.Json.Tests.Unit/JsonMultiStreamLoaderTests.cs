@@ -597,4 +597,25 @@ public class JsonMultiStreamLoaderTests
 
         Assert.Equal(new[] { "output/Alice.json", "output/Bob.json" }, namesReceived);
     }
+
+
+
+    [Fact]
+    public async Task LoadAsync_when_named_destination_factory_final_progress_report_includes_destination_name()
+    {
+        var capture = new ProgressCapture<JsonReport>();
+        var items = new List<PersonRecord>
+        {
+            new() { FirstName = "Alice", LastName = "Smith", Age = 30 },
+        };
+
+        var sut = new JsonMultiStreamLoader<PersonRecord>
+        (
+            item => new JsonNamedDestination(new MemoryStream(), $"output/{item.FirstName}.json")
+        );
+
+        await sut.LoadAsync(items.ToAsyncEnumerable(), capture);
+
+        Assert.Equal("output/Alice.json", capture.FinalReport?.CurrentSourceName);
+    }
 }
