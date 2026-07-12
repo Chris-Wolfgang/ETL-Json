@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [0.2.2] - 2026-07-06
+
+### Changed
+
+- Dependabot bump: dotnet-dependencies group (7 packages).
 ## [0.2.1] - 2026-06-26
 
 > Library public API is unchanged from `0.2.0`. This release is canonical
@@ -72,7 +89,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cached the default `JsonSerializerOptions` and log operation-name strings as
   static fields; sealed the extractor and loader classes.
 
-[Unreleased]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.2.2...HEAD
+[0.2.2]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v.0.1.0...v0.2.0
 [0.1.0]: https://github.com/Chris-Wolfgang/ETL-Json/releases/tag/v.0.1.0
