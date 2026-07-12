@@ -40,6 +40,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     private readonly JsonTypeInfo<TRecord>? _typeInfo;
     private readonly ILogger _logger;
     private readonly IProgressTimer? _progressTimer;
+    private readonly List<JsonDeserializationError> _errors = new();
     private int _progressTimerWired;
     private long _currentLineNumber;
 
@@ -207,6 +208,22 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 
 
 
+    /// <summary>
+    /// Gets or sets how deserialization errors are handled during extraction.
+    /// Default is <see cref="ErrorHandling.Throw"/>.
+    /// </summary>
+    public ErrorHandling ErrorHandling { get; init; } = ErrorHandling.Throw;
+
+
+
+    /// <summary>
+    /// Gets the collection of deserialization errors captured during the most recent extraction.
+    /// Only populated when <see cref="ErrorHandling"/> is <see cref="ErrorHandling.CaptureAndContinue"/>.
+    /// </summary>
+    public IReadOnlyList<JsonDeserializationError> Errors => _errors.AsReadOnly();
+
+
+
     private StreamReader CreateStreamReader()
     {
 #if NETSTANDARD2_0 || NET462 || NET481
@@ -228,6 +245,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
         [EnumeratorCancellation] CancellationToken token
     )
     {
+        _errors.Clear();
         JsonLogMessages.StartingOperation(_logger, OperationName, null);
 
         var skipBudget = SkipItemCount;
@@ -251,9 +269,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
                 continue;
             }
 
-            var item = _typeInfo is not null
-                ? JsonSerializer.Deserialize(line, _typeInfo)
-                : JsonSerializer.Deserialize<TRecord>(line, _options);
+            if (!TryDeserializeLine(line, lineNum, out var item)) { continue; }
             if (item is null)
             {
                 JsonLogMessages.LineDeserializedToNull(_logger, lineNum, null);
@@ -281,6 +297,34 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
         }
 
         JsonLogMessages.JsonlExtractionCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, Interlocked.Read(ref _currentLineNumber), null);
+    }
+
+
+
+    private bool TryDeserializeLine(string line, long lineNum, out TRecord? item)
+    {
+        try
+        {
+            item = _typeInfo is not null
+                ? JsonSerializer.Deserialize(line, _typeInfo)
+                : JsonSerializer.Deserialize<TRecord>(line, _options);
+            return true;
+        }
+#pragma warning disable CA1031 // catch JsonException to implement error-handling policy
+        catch (JsonException ex)
+#pragma warning restore CA1031
+        {
+            var error = new JsonDeserializationError(
+                itemIndex: _errors.Count + CurrentItemCount,
+                lineNumber: lineNum,
+                rawContent: line,
+                exception: ex);
+            if (ErrorHandling == ErrorHandling.Throw) { throw; }
+            if (ErrorHandling == ErrorHandling.CaptureAndContinue) { _errors.Add(error); }
+            JsonLogMessages.DeserializationErrorAtLine(_logger, lineNum, ex);
+            item = default;
+            return false;
+        }
     }
 
 

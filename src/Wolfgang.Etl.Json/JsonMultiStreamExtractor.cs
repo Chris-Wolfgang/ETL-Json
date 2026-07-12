@@ -42,6 +42,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     private readonly JsonTypeInfo<TRecord>? _typeInfo;
     private readonly ILogger _logger;
     private readonly IProgressTimer? _progressTimer;
+    private readonly List<JsonDeserializationError> _errors = new();
     private int _progressTimerWired;
 
 
@@ -199,12 +200,29 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
 
 
 
+    /// <summary>
+    /// Gets or sets how deserialization errors are handled during extraction.
+    /// Default is <see cref="ErrorHandling.Throw"/>.
+    /// </summary>
+    public ErrorHandling ErrorHandling { get; init; } = ErrorHandling.Throw;
+
+
+
+    /// <summary>
+    /// Gets the collection of deserialization errors captured during the most recent extraction.
+    /// Only populated when <see cref="ErrorHandling"/> is <see cref="ErrorHandling.CaptureAndContinue"/>.
+    /// </summary>
+    public IReadOnlyList<JsonDeserializationError> Errors => _errors;
+
+
+
     /// <inheritdoc />
     protected override async IAsyncEnumerable<TRecord> ExtractWorkerAsync
     (
         [EnumeratorCancellation] CancellationToken token
     )
     {
+        _errors.Clear();
         JsonLogMessages.StartingOperation(_logger, OperationName, null);
 
         var skipBudget = SkipItemCount;
@@ -215,23 +233,9 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
             token.ThrowIfCancellationRequested();
             JsonLogMessages.ReadingStream(_logger, streamIndex, null);
 
-            TRecord? item;
-            try
-            {
-                item = _typeInfo is not null
-                    ? await JsonSerializer.DeserializeAsync(stream, _typeInfo, token).ConfigureAwait(false)
-                    : await JsonSerializer.DeserializeAsync<TRecord>(stream, _options, token).ConfigureAwait(false);
-            }
-            finally
-            {
-#if NETSTANDARD2_0 || NET462 || NET481
-                stream.Dispose();
-#else
-                await stream.DisposeAsync().ConfigureAwait(false);
-#endif
-            }
-
+            var (item, failed) = await TryDeserializeStreamAsync(stream, streamIndex, token).ConfigureAwait(false);
             streamIndex++;
+            if (failed) { continue; }
 
             if (item is null)
             {
@@ -260,6 +264,59 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
         }
 
         JsonLogMessages.MultiStreamExtractionCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, streamIndex, null);
+    }
+
+
+
+    private async System.Threading.Tasks.Task<(TRecord? Item, bool Failed)> TryDeserializeStreamAsync
+    (
+        Stream stream,
+        int streamIndex,
+        CancellationToken token
+    )
+    {
+        TRecord? item = default;
+        bool failed = false;
+        JsonException? deserializationEx = null;
+        try
+        {
+            item = _typeInfo is not null
+                ? await JsonSerializer.DeserializeAsync(stream, _typeInfo, token).ConfigureAwait(false)
+                : await JsonSerializer.DeserializeAsync<TRecord>(stream, _options, token).ConfigureAwait(false);
+        }
+#pragma warning disable CA1031 // catch JsonException to implement error-handling policy
+        catch (JsonException ex)
+#pragma warning restore CA1031
+        {
+            failed = true;
+            deserializationEx = ex;
+        }
+        finally
+        {
+#if NETSTANDARD2_0 || NET462 || NET481
+            stream.Dispose();
+#else
+            await stream.DisposeAsync().ConfigureAwait(false);
+#endif
+        }
+
+        if (failed)
+        {
+            var error = new JsonDeserializationError(
+                itemIndex: streamIndex,
+                lineNumber: null,
+                rawContent: null,
+                exception: deserializationEx!);
+            if (ErrorHandling == ErrorHandling.Throw)
+            {
+                System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(deserializationEx!).Throw();
+            }
+
+            if (ErrorHandling == ErrorHandling.CaptureAndContinue) { _errors.Add(error); }
+            JsonLogMessages.DeserializationErrorAtIndex(_logger, streamIndex, deserializationEx);
+        }
+
+        return (item, failed);
     }
 
 

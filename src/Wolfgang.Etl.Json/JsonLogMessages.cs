@@ -100,4 +100,16 @@ internal static class JsonLogMessages
 
     internal static readonly Action<ILogger, int, int, long, Exception?> JsonlLoadingCompleted =
         LoggerMessage.Define<int, int, long>(LogLevel.Information, new EventId(311, nameof(JsonlLoadingCompleted)), "JSONL loading completed. Loaded: {ItemCount}, skipped: {SkippedCount}, lines: {LineCount}.");
+
+
+
+    // ── Error Handling ───────────────────────────────────────────────
+
+    internal static readonly Action<ILogger, long, Exception?> DeserializationErrorAtLine =
+        LoggerMessage.Define<long>(LogLevel.Warning, new EventId(400, nameof(DeserializationErrorAtLine)),
+            "Deserialization error at line {LineNumber}; skipping record.");
+
+    internal static readonly Action<ILogger, long, Exception?> DeserializationErrorAtIndex =
+        LoggerMessage.Define<long>(LogLevel.Warning, new EventId(401, nameof(DeserializationErrorAtIndex)),
+            "Deserialization error at item index {ItemIndex}; skipping record.");
 }
