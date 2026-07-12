@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
-<coverage version="1.0" date="2026-07-12_01-59-32" tag="">
+<coverage version="1.0" date="2026-07-12_12-43-43" tag="">
   <assembly name="Wolfgang.Etl.Json">
     <class name="Wolfgang.Etl.Json.JsonLineExtractor`1" coveredlines="99" coverablelines="101" totallines="276" coveredbranches="45" totalbranches="50" coveredcodeelements="10" fullcoveredcodeelements="9" totalcodeelements="10" />
     <class name="Wolfgang.Etl.Json.JsonLineLoader`1" coveredlines="91" coverablelines="93" totallines="263" coveredbranches="41" totalbranches="46" coveredcodeelements="10" fullcoveredcodeelements="9" totalcodeelements="10" />
