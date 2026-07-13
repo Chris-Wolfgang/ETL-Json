@@ -618,4 +618,44 @@ public class JsonMultiStreamLoaderTests
 
         Assert.Equal("output/Alice.json", capture.FinalReport?.CurrentSourceName);
     }
+
+
+
+    [Fact]
+    public async Task LoadAsync_when_stream_factory_overload_serializes_items_correctly()
+    {
+        var streams = new List<MemoryStream>();
+
+        var sut = new JsonMultiStreamLoader<PersonRecord>
+        (
+            _ =>
+            {
+                var ms = new MemoryStream();
+                streams.Add(ms);
+                return ms;
+            }
+        );
+
+        var items = new List<PersonRecord>
+        {
+            new() { FirstName = "Alice", LastName = "Smith", Age = 30 },
+            new() { FirstName = "Bob", LastName = "Jones", Age = 25 },
+        };
+
+        await sut.LoadAsync(items.ToAsyncEnumerable());
+
+        Assert.Equal(2, streams.Count);
+
+        var alice = JsonSerializer.Deserialize<PersonRecord>(streams[0].ToArray());
+        Assert.NotNull(alice);
+        Assert.Equal("Alice", alice.FirstName);
+        Assert.Equal("Smith", alice.LastName);
+        Assert.Equal(30, alice.Age);
+
+        var bob = JsonSerializer.Deserialize<PersonRecord>(streams[1].ToArray());
+        Assert.NotNull(bob);
+        Assert.Equal("Bob", bob.FirstName);
+        Assert.Equal("Jones", bob.LastName);
+        Assert.Equal(25, bob.Age);
+    }
 }

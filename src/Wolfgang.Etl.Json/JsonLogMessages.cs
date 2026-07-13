@@ -64,7 +64,7 @@ internal static class JsonLogMessages
     // ── MultiStream Loader ───────────────────────────────────────────
 
     internal static readonly Action<ILogger, int, Exception?> StreamFactoryReturnedNull =
-        LoggerMessage.Define<int>(LogLevel.Error, new EventId(210, nameof(StreamFactoryReturnedNull)), "Factory returned null or a null stream for item at index {StreamIndex}.");
+        LoggerMessage.Define<int>(LogLevel.Error, new EventId(210, nameof(StreamFactoryReturnedNull)), "Destination factory returned null or a null stream for item at index {StreamIndex}.");
 
     internal static readonly Action<ILogger, int, int, Exception?> LoadedItemToStream =
         LoggerMessage.Define<int, int>(LogLevel.Debug, new EventId(211, nameof(LoadedItemToStream)), "Loaded item {CurrentItemCount} to stream {StreamIndex}.");
