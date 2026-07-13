@@ -472,4 +472,105 @@ public class JsonMultiStreamExtractorTests
             )
         );
     }
+
+
+
+    [Fact]
+    public async Task ExtractAsync_when_ErrorHandling_is_Throw_throws_JsonException_on_bad_stream()
+    {
+        var goodJson = JsonSerializer.Serialize(ExpectedItems[0]);
+        var streams = new List<Stream>
+        {
+            new MemoryStream(Encoding.UTF8.GetBytes(goodJson)),
+            new MemoryStream(Encoding.UTF8.GetBytes("not-valid-json")),
+        };
+
+        var sut = new JsonMultiStreamExtractor<PersonRecord>
+        (
+            streams,
+            new JsonSerializerOptions()
+        )
+        {
+            ErrorHandling = ErrorHandling.Throw,
+        };
+
+        await Assert.ThrowsAsync<JsonException>
+        (
+            async () =>
+            {
+                await foreach (var _ in sut.ExtractAsync())
+                {
+                }
+            }
+        );
+    }
+
+
+
+    [Fact]
+    public async Task ExtractAsync_when_ErrorHandling_is_CaptureAndContinue_skips_bad_streams_and_populates_Errors()
+    {
+        var goodJson = JsonSerializer.Serialize(ExpectedItems[0]);
+        var good2Json = JsonSerializer.Serialize(ExpectedItems[1]);
+        var streams = new List<Stream>
+        {
+            new MemoryStream(Encoding.UTF8.GetBytes(goodJson)),
+            new MemoryStream(Encoding.UTF8.GetBytes("not-valid-json")),
+            new MemoryStream(Encoding.UTF8.GetBytes(good2Json)),
+        };
+
+        var sut = new JsonMultiStreamExtractor<PersonRecord>
+        (
+            streams,
+            new JsonSerializerOptions()
+        )
+        {
+            ErrorHandling = ErrorHandling.CaptureAndContinue,
+        };
+
+        var results = new List<PersonRecord>();
+        await foreach (var item in sut.ExtractAsync())
+        {
+            results.Add(item);
+        }
+
+        Assert.Equal(2, results.Count);
+        Assert.Equal("Alice", results[0].FirstName);
+        Assert.Equal("Bob", results[1].FirstName);
+        Assert.Single(sut.Errors);
+        Assert.IsType<JsonException>(sut.Errors[0].Exception);
+        Assert.Equal(1L, sut.Errors[0].ItemIndex);
+    }
+
+
+
+    [Fact]
+    public async Task ExtractAsync_when_ErrorHandling_is_SkipAndLog_skips_bad_streams_without_collecting_errors()
+    {
+        var goodJson = JsonSerializer.Serialize(ExpectedItems[0]);
+        var streams = new List<Stream>
+        {
+            new MemoryStream(Encoding.UTF8.GetBytes(goodJson)),
+            new MemoryStream(Encoding.UTF8.GetBytes("not-valid-json")),
+        };
+
+        var sut = new JsonMultiStreamExtractor<PersonRecord>
+        (
+            streams,
+            new JsonSerializerOptions()
+        )
+        {
+            ErrorHandling = ErrorHandling.SkipAndLog,
+        };
+
+        var results = new List<PersonRecord>();
+        await foreach (var item in sut.ExtractAsync())
+        {
+            results.Add(item);
+        }
+
+        Assert.Single(results);
+        Assert.Equal("Alice", results[0].FirstName);
+        Assert.Empty(sut.Errors);
+    }
 }

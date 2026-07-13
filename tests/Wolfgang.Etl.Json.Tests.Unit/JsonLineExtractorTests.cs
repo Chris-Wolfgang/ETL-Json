@@ -454,6 +454,132 @@ public class JsonLineExtractorTests
 
 
     [Fact]
+    public async Task ExtractAsync_when_ErrorHandling_is_Throw_throws_JsonException_on_bad_line()
+    {
+        const string content = "{\"FirstName\":\"Alice\",\"LastName\":\"Smith\",\"Age\":30}\nnot-valid-json\n";
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
+
+        var sut = new JsonLineExtractor<PersonRecord>
+        (
+            stream,
+            new JsonSerializerOptions()
+        )
+        {
+            ErrorHandling = ErrorHandling.Throw,
+        };
+
+        await Assert.ThrowsAsync<JsonException>
+        (
+            async () =>
+            {
+                await foreach (var _ in sut.ExtractAsync())
+                {
+                }
+            }
+        );
+    }
+
+
+
+    [Fact]
+    public async Task ExtractAsync_when_ErrorHandling_is_CaptureAndContinue_skips_bad_lines_and_populates_Errors()
+    {
+        var good1 = JsonSerializer.Serialize(ExpectedItems[0]);
+        var good2 = JsonSerializer.Serialize(ExpectedItems[1]);
+        var content = $"{good1}\nnot-valid-json\n{good2}\n";
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
+
+        var sut = new JsonLineExtractor<PersonRecord>
+        (
+            stream,
+            new JsonSerializerOptions()
+        )
+        {
+            ErrorHandling = ErrorHandling.CaptureAndContinue,
+        };
+
+        var results = new List<PersonRecord>();
+        await foreach (var item in sut.ExtractAsync())
+        {
+            results.Add(item);
+        }
+
+        Assert.Equal(2, results.Count);
+        Assert.Equal("Alice", results[0].FirstName);
+        Assert.Equal("Bob", results[1].FirstName);
+        Assert.Single(sut.Errors);
+        Assert.IsType<JsonException>(sut.Errors[0].Exception);
+        Assert.Equal("not-valid-json", sut.Errors[0].RawContent);
+        Assert.Equal(2L, sut.Errors[0].LineNumber);
+    }
+
+
+
+    [Fact]
+    public async Task ExtractAsync_when_ErrorHandling_is_SkipAndLog_skips_bad_lines_without_collecting_errors()
+    {
+        var good1 = JsonSerializer.Serialize(ExpectedItems[0]);
+        var content = $"{good1}\nnot-valid-json\n";
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
+
+        var sut = new JsonLineExtractor<PersonRecord>
+        (
+            stream,
+            new JsonSerializerOptions()
+        )
+        {
+            ErrorHandling = ErrorHandling.SkipAndLog,
+        };
+
+        var results = new List<PersonRecord>();
+        await foreach (var item in sut.ExtractAsync())
+        {
+            results.Add(item);
+        }
+
+        Assert.Single(results);
+        Assert.Equal("Alice", results[0].FirstName);
+        Assert.Empty(sut.Errors);
+    }
+
+
+
+    [Fact]
+    public async Task ExtractAsync_when_re_run_on_same_instance_clears_errors_from_previous_run()
+    {
+        var good = JsonSerializer.Serialize(ExpectedItems[0]);
+        var badContent = $"not-valid-json\n{good}\n";
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(badContent));
+
+        var sut = new JsonLineExtractor<PersonRecord>
+        (
+            stream,
+            new JsonSerializerOptions()
+        )
+        {
+            ErrorHandling = ErrorHandling.CaptureAndContinue,
+        };
+
+        // First run: populates errors
+        await foreach (var _ in sut.ExtractAsync())
+        {
+        }
+
+        Assert.Single(sut.Errors);
+
+        // Second run: seek back and re-run the same instance; Errors must be cleared before re-populating
+        stream.Seek(0, System.IO.SeekOrigin.Begin);
+
+        await foreach (var _ in sut.ExtractAsync())
+        {
+        }
+
+        Assert.Single(sut.Errors);
+    }
+
+
+
+    [Fact]
     public async Task ExtractAsync_with_progress_wires_timer_callback_exactly_once()
     {
         var callbackCount = 0;
