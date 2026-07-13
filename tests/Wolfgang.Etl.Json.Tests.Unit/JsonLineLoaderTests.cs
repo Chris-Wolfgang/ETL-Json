@@ -471,4 +471,46 @@ public class JsonLineLoaderTests
             )
         );
     }
+
+
+
+    [Fact]
+    public void Encoding_defaults_to_null()
+    {
+        var sut = new JsonLineLoader<PersonRecord>(new MemoryStream());
+        Assert.Null(sut.Encoding);
+    }
+
+
+
+    [Fact]
+    public async Task LoadAsync_when_Encoding_is_set_writes_stream_with_that_encoding()
+    {
+        // UnsafeRelaxedJsonEscaping forces raw non-ASCII bytes into the stream, so the
+        // encoding actually matters: "Å" is 0xC5 in ISO-8859-1 (1 byte) but 0xC3 0x85
+        // in UTF-8 (2 bytes). Reading back with the correct encoding round-trips cleanly;
+        // reading with the wrong encoding produces garbage and fails Assert.Contains.
+        var iso = Encoding.GetEncoding("iso-8859-1");
+        var opts = new JsonSerializerOptions
+        {
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+        };
+        var stream = new MemoryStream();
+        var sut = new JsonLineLoader<PersonRecord>(stream, opts)
+        {
+            Encoding = iso,
+        };
+
+        var items = new List<PersonRecord>
+        {
+            new() { FirstName = "Ångström", LastName = "Ünité", Age = 99 },
+        };
+
+        await sut.LoadAsync(items.ToAsyncEnumerable());
+
+        stream.Position = 0;
+        using var reader = new StreamReader(stream, iso);
+        var content = await reader.ReadToEndAsync();
+        Assert.Contains("Ångström", content);
+    }
 }

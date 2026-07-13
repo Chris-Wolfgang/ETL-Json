@@ -46,6 +46,15 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 
 
     /// <summary>
+    /// Gets or sets the character encoding to use when reading the JSONL stream.
+    /// When <see langword="null"/> (the default), the encoding is inferred from the
+    /// stream's byte-order mark (BOM), falling back to UTF-8.
+    /// </summary>
+    public System.Text.Encoding? Encoding { get; set; }
+
+
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="JsonLineExtractor{TRecord}"/> class.
     /// </summary>
     /// <param name="stream">The stream containing JSONL data to read from.</param>
@@ -198,6 +207,21 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 
 
 
+    private StreamReader CreateStreamReader()
+    {
+#if NETSTANDARD2_0 || NET462 || NET481
+        return Encoding is null
+            ? new StreamReader(_stream, System.Text.Encoding.UTF8, detectEncodingFromByteOrderMarks: true, bufferSize: 1024, leaveOpen: true)
+            : new StreamReader(_stream, Encoding, detectEncodingFromByteOrderMarks: false, bufferSize: 1024, leaveOpen: true);
+#else
+        return Encoding is null
+            ? new StreamReader(_stream, leaveOpen: true)
+            : new StreamReader(_stream, Encoding, detectEncodingFromByteOrderMarks: false, bufferSize: 1024, leaveOpen: true);
+#endif
+    }
+
+
+
     /// <inheritdoc />
     protected override async IAsyncEnumerable<TRecord> ExtractWorkerAsync
     (
@@ -208,11 +232,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 
         var skipBudget = SkipItemCount;
 
-#if NETSTANDARD2_0 || NET462 || NET481
-        using var reader = new StreamReader(_stream, System.Text.Encoding.UTF8, detectEncodingFromByteOrderMarks: true, bufferSize: 1024, leaveOpen: true);
-#else
-        using var reader = new StreamReader(_stream, leaveOpen: true);
-#endif
+        using var reader = CreateStreamReader();
 
         string? line;
 #if NETSTANDARD2_0 || NET462 || NET481

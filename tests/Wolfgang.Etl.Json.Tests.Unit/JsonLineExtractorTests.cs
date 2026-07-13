@@ -486,4 +486,41 @@ public class JsonLineExtractorTests
             await enumerator.DisposeAsync();
         }
     }
+
+
+
+    [Fact]
+    public void Encoding_defaults_to_null()
+    {
+        var sut = new JsonLineExtractor<PersonRecord>(new MemoryStream());
+        Assert.Null(sut.Encoding);
+    }
+
+
+
+    [Fact]
+    public async Task ExtractAsync_when_Encoding_is_set_reads_stream_with_that_encoding()
+    {
+        // Write raw JSON with non-escaped non-ASCII chars using UnsafeRelaxedJsonEscaping so that
+        // the bytes actually differ between ISO-8859-1 and UTF-8. "Å" is 0xC5 in ISO-8859-1
+        // (one byte) but 0xC3 0x85 in UTF-8 (two bytes). If the extractor uses the wrong
+        // encoding the JSON text is malformed and deserialization fails or returns wrong data.
+        var item = new PersonRecord { FirstName = "Ångström", LastName = "Ünité", Age = 99 };
+        var opts = new JsonSerializerOptions
+        {
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+        };
+        var iso = Encoding.GetEncoding("iso-8859-1");
+        var json = JsonSerializer.Serialize(item, opts);
+        var stream = new MemoryStream(iso.GetBytes(json + "\n"));
+
+        var sut = new JsonLineExtractor<PersonRecord>(stream)
+        {
+            Encoding = iso,
+        };
+
+        var results = await sut.ExtractAsync().ToListAsync();
+
+        Assert.Equal(item, results[0]);
+    }
 }
