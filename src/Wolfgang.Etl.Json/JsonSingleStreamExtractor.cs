@@ -206,6 +206,12 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     /// Gets or sets how deserialization errors are handled during extraction.
     /// Default is <see cref="ErrorHandling.Throw"/>.
     /// </summary>
+    /// <remarks>
+    /// Because JSON array deserialization is streaming, a <see cref="System.Text.Json.JsonException"/>
+    /// leaves the underlying reader in an unrecoverable state. When
+    /// <see cref="ErrorHandling.CaptureAndContinue"/> is set, the error is captured and enumeration
+    /// stops at the point of failure; subsequent records in the array are not returned.
+    /// </remarks>
     public ErrorHandling ErrorHandling { get; init; } = ErrorHandling.Throw;
 
 
@@ -282,7 +288,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     private void HandleDeserializationError(JsonException ex)
     {
         var error = new JsonDeserializationError(
-            itemIndex: _errors.Count + CurrentItemCount,
+            itemIndex: _errors.Count + CurrentItemCount + CurrentSkippedItemCount,
             lineNumber: null,
             rawContent: null,
             exception: ex);

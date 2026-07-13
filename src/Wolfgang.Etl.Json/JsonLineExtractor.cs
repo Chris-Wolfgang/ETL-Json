@@ -246,6 +246,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     )
     {
         _errors.Clear();
+        Interlocked.Exchange(ref _currentLineNumber, 0);
         JsonLogMessages.StartingOperation(_logger, OperationName, null);
 
         var skipBudget = SkipItemCount;
@@ -315,7 +316,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 #pragma warning restore CA1031
         {
             var error = new JsonDeserializationError(
-                itemIndex: _errors.Count + CurrentItemCount,
+                itemIndex: _errors.Count + CurrentItemCount + CurrentSkippedItemCount,
                 lineNumber: lineNum,
                 rawContent: line,
                 exception: ex);

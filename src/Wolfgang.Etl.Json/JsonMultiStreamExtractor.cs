@@ -212,7 +212,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// Gets the collection of deserialization errors captured during the most recent extraction.
     /// Only populated when <see cref="ErrorHandling"/> is <see cref="ErrorHandling.CaptureAndContinue"/>.
     /// </summary>
-    public IReadOnlyList<JsonDeserializationError> Errors => _errors;
+    public IReadOnlyList<JsonDeserializationError> Errors => _errors.AsReadOnly();
 
 
 

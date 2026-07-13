@@ -545,15 +545,15 @@ public class JsonLineExtractorTests
 
 
     [Fact]
-    public async Task ExtractAsync_when_re_run_clears_errors_from_previous_run()
+    public async Task ExtractAsync_when_re_run_on_same_instance_clears_errors_from_previous_run()
     {
         var good = JsonSerializer.Serialize(ExpectedItems[0]);
         var badContent = $"not-valid-json\n{good}\n";
-        var badStream = new MemoryStream(Encoding.UTF8.GetBytes(badContent));
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(badContent));
 
         var sut = new JsonLineExtractor<PersonRecord>
         (
-            badStream,
+            stream,
             new JsonSerializerOptions()
         )
         {
@@ -567,22 +567,14 @@ public class JsonLineExtractorTests
 
         Assert.Single(sut.Errors);
 
-        // Second run with a clean stream via a new SUT — verify Errors starts fresh
-        var cleanStream = new MemoryStream(Encoding.UTF8.GetBytes($"{good}\n"));
-        var sut2 = new JsonLineExtractor<PersonRecord>
-        (
-            cleanStream,
-            new JsonSerializerOptions()
-        )
-        {
-            ErrorHandling = ErrorHandling.CaptureAndContinue,
-        };
+        // Second run: seek back and re-run the same instance; Errors must be cleared before re-populating
+        stream.Seek(0, System.IO.SeekOrigin.Begin);
 
-        await foreach (var _ in sut2.ExtractAsync())
+        await foreach (var _ in sut.ExtractAsync())
         {
         }
 
-        Assert.Empty(sut2.Errors);
+        Assert.Single(sut.Errors);
     }
 
 
