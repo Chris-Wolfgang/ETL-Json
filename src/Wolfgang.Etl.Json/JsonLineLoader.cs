@@ -221,15 +221,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, I
     {
         JsonLogMessages.StartingOperation(_logger, OperationName, null);
 
-#if NETSTANDARD2_0 || NET462 || NET481
-        using var writer = Encoding is null
-            ? new StreamWriter(_stream, System.Text.Encoding.UTF8, bufferSize: 1024, leaveOpen: true)
-            : new StreamWriter(_stream, Encoding, bufferSize: 1024, leaveOpen: true);
-#else
-        using var writer = Encoding is null
-            ? new StreamWriter(_stream, leaveOpen: true)
-            : new StreamWriter(_stream, Encoding, bufferSize: 1024, leaveOpen: true);
-#endif
+        using var writer = IsDryRun ? null : CreateStreamWriter();
 
         await foreach (var item in items.WithCancellation(token).ConfigureAwait(false))
         {
@@ -250,7 +242,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, I
 
             Interlocked.Increment(ref _currentLineNumber);
 
-            if (!IsDryRun)
+            if (writer is not null)
             {
                 var json = _typeInfo is not null
                     ? JsonSerializer.Serialize(item, _typeInfo)
@@ -265,15 +257,33 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, I
             JsonLogMessages.LoadedItemAtLine(_logger, CurrentItemCount, Interlocked.Read(ref _currentLineNumber), null);
         }
 
+        if (writer is not null)
+        {
 #if NETSTANDARD2_0 || NET462 || NET481
 #pragma warning disable CA2016, MA0040 // FlushAsync(CancellationToken) not available on this TFM
-        await writer.FlushAsync().ConfigureAwait(false);
+            await writer.FlushAsync().ConfigureAwait(false);
 #pragma warning restore CA2016, MA0040
 #else
-        await writer.FlushAsync(token).ConfigureAwait(false);
+            await writer.FlushAsync(token).ConfigureAwait(false);
 #endif
+        }
 
         JsonLogMessages.JsonlLoadingCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, Interlocked.Read(ref _currentLineNumber), null);
+    }
+
+
+
+    private StreamWriter CreateStreamWriter()
+    {
+#if NETSTANDARD2_0 || NET462 || NET481
+        return Encoding is null
+            ? new StreamWriter(_stream, System.Text.Encoding.UTF8, bufferSize: 1024, leaveOpen: true)
+            : new StreamWriter(_stream, Encoding, bufferSize: 1024, leaveOpen: true);
+#else
+        return Encoding is null
+            ? new StreamWriter(_stream, leaveOpen: true)
+            : new StreamWriter(_stream, Encoding, bufferSize: 1024, leaveOpen: true);
+#endif
     }
 
 
