@@ -3,3 +3,9 @@ Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.Encoding.get -> System.Text.Encodin
 Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.Encoding.set -> void
 Wolfgang.Etl.Json.JsonLineLoader<TRecord>.Encoding.get -> System.Text.Encoding?
 Wolfgang.Etl.Json.JsonLineLoader<TRecord>.Encoding.set -> void
+Wolfgang.Etl.Json.JsonLineLoader<TRecord>.IsDryRun.get -> bool
+Wolfgang.Etl.Json.JsonLineLoader<TRecord>.IsDryRun.set -> void
+Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.IsDryRun.get -> bool
+Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.IsDryRun.set -> void
+Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>.IsDryRun.get -> bool
+Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>.IsDryRun.set -> void

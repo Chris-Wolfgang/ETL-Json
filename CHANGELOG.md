@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `JsonLineExtractor<TRecord>.Encoding` and `JsonLineLoader<TRecord>.Encoding` settable properties
+  (`System.Text.Encoding?`) that control the character encoding used when reading or writing the
+  JSONL stream. When `null` (the default), existing behavior is preserved: the extractor infers
+  encoding from the stream's BOM (falling back to UTF-8) and the loader writes UTF-8. Closes #12.
+- `ISupportDryRun` implemented on `JsonLineLoader<TRecord>`, `JsonSingleStreamLoader<TRecord>`,
+  and `JsonMultiStreamLoader<TRecord>`. When `IsDryRun` is `true`, the loader runs the full
+  pipeline (enumeration, `SkipItemCount`/`MaximumItemCount`, progress counters, logging) but
+  skips all writes to output stream(s). `JsonMultiStreamLoader` additionally skips calling the
+  stream factory. Closes #178.
+
 ### Changed
 
 ### Deprecated
@@ -18,15 +28,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 ### Security
-
-## [0.3.0] - unreleased
-
-### Added
-
-- `JsonLineExtractor<TRecord>.Encoding` and `JsonLineLoader<TRecord>.Encoding` settable properties
-  (`System.Text.Encoding?`) that control the character encoding used when reading or writing the
-  JSONL stream. When `null` (the default), existing behavior is preserved: the extractor infers
-  encoding from the stream's BOM (falling back to UTF-8) and the loader writes UTF-8. Closes #12.
 
 ## [0.2.2] - 2026-07-06
 

@@ -33,7 +33,7 @@ namespace Wolfgang.Etl.Json;
 /// await loader.LoadAsync(items, cancellationToken);
 /// </code>
 /// </example>
-public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonReport>
+public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonReport>, ISupportDryRun
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSON multi-stream loading of {typeof(TRecord).Name}";
@@ -43,6 +43,16 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     private readonly ILogger _logger;
     private readonly IProgressTimer? _progressTimer;
     private int _progressTimerWired;
+
+
+
+    /// <inheritdoc />
+    /// <remarks>
+    /// When <see langword="true"/>, the loader enumerates the source and increments
+    /// progress counters as usual but skips calling the stream factory and writing
+    /// any JSON to output streams.
+    /// </remarks>
+    public bool IsDryRun { get; set; }
 
 
 
@@ -243,38 +253,53 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
                 break;
             }
 
-            var stream = _streamFactory(item);
-            if (stream is null)
+            if (IsDryRun)
             {
-                JsonLogMessages.StreamFactoryReturnedNull(_logger, streamIndex, null);
-                throw new InvalidOperationException($"Stream factory returned null for item at index {streamIndex}.");
-            }
-
-            try
-            {
-                await SerializeToStreamAsync(stream, item, token).ConfigureAwait(false);
-#if NETSTANDARD2_0 || NET462 || NET481
-#pragma warning disable CA2016, MA0040 // FlushAsync(CancellationToken) not available on this TFM
-                await stream.FlushAsync().ConfigureAwait(false);
-#pragma warning restore CA2016, MA0040
-#else
-                await stream.FlushAsync(token).ConfigureAwait(false);
-#endif
                 IncrementCurrentItemCount();
                 streamIndex++;
                 JsonLogMessages.LoadedItemToStream(_logger, CurrentItemCount, streamIndex - 1, null);
+                continue;
             }
-            finally
-            {
-#if NETSTANDARD2_0 || NET462 || NET481
-                stream.Dispose();
-#else
-                await stream.DisposeAsync().ConfigureAwait(false);
-#endif
-            }
+
+            await WriteItemToStreamAsync(item, streamIndex, token).ConfigureAwait(false);
+            IncrementCurrentItemCount();
+            streamIndex++;
+            JsonLogMessages.LoadedItemToStream(_logger, CurrentItemCount, streamIndex - 1, null);
         }
 
         JsonLogMessages.MultiStreamLoadingCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, streamIndex, null);
+    }
+
+
+
+    private async Task WriteItemToStreamAsync(TRecord item, int streamIndex, CancellationToken token)
+    {
+        var stream = _streamFactory(item);
+        if (stream is null)
+        {
+            JsonLogMessages.StreamFactoryReturnedNull(_logger, streamIndex, null);
+            throw new InvalidOperationException($"Stream factory returned null for item at index {streamIndex}.");
+        }
+
+        try
+        {
+            await SerializeToStreamAsync(stream, item, token).ConfigureAwait(false);
+#if NETSTANDARD2_0 || NET462 || NET481
+#pragma warning disable CA2016, MA0040 // FlushAsync(CancellationToken) not available on this TFM
+            await stream.FlushAsync().ConfigureAwait(false);
+#pragma warning restore CA2016, MA0040
+#else
+            await stream.FlushAsync(token).ConfigureAwait(false);
+#endif
+        }
+        finally
+        {
+#if NETSTANDARD2_0 || NET462 || NET481
+            stream.Dispose();
+#else
+            await stream.DisposeAsync().ConfigureAwait(false);
+#endif
+        }
     }
 
 
