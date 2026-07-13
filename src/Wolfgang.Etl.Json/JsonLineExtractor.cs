@@ -199,7 +199,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 #else
         return Encoding is null
             ? new StreamReader(_stream, leaveOpen: true)
-            : new StreamReader(_stream, Encoding, detectEncodingFromByteOrderMarks: false, bufferSize: -1, leaveOpen: true);
+            : new StreamReader(_stream, Encoding, detectEncodingFromByteOrderMarks: false, bufferSize: 1024, leaveOpen: true);
 #endif
     }
 

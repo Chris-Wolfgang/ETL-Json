@@ -43,7 +43,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
 
     /// <summary>
     /// Gets or sets the character encoding to use when writing the JSONL stream.
-    /// When <see langword="null"/> (the default), UTF-8 without a byte-order mark (BOM) is used.
+    /// When <see langword="null"/> (the default), UTF-8 is used.
     /// </summary>
     public System.Text.Encoding? Encoding { get; set; }
 
