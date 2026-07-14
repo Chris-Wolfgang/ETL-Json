@@ -18,6 +18,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   pipeline (enumeration, `SkipItemCount`/`MaximumItemCount`, progress counters, logging) but
   skips all writes to output stream(s). `JsonMultiStreamLoader` additionally skips calling the
   stream factory. Closes #178.
+- `JsonNamedStream` record: pairs a `Stream` with an optional name for use with `JsonMultiStreamExtractor`.
+- `JsonNamedDestination` record: pairs a `Stream` with an optional name for use with `JsonMultiStreamLoader`.
+- `JsonMultiStreamExtractor<TRecord>` now accepts `IEnumerable<JsonNamedStream>` sources; the current source name surfaces in `JsonReport.CurrentSourceName` during progress reporting.
+- `JsonMultiStreamLoader<TRecord>` now accepts `Func<TRecord, JsonNamedDestination>` factory; the current destination name surfaces in `JsonReport.CurrentSourceName` during progress reporting.
+- `JsonReport.CurrentSourceName` property: the name of the stream currently being processed (`null` when not supplied or for non-multi-stream operations).
+- `JsonReport(int, int, string?)` constructor overload exposing `currentSourceName`.
 
 ### Changed
 
@@ -34,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Dependabot bump: dotnet-dependencies group (7 packages).
+
 ## [0.2.1] - 2026-06-26
 
 > Library public API is unchanged from `0.2.0`. This release is canonical
@@ -99,8 +106,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cached the default `JsonSerializerOptions` and log operation-name strings as
   static fields; sealed the extractor and loader classes.
 
-[Unreleased]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.2.2...HEAD
+[Unreleased]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.2.0...v0.2.1
-[0.2.0]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v.0.1.0...v0.2.0
-[0.1.0]: https://github.com/Chris-Wolfgang/ETL-Json/releases/tag/v.0.1.0
+[0.2.0]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/Chris-Wolfgang/ETL-Json/releases/tag/v0.1.0
