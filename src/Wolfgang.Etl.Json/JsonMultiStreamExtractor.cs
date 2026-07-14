@@ -459,16 +459,16 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
 
         if (failed)
         {
-            var error = new JsonDeserializationError(
-                itemIndex: streamIndex,
-                lineNumber: null,
-                rawContent: null,
-                exception: deserializationEx!);
             if (ErrorHandling == ErrorHandling.Throw)
             {
                 System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(deserializationEx!).Throw();
             }
 
+            var error = new JsonDeserializationError(
+                itemIndex: streamIndex,
+                lineNumber: null,
+                rawContent: null,
+                exception: deserializationEx!);
             if (ErrorHandling == ErrorHandling.CaptureAndContinue) { _errors.Add(error); }
             JsonLogMessages.DeserializationErrorAtIndex(_logger, streamIndex, deserializationEx);
         }

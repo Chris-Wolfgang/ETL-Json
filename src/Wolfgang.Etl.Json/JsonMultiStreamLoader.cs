@@ -415,6 +415,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
 
             if (IsDryRun)
             {
+                _currentDestinationName = null;
                 IncrementCurrentItemCount();
                 streamIndex++;
                 JsonLogMessages.LoadedItemToStream(_logger, CurrentItemCount, streamIndex - 1, null);

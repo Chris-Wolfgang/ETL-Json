@@ -287,16 +287,16 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
 
     private void HandleDeserializationError(JsonException ex)
     {
-        var error = new JsonDeserializationError(
-            itemIndex: _errors.Count + CurrentItemCount + CurrentSkippedItemCount,
-            lineNumber: null,
-            rawContent: null,
-            exception: ex);
         if (ErrorHandling == ErrorHandling.Throw)
         {
             System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(ex).Throw();
         }
 
+        var error = new JsonDeserializationError(
+            itemIndex: _errors.Count + CurrentItemCount + CurrentSkippedItemCount,
+            lineNumber: null,
+            rawContent: null,
+            exception: ex);
         if (ErrorHandling == ErrorHandling.CaptureAndContinue)
         {
             _errors.Add(error);
