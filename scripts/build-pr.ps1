@@ -300,12 +300,12 @@ if (-not $SkipSecurity) {
             # Without this branch the macOS path would download the Linux
             # tarball and either fail to install or install an incompatible
             # binary.
+            $arch = if ([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture -eq 'Arm64') { 'arm64' } else { 'x64' }
             if ($IsMacOS) {
-                $arch = if ([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture -eq 'Arm64') { 'arm64' } else { 'x64' }
                 $archive = "gitleaks_${version}_darwin_${arch}.tar.gz"
             }
             else {
-                $archive = "gitleaks_${version}_linux_x64.tar.gz"
+                $archive = "gitleaks_${version}_linux_${arch}.tar.gz"
             }
             $url = "https://github.com/gitleaks/gitleaks/releases/download/v${version}/$archive"
             # Install to a user-writable location instead of /usr/local/bin
