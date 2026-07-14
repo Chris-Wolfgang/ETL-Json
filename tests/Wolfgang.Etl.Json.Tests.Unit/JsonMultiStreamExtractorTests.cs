@@ -660,4 +660,234 @@ public class JsonMultiStreamExtractorTests
 
         Assert.Null(capturedReport?.CurrentSourceName);
     }
+
+
+
+    [Fact]
+    public void Constructor_with_named_sources_when_valid_args_does_not_throw()
+    {
+        var sources = new[] { new JsonNamedStream(new MemoryStream(), "test") };
+
+        var exception = Record.Exception
+        (
+            () => new JsonMultiStreamExtractor<PersonRecord>(sources)
+        );
+
+        Assert.Null(exception);
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_streams_and_logger_when_streams_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamExtractor<PersonRecord>
+            (
+                (IEnumerable<Stream>)null!,
+                NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_streams_and_logger_when_logger_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamExtractor<PersonRecord>
+            (
+                new[] { new MemoryStream() },
+                (ILogger<JsonMultiStreamExtractor<PersonRecord>>)null!
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_streams_and_logger_when_valid_args_does_not_throw()
+    {
+        var exception = Record.Exception
+        (
+            () => new JsonMultiStreamExtractor<PersonRecord>
+            (
+                new[] { new MemoryStream() },
+                NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
+            )
+        );
+
+        Assert.Null(exception);
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_named_sources_and_logger_when_sources_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamExtractor<PersonRecord>
+            (
+                (IEnumerable<JsonNamedStream>)null!,
+                NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_named_sources_and_logger_when_logger_is_null_throws_ArgumentNullException()
+    {
+        var sources = new[] { new JsonNamedStream(new MemoryStream()) };
+
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamExtractor<PersonRecord>
+            (
+                sources,
+                (ILogger<JsonMultiStreamExtractor<PersonRecord>>)null!
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_named_sources_and_logger_when_valid_args_does_not_throw()
+    {
+        var sources = new[] { new JsonNamedStream(new MemoryStream(), "s1") };
+
+        var exception = Record.Exception
+        (
+            () => new JsonMultiStreamExtractor<PersonRecord>
+            (
+                sources,
+                NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
+            )
+        );
+
+        Assert.Null(exception);
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_streams_and_options_when_streams_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamExtractor<PersonRecord>
+            (
+                (IEnumerable<Stream>)null!,
+                new JsonSerializerOptions()
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_named_sources_and_options_when_sources_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamExtractor<PersonRecord>
+            (
+                (IEnumerable<JsonNamedStream>)null!,
+                new JsonSerializerOptions()
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_named_sources_and_options_when_options_is_null_throws_ArgumentNullException()
+    {
+        var sources = new[] { new JsonNamedStream(new MemoryStream()) };
+
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamExtractor<PersonRecord>
+            (
+                sources,
+                (JsonSerializerOptions)null!
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_named_sources_and_options_when_valid_args_does_not_throw()
+    {
+        var sources = new[] { new JsonNamedStream(new MemoryStream(), "s1") };
+
+        var exception = Record.Exception
+        (
+            () => new JsonMultiStreamExtractor<PersonRecord>
+            (
+                sources,
+                new JsonSerializerOptions()
+            )
+        );
+
+        Assert.Null(exception);
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_named_sources_and_typeInfo_when_sources_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamExtractor<PersonRecord>
+            (
+                (IEnumerable<JsonNamedStream>)null!,
+                TestJsonContext.Default.PersonRecord
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_named_sources_and_typeInfo_when_typeInfo_is_null_throws_ArgumentNullException()
+    {
+        IEnumerable<JsonNamedStream> sources = new[] { new JsonNamedStream(new MemoryStream()) };
+
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamExtractor<PersonRecord>
+            (
+                sources,
+                typeInfo: null!
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_named_sources_and_typeInfo_when_valid_args_does_not_throw()
+    {
+        IEnumerable<JsonNamedStream> sources = new[] { new JsonNamedStream(new MemoryStream(), "s1") };
+
+        var exception = Record.Exception
+        (
+            () => new JsonMultiStreamExtractor<PersonRecord>
+            (
+                sources,
+                TestJsonContext.Default.PersonRecord
+            )
+        );
+
+        Assert.Null(exception);
+    }
 }
