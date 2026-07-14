@@ -315,12 +315,12 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
         catch (JsonException ex)
 #pragma warning restore CA1031
         {
+            if (ErrorHandling == ErrorHandling.Throw) { throw; }
             var error = new JsonDeserializationError(
                 itemIndex: _errors.Count + CurrentItemCount + CurrentSkippedItemCount,
                 lineNumber: lineNum,
                 rawContent: line,
                 exception: ex);
-            if (ErrorHandling == ErrorHandling.Throw) { throw; }
             if (ErrorHandling == ErrorHandling.CaptureAndContinue) { _errors.Add(error); }
             JsonLogMessages.DeserializationErrorAtLine(_logger, lineNum, ex);
             item = default;
