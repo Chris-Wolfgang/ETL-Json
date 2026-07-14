@@ -1441,17 +1441,11 @@ jobs:
       - name: Find and run integration test projects
         run: |
           integration_projects=()
-<<<<<<< HEAD
-          while IFS= read -r -d '' file; do
-            integration_projects+=("$file")
-          done < <(find ./tests -type f \( -name "*.csproj" -o -name "*.vbproj" -o -name "*.fsproj" \) -name "*.Tests.Integration.*" -print0)
-=======
           if [ -d ./tests ]; then
             while IFS= read -r -d '' file; do
               integration_projects+=("$file")
             done < <(find ./tests -type f \( -name "*.csproj" -o -name "*.vbproj" -o -name "*.fsproj" \) -name "*.Tests.Integration.*" -print0)
           fi
->>>>>>> origin/main
 
           if [ ${#integration_projects[@]} -eq 0 ]; then
             echo "ℹ️  No integration test projects found — skipping."
