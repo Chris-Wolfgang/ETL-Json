@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-07-13
+
 ### Added
 
 - `JsonLineExtractor<TRecord>.Encoding` and `JsonLineLoader<TRecord>.Encoding` settable properties
@@ -25,15 +27,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `JsonReport.CurrentSourceName` property: the name of the stream currently being processed (`null` when not supplied or for non-multi-stream operations).
 - `JsonReport(int, int, string?)` constructor overload exposing `currentSourceName`.
 
-### Changed
+### Performance
 
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
+- On the `ErrorHandling.Throw` path in `JsonLineExtractor` and `JsonMultiStreamExtractor`,
+  the `JsonDeserializationError` object is no longer allocated before re-throwing the original
+  `JsonException` (the object was constructed but never used on that path).
 
 ## [0.2.2] - 2026-07-06
 
