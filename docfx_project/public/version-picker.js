@@ -89,13 +89,15 @@
         var optionCount = 0;
         versions.forEach(function (v) {
             if (!v || !v.version || !v.url) return;
-            // Skip the "latest" alias EXCEPT when the reader is actually
-            // on /versions/latest/. On every other page the highest-
-            // numbered v* entry already represents the latest release
-            // and surfacing both is redundant; on /versions/latest/ we
-            // NEED `latest` in the list because otherwise the picker
-            // would show no selected option and the reader would have
-            // no way to know which version they are viewing.
+            // Skip the "latest" alias when the reader is browsing a
+            // specific /versions/<v>/ URL — the highest-numbered v*
+            // entry already represents the latest release and surfacing
+            // both would be redundant. On the site root or on
+            // /versions/latest/, currentVersion defaults to 'latest' so
+            // the alias IS included: without it the browser would
+            // default-select the first concrete version, and the user
+            // couldn't navigate to that version because re-selecting an
+            // already-selected option doesn't fire the 'change' event.
             if (v.version === 'latest' && currentVersion !== 'latest') return;
             var opt = document.createElement('option');
             opt.value = v.url;
