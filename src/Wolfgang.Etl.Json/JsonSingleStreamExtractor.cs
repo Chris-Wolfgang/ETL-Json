@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
@@ -43,6 +44,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     private readonly JsonTypeInfo<TRecord>? _typeInfo;
     private readonly ILogger _logger;
     private readonly IProgressTimer? _progressTimer;
+    private readonly List<JsonDeserializationError> _errors = new();
     private int _progressTimerWired;
 
 
@@ -54,6 +56,10 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="stream"/> is <c>null</c>.
     /// </exception>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+    [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
     public JsonSingleStreamExtractor
     (
         Stream stream
@@ -75,6 +81,10 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="stream"/> or <paramref name="logger"/> is <c>null</c>.
     /// </exception>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+    [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
     public JsonSingleStreamExtractor
     (
         Stream stream,
@@ -98,6 +108,10 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="stream"/> or <paramref name="options"/> is <c>null</c>.
     /// </exception>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+    [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
     public JsonSingleStreamExtractor
     (
         Stream stream,
@@ -120,6 +134,10 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     /// <param name="options">The JSON serializer options to use for deserialization.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <param name="timer">The progress timer to inject.</param>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+    [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
     internal JsonSingleStreamExtractor
     (
         Stream stream,
@@ -184,51 +202,107 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
 
 
 
+    /// <summary>
+    /// Gets or sets how deserialization errors are handled during extraction.
+    /// Default is <see cref="ErrorHandling.Throw"/>.
+    /// </summary>
+    /// <remarks>
+    /// Because JSON array deserialization is streaming, a <see cref="System.Text.Json.JsonException"/>
+    /// leaves the underlying reader in an unrecoverable state. When
+    /// <see cref="ErrorHandling.CaptureAndContinue"/> is set, the error is captured and enumeration
+    /// stops at the point of failure; subsequent records in the array are not returned.
+    /// </remarks>
+    public ErrorHandling ErrorHandling { get; init; } = ErrorHandling.Throw;
+
+
+
+    /// <summary>
+    /// Gets the collection of deserialization errors captured during the most recent extraction.
+    /// Only populated when <see cref="ErrorHandling"/> is <see cref="ErrorHandling.CaptureAndContinue"/>.
+    /// </summary>
+    public IReadOnlyList<JsonDeserializationError> Errors => _errors.AsReadOnly();
+
+
+
     /// <inheritdoc />
     protected override async IAsyncEnumerable<TRecord> ExtractWorkerAsync
     (
         [EnumeratorCancellation] CancellationToken token
     )
     {
+        _errors.Clear();
         JsonLogMessages.StartingOperation(_logger, OperationName, null);
 
         var skipBudget = SkipItemCount;
-
         var enumerable = _typeInfo is not null
             ? JsonSerializer.DeserializeAsyncEnumerable(_stream, _typeInfo, token)
             : JsonSerializer.DeserializeAsyncEnumerable<TRecord>(_stream, _options ?? DefaultOptions, token);
 
-        await foreach (var item in enumerable.WithCancellation(token).ConfigureAwait(false))
+        var enumerator = enumerable.GetAsyncEnumerator(token);
+        try
         {
-            token.ThrowIfCancellationRequested();
-
-            if (item is null)
+            while (true)
             {
-                JsonLogMessages.SkippingNullArrayItem(_logger, null);
-                continue;
+                token.ThrowIfCancellationRequested();
+                TRecord? item = default;
+                bool hasNext = false;
+                JsonException? caughtEx = null;
+                try
+                {
+                    hasNext = await enumerator.MoveNextAsync().ConfigureAwait(false);
+                    item = hasNext ? enumerator.Current : default;
+                }
+#pragma warning disable CA1031 // catch JsonException to implement error-handling policy
+                catch (JsonException ex) { caughtEx = ex; }
+#pragma warning restore CA1031
+                if (caughtEx is not null) { HandleDeserializationError(caughtEx); break; }
+                if (!hasNext) { break; }
+                if (item is null) { JsonLogMessages.SkippingNullArrayItem(_logger, null); continue; }
+                if (skipBudget > 0)
+                {
+                    skipBudget--;
+                    IncrementCurrentSkippedItemCount();
+                    JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
+                    continue;
+                }
+                if (CurrentItemCount >= MaximumItemCount)
+                {
+                    JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
+                    break;
+                }
+                IncrementCurrentItemCount();
+                JsonLogMessages.ExtractedItem(_logger, CurrentItemCount, null);
+                yield return item;
             }
-
-            if (skipBudget > 0)
-            {
-                skipBudget--;
-                IncrementCurrentSkippedItemCount();
-                JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
-                continue;
-            }
-
-            if (CurrentItemCount >= MaximumItemCount)
-            {
-                JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
-                break;
-            }
-
-            IncrementCurrentItemCount();
-            JsonLogMessages.ExtractedItem(_logger, CurrentItemCount, null);
-
-            yield return item;
+        }
+        finally
+        {
+            await enumerator.DisposeAsync().ConfigureAwait(false);
         }
 
         JsonLogMessages.SingleStreamExtractionCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, null);
+    }
+
+
+
+    private void HandleDeserializationError(JsonException ex)
+    {
+        if (ErrorHandling == ErrorHandling.Throw)
+        {
+            System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(ex).Throw();
+        }
+
+        var error = new JsonDeserializationError(
+            itemIndex: _errors.Count + CurrentItemCount + CurrentSkippedItemCount,
+            lineNumber: null,
+            rawContent: null,
+            exception: ex);
+        if (ErrorHandling == ErrorHandling.CaptureAndContinue)
+        {
+            _errors.Add(error);
+        }
+
+        JsonLogMessages.DeserializationErrorAtIndex(_logger, error.ItemIndex, ex);
     }
 
 

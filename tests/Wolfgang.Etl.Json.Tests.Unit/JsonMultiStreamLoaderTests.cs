@@ -133,7 +133,7 @@ public class JsonMultiStreamLoaderTests
     {
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
-            _ => null!
+            (Func<PersonRecord, Stream>)(_ => null!)
         );
 
         var items = new List<PersonRecord>
@@ -190,7 +190,7 @@ public class JsonMultiStreamLoaderTests
         (
             () => new JsonMultiStreamLoader<PersonRecord>
             (
-                null!
+                (Func<PersonRecord, Stream>)null!
             )
         );
     }
@@ -250,7 +250,7 @@ public class JsonMultiStreamLoaderTests
         (
             () => new JsonMultiStreamLoader<PersonRecord>
             (
-                null!,
+                (Func<PersonRecord, Stream>)null!,
                 new JsonSerializerOptions(),
                 NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance,
                 new ManualProgressTimer()
@@ -426,7 +426,7 @@ public class JsonMultiStreamLoaderTests
         (
             () => new JsonMultiStreamLoader<PersonRecord>
             (
-                null!,
+                (Func<PersonRecord, Stream>)null!,
                 TestJsonContext.Default.PersonRecord,
                 NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
             )
@@ -529,5 +529,373 @@ public class JsonMultiStreamLoaderTests
                 timer: null!
             )
         );
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_named_destination_factory_when_factory_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamLoader<PersonRecord>
+            (
+                (Func<PersonRecord, JsonNamedDestination>)null!
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public async Task LoadAsync_when_named_destination_factory_writes_correct_item_count()
+    {
+        var streamsCreated = 0;
+        var items = new List<PersonRecord>
+        {
+            new() { FirstName = "Alice", LastName = "Smith", Age = 30 },
+            new() { FirstName = "Bob", LastName = "Jones", Age = 25 },
+        };
+
+        var sut = new JsonMultiStreamLoader<PersonRecord>
+        (
+            _ =>
+            {
+                streamsCreated++;
+                return new JsonNamedDestination(new MemoryStream(), $"output/item-{streamsCreated}.json");
+            }
+        );
+
+        await sut.LoadAsync(items.ToAsyncEnumerable());
+
+        Assert.Equal(items.Count, sut.CurrentItemCount);
+    }
+
+
+
+    [Fact]
+    public async Task LoadAsync_when_named_destination_factory_invokes_factory_once_per_item()
+    {
+        var namesReceived = new List<string>();
+        var items = new List<PersonRecord>
+        {
+            new() { FirstName = "Alice", LastName = "Smith", Age = 30 },
+            new() { FirstName = "Bob", LastName = "Jones", Age = 25 },
+        };
+
+        var sut = new JsonMultiStreamLoader<PersonRecord>
+        (
+            item =>
+            {
+                var name = $"output/{item.FirstName}.json";
+                namesReceived.Add(name);
+                return new JsonNamedDestination(new MemoryStream(), name);
+            }
+        );
+
+        await sut.LoadAsync(items.ToAsyncEnumerable());
+
+        Assert.Equal(new[] { "output/Alice.json", "output/Bob.json" }, namesReceived);
+    }
+
+
+
+    [Fact]
+    public async Task LoadAsync_when_named_destination_factory_final_progress_report_includes_destination_name()
+    {
+        var capture = new ProgressCapture<JsonReport>();
+        var items = new List<PersonRecord>
+        {
+            new() { FirstName = "Alice", LastName = "Smith", Age = 30 },
+        };
+
+        var sut = new JsonMultiStreamLoader<PersonRecord>
+        (
+            item => new JsonNamedDestination(new MemoryStream(), $"output/{item.FirstName}.json")
+        );
+
+        await sut.LoadAsync(items.ToAsyncEnumerable(), capture);
+
+        Assert.Equal("output/Alice.json", capture.FinalReport?.CurrentSourceName);
+    }
+
+
+
+    [Fact]
+    public async Task LoadAsync_when_stream_factory_overload_serializes_items_correctly()
+    {
+        var streams = new List<MemoryStream>();
+
+        var sut = new JsonMultiStreamLoader<PersonRecord>
+        (
+            _ =>
+            {
+                var ms = new MemoryStream();
+                streams.Add(ms);
+                return ms;
+            }
+        );
+
+        var items = new List<PersonRecord>
+        {
+            new() { FirstName = "Alice", LastName = "Smith", Age = 30 },
+            new() { FirstName = "Bob", LastName = "Jones", Age = 25 },
+        };
+
+        await sut.LoadAsync(items.ToAsyncEnumerable());
+
+        Assert.Equal(2, streams.Count);
+
+        var alice = JsonSerializer.Deserialize<PersonRecord>(streams[0].ToArray());
+        Assert.NotNull(alice);
+        Assert.Equal("Alice", alice.FirstName);
+        Assert.Equal("Smith", alice.LastName);
+        Assert.Equal(30, alice.Age);
+
+        var bob = JsonSerializer.Deserialize<PersonRecord>(streams[1].ToArray());
+        Assert.NotNull(bob);
+        Assert.Equal("Bob", bob.FirstName);
+        Assert.Equal("Jones", bob.LastName);
+        Assert.Equal(25, bob.Age);
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_logger_when_streamFactory_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamLoader<PersonRecord>
+            (
+                (Func<PersonRecord, Stream>)null!,
+                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_logger_when_valid_args_does_not_throw()
+    {
+        var sut = new JsonMultiStreamLoader<PersonRecord>
+        (
+            _ => new MemoryStream(),
+            NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
+        );
+
+        Assert.NotNull(sut);
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_destinationFactory_and_logger_when_destinationFactory_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamLoader<PersonRecord>
+            (
+                (Func<PersonRecord, JsonNamedDestination>)null!,
+                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_destinationFactory_and_logger_when_logger_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamLoader<PersonRecord>
+            (
+                _ => new JsonNamedDestination(new MemoryStream()),
+                logger: null!
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_destinationFactory_and_logger_when_valid_args_does_not_throw()
+    {
+        var sut = new JsonMultiStreamLoader<PersonRecord>
+        (
+            _ => new JsonNamedDestination(new MemoryStream()),
+            NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
+        );
+
+        Assert.NotNull(sut);
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_destinationFactory_and_options_when_destinationFactory_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamLoader<PersonRecord>
+            (
+                (Func<PersonRecord, JsonNamedDestination>)null!,
+                new JsonSerializerOptions()
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_destinationFactory_and_options_when_options_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamLoader<PersonRecord>
+            (
+                _ => new JsonNamedDestination(new MemoryStream()),
+                options: null!
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_destinationFactory_and_options_when_valid_args_does_not_throw()
+    {
+        var sut = new JsonMultiStreamLoader<PersonRecord>
+        (
+            _ => new JsonNamedDestination(new MemoryStream()),
+            new JsonSerializerOptions()
+        );
+
+        Assert.NotNull(sut);
+    }
+
+
+
+    [Fact]
+    public void Internal_constructor_with_destinationFactory_when_destinationFactory_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamLoader<PersonRecord>
+            (
+                (Func<PersonRecord, JsonNamedDestination>)null!,
+                new JsonSerializerOptions(),
+                logger: null,
+                new ManualProgressTimer()
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Internal_constructor_with_destinationFactory_when_timer_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamLoader<PersonRecord>
+            (
+                _ => new JsonNamedDestination(new MemoryStream()),
+                new JsonSerializerOptions(),
+                logger: null,
+                null!
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Internal_constructor_with_destinationFactory_when_valid_args_does_not_throw()
+    {
+        var sut = new JsonMultiStreamLoader<PersonRecord>
+        (
+            _ => new JsonNamedDestination(new MemoryStream()),
+            new JsonSerializerOptions(),
+            logger: null,
+            new ManualProgressTimer()
+        );
+
+        Assert.NotNull(sut);
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_streamFactory_and_typeInfo_when_streamFactory_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamLoader<PersonRecord>
+            (
+                (Func<PersonRecord, Stream>)null!,
+                TestJsonContext.Default.PersonRecord
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_streamFactory_and_typeInfo_when_valid_args_does_not_throw()
+    {
+        var sut = new JsonMultiStreamLoader<PersonRecord>
+        (
+            _ => new MemoryStream(),
+            TestJsonContext.Default.PersonRecord
+        );
+
+        Assert.NotNull(sut);
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_destinationFactory_and_typeInfo_when_destinationFactory_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamLoader<PersonRecord>
+            (
+                (Func<PersonRecord, JsonNamedDestination>)null!,
+                TestJsonContext.Default.PersonRecord
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_destinationFactory_and_typeInfo_when_typeInfo_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>
+        (
+            () => new JsonMultiStreamLoader<PersonRecord>
+            (
+                _ => new JsonNamedDestination(new MemoryStream()),
+                typeInfo: null!
+            )
+        );
+    }
+
+
+
+    [Fact]
+    public void Constructor_with_destinationFactory_and_typeInfo_when_valid_args_does_not_throw()
+    {
+        var sut = new JsonMultiStreamLoader<PersonRecord>
+        (
+            _ => new JsonNamedDestination(new MemoryStream()),
+            TestJsonContext.Default.PersonRecord
+        );
+
+        Assert.NotNull(sut);
     }
 }
