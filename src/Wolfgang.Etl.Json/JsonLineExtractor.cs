@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -39,8 +40,18 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     private readonly JsonTypeInfo<TRecord>? _typeInfo;
     private readonly ILogger _logger;
     private readonly IProgressTimer? _progressTimer;
+    private readonly List<JsonDeserializationError> _errors = new();
     private int _progressTimerWired;
     private long _currentLineNumber;
+
+
+
+    /// <summary>
+    /// Gets or sets the character encoding to use when reading the JSONL stream.
+    /// When <see langword="null"/> (the default), the encoding is inferred from the
+    /// stream's byte-order mark (BOM), falling back to UTF-8.
+    /// </summary>
+    public System.Text.Encoding? Encoding { get; set; }
 
 
 
@@ -51,6 +62,10 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="stream"/> is <c>null</c>.
     /// </exception>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+    [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
     public JsonLineExtractor
     (
         Stream stream
@@ -72,6 +87,10 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="stream"/> or <paramref name="logger"/> is <c>null</c>.
     /// </exception>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+    [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
     public JsonLineExtractor
     (
         Stream stream,
@@ -95,6 +114,10 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="stream"/> or <paramref name="options"/> is <c>null</c>.
     /// </exception>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+    [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
     public JsonLineExtractor
     (
         Stream stream,
@@ -117,6 +140,10 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// <param name="options">The JSON serializer options to use for deserialization.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <param name="timer">The progress timer to inject.</param>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+    [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
     internal JsonLineExtractor
     (
         Stream stream,
@@ -181,21 +208,50 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 
 
 
+    /// <summary>
+    /// Gets or sets how deserialization errors are handled during extraction.
+    /// Default is <see cref="ErrorHandling.Throw"/>.
+    /// </summary>
+    public ErrorHandling ErrorHandling { get; init; } = ErrorHandling.Throw;
+
+
+
+    /// <summary>
+    /// Gets the collection of deserialization errors captured during the most recent extraction.
+    /// Only populated when <see cref="ErrorHandling"/> is <see cref="ErrorHandling.CaptureAndContinue"/>.
+    /// </summary>
+    public IReadOnlyList<JsonDeserializationError> Errors => _errors.AsReadOnly();
+
+
+
+    private StreamReader CreateStreamReader()
+    {
+#if NETSTANDARD2_0 || NET462 || NET481
+        return Encoding is null
+            ? new StreamReader(_stream, System.Text.Encoding.UTF8, detectEncodingFromByteOrderMarks: true, bufferSize: 1024, leaveOpen: true)
+            : new StreamReader(_stream, Encoding, detectEncodingFromByteOrderMarks: false, bufferSize: 1024, leaveOpen: true);
+#else
+        return Encoding is null
+            ? new StreamReader(_stream, leaveOpen: true)
+            : new StreamReader(_stream, Encoding, detectEncodingFromByteOrderMarks: false, bufferSize: 1024, leaveOpen: true);
+#endif
+    }
+
+
+
     /// <inheritdoc />
     protected override async IAsyncEnumerable<TRecord> ExtractWorkerAsync
     (
         [EnumeratorCancellation] CancellationToken token
     )
     {
+        _errors.Clear();
+        Interlocked.Exchange(ref _currentLineNumber, 0);
         JsonLogMessages.StartingOperation(_logger, OperationName, null);
 
         var skipBudget = SkipItemCount;
 
-#if NETSTANDARD2_0 || NET462 || NET481
-        using var reader = new StreamReader(_stream, System.Text.Encoding.UTF8, detectEncodingFromByteOrderMarks: true, bufferSize: 1024, leaveOpen: true);
-#else
-        using var reader = new StreamReader(_stream, leaveOpen: true);
-#endif
+        using var reader = CreateStreamReader();
 
         string? line;
 #if NETSTANDARD2_0 || NET462 || NET481
@@ -214,9 +270,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
                 continue;
             }
 
-            var item = _typeInfo is not null
-                ? JsonSerializer.Deserialize(line, _typeInfo)
-                : JsonSerializer.Deserialize<TRecord>(line, _options);
+            if (!TryDeserializeLine(line, lineNum, out var item)) { continue; }
             if (item is null)
             {
                 JsonLogMessages.LineDeserializedToNull(_logger, lineNum, null);
@@ -244,6 +298,34 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
         }
 
         JsonLogMessages.JsonlExtractionCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, Interlocked.Read(ref _currentLineNumber), null);
+    }
+
+
+
+    private bool TryDeserializeLine(string line, long lineNum, out TRecord? item)
+    {
+        try
+        {
+            item = _typeInfo is not null
+                ? JsonSerializer.Deserialize(line, _typeInfo)
+                : JsonSerializer.Deserialize<TRecord>(line, _options);
+            return true;
+        }
+#pragma warning disable CA1031 // catch JsonException to implement error-handling policy
+        catch (JsonException ex)
+#pragma warning restore CA1031
+        {
+            if (ErrorHandling == ErrorHandling.Throw) { throw; }
+            var error = new JsonDeserializationError(
+                itemIndex: _errors.Count + CurrentItemCount + CurrentSkippedItemCount,
+                lineNumber: lineNum,
+                rawContent: line,
+                exception: ex);
+            if (ErrorHandling == ErrorHandling.CaptureAndContinue) { _errors.Add(error); }
+            JsonLogMessages.DeserializationErrorAtLine(_logger, lineNum, ex);
+            item = default;
+            return false;
+        }
     }
 
 

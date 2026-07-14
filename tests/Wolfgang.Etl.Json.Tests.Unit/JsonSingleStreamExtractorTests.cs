@@ -425,4 +425,89 @@ public class JsonSingleStreamExtractorTests
             )
         );
     }
+
+
+
+    [Fact]
+    public async Task ExtractAsync_when_ErrorHandling_is_Throw_throws_JsonException_on_bad_input()
+    {
+        var content = Encoding.UTF8.GetBytes("[not-valid-json]");
+        var stream = new MemoryStream(content);
+
+        var sut = new JsonSingleStreamExtractor<PersonRecord>
+        (
+            stream,
+            new JsonSerializerOptions()
+        )
+        {
+            ErrorHandling = ErrorHandling.Throw,
+        };
+
+        await Assert.ThrowsAsync<JsonException>
+        (
+            async () =>
+            {
+                await foreach (var _ in sut.ExtractAsync())
+                {
+                }
+            }
+        );
+    }
+
+
+
+    [Fact]
+    public async Task ExtractAsync_when_ErrorHandling_is_CaptureAndContinue_captures_error_and_stops()
+    {
+        // DeserializeAsyncEnumerable can't resume from a corrupt position in the stream;
+        // CaptureAndContinue captures the error and stops enumeration without throwing.
+        var content = Encoding.UTF8.GetBytes("[not-valid-json]");
+        var stream = new MemoryStream(content);
+
+        var sut = new JsonSingleStreamExtractor<PersonRecord>
+        (
+            stream,
+            new JsonSerializerOptions()
+        )
+        {
+            ErrorHandling = ErrorHandling.CaptureAndContinue,
+        };
+
+        var results = new List<PersonRecord>();
+        await foreach (var item in sut.ExtractAsync())
+        {
+            results.Add(item);
+        }
+
+        Assert.Empty(results);
+        Assert.Single(sut.Errors);
+        Assert.IsType<JsonException>(sut.Errors[0].Exception);
+    }
+
+
+
+    [Fact]
+    public async Task ExtractAsync_when_ErrorHandling_is_SkipAndLog_skips_without_collecting_errors()
+    {
+        var content = Encoding.UTF8.GetBytes("[not-valid-json]");
+        var stream = new MemoryStream(content);
+
+        var sut = new JsonSingleStreamExtractor<PersonRecord>
+        (
+            stream,
+            new JsonSerializerOptions()
+        )
+        {
+            ErrorHandling = ErrorHandling.SkipAndLog,
+        };
+
+        var results = new List<PersonRecord>();
+        await foreach (var item in sut.ExtractAsync())
+        {
+            results.Add(item);
+        }
+
+        Assert.Empty(results);
+        Assert.Empty(sut.Errors);
+    }
 }

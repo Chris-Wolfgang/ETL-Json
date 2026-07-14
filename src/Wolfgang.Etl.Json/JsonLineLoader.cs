@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
@@ -27,7 +28,7 @@ namespace Wolfgang.Etl.Json;
 /// await loader.LoadAsync(items, cancellationToken);
 /// </code>
 /// </example>
-public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
+public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, ISupportDryRun
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSONL loading of {typeof(TRecord).Name}";
@@ -41,6 +42,23 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
 
 
 
+    /// <inheritdoc />
+    /// <remarks>
+    /// When <see langword="true"/>, the loader enumerates the source and increments
+    /// progress counters as usual but does not write any JSON to the output stream.
+    /// </remarks>
+    public bool IsDryRun { get; set; }
+
+
+
+    /// <summary>
+    /// Gets or sets the character encoding to use when writing the JSONL stream.
+    /// When <see langword="null"/> (the default), UTF-8 is used.
+    /// </summary>
+    public System.Text.Encoding? Encoding { get; set; }
+
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonLineLoader{TRecord}"/> class.
     /// </summary>
@@ -48,6 +66,10 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="stream"/> is <c>null</c>.
     /// </exception>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+    [RequiresDynamicCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
     public JsonLineLoader
     (
         Stream stream
@@ -69,6 +91,10 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="stream"/> or <paramref name="logger"/> is <c>null</c>.
     /// </exception>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+    [RequiresDynamicCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
     public JsonLineLoader
     (
         Stream stream,
@@ -92,6 +118,10 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="stream"/> or <paramref name="options"/> is <c>null</c>.
     /// </exception>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+    [RequiresDynamicCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
     public JsonLineLoader
     (
         Stream stream,
@@ -114,6 +144,10 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     /// <param name="options">The JSON serializer options to use for serialization.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <param name="timer">The progress timer to inject.</param>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+    [RequiresDynamicCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
     internal JsonLineLoader
     (
         Stream stream,
@@ -187,11 +221,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     {
         JsonLogMessages.StartingOperation(_logger, OperationName, null);
 
-#if NETSTANDARD2_0 || NET462 || NET481
-        using var writer = new StreamWriter(_stream, System.Text.Encoding.UTF8, bufferSize: 1024, leaveOpen: true);
-#else
-        using var writer = new StreamWriter(_stream, leaveOpen: true);
-#endif
+        using var writer = IsDryRun ? null : CreateStreamWriter();
 
         await foreach (var item in items.WithCancellation(token).ConfigureAwait(false))
         {
@@ -210,28 +240,50 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
                 break;
             }
 
-            var json = _typeInfo is not null
-                ? JsonSerializer.Serialize(item, _typeInfo)
-                : JsonSerializer.Serialize(item, _options);
             Interlocked.Increment(ref _currentLineNumber);
 
+            if (writer is not null)
+            {
+                var json = _typeInfo is not null
+                    ? JsonSerializer.Serialize(item, _typeInfo)
+                    : JsonSerializer.Serialize(item, _options);
+
 #pragma warning disable CA1849, S6966, VSTHRD103, AsyncFixer02 // Sync WriteLine avoids async state machine allocation per item
-            writer.WriteLine(json);
+                writer.WriteLine(json);
 #pragma warning restore CA1849, S6966, VSTHRD103, AsyncFixer02
+            }
 
             IncrementCurrentItemCount();
             JsonLogMessages.LoadedItemAtLine(_logger, CurrentItemCount, Interlocked.Read(ref _currentLineNumber), null);
         }
 
+        if (writer is not null)
+        {
 #if NETSTANDARD2_0 || NET462 || NET481
 #pragma warning disable CA2016, MA0040 // FlushAsync(CancellationToken) not available on this TFM
-        await writer.FlushAsync().ConfigureAwait(false);
+            await writer.FlushAsync().ConfigureAwait(false);
 #pragma warning restore CA2016, MA0040
 #else
-        await writer.FlushAsync(token).ConfigureAwait(false);
+            await writer.FlushAsync(token).ConfigureAwait(false);
 #endif
+        }
 
         JsonLogMessages.JsonlLoadingCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, Interlocked.Read(ref _currentLineNumber), null);
+    }
+
+
+
+    private StreamWriter CreateStreamWriter()
+    {
+#if NETSTANDARD2_0 || NET462 || NET481
+        return Encoding is null
+            ? new StreamWriter(_stream, System.Text.Encoding.UTF8, bufferSize: 1024, leaveOpen: true)
+            : new StreamWriter(_stream, Encoding, bufferSize: 1024, leaveOpen: true);
+#else
+        return Encoding is null
+            ? new StreamWriter(_stream, leaveOpen: true)
+            : new StreamWriter(_stream, Encoding, bufferSize: 1024, leaveOpen: true);
+#endif
     }
 
 

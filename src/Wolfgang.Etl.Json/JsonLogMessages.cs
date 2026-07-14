@@ -64,7 +64,7 @@ internal static class JsonLogMessages
     // ── MultiStream Loader ───────────────────────────────────────────
 
     internal static readonly Action<ILogger, int, Exception?> StreamFactoryReturnedNull =
-        LoggerMessage.Define<int>(LogLevel.Error, new EventId(210, nameof(StreamFactoryReturnedNull)), "Stream factory returned null for item at index {StreamIndex}.");
+        LoggerMessage.Define<int>(LogLevel.Error, new EventId(210, nameof(StreamFactoryReturnedNull)), "Destination factory returned null or a null stream for item at index {StreamIndex}.");
 
     internal static readonly Action<ILogger, int, int, Exception?> LoadedItemToStream =
         LoggerMessage.Define<int, int>(LogLevel.Debug, new EventId(211, nameof(LoadedItemToStream)), "Loaded item {CurrentItemCount} to stream {StreamIndex}.");
@@ -100,4 +100,16 @@ internal static class JsonLogMessages
 
     internal static readonly Action<ILogger, int, int, long, Exception?> JsonlLoadingCompleted =
         LoggerMessage.Define<int, int, long>(LogLevel.Information, new EventId(311, nameof(JsonlLoadingCompleted)), "JSONL loading completed. Loaded: {ItemCount}, skipped: {SkippedCount}, lines: {LineCount}.");
+
+
+
+    // ── Error Handling ───────────────────────────────────────────────
+
+    internal static readonly Action<ILogger, long, Exception?> DeserializationErrorAtLine =
+        LoggerMessage.Define<long>(LogLevel.Warning, new EventId(400, nameof(DeserializationErrorAtLine)),
+            "Deserialization error at line {LineNumber}; skipping record.");
+
+    internal static readonly Action<ILogger, long, Exception?> DeserializationErrorAtIndex =
+        LoggerMessage.Define<long>(LogLevel.Warning, new EventId(401, nameof(DeserializationErrorAtIndex)),
+            "Deserialization error at item index {ItemIndex}; skipping record.");
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
@@ -26,7 +27,7 @@ namespace Wolfgang.Etl.Json;
 /// await loader.LoadAsync(items, cancellationToken);
 /// </code>
 /// </example>
-public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonReport>
+public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonReport>, ISupportDryRun
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSON single-stream loading of {typeof(TRecord).Name}";
@@ -39,6 +40,15 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
 
 
 
+    /// <inheritdoc />
+    /// <remarks>
+    /// When <see langword="true"/>, the loader enumerates the source and increments
+    /// progress counters as usual but does not write any JSON to the output stream.
+    /// </remarks>
+    public bool IsDryRun { get; set; }
+
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonSingleStreamLoader{TRecord}"/> class.
     /// </summary>
@@ -46,6 +56,10 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="stream"/> is <c>null</c>.
     /// </exception>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+    [RequiresDynamicCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
     public JsonSingleStreamLoader
     (
         Stream stream
@@ -67,6 +81,10 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="stream"/> or <paramref name="logger"/> is <c>null</c>.
     /// </exception>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+    [RequiresDynamicCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
     public JsonSingleStreamLoader
     (
         Stream stream,
@@ -90,6 +108,10 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="stream"/> or <paramref name="options"/> is <c>null</c>.
     /// </exception>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+    [RequiresDynamicCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
     public JsonSingleStreamLoader
     (
         Stream stream,
@@ -112,6 +134,10 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     /// <param name="options">The JSON serializer options to use for serialization.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <param name="timer">The progress timer to inject.</param>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+    [RequiresDynamicCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
     internal JsonSingleStreamLoader
     (
         Stream stream,
@@ -187,10 +213,10 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
 
         // CA2007/MA0004: await using declarations do not support ConfigureAwait in C#
 #pragma warning disable CA2007, MA0004
-        await using var writer = new Utf8JsonWriter(_stream);
+        await using var writer = IsDryRun ? null : new Utf8JsonWriter(_stream);
 #pragma warning restore CA2007, MA0004
 
-        writer.WriteStartArray();
+        writer?.WriteStartArray();
 
         await foreach (var item in items.WithCancellation(token).ConfigureAwait(false))
         {
@@ -209,21 +235,27 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
                 break;
             }
 
-            if (_typeInfo is not null)
+            if (writer is not null)
             {
-                JsonSerializer.Serialize(writer, item, _typeInfo);
+                if (_typeInfo is not null)
+                {
+                    JsonSerializer.Serialize(writer, item, _typeInfo);
+                }
+                else
+                {
+                    JsonSerializer.Serialize(writer, item, _options);
+                }
             }
-            else
-            {
-                JsonSerializer.Serialize(writer, item, _options);
-            }
-            IncrementCurrentItemCount();
 
+            IncrementCurrentItemCount();
             JsonLogMessages.LoadedItem(_logger, CurrentItemCount, null);
         }
 
-        writer.WriteEndArray();
-        await writer.FlushAsync(token).ConfigureAwait(false);
+        writer?.WriteEndArray();
+        if (writer is not null)
+        {
+            await writer.FlushAsync(token).ConfigureAwait(false);
+        }
 
         JsonLogMessages.SingleStreamLoadingCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, null);
     }
