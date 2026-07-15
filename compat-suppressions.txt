@@ -1,0 +1,8 @@
+# ApiCompat suppressions for Wolfgang.Etl.Json.
+#
+# One entry per line — a CP-code prefix (e.g. CP0001) or a substring of the
+# apicompat message that uniquely identifies the intentional break.
+# Lines starting with '#' are comments and are ignored.
+#
+# Example:
+#   CP0002: Member 'SomeMethod()' exists in the contract but not in the implementation
