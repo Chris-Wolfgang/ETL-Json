@@ -34,41 +34,44 @@ quickly under stress.
 
 1. A GitHub Release is published (manually, by the maintainer).
 2. The `release.yaml` workflow fires on the `release: published` event.
-3. The workflow builds, tests, packs, and pushes to NuGet.org using the
-   `NUGET_API_KEY` secret stored in the repository's GitHub Actions secrets.
-4. Packages are signed by the workflow runner (not by a local certificate).
+3. The workflow builds, tests, packs, then publishes via **OIDC Trusted
+   Publishing**: the `NuGet/login` action exchanges the workflow's short-lived
+   GitHub OIDC token for a temporary NuGet API key (valid ~1 hour). No static
+   API key secret is stored in this repository.
+4. The Trusted Publishing policy on nuget.org is scoped to:
+   owner `Chris-Wolfgang`, repository `ETL-Json`, workflow `release.yaml`.
 
-The only credential that can publish a new package version is `NUGET_API_KEY`.
-No other path to NuGet.org exists in this repository.
+There is no stored `NUGET_API_KEY` secret. The only path to publish is through
+a GitHub Actions run of `release.yaml` on this specific repository.
 
-### If `NUGET_API_KEY` is compromised
+### If the release pipeline is compromised
 
-1. **Revoke the key immediately.** Log in to <https://www.nuget.org/account/apikeys>
-   and delete the affected key. GitHub Actions will fail on the next release
-   attempt until a new key is configured.
-2. **Rotate and re-add the key.** Create a new API key scoped to
-   `Wolfgang.Etl.Json` (push + unlist only; do not grant delete). Add it to
-   the repository's Actions secrets as `NUGET_API_KEY`.
-3. **Audit recent publishes.** Check <https://www.nuget.org/packages/Wolfgang.Etl.Json/>
-   for any unexpected versions published during the window of compromise.
-4. **Unlist (do not delete) any malicious version.** On nuget.org, navigate to
+Because there is no long-lived credential to steal, the attack surface is the
+GitHub Actions environment itself during a release run.
+
+1. **Audit recent publishes.** Check <https://www.nuget.org/packages/Wolfgang.Etl.Json/>
+   for any unexpected versions published during the incident window.
+2. **Revoke the Trusted Publishing policy** if you suspect the OIDC trust has
+   been abused. Log in to nuget.org → **Account** → **Publish** → **API Keys**
+   → find the Trusted Publisher entry and remove it. Re-add once the workflow
+   and repository are confirmed clean.
+3. **Unlist (do not delete) any malicious version.** On nuget.org, navigate to
    the affected version → **Manage package** → **Unlist**. Unlisting stops new
    consumers from finding the version while preserving audit history. NuGet
    does not allow hard-deleting a published version.
-5. **Publish a patched release.** Increment the version, document the incident
+4. **Publish a patched release.** Increment the version, document the incident
    in the release notes, and publish a clean version as soon as possible.
 
 ### If the GitHub account is compromised
 
 A GitHub account compromise is broader: an attacker could modify workflows,
-push malicious commits, or alter release artifacts.
+push malicious commits, or trigger a release run that publishes via OIDC.
 
 1. Revoke all active OAuth tokens and Personal Access Tokens in GitHub account
    settings.
 2. Enable or re-verify two-factor authentication.
 3. Review and revert any recent workflow or source changes.
-4. Follow the `NUGET_API_KEY` rotation steps above, since the key may have
-   been read from Actions secrets.
+4. Revoke and re-add the Trusted Publishing policy on nuget.org (see above).
 5. Contact GitHub Support at <https://support.github.com> if you believe the
    account itself was taken over.
 
