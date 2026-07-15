@@ -29,7 +29,7 @@ namespace Wolfgang.Etl.Json;
 /// <code>
 /// var sources = Directory.GetFiles("data/", "*.json")
 ///     .Select(path => new JsonNamedStream(File.OpenRead(path), path));
-/// var extractor = new JsonMultiStreamExtractor&lt;Person&gt;(sources, logger);
+/// var extractor = new JsonMultiStreamExtractor&lt;Person&gt;(sources);
 /// await foreach (var person in extractor.ExtractAsync(cancellationToken))
 /// {
 ///     Console.WriteLine(person.Name);
