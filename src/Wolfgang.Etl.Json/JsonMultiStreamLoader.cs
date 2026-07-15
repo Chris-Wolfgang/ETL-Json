@@ -27,8 +27,7 @@ namespace Wolfgang.Etl.Json;
 /// <code>
 /// var loader = new JsonMultiStreamLoader&lt;Person&gt;
 /// (
-///     person => new JsonNamedDestination(File.Create($"output/{person.Id}.json"), $"output/{person.Id}.json"),
-///     logger
+///     person => new JsonNamedDestination(File.Create($"output/{person.Name}.json"), $"output/{person.Name}.json")
 /// );
 /// await loader.LoadAsync(items, cancellationToken);
 /// </code>
