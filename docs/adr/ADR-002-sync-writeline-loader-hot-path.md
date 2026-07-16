@@ -1,6 +1,6 @@
 # ADR-002 Sync StreamWriter.WriteLine in Loader Hot Paths
 
-- **Status**: Accepted
+- **Status**: Superseded by removal of StreamWriter (2026-07-16)
 - **Date**: 2026-07-16
 
 ---
@@ -45,3 +45,11 @@ We will use synchronous `writer.WriteLine(json)` inside async methods, suppressi
 
 - Two analyzer suppressions (`CA1849`, `AsyncFixer02`) are required above each affected method; these are intentional and must not be removed without revisiting the allocation trade-off.
 - Reviewers unfamiliar with this ADR may flag the suppressions; this document serves as the authoritative explanation.
+
+---
+
+## Update — Superseded (2026-07-16)
+
+`JsonLineLoader` no longer uses `StreamWriter`. It writes directly to `_stream` via `Stream.WriteAsync`, using `JsonSerializer.SerializeToUtf8Bytes` to avoid a string intermediary in the UTF-8 (default) path. The sync/async write trade-off documented here no longer applies: `Stream.WriteAsync` is the correct call and carries no analyzer suppressions.
+
+The `#pragma warning disable CA1849, AsyncFixer02` blocks have been removed from `JsonLineLoader`. `JsonMultiStreamLoader` serializes via `Utf8JsonWriter` directly onto its stream and was not affected by this ADR.

@@ -1,53 +1,35 @@
 # ADR-003 `#if` Guards in CreateStreamWriter for leaveOpen Compat
 
-- **Status**: Accepted
+- **Status**: Superseded — StreamWriter removed (2026-07-16)
 - **Date**: 2026-07-16
-- **Updated**: 2026-07-16 (BOM issue resolved — see Update section)
 
 ---
 
 ## Context
 
-`JsonLineLoader` needs to write to a `Stream` it does not own, meaning `StreamWriter` must be constructed with `leaveOpen: true` so it does not close the caller's stream on dispose. The convenient `new StreamWriter(stream, leaveOpen: true)` constructor was introduced in .NET 6 and is not available on net462, netstandard2.0, or net481. A cross-TFM strategy is required.
+`JsonLineLoader` needed to write to a `Stream` it does not own, meaning `StreamWriter` had to be constructed with `leaveOpen: true` so it would not close the caller's stream on dispose. The 2-arg `new StreamWriter(stream, leaveOpen: true)` constructor was introduced in .NET 6 and was not available on net462, netstandard2.0, or net481. A cross-TFM strategy was required.
 
 ---
 
-## Decision
+## Decision (original)
 
-We use a `#if` preprocessor guard in `CreateStreamWriter` to call different constructors depending on the target framework. Modern TFMs (net6+) use the clean `leaveOpen: true` two-argument overload. Older TFMs use the five-argument overload with `new UTF8Encoding(encoderShouldEmitUTF8Identifier: false)` to suppress the BOM preamble.
-
----
-
-## Considered Options
-
-### Option A: Always use the 5-arg overload
-
-- Pro: Compiles on all TFMs without `#if`.
-- Con: Forces a magic buffer size even on modern TFMs where a cleaner API exists.
-
-### Option B: `#if` guard (chosen)
-
-- Pro: Modern TFMs (net6+) use the clean 2-arg constructor — no buffer size, no encoding ceremony.
-- Pro: Older TFMs compile and run correctly using the 5-arg form.
-- Con: Slightly more code to maintain across the `#if` boundary.
+A `#if` preprocessor guard in `CreateStreamWriter` called different constructors depending on the target framework. Modern TFMs (net6+) used the 2-arg overload. Older TFMs used the 5-arg overload, which required passing `Encoding.UTF8` — causing a UTF-8 BOM to be written on those TFMs.
 
 ---
 
-## Consequences
+## Update — Superseded (2026-07-16)
 
-**Easier:**
+`JsonLineLoader` no longer uses `StreamWriter` at all. The caller passes in a `Stream` they own; wrapping it in a `StreamWriter` (which disposes the stream on its own dispose) was the wrong approach from the start.
 
-- All TFMs produce BOM-free JSON output.
-- The library compiles and runs correctly across the full TFM matrix without runtime fallbacks.
+The replacement writes directly to `_stream`:
+- UTF-8 path (default): `JsonSerializer.SerializeToUtf8Bytes` + `Stream.WriteAsync`
+- Custom encoding path: `JsonSerializer.Serialize` (string) + `Encoding.GetBytes` + `Stream.WriteAsync`
 
-**Harder:**
-
-- The `#if` guard must be maintained when TFM targets change.
-
----
-
-## Update — BOM issue resolved (2026-07-16)
-
-The original draft of this ADR noted that the 5-arg constructor path (older TFMs) passed `System.Text.Encoding.UTF8`, which writes a UTF-8 BOM preamble. This caused observable output differences and required `TrimStart('﻿')` workarounds in the snapshot test suite.
-
-**Fix (issue #227):** The 5-arg path now passes `new UTF8Encoding(encoderShouldEmitUTF8Identifier: false)`, which is available on all TFMs including net462 and netstandard2.0, and produces BOM-free output. The `TrimStart` workaround has been removed. Both `#if` branches now produce identical, BOM-free output.
+This eliminates:
+- `leaveOpen: true` (no wrapper to close the stream)
+- The `#if` guard (no constructor variation needed)
+- The UTF-8 BOM (no `Encoding.UTF8` reference)
+- `CreateStreamWriter` method
+- The `TrimStart('﻿')` workaround in snapshot tests
+- `CA1849`/`AsyncFixer02` suppressions (writes are now genuinely async)
+- The explicit `FlushAsync` call (no intermediate buffer to flush)
