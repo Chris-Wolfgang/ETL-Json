@@ -45,6 +45,7 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Wolfgang.Etl.Json.Tests.Unit/Wolfgang.Etl.Json.Tests.Unit.csproj" />
+    <Project Path="tests/Wolfgang.Etl.Json.Tests.Docs/Wolfgang.Etl.Json.Tests.Docs.csproj" />
     <Project Path="tests/Wolfgang.Etl.Json.Tests.Integration/Wolfgang.Etl.Json.Tests.Integration.csproj" />
   </Folder>
 </Solution>
