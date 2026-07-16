@@ -746,6 +746,38 @@ jobs:
           Write-Host "✅ All packages published to NuGet.org" -ForegroundColor Green
           Write-Host "==========================================" -ForegroundColor Green
 
+  # SLSA build provenance attestation — proves the .nupkg / .snupkg
+  # attached to the Release were built by THIS workflow at THIS commit,
+  # signed via GitHub's OIDC identity with Sigstore's keyless CA.
+  # Consumers can verify with:
+  #   gh attestation verify <pkg>.nupkg --owner Chris-Wolfgang --repo ETL-Json
+  # See SECURITY.md for full verification instructions.
+  # Closes #125
+  attest-build-provenance:
+    name: Attest build provenance (SLSA)
+    needs: [pack-and-validate, publish-nuget]
+    if: needs.pack-and-validate.outputs.has-packages == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write      # OIDC token for Sigstore keyless signing
+      contents: read
+      attestations: write  # required to write attestation to the repo
+
+    steps:
+      - name: Download packed artifacts
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: nuget-packages
+          path: ./packages
+
+      - name: Attest .nupkg / .snupkg provenance
+        uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v3.0.0
+        with:
+          subject-path: |
+            packages/*.nupkg
+            packages/*.snupkg
+
+
   # Build and deploy versioned documentation via the shared docfx workflow
   # Note: reusable workflow jobs called via `uses:` do not require `runs-on` in the caller
   trigger-docs:
