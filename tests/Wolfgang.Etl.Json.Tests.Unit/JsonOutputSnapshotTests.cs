@@ -17,12 +17,10 @@ public class JsonOutputSnapshotTests
     private static readonly PersonRecord Alice = new() { FirstName = "Alice", LastName = "Smith", Age = 30 };
     private static readonly PersonRecord Bob = new() { FirstName = "Bob", LastName = "Jones", Age = 25 };
 
-    // net462/netstandard2.0: StreamWriter with Encoding.UTF8 writes a UTF-8 BOM preamble.
-    // Strip it so the snapshot covers JSON content, not encoding metadata.
     private static string ReadLineLoaderOutput(MemoryStream stream)
     {
         stream.Position = 0;
-        return Encoding.UTF8.GetString(stream.ToArray()).TrimStart('﻿');
+        return Encoding.UTF8.GetString(stream.ToArray());
     }
 
 
