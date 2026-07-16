@@ -375,6 +375,13 @@ jobs:
           dotnet restore
           dotnet build --no-restore --configuration Release
 
+      - name: Check ABI compatibility (ApiCompat)
+        shell: pwsh
+        run: |
+          dotnet tool install -g Microsoft.DotNet.ApiCompat.Tool
+          $env:PATH += [IO.Path]::PathSeparator + (Join-Path $env:USERPROFILE '.dotnet/tools')
+          ./scripts/Check-ApiCompatibility.ps1 -Configuration Release
+
       - name: Pack NuGet packages
         id: check-packages
         shell: pwsh
