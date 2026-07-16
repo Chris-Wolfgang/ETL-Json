@@ -1,0 +1,119 @@
+# AOT / trim publish smoke test.
+#
+# Publishes examples/Wolfgang.Etl.Json.Example.AotSmoke with
+# <PublishAot>true</PublishAot> + <PublishTrimmed>true</PublishTrimmed>
+# and runs the resulting native binary. Surfaces IL2xxx / AOT0xxx /
+# IL3xxx warnings so we know which library surfaces the trimmer /
+# AOT compiler can't see through.
+#
+# The library's JsonTypeInfo<T> overloads (used by the smoke example)
+# carry [RequiresDynamicCode] / [RequiresUnreferencedCode] guards on the
+# reflection-based overloads, so AOT-clean paths are explicitly marked.
+# This workflow verifies those paths produce a runnable binary.
+#
+# Status: INFORMATIONAL / NON-BLOCKING today (continue-on-error).
+# Refs #130.
+name: AOT + trim smoke
+
+on:
+  pull_request_target:
+    paths:
+      - "src/**"
+      - "examples/Wolfgang.Etl.Json.Example.AotSmoke/**"
+      - ".github/workflows/aot-smoke.yaml"
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "examples/Wolfgang.Etl.Json.Example.AotSmoke/**"
+      - ".github/workflows/aot-smoke.yaml"
+  workflow_dispatch:
+
+jobs:
+  aot-smoke:
+    name: PublishAot + PublishTrimmed
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore examples/Wolfgang.Etl.Json.Example.AotSmoke/Wolfgang.Etl.Json.Example.AotSmoke.csproj
+
+      - name: Publish (PublishAot + PublishTrimmed)
+        id: publish
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          mkdir -p publish
+          dotnet publish \
+            examples/Wolfgang.Etl.Json.Example.AotSmoke/Wolfgang.Etl.Json.Example.AotSmoke.csproj \
+            --configuration Release \
+            --runtime linux-x64 \
+            --self-contained true \
+            --output publish \
+            -p:PublishAot=true \
+            -p:PublishTrimmed=true \
+            -p:TrimmerSingleWarn=false \
+            2>&1 | tee publish.log
+
+      - name: Summarize trim / AOT warnings
+        if: always()
+        run: |
+          {
+            echo "## AOT + trim smoke — warning summary"
+            echo ""
+            if [ ! -f publish.log ]; then
+              echo "publish step produced no log — likely errored before running dotnet."
+              exit 0
+            fi
+            il2_count=$(grep -c "warning IL2" publish.log || true)
+            il3_count=$(grep -c "warning IL3" publish.log || true)
+            aot_count=$(grep -c "warning AOT" publish.log || true)
+            echo "| Category | Count |"
+            echo "|---|---|"
+            echo "| Trim (IL2xxx) | $il2_count |"
+            echo "| Single-file (IL3xxx) | $il3_count |"
+            echo "| AOT (AOT0xxx) | $aot_count |"
+            echo ""
+            if [ "$il2_count" -gt 0 ] || [ "$il3_count" -gt 0 ] || [ "$aot_count" -gt 0 ]; then
+              echo "<details><summary>First 20 warnings</summary>"
+              echo ""
+              echo '```'
+              grep -E "warning (IL[23]|AOT)" publish.log | head -20
+              echo '```'
+              echo ""
+              echo "</details>"
+            fi
+            echo ""
+            echo "**Gate mode**: non-blocking (informational). Promote to blocking once IL2xxx count reaches zero."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Run the AOT-published binary
+        if: steps.publish.outcome == 'success'
+        run: |
+          bin=publish/Wolfgang.Etl.Json.Example.AotSmoke
+          if [ ! -x "$bin" ]; then
+            echo "::warning::AOT-published binary not found at $bin — publish output layout may have changed."
+            exit 0
+          fi
+          "$bin"
+
+      - name: Upload publish log
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: aot-smoke-publish-log
+          path: publish.log
+          retention-days: 30
