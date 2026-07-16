@@ -568,6 +568,25 @@ jobs:
           }
 
 
+      - name: Generate reproducible-build hash manifest
+        if: steps.check-packages.outputs.has-packages == 'true'
+        shell: pwsh
+        env:
+          RELEASE_TAG_NAME: ${{ github.event.release.tag_name }}
+        run: |
+          $artifacts = Get-ChildItem -Path 'nuget-packages' -Include '*.nupkg','*.snupkg' -Recurse -ErrorAction SilentlyContinue
+          $entries = $artifacts | ForEach-Object {
+            $hash = (Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLower()
+            [ordered]@{ name = $_.Name; sha256 = $hash }
+          }
+          $manifest = [ordered]@{
+            version   = ($env:RELEASE_TAG_NAME -replace '^v\.?', '')
+            artifacts = @($entries)
+          }
+          $manifest | ConvertTo-Json -Depth 5 |
+            Out-File -FilePath 'nuget-packages/reproducible-build-manifest.json' -Encoding utf8NoBOM
+          Write-Host "✅ Hash manifest written" -ForegroundColor Green
+
       - name: Upload NuGet packages
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
@@ -821,5 +840,6 @@ jobs:
             ./nuget-packages/*.nupkg
             ./nuget-packages/*.snupkg
             ./nuget-packages/*.bom.json
+            ./nuget-packages/reproducible-build-manifest.json
             release-coverage.zip
 
