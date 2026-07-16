@@ -277,7 +277,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, I
     {
 #if NETSTANDARD2_0 || NET462 || NET481
         return Encoding is null
-            ? new StreamWriter(_stream, System.Text.Encoding.UTF8, bufferSize: 1024, leaveOpen: true)
+            ? new StreamWriter(_stream, new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: false), bufferSize: 1024, leaveOpen: true)
             : new StreamWriter(_stream, Encoding, bufferSize: 1024, leaveOpen: true);
 #else
         return Encoding is null

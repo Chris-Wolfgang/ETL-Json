@@ -2,6 +2,7 @@
 
 - **Status**: Accepted
 - **Date**: 2026-07-16
+- **Updated**: 2026-07-16 (BOM issue resolved — see Update section)
 
 ---
 
@@ -13,7 +14,7 @@
 
 ## Decision
 
-We will use a `#if` preprocessor guard in `CreateStreamWriter` to call different constructors depending on the target framework. Modern TFMs (net6+) use the clean `leaveOpen: true` two-argument overload. Older TFMs use the five-argument overload `new StreamWriter(stream, Encoding.UTF8, 1024, leaveOpen: true)`.
+We use a `#if` preprocessor guard in `CreateStreamWriter` to call different constructors depending on the target framework. Modern TFMs (net6+) use the clean `leaveOpen: true` two-argument overload. Older TFMs use the five-argument overload with `new UTF8Encoding(encoderShouldEmitUTF8Identifier: false)` to suppress the BOM preamble.
 
 ---
 
@@ -22,15 +23,13 @@ We will use a `#if` preprocessor guard in `CreateStreamWriter` to call different
 ### Option A: Always use the 5-arg overload
 
 - Pro: Compiles on all TFMs without `#if`.
-- Con: `Encoding.UTF8` on older frameworks writes a UTF-8 BOM, which is incorrect for most JSON consumers.
-- Con: Forces BOM behavior even on modern TFMs where a cleaner API exists.
+- Con: Forces a magic buffer size even on modern TFMs where a cleaner API exists.
 
 ### Option B: `#if` guard (chosen)
 
-- Pro: Modern TFMs (net6+) use the clean 2-arg constructor — no BOM, no magic buffer size.
+- Pro: Modern TFMs (net6+) use the clean 2-arg constructor — no buffer size, no encoding ceremony.
 - Pro: Older TFMs compile and run correctly using the 5-arg form.
-- Con: Older TFMs (net462, netstandard2.0, net481) emit a UTF-8 BOM at the start of each stream — this is a documented behavior difference.
-- Con: Test suite must strip the BOM (via `TrimStart('﻿')`) when comparing output across TFMs.
+- Con: Slightly more code to maintain across the `#if` boundary.
 
 ---
 
@@ -38,10 +37,17 @@ We will use a `#if` preprocessor guard in `CreateStreamWriter` to call different
 
 **Easier:**
 
-- Consumers on net6+ get clean, BOM-free JSON output with no special handling required.
+- All TFMs produce BOM-free JSON output.
 - The library compiles and runs correctly across the full TFM matrix without runtime fallbacks.
 
 **Harder:**
 
-- `JsonLineLoader` writes a UTF-8 BOM on net462, netstandard2.0, and net481; consumers on those TFMs should use a BOM-aware parser or set an explicit `Encoding.UTF8` (which strips the BOM on read).
-- The test suite's cross-TFM comparison logic must account for the BOM; do not remove the `TrimStart` call without re-examining the full TFM test matrix.
+- The `#if` guard must be maintained when TFM targets change.
+
+---
+
+## Update — BOM issue resolved (2026-07-16)
+
+The original draft of this ADR noted that the 5-arg constructor path (older TFMs) passed `System.Text.Encoding.UTF8`, which writes a UTF-8 BOM preamble. This caused observable output differences and required `TrimStart('﻿')` workarounds in the snapshot test suite.
+
+**Fix (issue #227):** The 5-arg path now passes `new UTF8Encoding(encoderShouldEmitUTF8Identifier: false)`, which is available on all TFMs including net462 and netstandard2.0, and produces BOM-free output. The `TrimStart` workaround has been removed. Both `#if` branches now produce identical, BOM-free output.
