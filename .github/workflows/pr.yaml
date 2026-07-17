@@ -1420,7 +1420,7 @@ jobs:
   # STAGE 4: Linux ARM64 Tests (Gated by Stage 2, runs parallel to Stage 3)
   # ============================================================================
   test-linux-arm64:
-    name: "Stage 4: Linux ARM64 Tests (.NET 5.0-10.0)"
+    name: "Stage 4: Linux ARM64 Tests (.NET 6.0-10.0)"
     runs-on: ubuntu-24.04-arm
     needs: [detect-projects, test-windows]
     if: github.repository != 'Chris-Wolfgang/repo-template' && needs.detect-projects.outputs.has-projects == 'true'
@@ -1469,7 +1469,6 @@ jobs:
         uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
         with:
           dotnet-version: |
-            5.0.x
             6.0.x
             7.0.x
             8.0.x
@@ -1481,7 +1480,7 @@ jobs:
           dotnet restore
           dotnet build --no-restore --configuration Release
 
-      - name: Run tests (.NET 5.0-10.0)
+      - name: Run tests (.NET 6.0-10.0)
         run: |
           test_projects=()
           while IFS= read -r proj; do
@@ -1497,7 +1496,7 @@ jobs:
             echo "=========================================="
             echo "Testing: $proj"
             echo "=========================================="
-            for fw in net5.0 net6.0 net7.0 net8.0 net9.0 net10.0; do
+            for fw in net6.0 net7.0 net8.0 net9.0 net10.0; do
               if dotnet test "$proj" --configuration Release --framework "$fw" \
                   --no-build --no-restore \
                   --logger "console;verbosity=minimal" 2>/dev/null; then
