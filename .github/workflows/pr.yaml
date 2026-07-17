@@ -1412,8 +1412,117 @@ jobs:
           echo "Stage 1: Linux tests + 90% coverage ✅"
           echo "Stage 2: Windows .NET Core & .NET Framework tests ✅"
           echo "Stage 3: macOS tests ✅"
+          echo "Stage 4: Linux ARM64 tests ✅ (runs parallel to Stage 3)"
           echo ""
           echo "PR is ready to merge! 🎉"
+
+  # ============================================================================
+  # STAGE 4: Linux ARM64 Tests (Gated by Stage 2, runs parallel to Stage 3)
+  # ============================================================================
+  test-linux-arm64:
+    name: "Stage 4: Linux ARM64 Tests (.NET 5.0-10.0)"
+    runs-on: ubuntu-24.04-arm
+    needs: [detect-projects, test-windows]
+    if: github.repository != 'Chris-Wolfgang/repo-template' && needs.detect-projects.outputs.has-projects == 'true'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          ref: refs/pull/${{ github.event.pull_request.number }}/head
+          persist-credentials: false
+
+      - name: Fetch trusted configuration files from main branch
+        if: github.event.pull_request.user.login != 'dependabot[bot]'
+        run: |
+          git fetch origin main:main-branch
+          config_files=(
+            ".editorconfig"
+            "Directory.Build.props"
+            "Directory.Build.targets"
+            "BannedSymbols.txt"
+            "*.globalconfig"
+            "*.ruleset"
+            ".github/workflows/*.yml"
+            ".github/workflows/*.yaml"
+          )
+          for config_file in "${config_files[@]}"; do
+            if [[ "$config_file" == *"*"* ]]; then
+              while read -r file; do
+                if [ -n "$file" ]; then
+                  mkdir -p "$(dirname "$file")"
+                  if ! git show "main-branch:$file" > "$file"; then
+                    echo "::error::Failed to copy $file from main-branch"
+                    exit 1
+                  fi
+                fi
+              done < <(git ls-tree -r --name-only main-branch | { grep -E "${config_file//\*/.*}" || true; })
+            else
+              if git cat-file -e "main-branch:$config_file" 2>/dev/null; then
+                mkdir -p "$(dirname "$config_file")"
+                git show "main-branch:$config_file" > "$config_file"
+              fi
+            fi
+          done
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+        with:
+          dotnet-version: |
+            5.0.x
+            6.0.x
+            7.0.x
+            8.0.x
+            9.0.x
+            10.0.x
+
+      - name: Restore and build
+        run: |
+          dotnet restore
+          dotnet build --no-restore --configuration Release
+
+      - name: Run tests (.NET 5.0-10.0)
+        run: |
+          test_projects=()
+          while IFS= read -r proj; do
+            test_projects+=("$proj")
+          done < <(find ./tests -name '*.csproj' -not -name '*.Docs.*' -not -name '*.Integration.*' 2>/dev/null || true)
+
+          if [ ${#test_projects[@]} -eq 0 ]; then
+            echo "No test projects found — skipping"
+            exit 0
+          fi
+
+          for proj in "${test_projects[@]}"; do
+            echo "=========================================="
+            echo "Testing: $proj"
+            echo "=========================================="
+            for fw in net5.0 net6.0 net7.0 net8.0 net9.0 net10.0; do
+              if dotnet test "$proj" --configuration Release --framework "$fw" \
+                  --no-build --no-restore \
+                  --logger "console;verbosity=minimal" 2>/dev/null; then
+                echo "  ✅ $fw passed"
+              else
+                rc=$?
+                # Skip if framework isn't targeted by this project
+                if dotnet test "$proj" --configuration Release --framework "$fw" \
+                    --list-tests --no-build 2>&1 | grep -q "No test"; then
+                  echo "  ⏭️  $fw not targeted"
+                else
+                  echo "  ❌ $fw failed"
+                  exit $rc
+                fi
+              fi
+            done
+          done
+          echo ""
+          echo "✅ All ARM64 tests passed"
+
+      - name: Display ARM64 architecture info
+        if: always()
+        run: |
+          echo "Runner architecture: $(uname -m)"
+          echo "OS: $(uname -s -r)"
 
   # ============================================================================
   # Integration Tests (Runs after Linux core tests on net8.0 and net10.0)
