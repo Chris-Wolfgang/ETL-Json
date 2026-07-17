@@ -38,6 +38,7 @@
   </Folder>
   <Folder Name="/examples/">
     <Project Path="examples/Wolfgang.Etl.Json.Examples/Wolfgang.Etl.Json.Examples.csproj" />
+    <Project Path="examples/Wolfgang.Etl.Json.Example.AotSmoke/Wolfgang.Etl.Json.Example.AotSmoke.csproj" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Wolfgang.Etl.Json/Wolfgang.Etl.Json.csproj" />

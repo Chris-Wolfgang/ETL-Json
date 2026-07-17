@@ -32,6 +32,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, I
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSONL loading of {typeof(TRecord).Name}";
+    private static readonly byte[] _newLineUtf8 = System.Text.Encoding.UTF8.GetBytes(Environment.NewLine);
     private readonly Stream _stream;
     private readonly JsonSerializerOptions? _options;
     private readonly JsonTypeInfo<TRecord>? _typeInfo;
@@ -221,7 +222,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, I
     {
         JsonLogMessages.StartingOperation(_logger, OperationName, null);
 
-        using var writer = IsDryRun ? null : CreateStreamWriter();
+        var newLine = Encoding is null ? _newLineUtf8 : Encoding.GetBytes(Environment.NewLine);
 
         await foreach (var item in items.WithCancellation(token).ConfigureAwait(false))
         {
@@ -242,48 +243,33 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, I
 
             Interlocked.Increment(ref _currentLineNumber);
 
-            if (writer is not null)
+            if (!IsDryRun)
             {
-                var json = _typeInfo is not null
-                    ? JsonSerializer.Serialize(item, _typeInfo)
-                    : JsonSerializer.Serialize(item, _options);
+                byte[] bytes;
 
-#pragma warning disable CA1849, S6966, VSTHRD103, AsyncFixer02 // Sync WriteLine avoids async state machine allocation per item
-                writer.WriteLine(json);
-#pragma warning restore CA1849, S6966, VSTHRD103, AsyncFixer02
+                if (Encoding is null)
+                {
+                    bytes = _typeInfo is not null
+                        ? JsonSerializer.SerializeToUtf8Bytes(item, _typeInfo)
+                        : JsonSerializer.SerializeToUtf8Bytes(item, _options);
+                }
+                else
+                {
+                    var json = _typeInfo is not null
+                        ? JsonSerializer.Serialize(item, _typeInfo)
+                        : JsonSerializer.Serialize(item, _options);
+                    bytes = Encoding.GetBytes(json);
+                }
+
+                await _stream.WriteAsync(bytes, offset: 0, count: bytes.Length, token).ConfigureAwait(false);
+                await _stream.WriteAsync(newLine, offset: 0, count: newLine.Length, token).ConfigureAwait(false);
             }
 
             IncrementCurrentItemCount();
             JsonLogMessages.LoadedItemAtLine(_logger, CurrentItemCount, Interlocked.Read(ref _currentLineNumber), null);
         }
 
-        if (writer is not null)
-        {
-#if NETSTANDARD2_0 || NET462 || NET481
-#pragma warning disable CA2016, MA0040 // FlushAsync(CancellationToken) not available on this TFM
-            await writer.FlushAsync().ConfigureAwait(false);
-#pragma warning restore CA2016, MA0040
-#else
-            await writer.FlushAsync(token).ConfigureAwait(false);
-#endif
-        }
-
         JsonLogMessages.JsonlLoadingCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, Interlocked.Read(ref _currentLineNumber), null);
-    }
-
-
-
-    private StreamWriter CreateStreamWriter()
-    {
-#if NETSTANDARD2_0 || NET462 || NET481
-        return Encoding is null
-            ? new StreamWriter(_stream, System.Text.Encoding.UTF8, bufferSize: 1024, leaveOpen: true)
-            : new StreamWriter(_stream, Encoding, bufferSize: 1024, leaveOpen: true);
-#else
-        return Encoding is null
-            ? new StreamWriter(_stream, leaveOpen: true)
-            : new StreamWriter(_stream, Encoding, bufferSize: 1024, leaveOpen: true);
-#endif
     }
 
 

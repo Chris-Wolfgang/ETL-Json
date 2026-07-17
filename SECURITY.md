@@ -102,3 +102,57 @@ If a malicious package was published and consumed:
 For urgent package-level issues (e.g., a compromised version that must be
 quarantined faster than the unlist process allows), contact NuGet support at
 <https://www.nuget.org/policies/Contact> and select **Report abuse**.
+
+---
+
+## Supply-Chain Verification
+
+This section documents how consumers can verify that a published NuGet package
+was genuinely built from this repository by the `release.yaml` workflow.
+
+### SBOM (Software Bill of Materials)
+
+Every release attaches a `Wolfgang.Etl.Json.bom.json` CycloneDX SBOM to the
+GitHub Release assets. It lists every NuGet dependency and its version.
+
+To audit the dependency graph:
+
+1. Download `Wolfgang.Etl.Json.bom.json` from the GitHub Release page.
+2. Open it in any CycloneDX-compatible tool (e.g.,
+   [CycloneDX CLI](https://github.com/CycloneDX/cyclonedx-cli),
+   [OWASP Dependency-Track](https://dependencytrack.org/)).
+3. Cross-reference component licenses and versions against your own policy.
+
+### SLSA Build Provenance Attestation
+
+Every release generates a **SLSA Build Level 2** provenance attestation signed
+via [Sigstore](https://sigstore.dev/) keyless signing through GitHub's OIDC
+identity. The attestation proves that the `.nupkg` / `.snupkg` files were
+produced by the `release.yaml` workflow at a specific commit in this
+repository — with no opportunity for an attacker to inject artifacts without
+leaving a verifiable audit trail.
+
+**To verify a package:**
+
+1. Install the [GitHub CLI](https://cli.github.com/) (v2.49.0+).
+2. Download the `.nupkg` from NuGet or the GitHub Release page.
+3. Run:
+
+   ```sh
+   gh attestation verify Wolfgang.Etl.Json.<version>.nupkg \
+     --owner Chris-Wolfgang \
+     --repo ETL-Json
+   ```
+
+4. A successful verification prints the signing workflow, commit SHA, and
+   Sigstore transparency log entry. Failure means the artifact cannot be
+   traced to a legitimate release run.
+
+### Package Signing (deferred)
+
+NuGet package signing via a code-signing certificate (or Sigstore `cosign`) is
+**not yet implemented**. SLSA attestation via `gh attestation verify` provides
+an equivalent supply-chain integrity guarantee for most scenarios.
+
+Once implemented, consumers will be able to run `dotnet nuget verify` to check
+the embedded signature independently of the GitHub CLI.

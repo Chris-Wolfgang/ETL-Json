@@ -236,6 +236,15 @@ docfx build --serve
 
 ---
 
+## 🔍 Verify the Build
+
+The NuGet packages published from this repository are reproducible and
+supply-chain-verified. See [`docs/REPRODUCIBLE-BUILD.md`](docs/REPRODUCIBLE-BUILD.md)
+for step-by-step instructions to independently reproduce and verify any
+release artifact.
+
+---
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for:
