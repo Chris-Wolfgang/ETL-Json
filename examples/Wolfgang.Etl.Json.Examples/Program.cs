@@ -257,23 +257,15 @@ static async Task SkipAndMaxExample()
 
 
 
-<<<<<<< HEAD
 static async Task CompressedStreamsExample()
 {
     Console.WriteLine("=== Compressed Streams Example ===");
     Console.WriteLine("The extractors and loaders accept any Stream, including compression wrappers.");
-=======
-static async Task SchemaCustomizationExample()
-{
-    Console.WriteLine("=== Schema Customization Example ===");
-    Console.WriteLine("Customize JSON serialization without modifying the POCO class.");
->>>>>>> a4a7f83 (docs: add schema customization examples and guide (#18))
     Console.WriteLine();
 
     var people = new List<Person>
     {
         new() { FirstName = "Alice", LastName = "Smith", Age = 30, Email = "alice@example.com" },
-<<<<<<< HEAD
         new() { FirstName = "Bob", LastName = "Jones", Age = 25, Email = "bob@example.com" },
     };
 
@@ -298,7 +290,19 @@ static async Task SchemaCustomizationExample()
     }
 
     Console.WriteLine($"Extracted: {extractor.CurrentItemCount}");
-=======
+}
+
+
+
+static async Task SchemaCustomizationExample()
+{
+    Console.WriteLine("=== Schema Customization Example ===");
+    Console.WriteLine("Customize JSON serialization without modifying the POCO class.");
+    Console.WriteLine();
+
+    var people = new List<Person>
+    {
+        new() { FirstName = "Alice", LastName = "Smith", Age = 30, Email = "alice@example.com" },
     };
 
     // --- snake_case naming policy ---
@@ -343,5 +347,4 @@ static async Task SchemaCustomizationExample()
     ignoreStream.Position = 0;
     using var ignoreReader = new StreamReader(ignoreStream);
     Console.WriteLine("  " + await ignoreReader.ReadToEndAsync());
->>>>>>> a4a7f83 (docs: add schema customization examples and guide (#18))
 }
