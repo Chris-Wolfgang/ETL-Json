@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -27,6 +28,8 @@ Console.WriteLine();
 await CustomOptionsExample(loggerFactory);
 Console.WriteLine();
 await SkipAndMaxExample();
+Console.WriteLine();
+await CompressedStreamsExample();
 
 
 
@@ -248,4 +251,41 @@ static async Task SkipAndMaxExample()
     }
 
     Console.WriteLine($"Extracted: {extractor.CurrentItemCount}, Skipped: {extractor.CurrentSkippedItemCount}");
+}
+
+
+
+static async Task CompressedStreamsExample()
+{
+    Console.WriteLine("=== Compressed Streams Example ===");
+    Console.WriteLine("The extractors and loaders accept any Stream, including compression wrappers.");
+    Console.WriteLine();
+
+    var people = new List<Person>
+    {
+        new() { FirstName = "Alice", LastName = "Smith", Age = 30, Email = "alice@example.com" },
+        new() { FirstName = "Bob", LastName = "Jones", Age = 25, Email = "bob@example.com" },
+    };
+
+    // --- Load to GZip-compressed JSONL ---
+    var compressed = new MemoryStream();
+    using (var gzipWrite = new GZipStream(compressed, CompressionLevel.Optimal, leaveOpen: true))
+    {
+        var loader = new JsonLineLoader<Person>(gzipWrite);
+        await loader.LoadAsync(people.ToAsyncEnumerable());
+        Console.WriteLine($"Loaded {loader.CurrentItemCount} items to GZip-compressed JSONL ({compressed.Length} bytes compressed).");
+    }
+
+    // --- Extract back from GZip-compressed JSONL ---
+    compressed.Position = 0;
+    using var gzipRead = new GZipStream(compressed, CompressionMode.Decompress);
+    var extractor = new JsonLineExtractor<Person>(gzipRead);
+
+    Console.WriteLine("Extracted items:");
+    await foreach (var person in extractor.ExtractAsync())
+    {
+        Console.WriteLine($"  {person.FirstName} {person.LastName}, age {person.Age}");
+    }
+
+    Console.WriteLine($"Extracted: {extractor.CurrentItemCount}");
 }
