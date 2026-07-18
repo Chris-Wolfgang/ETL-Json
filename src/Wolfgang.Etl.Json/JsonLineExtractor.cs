@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -37,6 +38,9 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSONL extraction of {typeof(TRecord).Name}";
+    private static readonly KeyValuePair<string, object?> _operationTag = new("etl.operation", "extract");
+    private static readonly KeyValuePair<string, object?> _componentTag = new("etl.component", "JsonLine");
+    private static readonly KeyValuePair<string, object?> _recordTypeTag = new("etl.record_type", typeof(TRecord).Name);
     private readonly Stream _stream;
     private readonly JsonSerializerOptions? _options;
     private readonly JsonTypeInfo<TRecord>? _typeInfo;
@@ -270,6 +274,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
         JsonLogMessages.StartingOperation(_logger, OperationName, null);
         var (newlineSize, lineEncoding) = await PrepareForExtractionAsync(token).ConfigureAwait(false);
         var skipBudget = SkipItemCount;
+        var sw = Stopwatch.StartNew();
         using var reader = CreateStreamReader();
         string? line;
 #if NETSTANDARD2_0 || NET462 || NET481
@@ -304,6 +309,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
                 skipBudget--;
                 Interlocked.Add(ref _currentByteOffset, lineBytes);
                 IncrementCurrentSkippedItemCount();
+                JsonMetrics.ItemsSkipped.Add(1, _operationTag, _componentTag, _recordTypeTag);
                 JsonLogMessages.SkippedItemAtLine(_logger, CurrentSkippedItemCount, SkipItemCount, lineNum, null);
                 continue;
             }
@@ -314,16 +320,25 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
             }
             Interlocked.Add(ref _currentByteOffset, lineBytes);
             IncrementCurrentItemCount();
+            JsonMetrics.ItemsExtracted.Add(1, _operationTag, _componentTag, _recordTypeTag);
             JsonLogMessages.ExtractedItemFromLine(_logger, CurrentItemCount, lineNum, null);
             yield return item;
         }
 
+        CompleteExtraction(sw);
+    }
+
+
+
+    private void CompleteExtraction(Stopwatch sw)
+    {
         if (_stream.CanSeek && Interlocked.Read(ref _currentByteOffset) > _stream.Length)
         {
             Interlocked.Exchange(ref _currentByteOffset, _stream.Length);
         }
 
         JsonLogMessages.JsonlExtractionCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, Interlocked.Read(ref _currentLineNumber), null);
+        JsonMetrics.OperationDuration.Record(sw.Elapsed.TotalMilliseconds, _operationTag, _componentTag, _recordTypeTag);
     }
 
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -37,6 +38,9 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSON single-stream extraction of {typeof(TRecord).Name}";
+    private static readonly KeyValuePair<string, object?> _operationTag = new("etl.operation", "extract");
+    private static readonly KeyValuePair<string, object?> _componentTag = new("etl.component", "JsonSingleStream");
+    private static readonly KeyValuePair<string, object?> _recordTypeTag = new("etl.record_type", typeof(TRecord).Name);
     private static readonly JsonSerializerOptions DefaultOptions = new();
 
     private readonly Stream _stream;
@@ -234,6 +238,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
         JsonLogMessages.StartingOperation(_logger, OperationName, null);
 
         var skipBudget = SkipItemCount;
+        var sw = Stopwatch.StartNew();
         var enumerable = _typeInfo is not null
             ? JsonSerializer.DeserializeAsyncEnumerable(_stream, _typeInfo, token)
             : JsonSerializer.DeserializeAsyncEnumerable<TRecord>(_stream, _options ?? DefaultOptions, token);
@@ -262,6 +267,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
                 {
                     skipBudget--;
                     IncrementCurrentSkippedItemCount();
+                    JsonMetrics.ItemsSkipped.Add(1, _operationTag, _componentTag, _recordTypeTag);
                     JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
                     continue;
                 }
@@ -271,6 +277,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
                     break;
                 }
                 IncrementCurrentItemCount();
+                JsonMetrics.ItemsExtracted.Add(1, _operationTag, _componentTag, _recordTypeTag);
                 JsonLogMessages.ExtractedItem(_logger, CurrentItemCount, null);
                 yield return item;
             }
@@ -278,6 +285,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
         finally
         {
             await enumerator.DisposeAsync().ConfigureAwait(false);
+            JsonMetrics.OperationDuration.Record(sw.Elapsed.TotalMilliseconds, _operationTag, _componentTag, _recordTypeTag);
         }
 
         JsonLogMessages.SingleStreamExtractionCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, null);

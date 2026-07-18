@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text.Json;
@@ -36,6 +37,9 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSON multi-stream loading of {typeof(TRecord).Name}";
+    private static readonly KeyValuePair<string, object?> _operationTag = new("etl.operation", "load");
+    private static readonly KeyValuePair<string, object?> _componentTag = new("etl.component", "JsonMultiStream");
+    private static readonly KeyValuePair<string, object?> _recordTypeTag = new("etl.record_type", typeof(TRecord).Name);
     private readonly Func<TRecord, JsonNamedDestination> _destinationFactory;
     private readonly JsonSerializerOptions? _options;
     private readonly JsonTypeInfo<TRecord>? _typeInfo;
@@ -394,47 +398,58 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
         JsonLogMessages.StartingOperation(_logger, OperationName, null);
 
         var streamIndex = 0;
+        var sw = Stopwatch.StartNew();
 
-        await foreach (var item in items.WithCancellation(token).ConfigureAwait(false))
+        try
         {
-            token.ThrowIfCancellationRequested();
-
-            if (CurrentSkippedItemCount < SkipItemCount)
+            await foreach (var item in items.WithCancellation(token).ConfigureAwait(false))
             {
-                IncrementCurrentSkippedItemCount();
-                JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
-                continue;
-            }
+                token.ThrowIfCancellationRequested();
 
-            if (CurrentItemCount >= MaximumItemCount)
-            {
-                JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
-                break;
-            }
+                if (CurrentSkippedItemCount < SkipItemCount)
+                {
+                    IncrementCurrentSkippedItemCount();
+                    JsonMetrics.ItemsSkipped.Add(1, _operationTag, _componentTag, _recordTypeTag);
+                    JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
+                    continue;
+                }
 
-            if (IsDryRun)
-            {
-                _currentDestinationName = null;
+                if (CurrentItemCount >= MaximumItemCount)
+                {
+                    JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
+                    break;
+                }
+
+                if (IsDryRun)
+                {
+                    _currentDestinationName = null;
+                    IncrementCurrentItemCount();
+                    JsonMetrics.ItemsLoaded.Add(1, _operationTag, _componentTag, _recordTypeTag);
+                    streamIndex++;
+                    JsonLogMessages.LoadedItemToStream(_logger, CurrentItemCount, streamIndex - 1, null);
+                    continue;
+                }
+
+                var destination = _destinationFactory(item);
+                _currentDestinationName = destination?.Name;
+                if (destination?.Stream is null)
+                {
+                    JsonLogMessages.StreamFactoryReturnedNull(_logger, streamIndex, null);
+                    throw new InvalidOperationException($"Destination factory returned null or a null stream for item at index {streamIndex}.");
+                }
+                await WriteItemToStreamAsync(destination.Stream, item, streamIndex, token).ConfigureAwait(false);
                 IncrementCurrentItemCount();
+                JsonMetrics.ItemsLoaded.Add(1, _operationTag, _componentTag, _recordTypeTag);
                 streamIndex++;
                 JsonLogMessages.LoadedItemToStream(_logger, CurrentItemCount, streamIndex - 1, null);
-                continue;
             }
 
-            var destination = _destinationFactory(item);
-            _currentDestinationName = destination?.Name;
-            if (destination?.Stream is null)
-            {
-                JsonLogMessages.StreamFactoryReturnedNull(_logger, streamIndex, null);
-                throw new InvalidOperationException($"Destination factory returned null or a null stream for item at index {streamIndex}.");
-            }
-            await WriteItemToStreamAsync(destination.Stream, item, streamIndex, token).ConfigureAwait(false);
-            IncrementCurrentItemCount();
-            streamIndex++;
-            JsonLogMessages.LoadedItemToStream(_logger, CurrentItemCount, streamIndex - 1, null);
+            JsonLogMessages.MultiStreamLoadingCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, streamIndex, null);
         }
-
-        JsonLogMessages.MultiStreamLoadingCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, streamIndex, null);
+        finally
+        {
+            JsonMetrics.OperationDuration.Record(sw.Elapsed.TotalMilliseconds, _operationTag, _componentTag, _recordTypeTag);
+        }
     }
 
 

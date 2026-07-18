@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text.Json;
@@ -32,6 +33,9 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, I
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSONL loading of {typeof(TRecord).Name}";
+    private static readonly KeyValuePair<string, object?> _operationTag = new("etl.operation", "load");
+    private static readonly KeyValuePair<string, object?> _componentTag = new("etl.component", "JsonLine");
+    private static readonly KeyValuePair<string, object?> _recordTypeTag = new("etl.record_type", typeof(TRecord).Name);
     private static readonly byte[] _newLineUtf8 = System.Text.Encoding.UTF8.GetBytes(Environment.NewLine);
     private readonly Stream _stream;
     private readonly JsonSerializerOptions? _options;
@@ -223,6 +227,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, I
         JsonLogMessages.StartingOperation(_logger, OperationName, null);
 
         var newLine = Encoding is null ? _newLineUtf8 : Encoding.GetBytes(Environment.NewLine);
+        var sw = Stopwatch.StartNew();
 
         await foreach (var item in items.WithCancellation(token).ConfigureAwait(false))
         {
@@ -231,6 +236,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, I
             if (CurrentSkippedItemCount < SkipItemCount)
             {
                 IncrementCurrentSkippedItemCount();
+                JsonMetrics.ItemsSkipped.Add(1, _operationTag, _componentTag, _recordTypeTag);
                 JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
                 continue;
             }
@@ -266,10 +272,12 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, I
             }
 
             IncrementCurrentItemCount();
+            JsonMetrics.ItemsLoaded.Add(1, _operationTag, _componentTag, _recordTypeTag);
             JsonLogMessages.LoadedItemAtLine(_logger, CurrentItemCount, Interlocked.Read(ref _currentLineNumber), null);
         }
 
         JsonLogMessages.JsonlLoadingCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, Interlocked.Read(ref _currentLineNumber), null);
+        JsonMetrics.OperationDuration.Record(sw.Elapsed.TotalMilliseconds, _operationTag, _componentTag, _recordTypeTag);
     }
 
 
