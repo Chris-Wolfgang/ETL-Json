@@ -287,8 +287,18 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
                 JsonLogMessages.SkippingBlankLine(_logger, lineNum, null);
                 continue;
             }
-            if (!TryDeserializeLine(line, lineNum, out var item)) { Interlocked.Add(ref _currentByteOffset, lineBytes); continue; }
-            if (item is null) { Interlocked.Add(ref _currentByteOffset, lineBytes); JsonLogMessages.LineDeserializedToNull(_logger, lineNum, null); continue; }
+            if (!TryDeserializeLine(line, lineNum, out var item))
+            {
+                Interlocked.Add(ref _currentByteOffset, lineBytes);
+                continue;
+            }
+
+            if (item is null)
+            {
+                Interlocked.Add(ref _currentByteOffset, lineBytes);
+                JsonLogMessages.LineDeserializedToNull(_logger, lineNum, null);
+                continue;
+            }
             if (skipBudget > 0)
             {
                 skipBudget--;
