@@ -649,4 +649,135 @@ public class JsonLineExtractorTests
 
         Assert.Equal(item, results[0]);
     }
+
+
+
+    [Fact]
+    public void StartByteOffset_defaults_to_zero()
+    {
+        var sut = new JsonLineExtractor<PersonRecord>(new MemoryStream());
+        Assert.Equal(0, sut.StartByteOffset);
+    }
+
+
+
+    [Fact]
+    public void CurrentByteOffset_is_zero_before_extraction()
+    {
+        var sut = new JsonLineExtractor<PersonRecord>(new MemoryStream());
+        Assert.Equal(0, sut.CurrentByteOffset);
+    }
+
+
+
+    [Fact]
+    public async Task CurrentByteOffset_advances_to_stream_length_after_full_extraction()
+    {
+        var stream = CreateJsonlStream(3);
+        var sut = new JsonLineExtractor<PersonRecord>(stream);
+
+        await sut.ExtractAsync().ToListAsync();
+
+        Assert.Equal(stream.Length, sut.CurrentByteOffset);
+    }
+
+
+
+    [Fact]
+    public async Task ExtractAsync_when_StartByteOffset_set_resumes_from_checkpoint()
+    {
+        var stream = CreateJsonlStream(ExpectedItems.Count);
+
+        // First pass — extract the first two items and capture the checkpoint.
+        var sut1 = new JsonLineExtractor<PersonRecord>(stream)
+        {
+            MaximumItemCount = 2,
+        };
+        var firstBatch = await sut1.ExtractAsync().ToListAsync();
+        var checkpoint = sut1.CurrentByteOffset;
+
+        // Second pass — seek to checkpoint and extract the remainder.
+        var sut2 = new JsonLineExtractor<PersonRecord>(stream)
+        {
+            StartByteOffset = checkpoint,
+        };
+        var secondBatch = await sut2.ExtractAsync().ToListAsync();
+
+        Assert.Equal(ExpectedItems.Take(2).ToList(), firstBatch);
+        Assert.Equal(ExpectedItems.Skip(2).ToList(), secondBatch);
+    }
+
+
+
+    [Fact]
+    public async Task ExtractAsync_when_StartByteOffset_set_extracts_items_from_checkpoint()
+    {
+        var stream = CreateJsonlStream(3);
+        var sut1 = new JsonLineExtractor<PersonRecord>(stream) { MaximumItemCount = 1 };
+        await sut1.ExtractAsync().ToListAsync();
+        var checkpoint = sut1.CurrentByteOffset;
+
+        var sut2 = new JsonLineExtractor<PersonRecord>(stream) { StartByteOffset = checkpoint };
+        var results = await sut2.ExtractAsync().ToListAsync();
+
+        Assert.Equal(ExpectedItems.Skip(1).Take(2).ToList(), results);
+    }
+
+
+
+    [Fact]
+    public async Task ExtractAsync_when_StartByteOffset_non_zero_and_stream_not_seekable_throws()
+    {
+        using var ms = CreateJsonlStream(3);
+        using var nonSeekable = new NonSeekableStream(ms);
+        var sut = new JsonLineExtractor<PersonRecord>(nonSeekable)
+        {
+            StartByteOffset = 10,
+        };
+
+        await Assert.ThrowsAsync<InvalidOperationException>
+        (
+            async () => await sut.ExtractAsync().ToListAsync()
+        );
+    }
+
+
+
+    [Fact]
+    public async Task ExtractAsync_with_crlf_stream_CurrentByteOffset_advances_to_stream_length()
+    {
+        var lines = ExpectedItems.Take(3).Select(item => JsonSerializer.Serialize(item));
+        var content = string.Join("\r\n", lines);
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
+        var sut = new JsonLineExtractor<PersonRecord>(stream);
+
+        await sut.ExtractAsync().ToListAsync();
+
+        Assert.Equal(stream.Length, sut.CurrentByteOffset);
+    }
+
+
+
+    private sealed class NonSeekableStream : Stream
+    {
+        private readonly Stream _inner;
+
+        internal NonSeekableStream(Stream inner) => _inner = inner;
+
+        public override bool CanRead => _inner.CanRead;
+        public override bool CanSeek => false;
+        public override bool CanWrite => false;
+        public override long Length => throw new NotSupportedException();
+        public override long Position
+        {
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
+        }
+
+        public override void Flush() => _inner.Flush();
+        public override int Read(byte[] buffer, int offset, int count) => _inner.Read(buffer, offset, count);
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+        public override void SetLength(long value) => throw new NotSupportedException();
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+    }
 }

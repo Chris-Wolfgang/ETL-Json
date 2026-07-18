@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Wolfgang.Etl.Abstractions;
@@ -43,6 +45,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     private readonly List<JsonDeserializationError> _errors = new();
     private int _progressTimerWired;
     private long _currentLineNumber;
+    private long _currentByteOffset;
 
 
 
@@ -52,6 +55,24 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// stream's byte-order mark (BOM), falling back to UTF-8.
     /// </summary>
     public System.Text.Encoding? Encoding { get; set; }
+
+
+
+    /// <summary>
+    /// Gets or sets the byte offset within the stream at which extraction begins.
+    /// Set this before calling <see cref="ExtractorBase{TSource,TProgress}.ExtractAsync(System.Threading.CancellationToken)"/> to resume from a saved checkpoint.
+    /// The stream must be seekable when this value is greater than zero.
+    /// Default is <c>0</c> (start of stream).
+    /// </summary>
+    public long StartByteOffset { get; set; }
+
+
+
+    /// <summary>
+    /// Gets the byte offset of the start of the next unread line in the stream.
+    /// Capture this value after each <see langword="yield"/> to create a resumable checkpoint.
+    /// </summary>
+    public long CurrentByteOffset => Interlocked.Read(ref _currentByteOffset);
 
 
 
@@ -246,13 +267,10 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     )
     {
         _errors.Clear();
-        Interlocked.Exchange(ref _currentLineNumber, 0);
         JsonLogMessages.StartingOperation(_logger, OperationName, null);
-
+        var (newlineSize, lineEncoding) = await PrepareForExtractionAsync(token).ConfigureAwait(false);
         var skipBudget = SkipItemCount;
-
         using var reader = CreateStreamReader();
-
         string? line;
 #if NETSTANDARD2_0 || NET462 || NET481
         while ((line = await reader.ReadLineAsync().ConfigureAwait(false)) is not null)
@@ -261,43 +279,93 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 #endif
         {
             token.ThrowIfCancellationRequested();
-            Interlocked.Increment(ref _currentLineNumber);
-            var lineNum = Interlocked.Read(ref _currentLineNumber);
-
+            var lineBytes = lineEncoding.GetByteCount(line) + newlineSize;
+            var lineNum = Interlocked.Increment(ref _currentLineNumber);
             if (string.IsNullOrWhiteSpace(line))
             {
+                Interlocked.Add(ref _currentByteOffset, lineBytes);
                 JsonLogMessages.SkippingBlankLine(_logger, lineNum, null);
                 continue;
             }
-
-            if (!TryDeserializeLine(line, lineNum, out var item)) { continue; }
-            if (item is null)
-            {
-                JsonLogMessages.LineDeserializedToNull(_logger, lineNum, null);
-                continue;
-            }
-
+            if (!TryDeserializeLine(line, lineNum, out var item)) { Interlocked.Add(ref _currentByteOffset, lineBytes); continue; }
+            if (item is null) { Interlocked.Add(ref _currentByteOffset, lineBytes); JsonLogMessages.LineDeserializedToNull(_logger, lineNum, null); continue; }
             if (skipBudget > 0)
             {
                 skipBudget--;
+                Interlocked.Add(ref _currentByteOffset, lineBytes);
                 IncrementCurrentSkippedItemCount();
                 JsonLogMessages.SkippedItemAtLine(_logger, CurrentSkippedItemCount, SkipItemCount, lineNum, null);
                 continue;
             }
-
             if (CurrentItemCount >= MaximumItemCount)
             {
                 JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
                 break;
             }
-
+            Interlocked.Add(ref _currentByteOffset, lineBytes);
             IncrementCurrentItemCount();
             JsonLogMessages.ExtractedItemFromLine(_logger, CurrentItemCount, lineNum, null);
-
             yield return item;
         }
 
+        if (_stream.CanSeek && Interlocked.Read(ref _currentByteOffset) > _stream.Length)
+        {
+            Interlocked.Exchange(ref _currentByteOffset, _stream.Length);
+        }
+
         JsonLogMessages.JsonlExtractionCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, Interlocked.Read(ref _currentLineNumber), null);
+    }
+
+
+
+    private async Task<(int NewlineSize, Encoding LineEncoding)> PrepareForExtractionAsync(CancellationToken token)
+    {
+        Interlocked.Exchange(ref _currentLineNumber, 0);
+        Interlocked.Exchange(ref _currentByteOffset, StartByteOffset);
+        var lineEncoding = Encoding ?? System.Text.Encoding.UTF8;
+        var newlineSize = await DetectNewlineSizeAsync(token).ConfigureAwait(false);
+        if (StartByteOffset > 0)
+        {
+            if (!_stream.CanSeek)
+            {
+                throw new InvalidOperationException
+                (
+                    "Stream must be seekable when StartByteOffset is greater than zero."
+                );
+            }
+
+            _stream.Seek(StartByteOffset, SeekOrigin.Begin);
+        }
+
+        return (newlineSize, lineEncoding);
+    }
+
+
+
+    private async Task<int> DetectNewlineSizeAsync(CancellationToken token)
+    {
+        if (!_stream.CanSeek) { return 1; }
+
+        var savedPosition = _stream.Position;
+        _stream.Seek(0, SeekOrigin.Begin);
+        var buffer = new byte[256];
+#if NETSTANDARD2_0 || NET462 || NET481
+#pragma warning disable CA2016, MA0040 // old TFM overload has no CancellationToken parameter
+        var bytesRead = await _stream.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
+#pragma warning restore CA2016, MA0040
+        _ = token;
+#else
+        var bytesRead = await _stream.ReadAsync(buffer.AsMemory(0, buffer.Length), token).ConfigureAwait(false);
+#endif
+        _stream.Seek(savedPosition, SeekOrigin.Begin);
+
+        for (var i = 0; i < bytesRead - 1; i++)
+        {
+            if (buffer[i] == '\r' && buffer[i + 1] == '\n') { return 2; }
+            if (buffer[i] == '\n') { return 1; }
+        }
+
+        return 1;
     }
 
 
