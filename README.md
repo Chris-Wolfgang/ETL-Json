@@ -236,6 +236,22 @@ docfx build --serve
 
 ---
 
+## 🔧 Advanced Usage
+
+### Compressed streams
+
+All extractors and loaders accept any `Stream`, including compression wrappers — no special API is needed. Wrap the underlying stream in a `GZipStream`, `BrotliStream`, or `DeflateStream` and pass it to the constructor.
+
+See [`docs/COMPRESSED-STREAMS.md`](docs/COMPRESSED-STREAMS.md) for examples and a TFM compatibility table.
+
+### Schema customization
+
+Customize JSON serialization without modifying — or even owning — the POCO class: use naming policies, `DefaultJsonTypeInfoResolver` modifiers (.NET 8+), custom converters, or source-generated `JsonTypeInfo<T>` for AOT-safe serialization.
+
+See [`docs/SCHEMA-CUSTOMIZATION.md`](docs/SCHEMA-CUSTOMIZATION.md) for recipes.
+
+---
+
 ## 🔍 Verify the Build
 
 The NuGet packages published from this repository are reproducible and
