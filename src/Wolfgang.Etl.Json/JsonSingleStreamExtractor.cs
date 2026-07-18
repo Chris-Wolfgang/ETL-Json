@@ -267,7 +267,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
                 {
                     skipBudget--;
                     IncrementCurrentSkippedItemCount();
-                    JsonMetrics.ItemsSkipped.Add(1, _operationTag, _componentTag, _recordTypeTag);
+                    JsonMetrics.AddSkipped(_operationTag, _componentTag, _recordTypeTag);
                     JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
                     continue;
                 }
@@ -277,7 +277,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
                     break;
                 }
                 IncrementCurrentItemCount();
-                JsonMetrics.ItemsExtracted.Add(1, _operationTag, _componentTag, _recordTypeTag);
+                JsonMetrics.AddExtracted(_operationTag, _componentTag, _recordTypeTag);
                 JsonLogMessages.ExtractedItem(_logger, CurrentItemCount, null);
                 yield return item;
             }
@@ -285,7 +285,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
         finally
         {
             await enumerator.DisposeAsync().ConfigureAwait(false);
-            JsonMetrics.OperationDuration.Record(sw.Elapsed.TotalMilliseconds, _operationTag, _componentTag, _recordTypeTag);
+            JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, _operationTag, _componentTag, _recordTypeTag);
         }
 
         JsonLogMessages.SingleStreamExtractionCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, null);

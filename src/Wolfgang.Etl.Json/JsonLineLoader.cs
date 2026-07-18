@@ -236,7 +236,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, I
             if (CurrentSkippedItemCount < SkipItemCount)
             {
                 IncrementCurrentSkippedItemCount();
-                JsonMetrics.ItemsSkipped.Add(1, _operationTag, _componentTag, _recordTypeTag);
+                JsonMetrics.AddSkipped(_operationTag, _componentTag, _recordTypeTag);
                 JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
                 continue;
             }
@@ -272,12 +272,12 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, I
             }
 
             IncrementCurrentItemCount();
-            JsonMetrics.ItemsLoaded.Add(1, _operationTag, _componentTag, _recordTypeTag);
+            JsonMetrics.AddLoaded(_operationTag, _componentTag, _recordTypeTag);
             JsonLogMessages.LoadedItemAtLine(_logger, CurrentItemCount, Interlocked.Read(ref _currentLineNumber), null);
         }
 
         JsonLogMessages.JsonlLoadingCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, Interlocked.Read(ref _currentLineNumber), null);
-        JsonMetrics.OperationDuration.Record(sw.Elapsed.TotalMilliseconds, _operationTag, _componentTag, _recordTypeTag);
+        JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, _operationTag, _componentTag, _recordTypeTag);
     }
 
 

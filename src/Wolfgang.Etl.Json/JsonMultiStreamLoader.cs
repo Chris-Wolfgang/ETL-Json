@@ -409,7 +409,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
                 if (CurrentSkippedItemCount < SkipItemCount)
                 {
                     IncrementCurrentSkippedItemCount();
-                    JsonMetrics.ItemsSkipped.Add(1, _operationTag, _componentTag, _recordTypeTag);
+                    JsonMetrics.AddSkipped(_operationTag, _componentTag, _recordTypeTag);
                     JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
                     continue;
                 }
@@ -424,7 +424,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
                 {
                     _currentDestinationName = null;
                     IncrementCurrentItemCount();
-                    JsonMetrics.ItemsLoaded.Add(1, _operationTag, _componentTag, _recordTypeTag);
+                    JsonMetrics.AddLoaded(_operationTag, _componentTag, _recordTypeTag);
                     streamIndex++;
                     JsonLogMessages.LoadedItemToStream(_logger, CurrentItemCount, streamIndex - 1, null);
                     continue;
@@ -439,7 +439,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
                 }
                 await WriteItemToStreamAsync(destination.Stream, item, streamIndex, token).ConfigureAwait(false);
                 IncrementCurrentItemCount();
-                JsonMetrics.ItemsLoaded.Add(1, _operationTag, _componentTag, _recordTypeTag);
+                JsonMetrics.AddLoaded(_operationTag, _componentTag, _recordTypeTag);
                 streamIndex++;
                 JsonLogMessages.LoadedItemToStream(_logger, CurrentItemCount, streamIndex - 1, null);
             }
@@ -448,7 +448,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
         }
         finally
         {
-            JsonMetrics.OperationDuration.Record(sw.Elapsed.TotalMilliseconds, _operationTag, _componentTag, _recordTypeTag);
+            JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, _operationTag, _componentTag, _recordTypeTag);
         }
     }
 
