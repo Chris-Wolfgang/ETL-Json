@@ -11,11 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Checkpoint/resume support on `JsonLineExtractor<TRecord>`: new `StartByteOffset` (settable) and
-  `CurrentByteOffset` (read-only) properties. Capture `CurrentByteOffset` after each yielded item to
-  record a byte-position checkpoint, then set `StartByteOffset` on a fresh extractor to resume from
-  that position. The stream must be seekable when `StartByteOffset` is greater than zero. Line
-  endings (`\n` vs `\r\n`) are detected automatically. Closes #16.
+- Checkpoint/resume support on `JsonLineExtractor<TRecord>`: new `EnableCheckpointing` (settable,
+  default `false`), `StartByteOffset` (settable) and `CurrentByteOffset` (read-only) properties. Set
+  `EnableCheckpointing` to `true`, then capture `CurrentByteOffset` after each yielded item to record
+  a byte-position checkpoint; set `StartByteOffset` on a fresh extractor to resume from that position.
+  Byte tracking is opt-in because it adds per-line overhead on the extraction hot path — with
+  `EnableCheckpointing` left `false` (the default) there is no cost, and reading `CurrentByteOffset`
+  throws `InvalidOperationException`. Resuming via `StartByteOffset` does not itself require the flag.
+  The stream must be seekable when `StartByteOffset` is greater than zero. Line endings (`\n` vs
+  `\r\n`) are detected automatically. Closes #16.
 - Built-in OpenTelemetry metrics via `System.Diagnostics.Metrics`. All extractors and loaders emit
   counters (`wolfgang.etl.json.items.extracted`, `.items.loaded`, `.items.skipped`) and an operation
   duration histogram (`wolfgang.etl.json.operation.duration`) under the `Wolfgang.Etl.Json` meter,
