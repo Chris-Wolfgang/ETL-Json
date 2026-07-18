@@ -22,6 +22,34 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.Etl.Json.ErrorHandling.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.Etl.Json.ErrorHandling.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.Etl.Json.ErrorHandling",
+      "Summary": "<p sourcefile=\"api/Wolfgang.Etl.Json.ErrorHandling.yml\" sourcestartlinenumber=\"1\">Controls how deserialization errors are handled during extraction.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.Etl.Json.JsonDeserializationError.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.Etl.Json.JsonDeserializationError.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.Etl.Json.JsonDeserializationError",
+      "Summary": "<p sourcefile=\"api/Wolfgang.Etl.Json.JsonDeserializationError.yml\" sourcestartlinenumber=\"1\">Represents a record that could not be deserialized during extraction.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/Wolfgang.Etl.Json.JsonLineExtractor-1.yml",
       "output": {
         ".html": {
@@ -75,6 +103,34 @@
       "IsMRef": true,
       "Title": "Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>",
       "Summary": "<p sourcefile=\"api/Wolfgang.Etl.Json.JsonMultiStreamLoader-1.yml\" sourcestartlinenumber=\"1\">Loads items of type <code class=\"typeparamref\">TRecord</code> into multiple streams,\nwriting one JSON object per stream.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.Etl.Json.JsonNamedDestination.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.Etl.Json.JsonNamedDestination.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.Etl.Json.JsonNamedDestination",
+      "Summary": "<p sourcefile=\"api/Wolfgang.Etl.Json.JsonNamedDestination.yml\" sourcestartlinenumber=\"1\">Associates a <xref href=\"Wolfgang.Etl.Json.JsonNamedDestination.Stream\" data-throw-if-not-resolved=\"false\"></xref> with an optional human-readable name for progress reporting.</p>\n"
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/Wolfgang.Etl.Json.JsonNamedStream.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/Wolfgang.Etl.Json.JsonNamedStream.html"
+        }
+      },
+      "version": "",
+      "Uid": null,
+      "IsMRef": true,
+      "Title": "Wolfgang.Etl.Json.JsonNamedStream",
+      "Summary": "<p sourcefile=\"api/Wolfgang.Etl.Json.JsonNamedStream.yml\" sourcestartlinenumber=\"1\">Associates a <xref href=\"Wolfgang.Etl.Json.JsonNamedStream.Stream\" data-throw-if-not-resolved=\"false\"></xref> with an optional human-readable name for progress reporting.</p>\n"
     },
     {
       "type": "ManagedReference",

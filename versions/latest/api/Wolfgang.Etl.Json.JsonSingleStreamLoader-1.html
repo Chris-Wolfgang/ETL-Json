@@ -16,7 +16,7 @@
       <meta name="docfx:rel" content="../">
       
       
-      <meta name="docfx:docurl" content="https://github.com/Chris-Wolfgang/ETL-Json/new/v0.2.2/apiSpec/new?filename=Wolfgang_Etl_Json_JsonSingleStreamLoader_1.md&amp;value=---%0Auid%3A%20Wolfgang.Etl.Json.JsonSingleStreamLoader%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
+      <meta name="docfx:docurl" content="https://github.com/Chris-Wolfgang/ETL-Json/new/v0.4.0/apiSpec/new?filename=Wolfgang_Etl_Json_JsonSingleStreamLoader_1.md&amp;value=---%0Auid%3A%20Wolfgang.Etl.Json.JsonSingleStreamLoader%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
       <meta name="loc:inThisArticle" content="In this article">
       <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
       <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
@@ -75,7 +75,7 @@
 
 
   <h1 id="Wolfgang_Etl_Json_JsonSingleStreamLoader_1" data-uid="Wolfgang.Etl.Json.JsonSingleStreamLoader`1" class="text-break">
-Class JsonSingleStreamLoader&lt;TRecord&gt;  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.2.2/src/Wolfgang.Etl.Json/JsonSingleStreamLoader.cs/#L29"><i class="bi bi-code-slash"></i></a>
+Class JsonSingleStreamLoader&lt;TRecord&gt;  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.4.0/src/Wolfgang.Etl.Json/JsonSingleStreamLoader.cs/#L30"><i class="bi bi-code-slash"></i></a>
   </h1>
 
   <div class="facts text-secondary">
@@ -88,7 +88,7 @@ Class JsonSingleStreamLoader&lt;TRecord&gt;  <a class="header-action link-second
   <div class="markdown conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class JsonSingleStreamLoader&lt;TRecord&gt; : LoaderBase&lt;TRecord, JsonReport&gt;, ILoadWithProgressAndCancellationAsync&lt;TRecord, JsonReport&gt;, ILoadWithProgressAsync&lt;TRecord, JsonReport&gt;, ILoadWithCancellationAsync&lt;TRecord&gt;, ILoadAsync&lt;TRecord&gt;, IAsyncDisposable, IDisposable where TRecord : notnull</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class JsonSingleStreamLoader&lt;TRecord&gt; : LoaderBase&lt;TRecord, JsonReport&gt;, ILoadWithProgressAndCancellationAsync&lt;TRecord, JsonReport&gt;, ILoadWithProgressAsync&lt;TRecord, JsonReport&gt;, ILoadWithCancellationAsync&lt;TRecord&gt;, ILoadAsync&lt;TRecord&gt;, IAsyncDisposable, IDisposable, ISupportDryRun where TRecord : notnull</code></pre>
   </div>
 
 
@@ -118,6 +118,7 @@ Class JsonSingleStreamLoader&lt;TRecord&gt;  <a class="header-action link-second
       <div><span class="xref">ILoadAsync</span>&lt;TRecord&gt;</div>
       <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a></div>
       <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
+      <div><span class="xref">ISupportDryRun</span></div>
     </dd>
   </dl>
 
@@ -200,7 +201,7 @@ by serializing each item from the input async enumerable sequence.</p>
 
   <h3 id="Wolfgang_Etl_Json_JsonSingleStreamLoader_1__ctor_System_IO_Stream_" data-uid="Wolfgang.Etl.Json.JsonSingleStreamLoader`1.#ctor(System.IO.Stream)">
   JsonSingleStreamLoader(Stream)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.2.2/src/Wolfgang.Etl.Json/JsonSingleStreamLoader.cs/#L49"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.4.0/src/Wolfgang.Etl.Json/JsonSingleStreamLoader.cs/#L60"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonSingleStreamLoader-1.html">JsonSingleStreamLoader&lt;TRecord&gt;</a> class.</p>
@@ -208,7 +209,9 @@ by serializing each item from the input async enumerable sequence.</p>
   <div class="markdown level1 conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public JsonSingleStreamLoader(Stream stream)</code></pre>
+    <pre><code class="lang-csharp hljs">[RequiresUnreferencedCode(&quot;JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.&quot;)]
+[RequiresDynamicCode(&quot;JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.&quot;)]
+public JsonSingleStreamLoader(Stream stream)</code></pre>
   </div>
 
   <h4 class="section">Parameters</h4>
@@ -239,7 +242,7 @@ by serializing each item from the input async enumerable sequence.</p>
 
   <h3 id="Wolfgang_Etl_Json_JsonSingleStreamLoader_1__ctor_System_IO_Stream_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonSingleStreamLoader__0___" data-uid="Wolfgang.Etl.Json.JsonSingleStreamLoader`1.#ctor(System.IO.Stream,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonSingleStreamLoader{`0}})">
   JsonSingleStreamLoader(Stream, ILogger&lt;JsonSingleStreamLoader&lt;TRecord&gt;&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.2.2/src/Wolfgang.Etl.Json/JsonSingleStreamLoader.cs/#L70"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.4.0/src/Wolfgang.Etl.Json/JsonSingleStreamLoader.cs/#L85"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonSingleStreamLoader-1.html">JsonSingleStreamLoader&lt;TRecord&gt;</a> class
@@ -248,7 +251,9 @@ with diagnostic logging.</p>
   <div class="markdown level1 conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public JsonSingleStreamLoader(Stream stream, ILogger&lt;JsonSingleStreamLoader&lt;TRecord&gt;&gt; logger)</code></pre>
+    <pre><code class="lang-csharp hljs">[RequiresUnreferencedCode(&quot;JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.&quot;)]
+[RequiresDynamicCode(&quot;JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.&quot;)]
+public JsonSingleStreamLoader(Stream stream, ILogger&lt;JsonSingleStreamLoader&lt;TRecord&gt;&gt; logger)</code></pre>
   </div>
 
   <h4 class="section">Parameters</h4>
@@ -282,7 +287,7 @@ with diagnostic logging.</p>
 
   <h3 id="Wolfgang_Etl_Json_JsonSingleStreamLoader_1__ctor_System_IO_Stream_System_Text_Json_JsonSerializerOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonSingleStreamLoader__0___" data-uid="Wolfgang.Etl.Json.JsonSingleStreamLoader`1.#ctor(System.IO.Stream,System.Text.Json.JsonSerializerOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonSingleStreamLoader{`0}})">
   JsonSingleStreamLoader(Stream, JsonSerializerOptions, ILogger&lt;JsonSingleStreamLoader&lt;TRecord&gt;&gt;?)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.2.2/src/Wolfgang.Etl.Json/JsonSingleStreamLoader.cs/#L93"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.4.0/src/Wolfgang.Etl.Json/JsonSingleStreamLoader.cs/#L112"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonSingleStreamLoader-1.html">JsonSingleStreamLoader&lt;TRecord&gt;</a> class
@@ -291,7 +296,9 @@ with custom serialization options.</p>
   <div class="markdown level1 conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public JsonSingleStreamLoader(Stream stream, JsonSerializerOptions options, ILogger&lt;JsonSingleStreamLoader&lt;TRecord&gt;&gt;? logger = null)</code></pre>
+    <pre><code class="lang-csharp hljs">[RequiresUnreferencedCode(&quot;JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.&quot;)]
+[RequiresDynamicCode(&quot;JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.&quot;)]
+public JsonSingleStreamLoader(Stream stream, JsonSerializerOptions options, ILogger&lt;JsonSingleStreamLoader&lt;TRecord&gt;&gt;? logger = null)</code></pre>
   </div>
 
   <h4 class="section">Parameters</h4>
@@ -328,7 +335,7 @@ with custom serialization options.</p>
 
   <h3 id="Wolfgang_Etl_Json_JsonSingleStreamLoader_1__ctor_System_IO_Stream_System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonSingleStreamLoader__0___" data-uid="Wolfgang.Etl.Json.JsonSingleStreamLoader`1.#ctor(System.IO.Stream,System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonSingleStreamLoader{`0}})">
   JsonSingleStreamLoader(Stream, JsonTypeInfo&lt;TRecord&gt;, ILogger&lt;JsonSingleStreamLoader&lt;TRecord&gt;&gt;?)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.2.2/src/Wolfgang.Etl.Json/JsonSingleStreamLoader.cs/#L141"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.4.0/src/Wolfgang.Etl.Json/JsonSingleStreamLoader.cs/#L167"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonSingleStreamLoader-1.html">JsonSingleStreamLoader&lt;TRecord&gt;</a> class
@@ -370,6 +377,49 @@ with source-generated type metadata for AOT-friendly, reflection-free serializat
 
 
 
+  <h2 class="section" id="properties">Properties
+</h2>
+
+
+  <a id="Wolfgang_Etl_Json_JsonSingleStreamLoader_1_IsDryRun_" data-uid="Wolfgang.Etl.Json.JsonSingleStreamLoader`1.IsDryRun*"></a>
+
+  <h3 id="Wolfgang_Etl_Json_JsonSingleStreamLoader_1_IsDryRun" data-uid="Wolfgang.Etl.Json.JsonSingleStreamLoader`1.IsDryRun">
+  IsDryRun
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.4.0/src/Wolfgang.Etl.Json/JsonSingleStreamLoader.cs/#L48"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets a value indicating whether the stage runs in dry-run mode.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsDryRun { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p>When <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, the stage runs the full pipeline but skips the
+external side effect that mutates the destination or source. Defaults to
+<a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</dd>
+  </dl>
+
+
+
+
+  <h4 class="section" id="Wolfgang_Etl_Json_JsonSingleStreamLoader_1_IsDryRun_remarks">Remarks</h4>
+  <div class="markdown level1 remarks"><p>When <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, the loader enumerates the source and increments
+progress counters as usual but does not write any JSON to the output stream.</p>
+</div>
+
+
+
+
   <h2 class="section" id="methods">Methods
 </h2>
 
@@ -378,7 +428,7 @@ with source-generated type metadata for AOT-friendly, reflection-free serializat
 
   <h3 id="Wolfgang_Etl_Json_JsonSingleStreamLoader_1_CreateProgressReport" data-uid="Wolfgang.Etl.Json.JsonSingleStreamLoader`1.CreateProgressReport">
   CreateProgressReport()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.2.2/src/Wolfgang.Etl.Json/JsonSingleStreamLoader.cs/#L234"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.4.0/src/Wolfgang.Etl.Json/JsonSingleStreamLoader.cs/#L266"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Creates a progress report of type TProgress. This gives the derived class the opportunity to
@@ -412,7 +462,7 @@ implement a custom progress report that is specific to the loading process.</p>
 
   <h3 id="Wolfgang_Etl_Json_JsonSingleStreamLoader_1_CreateProgressTimer_System_IProgress_Wolfgang_Etl_Json_JsonReport__" data-uid="Wolfgang.Etl.Json.JsonSingleStreamLoader`1.CreateProgressTimer(System.IProgress{Wolfgang.Etl.Json.JsonReport})">
   CreateProgressTimer(IProgress&lt;JsonReport&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.2.2/src/Wolfgang.Etl.Json/JsonSingleStreamLoader.cs/#L243"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.4.0/src/Wolfgang.Etl.Json/JsonSingleStreamLoader.cs/#L275"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Creates the <span class="xref">Wolfgang.Etl.Abstractions.IProgressTimer</span> used to drive progress callbacks.
@@ -453,7 +503,7 @@ Override this method in a derived class to inject a custom timer
 
   <h3 id="Wolfgang_Etl_Json_JsonSingleStreamLoader_1_LoadWorkerAsync_System_Collections_Generic_IAsyncEnumerable__0__System_Threading_CancellationToken_" data-uid="Wolfgang.Etl.Json.JsonSingleStreamLoader`1.LoadWorkerAsync(System.Collections.Generic.IAsyncEnumerable{`0},System.Threading.CancellationToken)">
   LoadWorkerAsync(IAsyncEnumerable&lt;TRecord&gt;, CancellationToken)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.2.2/src/Wolfgang.Etl.Json/JsonSingleStreamLoader.cs/#L180"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.4.0/src/Wolfgang.Etl.Json/JsonSingleStreamLoader.cs/#L206"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>This method is the core implementation of the loading logic and should be
@@ -505,7 +555,7 @@ overridden by derived classes.</p>
 </article>
 
         <div class="contribution d-print-none">
-          <a href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.2.2/src/Wolfgang.Etl.Json/JsonSingleStreamLoader.cs/#L29" class="edit-link">Edit this page</a>
+          <a href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.4.0/src/Wolfgang.Etl.Json/JsonSingleStreamLoader.cs/#L30" class="edit-link">Edit this page</a>
         </div>
 
 

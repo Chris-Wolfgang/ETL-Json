@@ -16,7 +16,7 @@
       <meta name="docfx:rel" content="../">
       
       
-      <meta name="docfx:docurl" content="https://github.com/Chris-Wolfgang/ETL-Json/new/v0.2.2/apiSpec/new?filename=Wolfgang_Etl_Json_JsonMultiStreamLoader_1.md&amp;value=---%0Auid%3A%20Wolfgang.Etl.Json.JsonMultiStreamLoader%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
+      <meta name="docfx:docurl" content="https://github.com/Chris-Wolfgang/ETL-Json/new/v0.4.0/apiSpec/new?filename=Wolfgang_Etl_Json_JsonMultiStreamLoader_1.md&amp;value=---%0Auid%3A%20Wolfgang.Etl.Json.JsonMultiStreamLoader%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
       <meta name="loc:inThisArticle" content="In this article">
       <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
       <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
@@ -75,7 +75,7 @@
 
 
   <h1 id="Wolfgang_Etl_Json_JsonMultiStreamLoader_1" data-uid="Wolfgang.Etl.Json.JsonMultiStreamLoader`1" class="text-break">
-Class JsonMultiStreamLoader&lt;TRecord&gt;  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.2.2/src/Wolfgang.Etl.Json/JsonMultiStreamLoader.cs/#L35"><i class="bi bi-code-slash"></i></a>
+Class JsonMultiStreamLoader&lt;TRecord&gt;  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.4.0/src/Wolfgang.Etl.Json/JsonMultiStreamLoader.cs/#L35"><i class="bi bi-code-slash"></i></a>
   </h1>
 
   <div class="facts text-secondary">
@@ -89,7 +89,7 @@ writing one JSON object per stream.</p>
   <div class="markdown conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public sealed class JsonMultiStreamLoader&lt;TRecord&gt; : LoaderBase&lt;TRecord, JsonReport&gt;, ILoadWithProgressAndCancellationAsync&lt;TRecord, JsonReport&gt;, ILoadWithProgressAsync&lt;TRecord, JsonReport&gt;, ILoadWithCancellationAsync&lt;TRecord&gt;, ILoadAsync&lt;TRecord&gt;, IAsyncDisposable, IDisposable where TRecord : notnull</code></pre>
+    <pre><code class="lang-csharp hljs">public sealed class JsonMultiStreamLoader&lt;TRecord&gt; : LoaderBase&lt;TRecord, JsonReport&gt;, ILoadWithProgressAndCancellationAsync&lt;TRecord, JsonReport&gt;, ILoadWithProgressAsync&lt;TRecord, JsonReport&gt;, ILoadWithCancellationAsync&lt;TRecord&gt;, ILoadAsync&lt;TRecord&gt;, IAsyncDisposable, IDisposable, ISupportDryRun where TRecord : notnull</code></pre>
   </div>
 
 
@@ -119,6 +119,7 @@ writing one JSON object per stream.</p>
       <div><span class="xref">ILoadAsync</span>&lt;TRecord&gt;</div>
       <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a></div>
       <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
+      <div><span class="xref">ISupportDryRun</span></div>
     </dd>
   </dl>
 
@@ -184,17 +185,16 @@ writing one JSON object per stream.</p>
   <h2 id="Wolfgang_Etl_Json_JsonMultiStreamLoader_1_examples">Examples</h2>
   <pre><code class="lang-csharp">var loader = new JsonMultiStreamLoader&lt;Person&gt;
 (
-    person =&gt; File.Create($"output/{person.Id}.json"),
-    logger
+    person =&gt; new JsonNamedDestination(File.Create($"output/{person.Name}.json"), $"output/{person.Name}.json")
 );
 await loader.LoadAsync(items, cancellationToken);</code></pre>
 
 
   <h2 id="Wolfgang_Etl_Json_JsonMultiStreamLoader_1_remarks">Remarks</h2>
-  <div class="markdown level0 remarks"><p>For each item in the input sequence, calls a factory function to obtain a <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a>,
+  <div class="markdown level0 remarks"><p>For each item in the input sequence, calls a factory function to obtain a stream,
 serializes the item as a single JSON object, and disposes the stream.
-The factory receives the item being written, allowing stream creation based on item properties
-(e.g., generating file names from record fields).</p>
+Supply a <a class="xref" href="Wolfgang.Etl.Json.JsonNamedDestination.html">JsonNamedDestination</a> factory to surface the current destination name
+in progress reports via <a class="xref" href="Wolfgang.Etl.Json.JsonReport.html#Wolfgang_Etl_Json_JsonReport_CurrentSourceName">CurrentSourceName</a>.</p>
 </div>
 
 
@@ -206,7 +206,7 @@ The factory receives the item being written, allowing stream creation based on i
 
   <h3 id="Wolfgang_Etl_Json_JsonMultiStreamLoader_1__ctor_System_Func__0_System_IO_Stream__" data-uid="Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,System.IO.Stream})">
   JsonMultiStreamLoader(Func&lt;TRecord, Stream&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.2.2/src/Wolfgang.Etl.Json/JsonMultiStreamLoader.cs/#L58"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.4.0/src/Wolfgang.Etl.Json/JsonMultiStreamLoader.cs/#L70"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html">JsonMultiStreamLoader&lt;TRecord&gt;</a> class.</p>
@@ -214,7 +214,9 @@ The factory receives the item being written, allowing stream creation based on i
   <div class="markdown level1 conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public JsonMultiStreamLoader(Func&lt;TRecord, Stream&gt; streamFactory)</code></pre>
+    <pre><code class="lang-csharp hljs">[RequiresUnreferencedCode(&quot;JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.&quot;)]
+[RequiresDynamicCode(&quot;JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.&quot;)]
+public JsonMultiStreamLoader(Func&lt;TRecord, Stream&gt; streamFactory)</code></pre>
   </div>
 
   <h4 class="section">Parameters</h4>
@@ -246,7 +248,7 @@ The loader will dispose the stream after writing.</p>
 
   <h3 id="Wolfgang_Etl_Json_JsonMultiStreamLoader_1__ctor_System_Func__0_System_IO_Stream__Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamLoader__0___" data-uid="Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,System.IO.Stream},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamLoader{`0}})">
   JsonMultiStreamLoader(Func&lt;TRecord, Stream&gt;, ILogger&lt;JsonMultiStreamLoader&lt;TRecord&gt;&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.2.2/src/Wolfgang.Etl.Json/JsonMultiStreamLoader.cs/#L82"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.4.0/src/Wolfgang.Etl.Json/JsonMultiStreamLoader.cs/#L126"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html">JsonMultiStreamLoader&lt;TRecord&gt;</a> class
@@ -255,7 +257,9 @@ with diagnostic logging.</p>
   <div class="markdown level1 conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public JsonMultiStreamLoader(Func&lt;TRecord, Stream&gt; streamFactory, ILogger&lt;JsonMultiStreamLoader&lt;TRecord&gt;&gt; logger)</code></pre>
+    <pre><code class="lang-csharp hljs">[RequiresUnreferencedCode(&quot;JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.&quot;)]
+[RequiresDynamicCode(&quot;JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.&quot;)]
+public JsonMultiStreamLoader(Func&lt;TRecord, Stream&gt; streamFactory, ILogger&lt;JsonMultiStreamLoader&lt;TRecord&gt;&gt; logger)</code></pre>
   </div>
 
   <h4 class="section">Parameters</h4>
@@ -290,7 +294,7 @@ The loader will dispose the stream after writing.</p>
 
   <h3 id="Wolfgang_Etl_Json_JsonMultiStreamLoader_1__ctor_System_Func__0_System_IO_Stream__System_Text_Json_JsonSerializerOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamLoader__0___" data-uid="Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,System.IO.Stream},System.Text.Json.JsonSerializerOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamLoader{`0}})">
   JsonMultiStreamLoader(Func&lt;TRecord, Stream&gt;, JsonSerializerOptions, ILogger&lt;JsonMultiStreamLoader&lt;TRecord&gt;&gt;?)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.2.2/src/Wolfgang.Etl.Json/JsonMultiStreamLoader.cs/#L108"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.4.0/src/Wolfgang.Etl.Json/JsonMultiStreamLoader.cs/#L186"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html">JsonMultiStreamLoader&lt;TRecord&gt;</a> class
@@ -299,7 +303,9 @@ with custom serialization options.</p>
   <div class="markdown level1 conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public JsonMultiStreamLoader(Func&lt;TRecord, Stream&gt; streamFactory, JsonSerializerOptions options, ILogger&lt;JsonMultiStreamLoader&lt;TRecord&gt;&gt;? logger = null)</code></pre>
+    <pre><code class="lang-csharp hljs">[RequiresUnreferencedCode(&quot;JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.&quot;)]
+[RequiresDynamicCode(&quot;JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.&quot;)]
+public JsonMultiStreamLoader(Func&lt;TRecord, Stream&gt; streamFactory, JsonSerializerOptions options, ILogger&lt;JsonMultiStreamLoader&lt;TRecord&gt;&gt;? logger = null)</code></pre>
   </div>
 
   <h4 class="section">Parameters</h4>
@@ -337,7 +343,7 @@ The loader will dispose the stream after writing.</p>
 
   <h3 id="Wolfgang_Etl_Json_JsonMultiStreamLoader_1__ctor_System_Func__0_System_IO_Stream__System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamLoader__0___" data-uid="Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,System.IO.Stream},System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamLoader{`0}})">
   JsonMultiStreamLoader(Func&lt;TRecord, Stream&gt;, JsonTypeInfo&lt;TRecord&gt;, ILogger&lt;JsonMultiStreamLoader&lt;TRecord&gt;&gt;?)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.2.2/src/Wolfgang.Etl.Json/JsonMultiStreamLoader.cs/#L161"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.4.0/src/Wolfgang.Etl.Json/JsonMultiStreamLoader.cs/#L310"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html">JsonMultiStreamLoader&lt;TRecord&gt;</a> class
@@ -380,6 +386,229 @@ The loader will dispose the stream after writing.</p>
 
 
 
+  <a id="Wolfgang_Etl_Json_JsonMultiStreamLoader_1__ctor_" data-uid="Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor*"></a>
+
+  <h3 id="Wolfgang_Etl_Json_JsonMultiStreamLoader_1__ctor_System_Func__0_Wolfgang_Etl_Json_JsonNamedDestination__" data-uid="Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,Wolfgang.Etl.Json.JsonNamedDestination})">
+  JsonMultiStreamLoader(Func&lt;TRecord, JsonNamedDestination&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.4.0/src/Wolfgang.Etl.Json/JsonMultiStreamLoader.cs/#L101"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html">JsonMultiStreamLoader&lt;TRecord&gt;</a> class
+with a named-destination factory for progress reporting.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public JsonMultiStreamLoader(Func&lt;TRecord, JsonNamedDestination&gt; destinationFactory)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>destinationFactory</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;TRecord, <a class="xref" href="Wolfgang.Etl.Json.JsonNamedDestination.html">JsonNamedDestination</a>&gt;</dt>
+    <dd><p>A factory function that receives the item to be written and returns a <a class="xref" href="Wolfgang.Etl.Json.JsonNamedDestination.html">JsonNamedDestination</a>
+containing the stream and an optional name. The loader will dispose the stream after writing.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></dt>
+    <dd><p>Thrown when <code class="paramref">destinationFactory</code> is <code>null</code>.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="Wolfgang_Etl_Json_JsonMultiStreamLoader_1__ctor_" data-uid="Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor*"></a>
+
+  <h3 id="Wolfgang_Etl_Json_JsonMultiStreamLoader_1__ctor_System_Func__0_Wolfgang_Etl_Json_JsonNamedDestination__Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamLoader__0___" data-uid="Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,Wolfgang.Etl.Json.JsonNamedDestination},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamLoader{`0}})">
+  JsonMultiStreamLoader(Func&lt;TRecord, JsonNamedDestination&gt;, ILogger&lt;JsonMultiStreamLoader&lt;TRecord&gt;&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.4.0/src/Wolfgang.Etl.Json/JsonMultiStreamLoader.cs/#L159"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html">JsonMultiStreamLoader&lt;TRecord&gt;</a> class
+with a named-destination factory and diagnostic logging.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public JsonMultiStreamLoader(Func&lt;TRecord, JsonNamedDestination&gt; destinationFactory, ILogger&lt;JsonMultiStreamLoader&lt;TRecord&gt;&gt; logger)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>destinationFactory</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;TRecord, <a class="xref" href="Wolfgang.Etl.Json.JsonNamedDestination.html">JsonNamedDestination</a>&gt;</dt>
+    <dd><p>A factory function that receives the item to be written and returns a <a class="xref" href="Wolfgang.Etl.Json.JsonNamedDestination.html">JsonNamedDestination</a>
+containing the stream and an optional name. The loader will dispose the stream after writing.</p>
+</dd>
+    <dt><code>logger</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger-1">ILogger</a>&lt;<a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html">JsonMultiStreamLoader</a>&lt;TRecord&gt;&gt;</dt>
+    <dd><p>The logger instance for diagnostic output.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></dt>
+    <dd><p>Thrown when <code class="paramref">destinationFactory</code> or <code class="paramref">logger</code> is <code>null</code>.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="Wolfgang_Etl_Json_JsonMultiStreamLoader_1__ctor_" data-uid="Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor*"></a>
+
+  <h3 id="Wolfgang_Etl_Json_JsonMultiStreamLoader_1__ctor_System_Func__0_Wolfgang_Etl_Json_JsonNamedDestination__System_Text_Json_JsonSerializerOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamLoader__0___" data-uid="Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,Wolfgang.Etl.Json.JsonNamedDestination},System.Text.Json.JsonSerializerOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamLoader{`0}})">
+  JsonMultiStreamLoader(Func&lt;TRecord, JsonNamedDestination&gt;, JsonSerializerOptions, ILogger&lt;JsonMultiStreamLoader&lt;TRecord&gt;&gt;?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.4.0/src/Wolfgang.Etl.Json/JsonMultiStreamLoader.cs/#L221"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html">JsonMultiStreamLoader&lt;TRecord&gt;</a> class
+with a named-destination factory and custom serialization options.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public JsonMultiStreamLoader(Func&lt;TRecord, JsonNamedDestination&gt; destinationFactory, JsonSerializerOptions options, ILogger&lt;JsonMultiStreamLoader&lt;TRecord&gt;&gt;? logger = null)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>destinationFactory</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;TRecord, <a class="xref" href="Wolfgang.Etl.Json.JsonNamedDestination.html">JsonNamedDestination</a>&gt;</dt>
+    <dd><p>A factory function that receives the item to be written and returns a <a class="xref" href="Wolfgang.Etl.Json.JsonNamedDestination.html">JsonNamedDestination</a>
+containing the stream and an optional name. The loader will dispose the stream after writing.</p>
+</dd>
+    <dt><code>options</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.jsonserializeroptions">JsonSerializerOptions</a></dt>
+    <dd><p>The JSON serializer options to use for serialization.</p>
+</dd>
+    <dt><code>logger</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger-1">ILogger</a>&lt;<a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html">JsonMultiStreamLoader</a>&lt;TRecord&gt;&gt;</dt>
+    <dd><p>An optional logger instance for diagnostic output.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></dt>
+    <dd><p>Thrown when <code class="paramref">destinationFactory</code> or <code class="paramref">options</code> is <code>null</code>.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="Wolfgang_Etl_Json_JsonMultiStreamLoader_1__ctor_" data-uid="Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor*"></a>
+
+  <h3 id="Wolfgang_Etl_Json_JsonMultiStreamLoader_1__ctor_System_Func__0_Wolfgang_Etl_Json_JsonNamedDestination__System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamLoader__0___" data-uid="Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,Wolfgang.Etl.Json.JsonNamedDestination},System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamLoader{`0}})">
+  JsonMultiStreamLoader(Func&lt;TRecord, JsonNamedDestination&gt;, JsonTypeInfo&lt;TRecord&gt;, ILogger&lt;JsonMultiStreamLoader&lt;TRecord&gt;&gt;?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.4.0/src/Wolfgang.Etl.Json/JsonMultiStreamLoader.cs/#L342"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html">JsonMultiStreamLoader&lt;TRecord&gt;</a> class
+with a named-destination factory and source-generated type metadata for AOT-friendly serialization.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public JsonMultiStreamLoader(Func&lt;TRecord, JsonNamedDestination&gt; destinationFactory, JsonTypeInfo&lt;TRecord&gt; typeInfo, ILogger&lt;JsonMultiStreamLoader&lt;TRecord&gt;&gt;? logger = null)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>destinationFactory</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;TRecord, <a class="xref" href="Wolfgang.Etl.Json.JsonNamedDestination.html">JsonNamedDestination</a>&gt;</dt>
+    <dd><p>A factory function that receives the item to be written and returns a <a class="xref" href="Wolfgang.Etl.Json.JsonNamedDestination.html">JsonNamedDestination</a>
+containing the stream and an optional name. The loader will dispose the stream after writing.</p>
+</dd>
+    <dt><code>typeInfo</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1">JsonTypeInfo</a>&lt;TRecord&gt;</dt>
+    <dd><p>The source-generated type metadata for <code class="typeparamref">TRecord</code>.</p>
+</dd>
+    <dt><code>logger</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger-1">ILogger</a>&lt;<a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html">JsonMultiStreamLoader</a>&lt;TRecord&gt;&gt;</dt>
+    <dd><p>An optional logger instance for diagnostic output.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></dt>
+    <dd><p>Thrown when <code class="paramref">destinationFactory</code> or <code class="paramref">typeInfo</code> is <code>null</code>.</p>
+</dd>
+  </dl>
+
+
+
+  <h2 class="section" id="properties">Properties
+</h2>
+
+
+  <a id="Wolfgang_Etl_Json_JsonMultiStreamLoader_1_IsDryRun_" data-uid="Wolfgang.Etl.Json.JsonMultiStreamLoader`1.IsDryRun*"></a>
+
+  <h3 id="Wolfgang_Etl_Json_JsonMultiStreamLoader_1_IsDryRun" data-uid="Wolfgang.Etl.Json.JsonMultiStreamLoader`1.IsDryRun">
+  IsDryRun
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.4.0/src/Wolfgang.Etl.Json/JsonMultiStreamLoader.cs/#L55"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets a value indicating whether the stage runs in dry-run mode.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsDryRun { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p>When <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, the stage runs the full pipeline but skips the
+external side effect that mutates the destination or source. Defaults to
+<a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</dd>
+  </dl>
+
+
+
+
+  <h4 class="section" id="Wolfgang_Etl_Json_JsonMultiStreamLoader_1_IsDryRun_remarks">Remarks</h4>
+  <div class="markdown level1 remarks"><p>When <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a>, the loader enumerates the source and increments
+progress counters as usual but skips calling the stream factory and writing
+any JSON to output streams.</p>
+</div>
+
+
+
+
   <h2 class="section" id="methods">Methods
 </h2>
 
@@ -388,7 +617,7 @@ The loader will dispose the stream after writing.</p>
 
   <h3 id="Wolfgang_Etl_Json_JsonMultiStreamLoader_1_CreateProgressReport" data-uid="Wolfgang.Etl.Json.JsonMultiStreamLoader`1.CreateProgressReport">
   CreateProgressReport()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.2.2/src/Wolfgang.Etl.Json/JsonMultiStreamLoader.cs/#L273"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.4.0/src/Wolfgang.Etl.Json/JsonMultiStreamLoader.cs/#L475"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Creates a progress report of type TProgress. This gives the derived class the opportunity to
@@ -422,7 +651,7 @@ implement a custom progress report that is specific to the loading process.</p>
 
   <h3 id="Wolfgang_Etl_Json_JsonMultiStreamLoader_1_CreateProgressTimer_System_IProgress_Wolfgang_Etl_Json_JsonReport__" data-uid="Wolfgang.Etl.Json.JsonMultiStreamLoader`1.CreateProgressTimer(System.IProgress{Wolfgang.Etl.Json.JsonReport})">
   CreateProgressTimer(IProgress&lt;JsonReport&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.2.2/src/Wolfgang.Etl.Json/JsonMultiStreamLoader.cs/#L282"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.4.0/src/Wolfgang.Etl.Json/JsonMultiStreamLoader.cs/#L485"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Creates the <span class="xref">Wolfgang.Etl.Abstractions.IProgressTimer</span> used to drive progress callbacks.
@@ -463,7 +692,7 @@ Override this method in a derived class to inject a custom timer
 
   <h3 id="Wolfgang_Etl_Json_JsonMultiStreamLoader_1_LoadWorkerAsync_System_Collections_Generic_IAsyncEnumerable__0__System_Threading_CancellationToken_" data-uid="Wolfgang.Etl.Json.JsonMultiStreamLoader`1.LoadWorkerAsync(System.Collections.Generic.IAsyncEnumerable{`0},System.Threading.CancellationToken)">
   LoadWorkerAsync(IAsyncEnumerable&lt;TRecord&gt;, CancellationToken)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.2.2/src/Wolfgang.Etl.Json/JsonMultiStreamLoader.cs/#L202"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.4.0/src/Wolfgang.Etl.Json/JsonMultiStreamLoader.cs/#L388"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>This method is the core implementation of the loading logic and should be
@@ -515,7 +744,7 @@ overridden by derived classes.</p>
 </article>
 
         <div class="contribution d-print-none">
-          <a href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.2.2/src/Wolfgang.Etl.Json/JsonMultiStreamLoader.cs/#L35" class="edit-link">Edit this page</a>
+          <a href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.4.0/src/Wolfgang.Etl.Json/JsonMultiStreamLoader.cs/#L35" class="edit-link">Edit this page</a>
         </div>
 
 

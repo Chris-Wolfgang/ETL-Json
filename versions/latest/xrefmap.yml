@@ -7,6 +7,88 @@ references:
   commentId: N:Wolfgang.Etl.Json
   fullName: Wolfgang.Etl.Json
   nameWithType: Wolfgang.Etl.Json
+- uid: Wolfgang.Etl.Json.ErrorHandling
+  name: ErrorHandling
+  href: api/Wolfgang.Etl.Json.ErrorHandling.html
+  commentId: T:Wolfgang.Etl.Json.ErrorHandling
+  fullName: Wolfgang.Etl.Json.ErrorHandling
+  nameWithType: ErrorHandling
+- uid: Wolfgang.Etl.Json.ErrorHandling.CaptureAndContinue
+  name: CaptureAndContinue
+  href: api/Wolfgang.Etl.Json.ErrorHandling.html#Wolfgang_Etl_Json_ErrorHandling_CaptureAndContinue
+  commentId: F:Wolfgang.Etl.Json.ErrorHandling.CaptureAndContinue
+  fullName: Wolfgang.Etl.Json.ErrorHandling.CaptureAndContinue
+  nameWithType: ErrorHandling.CaptureAndContinue
+- uid: Wolfgang.Etl.Json.ErrorHandling.SkipAndLog
+  name: SkipAndLog
+  href: api/Wolfgang.Etl.Json.ErrorHandling.html#Wolfgang_Etl_Json_ErrorHandling_SkipAndLog
+  commentId: F:Wolfgang.Etl.Json.ErrorHandling.SkipAndLog
+  fullName: Wolfgang.Etl.Json.ErrorHandling.SkipAndLog
+  nameWithType: ErrorHandling.SkipAndLog
+- uid: Wolfgang.Etl.Json.ErrorHandling.Throw
+  name: Throw
+  href: api/Wolfgang.Etl.Json.ErrorHandling.html#Wolfgang_Etl_Json_ErrorHandling_Throw
+  commentId: F:Wolfgang.Etl.Json.ErrorHandling.Throw
+  fullName: Wolfgang.Etl.Json.ErrorHandling.Throw
+  nameWithType: ErrorHandling.Throw
+- uid: Wolfgang.Etl.Json.JsonDeserializationError
+  name: JsonDeserializationError
+  href: api/Wolfgang.Etl.Json.JsonDeserializationError.html
+  commentId: T:Wolfgang.Etl.Json.JsonDeserializationError
+  fullName: Wolfgang.Etl.Json.JsonDeserializationError
+  nameWithType: JsonDeserializationError
+- uid: Wolfgang.Etl.Json.JsonDeserializationError.Exception
+  name: Exception
+  href: api/Wolfgang.Etl.Json.JsonDeserializationError.html#Wolfgang_Etl_Json_JsonDeserializationError_Exception
+  commentId: P:Wolfgang.Etl.Json.JsonDeserializationError.Exception
+  fullName: Wolfgang.Etl.Json.JsonDeserializationError.Exception
+  nameWithType: JsonDeserializationError.Exception
+- uid: Wolfgang.Etl.Json.JsonDeserializationError.Exception*
+  name: Exception
+  href: api/Wolfgang.Etl.Json.JsonDeserializationError.html#Wolfgang_Etl_Json_JsonDeserializationError_Exception_
+  commentId: Overload:Wolfgang.Etl.Json.JsonDeserializationError.Exception
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonDeserializationError.Exception
+  nameWithType: JsonDeserializationError.Exception
+- uid: Wolfgang.Etl.Json.JsonDeserializationError.ItemIndex
+  name: ItemIndex
+  href: api/Wolfgang.Etl.Json.JsonDeserializationError.html#Wolfgang_Etl_Json_JsonDeserializationError_ItemIndex
+  commentId: P:Wolfgang.Etl.Json.JsonDeserializationError.ItemIndex
+  fullName: Wolfgang.Etl.Json.JsonDeserializationError.ItemIndex
+  nameWithType: JsonDeserializationError.ItemIndex
+- uid: Wolfgang.Etl.Json.JsonDeserializationError.ItemIndex*
+  name: ItemIndex
+  href: api/Wolfgang.Etl.Json.JsonDeserializationError.html#Wolfgang_Etl_Json_JsonDeserializationError_ItemIndex_
+  commentId: Overload:Wolfgang.Etl.Json.JsonDeserializationError.ItemIndex
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonDeserializationError.ItemIndex
+  nameWithType: JsonDeserializationError.ItemIndex
+- uid: Wolfgang.Etl.Json.JsonDeserializationError.LineNumber
+  name: LineNumber
+  href: api/Wolfgang.Etl.Json.JsonDeserializationError.html#Wolfgang_Etl_Json_JsonDeserializationError_LineNumber
+  commentId: P:Wolfgang.Etl.Json.JsonDeserializationError.LineNumber
+  fullName: Wolfgang.Etl.Json.JsonDeserializationError.LineNumber
+  nameWithType: JsonDeserializationError.LineNumber
+- uid: Wolfgang.Etl.Json.JsonDeserializationError.LineNumber*
+  name: LineNumber
+  href: api/Wolfgang.Etl.Json.JsonDeserializationError.html#Wolfgang_Etl_Json_JsonDeserializationError_LineNumber_
+  commentId: Overload:Wolfgang.Etl.Json.JsonDeserializationError.LineNumber
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonDeserializationError.LineNumber
+  nameWithType: JsonDeserializationError.LineNumber
+- uid: Wolfgang.Etl.Json.JsonDeserializationError.RawContent
+  name: RawContent
+  href: api/Wolfgang.Etl.Json.JsonDeserializationError.html#Wolfgang_Etl_Json_JsonDeserializationError_RawContent
+  commentId: P:Wolfgang.Etl.Json.JsonDeserializationError.RawContent
+  fullName: Wolfgang.Etl.Json.JsonDeserializationError.RawContent
+  nameWithType: JsonDeserializationError.RawContent
+- uid: Wolfgang.Etl.Json.JsonDeserializationError.RawContent*
+  name: RawContent
+  href: api/Wolfgang.Etl.Json.JsonDeserializationError.html#Wolfgang_Etl_Json_JsonDeserializationError_RawContent_
+  commentId: Overload:Wolfgang.Etl.Json.JsonDeserializationError.RawContent
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonDeserializationError.RawContent
+  nameWithType: JsonDeserializationError.RawContent
 - uid: Wolfgang.Etl.Json.JsonLineExtractor`1
   name: JsonLineExtractor<TRecord>
   href: api/Wolfgang.Etl.Json.JsonLineExtractor-1.html
@@ -97,6 +179,57 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonLineExtractor(Of TRecord).CreateProgressTimer
   nameWithType: JsonLineExtractor<TRecord>.CreateProgressTimer
   nameWithType.vb: JsonLineExtractor(Of TRecord).CreateProgressTimer
+- uid: Wolfgang.Etl.Json.JsonLineExtractor`1.Encoding
+  name: Encoding
+  href: api/Wolfgang.Etl.Json.JsonLineExtractor-1.html#Wolfgang_Etl_Json_JsonLineExtractor_1_Encoding
+  commentId: P:Wolfgang.Etl.Json.JsonLineExtractor`1.Encoding
+  fullName: Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.Encoding
+  fullName.vb: Wolfgang.Etl.Json.JsonLineExtractor(Of TRecord).Encoding
+  nameWithType: JsonLineExtractor<TRecord>.Encoding
+  nameWithType.vb: JsonLineExtractor(Of TRecord).Encoding
+- uid: Wolfgang.Etl.Json.JsonLineExtractor`1.Encoding*
+  name: Encoding
+  href: api/Wolfgang.Etl.Json.JsonLineExtractor-1.html#Wolfgang_Etl_Json_JsonLineExtractor_1_Encoding_
+  commentId: Overload:Wolfgang.Etl.Json.JsonLineExtractor`1.Encoding
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.Encoding
+  fullName.vb: Wolfgang.Etl.Json.JsonLineExtractor(Of TRecord).Encoding
+  nameWithType: JsonLineExtractor<TRecord>.Encoding
+  nameWithType.vb: JsonLineExtractor(Of TRecord).Encoding
+- uid: Wolfgang.Etl.Json.JsonLineExtractor`1.ErrorHandling
+  name: ErrorHandling
+  href: api/Wolfgang.Etl.Json.JsonLineExtractor-1.html#Wolfgang_Etl_Json_JsonLineExtractor_1_ErrorHandling
+  commentId: P:Wolfgang.Etl.Json.JsonLineExtractor`1.ErrorHandling
+  fullName: Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.ErrorHandling
+  fullName.vb: Wolfgang.Etl.Json.JsonLineExtractor(Of TRecord).ErrorHandling
+  nameWithType: JsonLineExtractor<TRecord>.ErrorHandling
+  nameWithType.vb: JsonLineExtractor(Of TRecord).ErrorHandling
+- uid: Wolfgang.Etl.Json.JsonLineExtractor`1.ErrorHandling*
+  name: ErrorHandling
+  href: api/Wolfgang.Etl.Json.JsonLineExtractor-1.html#Wolfgang_Etl_Json_JsonLineExtractor_1_ErrorHandling_
+  commentId: Overload:Wolfgang.Etl.Json.JsonLineExtractor`1.ErrorHandling
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.ErrorHandling
+  fullName.vb: Wolfgang.Etl.Json.JsonLineExtractor(Of TRecord).ErrorHandling
+  nameWithType: JsonLineExtractor<TRecord>.ErrorHandling
+  nameWithType.vb: JsonLineExtractor(Of TRecord).ErrorHandling
+- uid: Wolfgang.Etl.Json.JsonLineExtractor`1.Errors
+  name: Errors
+  href: api/Wolfgang.Etl.Json.JsonLineExtractor-1.html#Wolfgang_Etl_Json_JsonLineExtractor_1_Errors
+  commentId: P:Wolfgang.Etl.Json.JsonLineExtractor`1.Errors
+  fullName: Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.Errors
+  fullName.vb: Wolfgang.Etl.Json.JsonLineExtractor(Of TRecord).Errors
+  nameWithType: JsonLineExtractor<TRecord>.Errors
+  nameWithType.vb: JsonLineExtractor(Of TRecord).Errors
+- uid: Wolfgang.Etl.Json.JsonLineExtractor`1.Errors*
+  name: Errors
+  href: api/Wolfgang.Etl.Json.JsonLineExtractor-1.html#Wolfgang_Etl_Json_JsonLineExtractor_1_Errors_
+  commentId: Overload:Wolfgang.Etl.Json.JsonLineExtractor`1.Errors
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.Errors
+  fullName.vb: Wolfgang.Etl.Json.JsonLineExtractor(Of TRecord).Errors
+  nameWithType: JsonLineExtractor<TRecord>.Errors
+  nameWithType.vb: JsonLineExtractor(Of TRecord).Errors
 - uid: Wolfgang.Etl.Json.JsonLineExtractor`1.ExtractWorkerAsync(System.Threading.CancellationToken)
   name: ExtractWorkerAsync(CancellationToken)
   href: api/Wolfgang.Etl.Json.JsonLineExtractor-1.html#Wolfgang_Etl_Json_JsonLineExtractor_1_ExtractWorkerAsync_System_Threading_CancellationToken_
@@ -204,6 +337,40 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonLineLoader(Of TRecord).CreateProgressTimer
   nameWithType: JsonLineLoader<TRecord>.CreateProgressTimer
   nameWithType.vb: JsonLineLoader(Of TRecord).CreateProgressTimer
+- uid: Wolfgang.Etl.Json.JsonLineLoader`1.Encoding
+  name: Encoding
+  href: api/Wolfgang.Etl.Json.JsonLineLoader-1.html#Wolfgang_Etl_Json_JsonLineLoader_1_Encoding
+  commentId: P:Wolfgang.Etl.Json.JsonLineLoader`1.Encoding
+  fullName: Wolfgang.Etl.Json.JsonLineLoader<TRecord>.Encoding
+  fullName.vb: Wolfgang.Etl.Json.JsonLineLoader(Of TRecord).Encoding
+  nameWithType: JsonLineLoader<TRecord>.Encoding
+  nameWithType.vb: JsonLineLoader(Of TRecord).Encoding
+- uid: Wolfgang.Etl.Json.JsonLineLoader`1.Encoding*
+  name: Encoding
+  href: api/Wolfgang.Etl.Json.JsonLineLoader-1.html#Wolfgang_Etl_Json_JsonLineLoader_1_Encoding_
+  commentId: Overload:Wolfgang.Etl.Json.JsonLineLoader`1.Encoding
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonLineLoader<TRecord>.Encoding
+  fullName.vb: Wolfgang.Etl.Json.JsonLineLoader(Of TRecord).Encoding
+  nameWithType: JsonLineLoader<TRecord>.Encoding
+  nameWithType.vb: JsonLineLoader(Of TRecord).Encoding
+- uid: Wolfgang.Etl.Json.JsonLineLoader`1.IsDryRun
+  name: IsDryRun
+  href: api/Wolfgang.Etl.Json.JsonLineLoader-1.html#Wolfgang_Etl_Json_JsonLineLoader_1_IsDryRun
+  commentId: P:Wolfgang.Etl.Json.JsonLineLoader`1.IsDryRun
+  fullName: Wolfgang.Etl.Json.JsonLineLoader<TRecord>.IsDryRun
+  fullName.vb: Wolfgang.Etl.Json.JsonLineLoader(Of TRecord).IsDryRun
+  nameWithType: JsonLineLoader<TRecord>.IsDryRun
+  nameWithType.vb: JsonLineLoader(Of TRecord).IsDryRun
+- uid: Wolfgang.Etl.Json.JsonLineLoader`1.IsDryRun*
+  name: IsDryRun
+  href: api/Wolfgang.Etl.Json.JsonLineLoader-1.html#Wolfgang_Etl_Json_JsonLineLoader_1_IsDryRun_
+  commentId: Overload:Wolfgang.Etl.Json.JsonLineLoader`1.IsDryRun
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonLineLoader<TRecord>.IsDryRun
+  fullName.vb: Wolfgang.Etl.Json.JsonLineLoader(Of TRecord).IsDryRun
+  nameWithType: JsonLineLoader<TRecord>.IsDryRun
+  nameWithType.vb: JsonLineLoader(Of TRecord).IsDryRun
 - uid: Wolfgang.Etl.Json.JsonLineLoader`1.LoadWorkerAsync(System.Collections.Generic.IAsyncEnumerable{`0},System.Threading.CancellationToken)
   name: LoadWorkerAsync(IAsyncEnumerable<TRecord>, CancellationToken)
   href: api/Wolfgang.Etl.Json.JsonLineLoader-1.html#Wolfgang_Etl_Json_JsonLineLoader_1_LoadWorkerAsync_System_Collections_Generic_IAsyncEnumerable__0__System_Threading_CancellationToken_
@@ -267,6 +434,42 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord).New(System.Collections.Generic.IEnumerable(Of System.IO.Stream), System.Text.Json.Serialization.Metadata.JsonTypeInfo(Of TRecord), Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord)))
   nameWithType: JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(IEnumerable<Stream>, JsonTypeInfo<TRecord>, ILogger<JsonMultiStreamExtractor<TRecord>>?)
   nameWithType.vb: JsonMultiStreamExtractor(Of TRecord).New(IEnumerable(Of Stream), JsonTypeInfo(Of TRecord), ILogger(Of JsonMultiStreamExtractor(Of TRecord)))
+- uid: Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{Wolfgang.Etl.Json.JsonNamedStream})
+  name: JsonMultiStreamExtractor(IEnumerable<JsonNamedStream>)
+  href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html#Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_System_Collections_Generic_IEnumerable_Wolfgang_Etl_Json_JsonNamedStream__
+  commentId: M:Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{Wolfgang.Etl.Json.JsonNamedStream})
+  name.vb: New(IEnumerable(Of JsonNamedStream))
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(System.Collections.Generic.IEnumerable<Wolfgang.Etl.Json.JsonNamedStream>)
+  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord).New(System.Collections.Generic.IEnumerable(Of Wolfgang.Etl.Json.JsonNamedStream))
+  nameWithType: JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(IEnumerable<JsonNamedStream>)
+  nameWithType.vb: JsonMultiStreamExtractor(Of TRecord).New(IEnumerable(Of JsonNamedStream))
+- uid: Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{Wolfgang.Etl.Json.JsonNamedStream},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})
+  name: JsonMultiStreamExtractor(IEnumerable<JsonNamedStream>, ILogger<JsonMultiStreamExtractor<TRecord>>)
+  href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html#Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_System_Collections_Generic_IEnumerable_Wolfgang_Etl_Json_JsonNamedStream__Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamExtractor__0___
+  commentId: M:Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{Wolfgang.Etl.Json.JsonNamedStream},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})
+  name.vb: New(IEnumerable(Of JsonNamedStream), ILogger(Of JsonMultiStreamExtractor(Of TRecord)))
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(System.Collections.Generic.IEnumerable<Wolfgang.Etl.Json.JsonNamedStream>, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>>)
+  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord).New(System.Collections.Generic.IEnumerable(Of Wolfgang.Etl.Json.JsonNamedStream), Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord)))
+  nameWithType: JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(IEnumerable<JsonNamedStream>, ILogger<JsonMultiStreamExtractor<TRecord>>)
+  nameWithType.vb: JsonMultiStreamExtractor(Of TRecord).New(IEnumerable(Of JsonNamedStream), ILogger(Of JsonMultiStreamExtractor(Of TRecord)))
+- uid: Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{Wolfgang.Etl.Json.JsonNamedStream},System.Text.Json.JsonSerializerOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})
+  name: JsonMultiStreamExtractor(IEnumerable<JsonNamedStream>, JsonSerializerOptions, ILogger<JsonMultiStreamExtractor<TRecord>>?)
+  href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html#Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_System_Collections_Generic_IEnumerable_Wolfgang_Etl_Json_JsonNamedStream__System_Text_Json_JsonSerializerOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamExtractor__0___
+  commentId: M:Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{Wolfgang.Etl.Json.JsonNamedStream},System.Text.Json.JsonSerializerOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})
+  name.vb: New(IEnumerable(Of JsonNamedStream), JsonSerializerOptions, ILogger(Of JsonMultiStreamExtractor(Of TRecord)))
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(System.Collections.Generic.IEnumerable<Wolfgang.Etl.Json.JsonNamedStream>, System.Text.Json.JsonSerializerOptions, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>>?)
+  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord).New(System.Collections.Generic.IEnumerable(Of Wolfgang.Etl.Json.JsonNamedStream), System.Text.Json.JsonSerializerOptions, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord)))
+  nameWithType: JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(IEnumerable<JsonNamedStream>, JsonSerializerOptions, ILogger<JsonMultiStreamExtractor<TRecord>>?)
+  nameWithType.vb: JsonMultiStreamExtractor(Of TRecord).New(IEnumerable(Of JsonNamedStream), JsonSerializerOptions, ILogger(Of JsonMultiStreamExtractor(Of TRecord)))
+- uid: Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{Wolfgang.Etl.Json.JsonNamedStream},System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})
+  name: JsonMultiStreamExtractor(IEnumerable<JsonNamedStream>, JsonTypeInfo<TRecord>, ILogger<JsonMultiStreamExtractor<TRecord>>?)
+  href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html#Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_System_Collections_Generic_IEnumerable_Wolfgang_Etl_Json_JsonNamedStream__System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamExtractor__0___
+  commentId: M:Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{Wolfgang.Etl.Json.JsonNamedStream},System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})
+  name.vb: New(IEnumerable(Of JsonNamedStream), JsonTypeInfo(Of TRecord), ILogger(Of JsonMultiStreamExtractor(Of TRecord)))
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(System.Collections.Generic.IEnumerable<Wolfgang.Etl.Json.JsonNamedStream>, System.Text.Json.Serialization.Metadata.JsonTypeInfo<TRecord>, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>>?)
+  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord).New(System.Collections.Generic.IEnumerable(Of Wolfgang.Etl.Json.JsonNamedStream), System.Text.Json.Serialization.Metadata.JsonTypeInfo(Of TRecord), Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord)))
+  nameWithType: JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(IEnumerable<JsonNamedStream>, JsonTypeInfo<TRecord>, ILogger<JsonMultiStreamExtractor<TRecord>>?)
+  nameWithType.vb: JsonMultiStreamExtractor(Of TRecord).New(IEnumerable(Of JsonNamedStream), JsonTypeInfo(Of TRecord), ILogger(Of JsonMultiStreamExtractor(Of TRecord)))
 - uid: Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor*
   name: JsonMultiStreamExtractor
   href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html#Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_
@@ -312,6 +515,40 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord).CreateProgressTimer
   nameWithType: JsonMultiStreamExtractor<TRecord>.CreateProgressTimer
   nameWithType.vb: JsonMultiStreamExtractor(Of TRecord).CreateProgressTimer
+- uid: Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.ErrorHandling
+  name: ErrorHandling
+  href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html#Wolfgang_Etl_Json_JsonMultiStreamExtractor_1_ErrorHandling
+  commentId: P:Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.ErrorHandling
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.ErrorHandling
+  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord).ErrorHandling
+  nameWithType: JsonMultiStreamExtractor<TRecord>.ErrorHandling
+  nameWithType.vb: JsonMultiStreamExtractor(Of TRecord).ErrorHandling
+- uid: Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.ErrorHandling*
+  name: ErrorHandling
+  href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html#Wolfgang_Etl_Json_JsonMultiStreamExtractor_1_ErrorHandling_
+  commentId: Overload:Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.ErrorHandling
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.ErrorHandling
+  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord).ErrorHandling
+  nameWithType: JsonMultiStreamExtractor<TRecord>.ErrorHandling
+  nameWithType.vb: JsonMultiStreamExtractor(Of TRecord).ErrorHandling
+- uid: Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.Errors
+  name: Errors
+  href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html#Wolfgang_Etl_Json_JsonMultiStreamExtractor_1_Errors
+  commentId: P:Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.Errors
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.Errors
+  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord).Errors
+  nameWithType: JsonMultiStreamExtractor<TRecord>.Errors
+  nameWithType.vb: JsonMultiStreamExtractor(Of TRecord).Errors
+- uid: Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.Errors*
+  name: Errors
+  href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html#Wolfgang_Etl_Json_JsonMultiStreamExtractor_1_Errors_
+  commentId: Overload:Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.Errors
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.Errors
+  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord).Errors
+  nameWithType: JsonMultiStreamExtractor<TRecord>.Errors
+  nameWithType.vb: JsonMultiStreamExtractor(Of TRecord).Errors
 - uid: Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.ExtractWorkerAsync(System.Threading.CancellationToken)
   name: ExtractWorkerAsync(CancellationToken)
   href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html#Wolfgang_Etl_Json_JsonMultiStreamExtractor_1_ExtractWorkerAsync_System_Threading_CancellationToken_
@@ -374,6 +611,42 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord).New(System.Func(Of TRecord, System.IO.Stream), System.Text.Json.Serialization.Metadata.JsonTypeInfo(Of TRecord), Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord)))
   nameWithType: JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(Func<TRecord, Stream>, JsonTypeInfo<TRecord>, ILogger<JsonMultiStreamLoader<TRecord>>?)
   nameWithType.vb: JsonMultiStreamLoader(Of TRecord).New(Func(Of TRecord, Stream), JsonTypeInfo(Of TRecord), ILogger(Of JsonMultiStreamLoader(Of TRecord)))
+- uid: Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,Wolfgang.Etl.Json.JsonNamedDestination})
+  name: JsonMultiStreamLoader(Func<TRecord, JsonNamedDestination>)
+  href: api/Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html#Wolfgang_Etl_Json_JsonMultiStreamLoader_1__ctor_System_Func__0_Wolfgang_Etl_Json_JsonNamedDestination__
+  commentId: M:Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,Wolfgang.Etl.Json.JsonNamedDestination})
+  name.vb: New(Func(Of TRecord, JsonNamedDestination))
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(System.Func<TRecord, Wolfgang.Etl.Json.JsonNamedDestination>)
+  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord).New(System.Func(Of TRecord, Wolfgang.Etl.Json.JsonNamedDestination))
+  nameWithType: JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(Func<TRecord, JsonNamedDestination>)
+  nameWithType.vb: JsonMultiStreamLoader(Of TRecord).New(Func(Of TRecord, JsonNamedDestination))
+- uid: Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,Wolfgang.Etl.Json.JsonNamedDestination},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamLoader{`0}})
+  name: JsonMultiStreamLoader(Func<TRecord, JsonNamedDestination>, ILogger<JsonMultiStreamLoader<TRecord>>)
+  href: api/Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html#Wolfgang_Etl_Json_JsonMultiStreamLoader_1__ctor_System_Func__0_Wolfgang_Etl_Json_JsonNamedDestination__Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamLoader__0___
+  commentId: M:Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,Wolfgang.Etl.Json.JsonNamedDestination},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamLoader{`0}})
+  name.vb: New(Func(Of TRecord, JsonNamedDestination), ILogger(Of JsonMultiStreamLoader(Of TRecord)))
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(System.Func<TRecord, Wolfgang.Etl.Json.JsonNamedDestination>, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>>)
+  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord).New(System.Func(Of TRecord, Wolfgang.Etl.Json.JsonNamedDestination), Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord)))
+  nameWithType: JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(Func<TRecord, JsonNamedDestination>, ILogger<JsonMultiStreamLoader<TRecord>>)
+  nameWithType.vb: JsonMultiStreamLoader(Of TRecord).New(Func(Of TRecord, JsonNamedDestination), ILogger(Of JsonMultiStreamLoader(Of TRecord)))
+- uid: Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,Wolfgang.Etl.Json.JsonNamedDestination},System.Text.Json.JsonSerializerOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamLoader{`0}})
+  name: JsonMultiStreamLoader(Func<TRecord, JsonNamedDestination>, JsonSerializerOptions, ILogger<JsonMultiStreamLoader<TRecord>>?)
+  href: api/Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html#Wolfgang_Etl_Json_JsonMultiStreamLoader_1__ctor_System_Func__0_Wolfgang_Etl_Json_JsonNamedDestination__System_Text_Json_JsonSerializerOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamLoader__0___
+  commentId: M:Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,Wolfgang.Etl.Json.JsonNamedDestination},System.Text.Json.JsonSerializerOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamLoader{`0}})
+  name.vb: New(Func(Of TRecord, JsonNamedDestination), JsonSerializerOptions, ILogger(Of JsonMultiStreamLoader(Of TRecord)))
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(System.Func<TRecord, Wolfgang.Etl.Json.JsonNamedDestination>, System.Text.Json.JsonSerializerOptions, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>>?)
+  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord).New(System.Func(Of TRecord, Wolfgang.Etl.Json.JsonNamedDestination), System.Text.Json.JsonSerializerOptions, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord)))
+  nameWithType: JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(Func<TRecord, JsonNamedDestination>, JsonSerializerOptions, ILogger<JsonMultiStreamLoader<TRecord>>?)
+  nameWithType.vb: JsonMultiStreamLoader(Of TRecord).New(Func(Of TRecord, JsonNamedDestination), JsonSerializerOptions, ILogger(Of JsonMultiStreamLoader(Of TRecord)))
+- uid: Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,Wolfgang.Etl.Json.JsonNamedDestination},System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamLoader{`0}})
+  name: JsonMultiStreamLoader(Func<TRecord, JsonNamedDestination>, JsonTypeInfo<TRecord>, ILogger<JsonMultiStreamLoader<TRecord>>?)
+  href: api/Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html#Wolfgang_Etl_Json_JsonMultiStreamLoader_1__ctor_System_Func__0_Wolfgang_Etl_Json_JsonNamedDestination__System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamLoader__0___
+  commentId: M:Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,Wolfgang.Etl.Json.JsonNamedDestination},System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamLoader{`0}})
+  name.vb: New(Func(Of TRecord, JsonNamedDestination), JsonTypeInfo(Of TRecord), ILogger(Of JsonMultiStreamLoader(Of TRecord)))
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(System.Func<TRecord, Wolfgang.Etl.Json.JsonNamedDestination>, System.Text.Json.Serialization.Metadata.JsonTypeInfo<TRecord>, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>>?)
+  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord).New(System.Func(Of TRecord, Wolfgang.Etl.Json.JsonNamedDestination), System.Text.Json.Serialization.Metadata.JsonTypeInfo(Of TRecord), Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord)))
+  nameWithType: JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(Func<TRecord, JsonNamedDestination>, JsonTypeInfo<TRecord>, ILogger<JsonMultiStreamLoader<TRecord>>?)
+  nameWithType.vb: JsonMultiStreamLoader(Of TRecord).New(Func(Of TRecord, JsonNamedDestination), JsonTypeInfo(Of TRecord), ILogger(Of JsonMultiStreamLoader(Of TRecord)))
 - uid: Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor*
   name: JsonMultiStreamLoader
   href: api/Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html#Wolfgang_Etl_Json_JsonMultiStreamLoader_1__ctor_
@@ -419,6 +692,23 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord).CreateProgressTimer
   nameWithType: JsonMultiStreamLoader<TRecord>.CreateProgressTimer
   nameWithType.vb: JsonMultiStreamLoader(Of TRecord).CreateProgressTimer
+- uid: Wolfgang.Etl.Json.JsonMultiStreamLoader`1.IsDryRun
+  name: IsDryRun
+  href: api/Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html#Wolfgang_Etl_Json_JsonMultiStreamLoader_1_IsDryRun
+  commentId: P:Wolfgang.Etl.Json.JsonMultiStreamLoader`1.IsDryRun
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.IsDryRun
+  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord).IsDryRun
+  nameWithType: JsonMultiStreamLoader<TRecord>.IsDryRun
+  nameWithType.vb: JsonMultiStreamLoader(Of TRecord).IsDryRun
+- uid: Wolfgang.Etl.Json.JsonMultiStreamLoader`1.IsDryRun*
+  name: IsDryRun
+  href: api/Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html#Wolfgang_Etl_Json_JsonMultiStreamLoader_1_IsDryRun_
+  commentId: Overload:Wolfgang.Etl.Json.JsonMultiStreamLoader`1.IsDryRun
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.IsDryRun
+  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord).IsDryRun
+  nameWithType: JsonMultiStreamLoader<TRecord>.IsDryRun
+  nameWithType.vb: JsonMultiStreamLoader(Of TRecord).IsDryRun
 - uid: Wolfgang.Etl.Json.JsonMultiStreamLoader`1.LoadWorkerAsync(System.Collections.Generic.IAsyncEnumerable{`0},System.Threading.CancellationToken)
   name: LoadWorkerAsync(IAsyncEnumerable<TRecord>, CancellationToken)
   href: api/Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html#Wolfgang_Etl_Json_JsonMultiStreamLoader_1_LoadWorkerAsync_System_Collections_Generic_IAsyncEnumerable__0__System_Threading_CancellationToken_
@@ -437,6 +727,108 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord).LoadWorkerAsync
   nameWithType: JsonMultiStreamLoader<TRecord>.LoadWorkerAsync
   nameWithType.vb: JsonMultiStreamLoader(Of TRecord).LoadWorkerAsync
+- uid: Wolfgang.Etl.Json.JsonNamedDestination
+  name: JsonNamedDestination
+  href: api/Wolfgang.Etl.Json.JsonNamedDestination.html
+  commentId: T:Wolfgang.Etl.Json.JsonNamedDestination
+  fullName: Wolfgang.Etl.Json.JsonNamedDestination
+  nameWithType: JsonNamedDestination
+- uid: Wolfgang.Etl.Json.JsonNamedDestination.#ctor(System.IO.Stream,System.String)
+  name: JsonNamedDestination(Stream, string?)
+  href: api/Wolfgang.Etl.Json.JsonNamedDestination.html#Wolfgang_Etl_Json_JsonNamedDestination__ctor_System_IO_Stream_System_String_
+  commentId: M:Wolfgang.Etl.Json.JsonNamedDestination.#ctor(System.IO.Stream,System.String)
+  name.vb: New(Stream, String)
+  fullName: Wolfgang.Etl.Json.JsonNamedDestination.JsonNamedDestination(System.IO.Stream, string?)
+  fullName.vb: Wolfgang.Etl.Json.JsonNamedDestination.New(System.IO.Stream, String)
+  nameWithType: JsonNamedDestination.JsonNamedDestination(Stream, string?)
+  nameWithType.vb: JsonNamedDestination.New(Stream, String)
+- uid: Wolfgang.Etl.Json.JsonNamedDestination.#ctor*
+  name: JsonNamedDestination
+  href: api/Wolfgang.Etl.Json.JsonNamedDestination.html#Wolfgang_Etl_Json_JsonNamedDestination__ctor_
+  commentId: Overload:Wolfgang.Etl.Json.JsonNamedDestination.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: Wolfgang.Etl.Json.JsonNamedDestination.JsonNamedDestination
+  fullName.vb: Wolfgang.Etl.Json.JsonNamedDestination.New
+  nameWithType: JsonNamedDestination.JsonNamedDestination
+  nameWithType.vb: JsonNamedDestination.New
+- uid: Wolfgang.Etl.Json.JsonNamedDestination.Name
+  name: Name
+  href: api/Wolfgang.Etl.Json.JsonNamedDestination.html#Wolfgang_Etl_Json_JsonNamedDestination_Name
+  commentId: P:Wolfgang.Etl.Json.JsonNamedDestination.Name
+  fullName: Wolfgang.Etl.Json.JsonNamedDestination.Name
+  nameWithType: JsonNamedDestination.Name
+- uid: Wolfgang.Etl.Json.JsonNamedDestination.Name*
+  name: Name
+  href: api/Wolfgang.Etl.Json.JsonNamedDestination.html#Wolfgang_Etl_Json_JsonNamedDestination_Name_
+  commentId: Overload:Wolfgang.Etl.Json.JsonNamedDestination.Name
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonNamedDestination.Name
+  nameWithType: JsonNamedDestination.Name
+- uid: Wolfgang.Etl.Json.JsonNamedDestination.Stream
+  name: Stream
+  href: api/Wolfgang.Etl.Json.JsonNamedDestination.html#Wolfgang_Etl_Json_JsonNamedDestination_Stream
+  commentId: P:Wolfgang.Etl.Json.JsonNamedDestination.Stream
+  fullName: Wolfgang.Etl.Json.JsonNamedDestination.Stream
+  nameWithType: JsonNamedDestination.Stream
+- uid: Wolfgang.Etl.Json.JsonNamedDestination.Stream*
+  name: Stream
+  href: api/Wolfgang.Etl.Json.JsonNamedDestination.html#Wolfgang_Etl_Json_JsonNamedDestination_Stream_
+  commentId: Overload:Wolfgang.Etl.Json.JsonNamedDestination.Stream
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonNamedDestination.Stream
+  nameWithType: JsonNamedDestination.Stream
+- uid: Wolfgang.Etl.Json.JsonNamedStream
+  name: JsonNamedStream
+  href: api/Wolfgang.Etl.Json.JsonNamedStream.html
+  commentId: T:Wolfgang.Etl.Json.JsonNamedStream
+  fullName: Wolfgang.Etl.Json.JsonNamedStream
+  nameWithType: JsonNamedStream
+- uid: Wolfgang.Etl.Json.JsonNamedStream.#ctor(System.IO.Stream,System.String)
+  name: JsonNamedStream(Stream, string?)
+  href: api/Wolfgang.Etl.Json.JsonNamedStream.html#Wolfgang_Etl_Json_JsonNamedStream__ctor_System_IO_Stream_System_String_
+  commentId: M:Wolfgang.Etl.Json.JsonNamedStream.#ctor(System.IO.Stream,System.String)
+  name.vb: New(Stream, String)
+  fullName: Wolfgang.Etl.Json.JsonNamedStream.JsonNamedStream(System.IO.Stream, string?)
+  fullName.vb: Wolfgang.Etl.Json.JsonNamedStream.New(System.IO.Stream, String)
+  nameWithType: JsonNamedStream.JsonNamedStream(Stream, string?)
+  nameWithType.vb: JsonNamedStream.New(Stream, String)
+- uid: Wolfgang.Etl.Json.JsonNamedStream.#ctor*
+  name: JsonNamedStream
+  href: api/Wolfgang.Etl.Json.JsonNamedStream.html#Wolfgang_Etl_Json_JsonNamedStream__ctor_
+  commentId: Overload:Wolfgang.Etl.Json.JsonNamedStream.#ctor
+  isSpec: "True"
+  name.vb: New
+  fullName: Wolfgang.Etl.Json.JsonNamedStream.JsonNamedStream
+  fullName.vb: Wolfgang.Etl.Json.JsonNamedStream.New
+  nameWithType: JsonNamedStream.JsonNamedStream
+  nameWithType.vb: JsonNamedStream.New
+- uid: Wolfgang.Etl.Json.JsonNamedStream.Name
+  name: Name
+  href: api/Wolfgang.Etl.Json.JsonNamedStream.html#Wolfgang_Etl_Json_JsonNamedStream_Name
+  commentId: P:Wolfgang.Etl.Json.JsonNamedStream.Name
+  fullName: Wolfgang.Etl.Json.JsonNamedStream.Name
+  nameWithType: JsonNamedStream.Name
+- uid: Wolfgang.Etl.Json.JsonNamedStream.Name*
+  name: Name
+  href: api/Wolfgang.Etl.Json.JsonNamedStream.html#Wolfgang_Etl_Json_JsonNamedStream_Name_
+  commentId: Overload:Wolfgang.Etl.Json.JsonNamedStream.Name
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonNamedStream.Name
+  nameWithType: JsonNamedStream.Name
+- uid: Wolfgang.Etl.Json.JsonNamedStream.Stream
+  name: Stream
+  href: api/Wolfgang.Etl.Json.JsonNamedStream.html#Wolfgang_Etl_Json_JsonNamedStream_Stream
+  commentId: P:Wolfgang.Etl.Json.JsonNamedStream.Stream
+  fullName: Wolfgang.Etl.Json.JsonNamedStream.Stream
+  nameWithType: JsonNamedStream.Stream
+- uid: Wolfgang.Etl.Json.JsonNamedStream.Stream*
+  name: Stream
+  href: api/Wolfgang.Etl.Json.JsonNamedStream.html#Wolfgang_Etl_Json_JsonNamedStream_Stream_
+  commentId: Overload:Wolfgang.Etl.Json.JsonNamedStream.Stream
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonNamedStream.Stream
+  nameWithType: JsonNamedStream.Stream
 - uid: Wolfgang.Etl.Json.JsonReport
   name: JsonReport
   href: api/Wolfgang.Etl.Json.JsonReport.html
@@ -452,6 +844,15 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonReport.New(Integer, Integer)
   nameWithType: JsonReport.JsonReport(int, int)
   nameWithType.vb: JsonReport.New(Integer, Integer)
+- uid: Wolfgang.Etl.Json.JsonReport.#ctor(System.Int32,System.Int32,System.String)
+  name: JsonReport(int, int, string?)
+  href: api/Wolfgang.Etl.Json.JsonReport.html#Wolfgang_Etl_Json_JsonReport__ctor_System_Int32_System_Int32_System_String_
+  commentId: M:Wolfgang.Etl.Json.JsonReport.#ctor(System.Int32,System.Int32,System.String)
+  name.vb: New(Integer, Integer, String)
+  fullName: Wolfgang.Etl.Json.JsonReport.JsonReport(int, int, string?)
+  fullName.vb: Wolfgang.Etl.Json.JsonReport.New(Integer, Integer, String)
+  nameWithType: JsonReport.JsonReport(int, int, string?)
+  nameWithType.vb: JsonReport.New(Integer, Integer, String)
 - uid: Wolfgang.Etl.Json.JsonReport.#ctor*
   name: JsonReport
   href: api/Wolfgang.Etl.Json.JsonReport.html#Wolfgang_Etl_Json_JsonReport__ctor_
@@ -475,6 +876,19 @@ references:
   isSpec: "True"
   fullName: Wolfgang.Etl.Json.JsonReport.CurrentSkippedItemCount
   nameWithType: JsonReport.CurrentSkippedItemCount
+- uid: Wolfgang.Etl.Json.JsonReport.CurrentSourceName
+  name: CurrentSourceName
+  href: api/Wolfgang.Etl.Json.JsonReport.html#Wolfgang_Etl_Json_JsonReport_CurrentSourceName
+  commentId: P:Wolfgang.Etl.Json.JsonReport.CurrentSourceName
+  fullName: Wolfgang.Etl.Json.JsonReport.CurrentSourceName
+  nameWithType: JsonReport.CurrentSourceName
+- uid: Wolfgang.Etl.Json.JsonReport.CurrentSourceName*
+  name: CurrentSourceName
+  href: api/Wolfgang.Etl.Json.JsonReport.html#Wolfgang_Etl_Json_JsonReport_CurrentSourceName_
+  commentId: Overload:Wolfgang.Etl.Json.JsonReport.CurrentSourceName
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonReport.CurrentSourceName
+  nameWithType: JsonReport.CurrentSourceName
 - uid: Wolfgang.Etl.Json.JsonSingleStreamExtractor`1
   name: JsonSingleStreamExtractor<TRecord>
   href: api/Wolfgang.Etl.Json.JsonSingleStreamExtractor-1.html
@@ -565,6 +979,40 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonSingleStreamExtractor(Of TRecord).CreateProgressTimer
   nameWithType: JsonSingleStreamExtractor<TRecord>.CreateProgressTimer
   nameWithType.vb: JsonSingleStreamExtractor(Of TRecord).CreateProgressTimer
+- uid: Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.ErrorHandling
+  name: ErrorHandling
+  href: api/Wolfgang.Etl.Json.JsonSingleStreamExtractor-1.html#Wolfgang_Etl_Json_JsonSingleStreamExtractor_1_ErrorHandling
+  commentId: P:Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.ErrorHandling
+  fullName: Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.ErrorHandling
+  fullName.vb: Wolfgang.Etl.Json.JsonSingleStreamExtractor(Of TRecord).ErrorHandling
+  nameWithType: JsonSingleStreamExtractor<TRecord>.ErrorHandling
+  nameWithType.vb: JsonSingleStreamExtractor(Of TRecord).ErrorHandling
+- uid: Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.ErrorHandling*
+  name: ErrorHandling
+  href: api/Wolfgang.Etl.Json.JsonSingleStreamExtractor-1.html#Wolfgang_Etl_Json_JsonSingleStreamExtractor_1_ErrorHandling_
+  commentId: Overload:Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.ErrorHandling
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.ErrorHandling
+  fullName.vb: Wolfgang.Etl.Json.JsonSingleStreamExtractor(Of TRecord).ErrorHandling
+  nameWithType: JsonSingleStreamExtractor<TRecord>.ErrorHandling
+  nameWithType.vb: JsonSingleStreamExtractor(Of TRecord).ErrorHandling
+- uid: Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.Errors
+  name: Errors
+  href: api/Wolfgang.Etl.Json.JsonSingleStreamExtractor-1.html#Wolfgang_Etl_Json_JsonSingleStreamExtractor_1_Errors
+  commentId: P:Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.Errors
+  fullName: Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.Errors
+  fullName.vb: Wolfgang.Etl.Json.JsonSingleStreamExtractor(Of TRecord).Errors
+  nameWithType: JsonSingleStreamExtractor<TRecord>.Errors
+  nameWithType.vb: JsonSingleStreamExtractor(Of TRecord).Errors
+- uid: Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.Errors*
+  name: Errors
+  href: api/Wolfgang.Etl.Json.JsonSingleStreamExtractor-1.html#Wolfgang_Etl_Json_JsonSingleStreamExtractor_1_Errors_
+  commentId: Overload:Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.Errors
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.Errors
+  fullName.vb: Wolfgang.Etl.Json.JsonSingleStreamExtractor(Of TRecord).Errors
+  nameWithType: JsonSingleStreamExtractor<TRecord>.Errors
+  nameWithType.vb: JsonSingleStreamExtractor(Of TRecord).Errors
 - uid: Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.ExtractWorkerAsync(System.Threading.CancellationToken)
   name: ExtractWorkerAsync(CancellationToken)
   href: api/Wolfgang.Etl.Json.JsonSingleStreamExtractor-1.html#Wolfgang_Etl_Json_JsonSingleStreamExtractor_1_ExtractWorkerAsync_System_Threading_CancellationToken_
@@ -672,6 +1120,23 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonSingleStreamLoader(Of TRecord).CreateProgressTimer
   nameWithType: JsonSingleStreamLoader<TRecord>.CreateProgressTimer
   nameWithType.vb: JsonSingleStreamLoader(Of TRecord).CreateProgressTimer
+- uid: Wolfgang.Etl.Json.JsonSingleStreamLoader`1.IsDryRun
+  name: IsDryRun
+  href: api/Wolfgang.Etl.Json.JsonSingleStreamLoader-1.html#Wolfgang_Etl_Json_JsonSingleStreamLoader_1_IsDryRun
+  commentId: P:Wolfgang.Etl.Json.JsonSingleStreamLoader`1.IsDryRun
+  fullName: Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>.IsDryRun
+  fullName.vb: Wolfgang.Etl.Json.JsonSingleStreamLoader(Of TRecord).IsDryRun
+  nameWithType: JsonSingleStreamLoader<TRecord>.IsDryRun
+  nameWithType.vb: JsonSingleStreamLoader(Of TRecord).IsDryRun
+- uid: Wolfgang.Etl.Json.JsonSingleStreamLoader`1.IsDryRun*
+  name: IsDryRun
+  href: api/Wolfgang.Etl.Json.JsonSingleStreamLoader-1.html#Wolfgang_Etl_Json_JsonSingleStreamLoader_1_IsDryRun_
+  commentId: Overload:Wolfgang.Etl.Json.JsonSingleStreamLoader`1.IsDryRun
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>.IsDryRun
+  fullName.vb: Wolfgang.Etl.Json.JsonSingleStreamLoader(Of TRecord).IsDryRun
+  nameWithType: JsonSingleStreamLoader<TRecord>.IsDryRun
+  nameWithType.vb: JsonSingleStreamLoader(Of TRecord).IsDryRun
 - uid: Wolfgang.Etl.Json.JsonSingleStreamLoader`1.LoadWorkerAsync(System.Collections.Generic.IAsyncEnumerable{`0},System.Threading.CancellationToken)
   name: LoadWorkerAsync(IAsyncEnumerable<TRecord>, CancellationToken)
   href: api/Wolfgang.Etl.Json.JsonSingleStreamLoader-1.html#Wolfgang_Etl_Json_JsonSingleStreamLoader_1_LoadWorkerAsync_System_Collections_Generic_IAsyncEnumerable__0__System_Threading_CancellationToken_

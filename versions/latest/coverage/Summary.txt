@@ -1,30 +1,33 @@
 Summary
-  Generated on: 7/12/2026 - 1:02:40 PM
-  Coverage date: 7/12/2026 - 1:02:36 PM
-  Parser: MultiReport (2x Cobertura)
+  Generated on: 7/18/2026 - 12:28:17 AM
+  Coverage date: 7/18/2026 - 12:28:11 AM - 7/18/2026 - 12:28:13 AM
+  Parser: MultiReport (3x Cobertura)
   Assemblies: 1
-  Classes: 8
-  Files: 8
-  Line coverage: 98%
-  Covered lines: 618
-  Uncovered lines: 12
-  Coverable lines: 630
-  Total lines: 1765
-  Branch coverage: 89.5% (258 of 288)
-  Covered branches: 258
-  Total branches: 288
-  Method coverage: 100% (64 of 64)
-  Full method coverage: 90.6% (58 of 64)
-  Covered methods: 64
-  Fully covered methods: 58
-  Total methods: 64
+  Classes: 11
+  Files: 11
+  Line coverage: 98.9%
+  Covered lines: 868
+  Uncovered lines: 9
+  Coverable lines: 877
+  Total lines: 2535
+  Branch coverage: 90.5% (362 of 400)
+  Covered branches: 362
+  Total branches: 400
+  Method coverage: 100% (99 of 99)
+  Full method coverage: 94.9% (94 of 99)
+  Covered methods: 99
+  Fully covered methods: 94
+  Total methods: 99
 
-Wolfgang.Etl.Json                                    98%
-  Wolfgang.Etl.Json.JsonLineExtractor<T>             98%
-  Wolfgang.Etl.Json.JsonLineLoader<T>              97.8%
+Wolfgang.Etl.Json                                  98.9%
+  Wolfgang.Etl.Json.JsonDeserializationError        100%
+  Wolfgang.Etl.Json.JsonLineExtractor<T>           98.3%
+  Wolfgang.Etl.Json.JsonLineLoader<T>                98%
   Wolfgang.Etl.Json.JsonLogMessages                 100%
-  Wolfgang.Etl.Json.JsonMultiStreamExtractor<T>      98%
-  Wolfgang.Etl.Json.JsonMultiStreamLoader<T>       97.9%
+  Wolfgang.Etl.Json.JsonMultiStreamExtractor<T>     100%
+  Wolfgang.Etl.Json.JsonMultiStreamLoader<T>       99.4%
+  Wolfgang.Etl.Json.JsonNamedDestination            100%
+  Wolfgang.Etl.Json.JsonNamedStream                 100%
   Wolfgang.Etl.Json.JsonReport                      100%
-  Wolfgang.Etl.Json.JsonSingleStreamExtractor<T>   97.9%
-  Wolfgang.Etl.Json.JsonSingleStreamLoader<T>      97.8%
+  Wolfgang.Etl.Json.JsonSingleStreamExtractor<T>   98.3%
+  Wolfgang.Etl.Json.JsonSingleStreamLoader<T>      97.9%
