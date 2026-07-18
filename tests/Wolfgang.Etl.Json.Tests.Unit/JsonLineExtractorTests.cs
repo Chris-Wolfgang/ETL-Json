@@ -662,10 +662,34 @@ public class JsonLineExtractorTests
 
 
     [Fact]
-    public void CurrentByteOffset_is_zero_before_extraction()
+    public void EnableCheckpointing_defaults_to_false()
     {
         var sut = new JsonLineExtractor<PersonRecord>(new MemoryStream());
-        Assert.Equal(0, sut.CurrentByteOffset);
+        Assert.False(sut.EnableCheckpointing);
+    }
+
+
+
+    [Fact]
+    public void CurrentByteOffset_throws_when_checkpointing_disabled()
+    {
+        var sut = new JsonLineExtractor<PersonRecord>(new MemoryStream());
+        Assert.Throws<InvalidOperationException>(() => sut.CurrentByteOffset);
+    }
+
+
+
+    [Fact]
+    public async Task CurrentByteOffset_throws_after_extraction_when_checkpointing_disabled()
+    {
+        var stream = CreateJsonlStream(3);
+        var sut = new JsonLineExtractor<PersonRecord>(stream);
+
+        var results = await sut.ExtractAsync().ToListAsync();
+
+        // Extraction still works with checkpointing off; only CurrentByteOffset is unavailable.
+        Assert.Equal(3, results.Count);
+        Assert.Throws<InvalidOperationException>(() => sut.CurrentByteOffset);
     }
 
 
@@ -674,7 +698,10 @@ public class JsonLineExtractorTests
     public async Task CurrentByteOffset_advances_to_stream_length_after_full_extraction()
     {
         var stream = CreateJsonlStream(3);
-        var sut = new JsonLineExtractor<PersonRecord>(stream);
+        var sut = new JsonLineExtractor<PersonRecord>(stream)
+        {
+            EnableCheckpointing = true,
+        };
 
         await sut.ExtractAsync().ToListAsync();
 
@@ -692,11 +719,13 @@ public class JsonLineExtractorTests
         var sut1 = new JsonLineExtractor<PersonRecord>(stream)
         {
             MaximumItemCount = 2,
+            EnableCheckpointing = true,
         };
         var firstBatch = await sut1.ExtractAsync().ToListAsync();
         var checkpoint = sut1.CurrentByteOffset;
 
         // Second pass — seek to checkpoint and extract the remainder.
+        // Resuming via StartByteOffset works even without EnableCheckpointing.
         var sut2 = new JsonLineExtractor<PersonRecord>(stream)
         {
             StartByteOffset = checkpoint,
@@ -713,7 +742,7 @@ public class JsonLineExtractorTests
     public async Task ExtractAsync_when_StartByteOffset_set_extracts_items_from_checkpoint()
     {
         var stream = CreateJsonlStream(3);
-        var sut1 = new JsonLineExtractor<PersonRecord>(stream) { MaximumItemCount = 1 };
+        var sut1 = new JsonLineExtractor<PersonRecord>(stream) { MaximumItemCount = 1, EnableCheckpointing = true };
         await sut1.ExtractAsync().ToListAsync();
         var checkpoint = sut1.CurrentByteOffset;
 
@@ -749,7 +778,10 @@ public class JsonLineExtractorTests
         var lines = ExpectedItems.Take(3).Select(item => JsonSerializer.Serialize(item));
         var content = string.Join("\r\n", lines);
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
-        var sut = new JsonLineExtractor<PersonRecord>(stream);
+        var sut = new JsonLineExtractor<PersonRecord>(stream)
+        {
+            EnableCheckpointing = true,
+        };
 
         await sut.ExtractAsync().ToListAsync();
 

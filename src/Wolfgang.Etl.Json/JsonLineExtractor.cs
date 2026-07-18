@@ -63,6 +63,22 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 
 
     /// <summary>
+    /// Gets or sets a value indicating whether the extractor tracks the byte offset of each line
+    /// so that <see cref="CurrentByteOffset"/> can be captured as a resumable checkpoint.
+    /// Default is <see langword="false"/>.
+    /// </summary>
+    /// <remarks>
+    /// Tracking requires computing the byte length of every line, which adds measurable per-line
+    /// overhead on the extraction hot path. It is therefore opt-in: leave this <see langword="false"/>
+    /// unless you intend to read <see cref="CurrentByteOffset"/> to create checkpoints. Resuming a
+    /// prior run via <see cref="StartByteOffset"/> does not by itself require this flag — set it only
+    /// when you also need to capture new checkpoints during the resumed run.
+    /// </remarks>
+    public bool EnableCheckpointing { get; set; }
+
+
+
+    /// <summary>
     /// Gets or sets the byte offset within the stream at which extraction begins.
     /// Set this before calling <see cref="ExtractorBase{TSource,TProgress}.ExtractAsync(System.Threading.CancellationToken)"/> to resume from a saved checkpoint.
     /// The stream must be seekable when this value is greater than zero.
@@ -76,7 +92,14 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// Gets the byte offset of the start of the next unread line in the stream.
     /// Capture this value after each <see langword="yield"/> to create a resumable checkpoint.
     /// </summary>
-    public long CurrentByteOffset => Interlocked.Read(ref _currentByteOffset);
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when <see cref="EnableCheckpointing"/> is <see langword="false"/>. Byte offsets are
+    /// only tracked when checkpointing is enabled.
+    /// </exception>
+    public long CurrentByteOffset =>
+        EnableCheckpointing
+            ? Interlocked.Read(ref _currentByteOffset)
+            : throw new InvalidOperationException("Set EnableCheckpointing to true before reading CurrentByteOffset.");
 
 
 
@@ -272,6 +295,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     {
         _errors.Clear();
         JsonLogMessages.StartingOperation(_logger, OperationName, null);
+        var track = EnableCheckpointing;
         var (newlineSize, lineEncoding) = await PrepareForExtractionAsync(token).ConfigureAwait(false);
         var skipBudget = SkipItemCount;
         var sw = Stopwatch.StartNew();
@@ -284,7 +308,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 #endif
         {
             token.ThrowIfCancellationRequested();
-            var lineBytes = lineEncoding.GetByteCount(line) + newlineSize;
+            var lineBytes = track ? lineEncoding.GetByteCount(line) + newlineSize : 0;
             var lineNum = Interlocked.Increment(ref _currentLineNumber);
             if (string.IsNullOrWhiteSpace(line))
             {
@@ -309,7 +333,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
                 skipBudget--;
                 Interlocked.Add(ref _currentByteOffset, lineBytes);
                 IncrementCurrentSkippedItemCount();
-                JsonMetrics.ItemsSkipped.Add(1, _operationTag, _componentTag, _recordTypeTag);
+                JsonMetrics.AddSkipped(_operationTag, _componentTag, _recordTypeTag);
                 JsonLogMessages.SkippedItemAtLine(_logger, CurrentSkippedItemCount, SkipItemCount, lineNum, null);
                 continue;
             }
@@ -320,7 +344,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
             }
             Interlocked.Add(ref _currentByteOffset, lineBytes);
             IncrementCurrentItemCount();
-            JsonMetrics.ItemsExtracted.Add(1, _operationTag, _componentTag, _recordTypeTag);
+            JsonMetrics.AddExtracted(_operationTag, _componentTag, _recordTypeTag);
             JsonLogMessages.ExtractedItemFromLine(_logger, CurrentItemCount, lineNum, null);
             yield return item;
         }
@@ -338,7 +362,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
         }
 
         JsonLogMessages.JsonlExtractionCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, Interlocked.Read(ref _currentLineNumber), null);
-        JsonMetrics.OperationDuration.Record(sw.Elapsed.TotalMilliseconds, _operationTag, _componentTag, _recordTypeTag);
+        JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, _operationTag, _componentTag, _recordTypeTag);
     }
 
 
@@ -348,7 +372,9 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
         Interlocked.Exchange(ref _currentLineNumber, 0);
         Interlocked.Exchange(ref _currentByteOffset, StartByteOffset);
         var lineEncoding = Encoding ?? System.Text.Encoding.UTF8;
-        var newlineSize = await DetectNewlineSizeAsync(token).ConfigureAwait(false);
+        var newlineSize = EnableCheckpointing
+            ? await DetectNewlineSizeAsync(token).ConfigureAwait(false)
+            : 0;
         if (StartByteOffset > 0)
         {
             if (!_stream.CanSeek)
