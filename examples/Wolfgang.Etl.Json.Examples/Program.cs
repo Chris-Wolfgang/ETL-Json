@@ -30,6 +30,8 @@ Console.WriteLine();
 await SkipAndMaxExample();
 Console.WriteLine();
 await CompressedStreamsExample();
+Console.WriteLine();
+await SchemaCustomizationExample();
 
 
 
@@ -288,4 +290,61 @@ static async Task CompressedStreamsExample()
     }
 
     Console.WriteLine($"Extracted: {extractor.CurrentItemCount}");
+}
+
+
+
+static async Task SchemaCustomizationExample()
+{
+    Console.WriteLine("=== Schema Customization Example ===");
+    Console.WriteLine("Customize JSON serialization without modifying the POCO class.");
+    Console.WriteLine();
+
+    var people = new List<Person>
+    {
+        new() { FirstName = "Alice", LastName = "Smith", Age = 30, Email = "alice@example.com" },
+    };
+
+    // --- snake_case naming policy ---
+    Console.WriteLine("snake_case naming policy:");
+    var snakeOptions = new JsonSerializerOptions
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+        PropertyNameCaseInsensitive = true,
+    };
+
+    var snakeStream = new MemoryStream();
+    var snakeLoader = new JsonLineLoader<Person>(snakeStream, snakeOptions);
+    await snakeLoader.LoadAsync(people.ToAsyncEnumerable());
+
+    snakeStream.Position = 0;
+    using var snakeReader = new StreamReader(snakeStream);
+    Console.WriteLine("  " + await snakeReader.ReadToEndAsync());
+
+    // --- Ignore a property via JsonSerializerOptions ---
+    Console.WriteLine("Ignore Email via options:");
+    var ignoreOptions = new JsonSerializerOptions();
+    ignoreOptions.TypeInfoResolverChain.Add(new System.Text.Json.Serialization.Metadata.DefaultJsonTypeInfoResolver
+    {
+        Modifiers =
+        {
+            typeInfo =>
+            {
+                if (typeInfo.Type != typeof(Person)) return;
+                foreach (var prop in typeInfo.Properties)
+                {
+                    if (string.Equals(prop.Name, "Email", StringComparison.Ordinal))
+                        prop.ShouldSerialize = (_, _) => false;
+                }
+            }
+        }
+    });
+
+    var ignoreStream = new MemoryStream();
+    var ignoreLoader = new JsonLineLoader<Person>(ignoreStream, ignoreOptions);
+    await ignoreLoader.LoadAsync(people.ToAsyncEnumerable());
+
+    ignoreStream.Position = 0;
+    using var ignoreReader = new StreamReader(ignoreStream);
+    Console.WriteLine("  " + await ignoreReader.ReadToEndAsync());
 }
