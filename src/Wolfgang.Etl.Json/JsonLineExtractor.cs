@@ -42,6 +42,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     private static readonly KeyValuePair<string, object?> _componentTag = new("etl.component", "JsonLine");
     private static readonly KeyValuePair<string, object?> _recordTypeTag = new("etl.record_type", typeof(TRecord).Name);
     private readonly Stream _stream;
+    private readonly bool _ownsStream;
     private readonly JsonSerializerOptions? _options;
     private readonly JsonTypeInfo<TRecord>? _typeInfo;
     private readonly ILogger _logger;
@@ -122,6 +123,39 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
         _logger = NullLogger.Instance;
         _options = null;
+    }
+
+
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonLineExtractor{TRecord}"/> class that opens
+    /// and owns the JSONL file at <paramref name="path"/>. The file is closed when extraction
+    /// completes or the extractor is disposed.
+    /// </summary>
+    /// <param name="path">The path of the JSONL file to read.</param>
+    /// <param name="options">The JSON serializer options to use, or <c>null</c> for the default.</param>
+    /// <param name="logger">An optional logger instance for diagnostic output.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="path"/> is <c>null</c>.</exception>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+    [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
+    public JsonLineExtractor
+    (
+        string path,
+        JsonSerializerOptions? options = null,
+        ILogger<JsonLineExtractor<TRecord>>? logger = null
+    )
+    {
+        if (path is null)
+        {
+            throw new ArgumentNullException(nameof(path));
+        }
+
+        _stream = File.OpenRead(path);
+        _ownsStream = true;
+        _options = options;
+        _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
 
@@ -276,12 +310,12 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     {
 #if NETSTANDARD2_0 || NET462 || NET481
         return Encoding is null
-            ? new StreamReader(_stream, System.Text.Encoding.UTF8, detectEncodingFromByteOrderMarks: true, bufferSize: 1024, leaveOpen: true)
-            : new StreamReader(_stream, Encoding, detectEncodingFromByteOrderMarks: false, bufferSize: 1024, leaveOpen: true);
+            ? new StreamReader(_stream, System.Text.Encoding.UTF8, detectEncodingFromByteOrderMarks: true, bufferSize: 1024, leaveOpen: !_ownsStream)
+            : new StreamReader(_stream, Encoding, detectEncodingFromByteOrderMarks: false, bufferSize: 1024, leaveOpen: !_ownsStream);
 #else
         return Encoding is null
-            ? new StreamReader(_stream, leaveOpen: true)
-            : new StreamReader(_stream, Encoding, detectEncodingFromByteOrderMarks: false, bufferSize: 1024, leaveOpen: true);
+            ? new StreamReader(_stream, leaveOpen: !_ownsStream)
+            : new StreamReader(_stream, Encoding, detectEncodingFromByteOrderMarks: false, bufferSize: 1024, leaveOpen: !_ownsStream);
 #endif
     }
 
@@ -473,5 +507,18 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
         }
 
         return base.CreateProgressTimer(progress);
+    }
+
+
+
+    /// <inheritdoc />
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing && _ownsStream)
+        {
+            _stream.Dispose();
+        }
+
+        base.Dispose(disposing);
     }
 }

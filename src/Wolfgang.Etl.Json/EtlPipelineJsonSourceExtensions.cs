@@ -1,11 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using Wolfgang.Etl.Abstractions;
 
 namespace Wolfgang.Etl.Json;
@@ -52,7 +48,7 @@ public static class EtlPipelineJsonSourceExtensions
             throw new ArgumentNullException(nameof(path));
         }
 
-        return pipeline.From(ReadJsonLinesAsync<T>(path, options));
+        return pipeline.From(new JsonLineExtractor<T>(path, options));
     }
 
 
@@ -125,7 +121,7 @@ public static class EtlPipelineJsonSourceExtensions
             throw new ArgumentNullException(nameof(path));
         }
 
-        return pipeline.From(ReadJsonArrayAsync<T>(path, options));
+        return pipeline.From(new JsonSingleStreamExtractor<T>(path, options));
     }
 
 
@@ -164,59 +160,5 @@ public static class EtlPipelineJsonSourceExtensions
             ? new JsonSingleStreamExtractor<T>(stream)
             : new JsonSingleStreamExtractor<T>(stream, options);
         return pipeline.From(extractor);
-    }
-
-
-#if NET5_0_OR_GREATER
-    [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed.")]
-    [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed.")]
-#endif
-    private static async IAsyncEnumerable<T> ReadJsonLinesAsync<T>
-    (
-        string path,
-        JsonSerializerOptions? options,
-        [EnumeratorCancellation] CancellationToken token = default
-    )
-        where T : notnull
-    {
-#if NETSTANDARD2_0 || NET462 || NET481
-        using var stream = File.OpenRead(path);
-#else
-        await using var stream = File.OpenRead(path);
-#endif
-        var extractor = options is null
-            ? new JsonLineExtractor<T>(stream)
-            : new JsonLineExtractor<T>(stream, options);
-        await foreach (var item in extractor.ExtractAsync(token).ConfigureAwait(false))
-        {
-            yield return item;
-        }
-    }
-
-
-#if NET5_0_OR_GREATER
-    [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed.")]
-    [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed.")]
-#endif
-    private static async IAsyncEnumerable<T> ReadJsonArrayAsync<T>
-    (
-        string path,
-        JsonSerializerOptions? options,
-        [EnumeratorCancellation] CancellationToken token = default
-    )
-        where T : notnull
-    {
-#if NETSTANDARD2_0 || NET462 || NET481
-        using var stream = File.OpenRead(path);
-#else
-        await using var stream = File.OpenRead(path);
-#endif
-        var extractor = options is null
-            ? new JsonSingleStreamExtractor<T>(stream)
-            : new JsonSingleStreamExtractor<T>(stream, options);
-        await foreach (var item in extractor.ExtractAsync(token).ConfigureAwait(false))
-        {
-            yield return item;
-        }
     }
 }
