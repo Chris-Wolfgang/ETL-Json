@@ -167,6 +167,6 @@ public static class EtlPipelineJsonSinkExtensions
         var loader = options is null
             ? new JsonSingleStreamLoader<T>(stream)
             : new JsonSingleStreamLoader<T>(stream, options);
-        return pipeline.To(loader).DisposingOwned(stream);
+        return pipeline.To(loader);
     }
 }

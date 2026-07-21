@@ -99,7 +99,7 @@ public sealed class EtlPipelineJsonExtensionsTests
 
         destination.Position = 0;
         var lines = Encoding.UTF8.GetString(destination.ToArray())
-            .Split('\n', StringSplitOptions.RemoveEmptyEntries);
+            .Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
         Assert.Equal(3, lines.Length);
     }
@@ -144,6 +144,113 @@ public sealed class EtlPipelineJsonExtensionsTests
     {
         var pipeline = EtlPipeline.Create().JsonLineExtractor<PersonRecord>(new MemoryStream());
         Assert.Throws<ArgumentNullException>(() => pipeline.JsonLineLoader<PersonRecord>((string)null!));
+    }
+
+
+    [Fact]
+    public async Task JsonSingleStream_stream_round_trip_via_pipeline()
+    {
+        var source = new MemoryStream(Encoding.UTF8.GetBytes(
+            System.Text.Json.JsonSerializer.Serialize(People)));
+        var destination = new MemoryStream();
+
+        await EtlPipeline
+            .Create()
+            .JsonSingleStreamExtractor<PersonRecord>(source)
+            .JsonSingleStreamLoader<PersonRecord>(destination)
+            .RunAsync();
+
+        destination.Position = 0;
+        var readBack = await Collect(new JsonSingleStreamExtractor<PersonRecord>(destination).ExtractAsync());
+
+        Assert.Equal(People, readBack);
+    }
+
+
+    [Fact]
+    public async Task JsonSingleStream_file_round_trip_via_pipeline_disposes_streams()
+    {
+        var inPath = Path.GetTempFileName();
+        var outPath = Path.GetTempFileName();
+        try
+        {
+            File.WriteAllText(inPath, System.Text.Json.JsonSerializer.Serialize(People));
+
+            await EtlPipeline
+                .Create()
+                .JsonSingleStreamExtractor<PersonRecord>(inPath)
+                .JsonSingleStreamLoader<PersonRecord>(outPath)
+                .RunAsync();
+
+            // Re-opening the output proves the factory-owned streams were disposed.
+            List<PersonRecord> readBack;
+            using (var outStream = File.OpenRead(outPath))
+            {
+                readBack = await Collect(new JsonSingleStreamExtractor<PersonRecord>(outStream).ExtractAsync());
+            }
+
+            Assert.Equal(People, readBack);
+        }
+        finally
+        {
+            File.Delete(inPath);
+            File.Delete(outPath);
+        }
+    }
+
+
+    [Fact]
+    public async Task Factories_accept_explicit_serializer_options()
+    {
+        var options = new System.Text.Json.JsonSerializerOptions();
+        var source = new MemoryStream(Encoding.UTF8.GetBytes(
+            string.Join("\n", People.Select(p => System.Text.Json.JsonSerializer.Serialize(p, options)))));
+        var destination = new MemoryStream();
+
+        await EtlPipeline
+            .Create()
+            .JsonLineExtractor<PersonRecord>(source, options)
+            .JsonLineLoader<PersonRecord>(destination, options)
+            .RunAsync();
+
+        destination.Position = 0;
+        var readBack = await Collect(new JsonLineExtractor<PersonRecord>(destination).ExtractAsync());
+
+        Assert.Equal(People, readBack);
+    }
+
+
+    [Fact]
+    public void All_factory_null_arguments_throw()
+    {
+        var pipeline = EtlPipeline.Create().JsonLineExtractor<PersonRecord>(new MemoryStream());
+
+        // Source factories.
+        Assert.Throws<ArgumentNullException>(() => ((EtlPipeline)null!).JsonLineExtractor<PersonRecord>("x"));
+        Assert.Throws<ArgumentNullException>(() => EtlPipeline.Create().JsonLineExtractor<PersonRecord>((Stream)null!));
+        Assert.Throws<ArgumentNullException>(() => EtlPipeline.Create().JsonLineExtractor<PersonRecord>((string)null!));
+        Assert.Throws<ArgumentNullException>(() => ((EtlPipeline)null!).JsonSingleStreamExtractor<PersonRecord>("x"));
+        Assert.Throws<ArgumentNullException>(() => EtlPipeline.Create().JsonSingleStreamExtractor<PersonRecord>((Stream)null!));
+        Assert.Throws<ArgumentNullException>(() => EtlPipeline.Create().JsonSingleStreamExtractor<PersonRecord>((string)null!));
+
+        // Sink terminators.
+        Assert.Throws<ArgumentNullException>(() => ((IEtlPipeline<PersonRecord>)null!).JsonLineLoader<PersonRecord>("x"));
+        Assert.Throws<ArgumentNullException>(() => pipeline.JsonLineLoader<PersonRecord>((Stream)null!));
+        Assert.Throws<ArgumentNullException>(() => ((IEtlPipeline<PersonRecord>)null!).JsonSingleStreamLoader<PersonRecord>("x"));
+        Assert.Throws<ArgumentNullException>(() => pipeline.JsonSingleStreamLoader<PersonRecord>((string)null!));
+        Assert.Throws<ArgumentNullException>(() => pipeline.JsonSingleStreamLoader<PersonRecord>((Stream)null!));
+    }
+
+
+    private static async Task<List<T>> Collect<T>(IAsyncEnumerable<T> items)
+    {
+        var list = new List<T>();
+        await foreach (var item in items)
+        {
+            list.Add(item);
+        }
+
+        return list;
     }
 
 
