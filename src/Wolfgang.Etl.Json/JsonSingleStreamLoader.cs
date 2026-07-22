@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text.Json;
@@ -31,6 +32,9 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSON single-stream loading of {typeof(TRecord).Name}";
+    private static readonly KeyValuePair<string, object?> _operationTag = new("etl.operation", "load");
+    private static readonly KeyValuePair<string, object?> _componentTag = new("etl.component", "JsonSingleStream");
+    private static readonly KeyValuePair<string, object?> _recordTypeTag = new("etl.record_type", typeof(TRecord).Name);
     private readonly Stream _stream;
     private readonly JsonSerializerOptions? _options;
     private readonly JsonTypeInfo<TRecord>? _typeInfo;
@@ -211,6 +215,8 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     {
         JsonLogMessages.StartingOperation(_logger, OperationName, null);
 
+        var sw = Stopwatch.StartNew();
+
         // CA2007/MA0004: await using declarations do not support ConfigureAwait in C#
 #pragma warning disable CA2007, MA0004
         await using var writer = IsDryRun ? null : new Utf8JsonWriter(_stream);
@@ -225,6 +231,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
             if (CurrentSkippedItemCount < SkipItemCount)
             {
                 IncrementCurrentSkippedItemCount();
+                JsonMetrics.AddSkipped(_operationTag, _componentTag, _recordTypeTag);
                 JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
                 continue;
             }
@@ -248,6 +255,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
             }
 
             IncrementCurrentItemCount();
+            JsonMetrics.AddLoaded(_operationTag, _componentTag, _recordTypeTag);
             JsonLogMessages.LoadedItem(_logger, CurrentItemCount, null);
         }
 
@@ -258,6 +266,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
         }
 
         JsonLogMessages.SingleStreamLoadingCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, null);
+        JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, _operationTag, _componentTag, _recordTypeTag);
     }
 
 

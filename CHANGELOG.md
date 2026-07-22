@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-07-18
+
+### Added
+
+- Checkpoint/resume support on `JsonLineExtractor<TRecord>`: new `EnableCheckpointing` (settable,
+  default `false`), `StartByteOffset` (settable) and `CurrentByteOffset` (read-only) properties. Set
+  `EnableCheckpointing` to `true`, then capture `CurrentByteOffset` after each yielded item to record
+  a byte-position checkpoint; set `StartByteOffset` on a fresh extractor to resume from that position.
+  Byte tracking is opt-in because it adds per-line overhead on the extraction hot path — with
+  `EnableCheckpointing` left `false` (the default) there is no cost, and reading `CurrentByteOffset`
+  throws `InvalidOperationException`. Resuming via `StartByteOffset` does not itself require the flag.
+  The stream must be seekable when `StartByteOffset` is greater than zero. Line endings (`\n` vs
+  `\r\n`) are detected automatically. Closes #16.
+- Built-in OpenTelemetry metrics via `System.Diagnostics.Metrics`. All extractors and loaders emit
+  counters (`wolfgang.etl.json.items.extracted`, `.items.loaded`, `.items.skipped`) and an operation
+  duration histogram (`wolfgang.etl.json.operation.duration`) under the `Wolfgang.Etl.Json` meter,
+  tagged with `etl.operation`, `etl.component`, and `etl.record_type`. Closes #14.
+
+## [0.4.0] - 2026-07-15
+
+### Changed
+
+- `JsonLineLoader<TRecord>` now writes directly to the output stream instead of wrapping it in a
+  `StreamWriter`, avoiding an unnecessary buffering layer.
+
+### Fixed
+
+- Suppressed the UTF-8 byte-order mark (BOM) emitted by `JsonLineLoader<TRecord>` on older target
+  frameworks so JSONL output is byte-identical across all TFMs.
+
 ## [0.3.0] - 2026-07-13
 
 ### Added
@@ -104,7 +134,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cached the default `JsonSerializerOptions` and log operation-name strings as
   static fields; sealed the extractor and loader classes.
 
-[Unreleased]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.4.0...v0.5.0
+[0.4.0]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.2.2...v0.3.0
 [0.2.2]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.2.0...v0.2.1

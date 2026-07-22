@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -40,6 +41,9 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSON multi-stream extraction of {typeof(TRecord).Name}";
+    private static readonly KeyValuePair<string, object?> _operationTag = new("etl.operation", "extract");
+    private static readonly KeyValuePair<string, object?> _componentTag = new("etl.component", "JsonMultiStream");
+    private static readonly KeyValuePair<string, object?> _recordTypeTag = new("etl.record_type", typeof(TRecord).Name);
     private readonly IEnumerable<JsonNamedStream> _sources;
     private readonly JsonSerializerOptions? _options;
     private readonly JsonTypeInfo<TRecord>? _typeInfo;
@@ -383,44 +387,54 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
 
         var skipBudget = SkipItemCount;
         var streamIndex = 0;
+        var sw = Stopwatch.StartNew();
 
-        foreach (var source in _sources)
+        try
         {
-            token.ThrowIfCancellationRequested();
-            _currentSourceName = source.Name;
-            JsonLogMessages.ReadingStream(_logger, streamIndex, null);
-
-            var (item, failed) = await TryDeserializeStreamAsync(source.Stream, streamIndex, token).ConfigureAwait(false);
-            streamIndex++;
-            if (failed) { continue; }
-
-            if (item is null)
+            foreach (var source in _sources)
             {
-                JsonLogMessages.StreamDeserializedToNull(_logger, streamIndex - 1, null);
-                continue;
+                token.ThrowIfCancellationRequested();
+                _currentSourceName = source.Name;
+                JsonLogMessages.ReadingStream(_logger, streamIndex, null);
+
+                var (item, failed) = await TryDeserializeStreamAsync(source.Stream, streamIndex, token).ConfigureAwait(false);
+                streamIndex++;
+                if (failed) { continue; }
+
+                if (item is null)
+                {
+                    JsonLogMessages.StreamDeserializedToNull(_logger, streamIndex - 1, null);
+                    continue;
+                }
+
+                if (skipBudget > 0)
+                {
+                    skipBudget--;
+                    IncrementCurrentSkippedItemCount();
+                    JsonMetrics.AddSkipped(_operationTag, _componentTag, _recordTypeTag);
+                    JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
+                    continue;
+                }
+
+                if (CurrentItemCount >= MaximumItemCount)
+                {
+                    JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
+                    break;
+                }
+
+                IncrementCurrentItemCount();
+                JsonMetrics.AddExtracted(_operationTag, _componentTag, _recordTypeTag);
+                JsonLogMessages.ExtractedItemFromStream(_logger, CurrentItemCount, streamIndex - 1, null);
+
+                yield return item;
             }
 
-            if (skipBudget > 0)
-            {
-                skipBudget--;
-                IncrementCurrentSkippedItemCount();
-                JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
-                continue;
-            }
-
-            if (CurrentItemCount >= MaximumItemCount)
-            {
-                JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
-                break;
-            }
-
-            IncrementCurrentItemCount();
-            JsonLogMessages.ExtractedItemFromStream(_logger, CurrentItemCount, streamIndex - 1, null);
-
-            yield return item;
+            JsonLogMessages.MultiStreamExtractionCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, streamIndex, null);
         }
-
-        JsonLogMessages.MultiStreamExtractionCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, streamIndex, null);
+        finally
+        {
+            JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, _operationTag, _componentTag, _recordTypeTag);
+        }
     }
 
 

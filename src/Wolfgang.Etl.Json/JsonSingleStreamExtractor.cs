@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -37,9 +38,13 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSON single-stream extraction of {typeof(TRecord).Name}";
+    private static readonly KeyValuePair<string, object?> _operationTag = new("etl.operation", "extract");
+    private static readonly KeyValuePair<string, object?> _componentTag = new("etl.component", "JsonSingleStream");
+    private static readonly KeyValuePair<string, object?> _recordTypeTag = new("etl.record_type", typeof(TRecord).Name);
     private static readonly JsonSerializerOptions DefaultOptions = new();
 
     private readonly Stream _stream;
+    private readonly bool _ownsStream;
     private readonly JsonSerializerOptions? _options;
     private readonly JsonTypeInfo<TRecord>? _typeInfo;
     private readonly ILogger _logger;
@@ -68,6 +73,39 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
         _logger = NullLogger.Instance;
         _options = null;
+    }
+
+
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonSingleStreamExtractor{TRecord}"/> class that
+    /// opens and owns the JSON array file at <paramref name="path"/>. The file is closed when
+    /// extraction completes or the extractor is disposed.
+    /// </summary>
+    /// <param name="path">The path of the JSON array file to read.</param>
+    /// <param name="options">The JSON serializer options to use, or <c>null</c> for the default.</param>
+    /// <param name="logger">An optional logger instance for diagnostic output.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="path"/> is <c>null</c>.</exception>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+    [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
+    public JsonSingleStreamExtractor
+    (
+        string path,
+        JsonSerializerOptions? options = null,
+        ILogger<JsonSingleStreamExtractor<TRecord>>? logger = null
+    )
+    {
+        if (path is null)
+        {
+            throw new ArgumentNullException(nameof(path));
+        }
+
+        _stream = File.OpenRead(path);
+        _ownsStream = true;
+        _options = options;
+        _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
 
@@ -234,6 +272,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
         JsonLogMessages.StartingOperation(_logger, OperationName, null);
 
         var skipBudget = SkipItemCount;
+        var sw = Stopwatch.StartNew();
         var enumerable = _typeInfo is not null
             ? JsonSerializer.DeserializeAsyncEnumerable(_stream, _typeInfo, token)
             : JsonSerializer.DeserializeAsyncEnumerable<TRecord>(_stream, _options ?? DefaultOptions, token);
@@ -262,6 +301,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
                 {
                     skipBudget--;
                     IncrementCurrentSkippedItemCount();
+                    JsonMetrics.AddSkipped(_operationTag, _componentTag, _recordTypeTag);
                     JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
                     continue;
                 }
@@ -271,13 +311,15 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
                     break;
                 }
                 IncrementCurrentItemCount();
+                JsonMetrics.AddExtracted(_operationTag, _componentTag, _recordTypeTag);
                 JsonLogMessages.ExtractedItem(_logger, CurrentItemCount, null);
                 yield return item;
             }
         }
         finally
         {
-            await enumerator.DisposeAsync().ConfigureAwait(false);
+            await CleanupAsync(enumerator).ConfigureAwait(false);
+            JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, _operationTag, _componentTag, _recordTypeTag);
         }
 
         JsonLogMessages.SingleStreamExtractionCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, null);
@@ -331,5 +373,44 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
         }
 
         return base.CreateProgressTimer(progress);
+    }
+
+
+
+    /// <inheritdoc />
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing && _ownsStream)
+        {
+            _stream.Dispose();
+        }
+
+        base.Dispose(disposing);
+    }
+
+
+    // Disposes the deserialization enumerator, then the file stream this extractor opened (if any).
+    private async ValueTask CleanupAsync(IAsyncDisposable enumerator)
+    {
+        await enumerator.DisposeAsync().ConfigureAwait(false);
+        await DisposeOwnedStreamAsync().ConfigureAwait(false);
+    }
+
+
+    // Disposes the file stream this extractor opened (path-based ctor). No-op otherwise. Not async
+    // itself — returns the underlying DisposeAsync ValueTask so there is no CS1998 on the sync TFMs.
+    private ValueTask DisposeOwnedStreamAsync()
+    {
+        if (!_ownsStream)
+        {
+            return default;
+        }
+
+#if NETSTANDARD2_0 || NET462 || NET481
+        _stream.Dispose();
+        return default;
+#else
+        return _stream.DisposeAsync();
+#endif
     }
 }
