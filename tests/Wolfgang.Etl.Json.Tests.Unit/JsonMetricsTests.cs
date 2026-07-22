@@ -27,10 +27,8 @@ public sealed class JsonMetricsTests
     private sealed class MetricsCollector : IDisposable
     {
         private readonly MeterListener _listener = new();
-
-        public List<string> Counters { get; } = new();
-
-        public List<string> Histograms { get; } = new();
+        private readonly List<string> _counters = new();
+        private readonly List<string> _histograms = new();
 
         public MetricsCollector()
         {
@@ -44,21 +42,40 @@ public sealed class JsonMetricsTests
 
             _listener.SetMeasurementEventCallback<long>((instrument, _, _, _) =>
             {
-                lock (Counters)
+                lock (_counters)
                 {
-                    Counters.Add(instrument.Name);
+                    _counters.Add(instrument.Name);
                 }
             });
 
             _listener.SetMeasurementEventCallback<double>((instrument, _, _, _) =>
             {
-                lock (Histograms)
+                lock (_histograms)
                 {
-                    Histograms.Add(instrument.Name);
+                    _histograms.Add(instrument.Name);
                 }
             });
 
             _listener.Start();
+        }
+
+        // Reads must hold the same lock as the callbacks' writes: the listener fires on other
+        // threads (including measurements from tests running in parallel), so an unlocked
+        // enumeration can race with an Add and throw "Collection was modified".
+        public bool CounterRecorded(string name)
+        {
+            lock (_counters)
+            {
+                return _counters.Contains(name);
+            }
+        }
+
+        public bool HistogramRecorded(string name)
+        {
+            lock (_histograms)
+            {
+                return _histograms.Contains(name);
+            }
         }
 
         public void Dispose() => _listener.Dispose();
@@ -79,9 +96,9 @@ public sealed class JsonMetricsTests
         {
         }
 
-        Assert.Contains("wolfgang.etl.json.items.extracted", collector.Counters);
-        Assert.Contains("wolfgang.etl.json.items.skipped", collector.Counters);
-        Assert.Contains("wolfgang.etl.json.operation.duration", collector.Histograms);
+        Assert.True(collector.CounterRecorded("wolfgang.etl.json.items.extracted"));
+        Assert.True(collector.CounterRecorded("wolfgang.etl.json.items.skipped"));
+        Assert.True(collector.HistogramRecorded("wolfgang.etl.json.operation.duration"));
     }
 
 
@@ -93,8 +110,8 @@ public sealed class JsonMetricsTests
 
         await loader.LoadAsync(Source());
 
-        Assert.Contains("wolfgang.etl.json.items.loaded", collector.Counters);
-        Assert.Contains("wolfgang.etl.json.operation.duration", collector.Histograms);
+        Assert.True(collector.CounterRecorded("wolfgang.etl.json.items.loaded"));
+        Assert.True(collector.HistogramRecorded("wolfgang.etl.json.operation.duration"));
     }
 
 
