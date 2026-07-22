@@ -7,10 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.5.0] - 2026-07-18
+## [0.5.0] - 2026-07-22
 
 ### Added
 
+- Fluent `EtlPipeline` JSON factories, composing on the generic pipeline in
+  `Wolfgang.Etl.Abstractions` 0.16.0 so JSON reads/writes flow through cross-format pipelines —
+  `EtlPipeline.Create().JsonLineExtractor<Person>("in.jsonl").JsonLineLoader<Person>("out.jsonl").RunAsync()`.
+  Source factories `JsonLineExtractor<T>` / `JsonSingleStreamExtractor<T>` (extension methods on
+  `EtlPipeline`) and sink terminators `JsonLineLoader<T>` / `JsonSingleStreamLoader<T>` (extension
+  methods on `IEtlPipeline<T>`), each with path, `Stream`, and optional `JsonSerializerOptions`
+  overloads. Path-based factories own the file stream they open and dispose it when the run
+  completes; stream-based overloads leave the stream's lifetime to the caller. Closes #62.
+- Path-based constructors on `JsonLineExtractor<TRecord>` and `JsonSingleStreamExtractor<TRecord>`
+  (`(string path, JsonSerializerOptions? = null, ILogger? = null)`) that open and own the file,
+  closing it when extraction completes or the extractor is disposed.
 - Checkpoint/resume support on `JsonLineExtractor<TRecord>`: new `EnableCheckpointing` (settable,
   default `false`), `StartByteOffset` (settable) and `CurrentByteOffset` (read-only) properties. Set
   `EnableCheckpointing` to `true`, then capture `CurrentByteOffset` after each yielded item to record
@@ -24,6 +35,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   counters (`wolfgang.etl.json.items.extracted`, `.items.loaded`, `.items.skipped`) and an operation
   duration histogram (`wolfgang.etl.json.operation.duration`) under the `Wolfgang.Etl.Json` meter,
   tagged with `etl.operation`, `etl.component`, and `etl.record_type`. Closes #14.
+
+### Changed
+
+- Bumped the `Wolfgang.Etl.Abstractions` dependency from 0.15.0 to 0.16.0, required by the fluent
+  `EtlPipeline` JSON factories.
 
 ## [0.4.0] - 2026-07-15
 
