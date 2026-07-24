@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.5.0] - 2026-07-22
+## [0.5.0] - 2026-07-25
 
 ### Added
 
@@ -38,8 +38,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Bumped the `Wolfgang.Etl.Abstractions` dependency from 0.15.0 to 0.16.0, required by the fluent
-  `EtlPipeline` JSON factories.
+- Bumped the `Wolfgang.Etl.Abstractions` dependency from 0.15.0 to 0.18.0 (0.16.0 for the fluent
+  `EtlPipeline` JSON factories; 0.18.0 for the #84 per-item error-handling mechanism).
+- `JsonLineExtractor`'s error handling now flows through the Abstractions #84 policy: the existing
+  `ErrorHandling` knob (`Throw` / `CaptureAndContinue` / `SkipAndLog`) is translated to the base
+  `ItemErrorAction` via `OnItemError`, and a skipped record is counted in `CurrentErrorItemCount`
+  and surfaced in the pipeline's `ErrorItemCount`. Behaviour is unchanged for existing callers.
+- **Breaking:** `JsonDeserializationError` now exposes a single 1-based `ItemNumber` locator (the
+  JSONL line number, stream number, or item position) plus `RawContent` and `Exception` — the
+  previous `ItemIndex` and `LineNumber` properties (shipped in 0.4.0) are removed. The whole-document
+  extractors' ordinal shifts from 0-based to 1-based for consistency.
 
 ## [0.4.0] - 2026-07-15
 
