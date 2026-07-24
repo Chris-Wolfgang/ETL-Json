@@ -335,8 +335,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
         }
 
         var error = new JsonDeserializationError(
-            itemIndex: _errors.Count + CurrentItemCount + CurrentSkippedItemCount,
-            lineNumber: null,
+            itemNumber: _errors.Count + CurrentItemCount + CurrentSkippedItemCount + 1,
             rawContent: null,
             exception: ex);
         if (ErrorHandling == ErrorHandling.CaptureAndContinue)
@@ -344,7 +343,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
             _errors.Add(error);
         }
 
-        JsonLogMessages.DeserializationErrorAtIndex(_logger, error.ItemIndex, ex);
+        JsonLogMessages.DeserializationErrorAtIndex(_logger, error.ItemNumber, ex);
     }
 
 

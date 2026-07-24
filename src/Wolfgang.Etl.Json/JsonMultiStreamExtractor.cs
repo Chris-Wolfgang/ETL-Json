@@ -479,8 +479,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
             }
 
             var error = new JsonDeserializationError(
-                itemIndex: streamIndex,
-                lineNumber: null,
+                itemNumber: streamIndex + 1,
                 rawContent: null,
                 exception: deserializationEx!);
             if (ErrorHandling == ErrorHandling.CaptureAndContinue) { _errors.Add(error); }

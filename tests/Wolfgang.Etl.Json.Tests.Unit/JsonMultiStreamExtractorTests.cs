@@ -553,7 +553,7 @@ public class JsonMultiStreamExtractorTests
         Assert.Equal("Bob", results[1].FirstName);
         Assert.Single(sut.Errors);
         Assert.IsType<JsonException>(sut.Errors[0].Exception);
-        Assert.Equal(1L, sut.Errors[0].ItemIndex);
+        Assert.Equal(2L, sut.Errors[0].ItemNumber);
     }
 
 

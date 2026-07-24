@@ -510,7 +510,7 @@ public class JsonLineExtractorTests
         Assert.Single(sut.Errors);
         Assert.IsType<JsonException>(sut.Errors[0].Exception);
         Assert.Equal("not-valid-json", sut.Errors[0].RawContent);
-        Assert.Equal(2L, sut.Errors[0].LineNumber);
+        Assert.Equal(2L, sut.Errors[0].ItemNumber);
     }
 
 

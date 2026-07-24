@@ -329,8 +329,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
         }
 
         var error = new JsonDeserializationError(
-            itemIndex: _errors.Count + CurrentItemCount + CurrentSkippedItemCount + CurrentErrorItemCount,
-            lineNumber: context.ItemNumber,
+            itemNumber: context.ItemNumber,
             rawContent: context.RawContent?.Invoke(),
             exception: context.Exception);
 

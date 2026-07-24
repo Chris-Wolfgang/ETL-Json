@@ -7,27 +7,23 @@ public sealed class JsonDeserializationError
 {
     internal JsonDeserializationError
     (
-        long itemIndex,
-        long? lineNumber,
+        long itemNumber,
         string? rawContent,
         Exception exception
     )
     {
-        ItemIndex = itemIndex;
-        LineNumber = lineNumber;
+        ItemNumber = itemNumber;
         RawContent = rawContent;
         Exception = exception;
     }
 
 
 
-    /// <summary>The zero-based index of the item in the extraction sequence.</summary>
-    public long ItemIndex { get; }
-
-
-
-    /// <summary>The line number in the source, if applicable (JSONL only).</summary>
-    public long? LineNumber { get; }
+    /// <summary>
+    /// The 1-based ordinal of the failed item within the extraction — the line number for JSONL,
+    /// or the item's position for a single- or multi-stream source.
+    /// </summary>
+    public long ItemNumber { get; }
 
 
 
