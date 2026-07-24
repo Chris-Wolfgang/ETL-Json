@@ -136,17 +136,15 @@ var loader = new JsonLineLoader<Person>(stream, AppJsonContext.Default.Person, l
 
 ---
 
-## 🎯 Target Frameworks
+## 🎯 Supported Frameworks
 
-| Platform | Versions |
-|----------|----------|
-| .NET Framework | 4.6.2, 4.8.1 |
-| .NET Standard | 2.0 |
-| .NET | 8.0, 10.0 |
+This library targets:
 
-Test coverage spans: .NET Framework 4.6.2 through 4.8.1, .NET Core 3.1, .NET 5.0 through 10.0.
+- **.NET Framework:** 4.6.2, 4.8.1
+- **.NET Standard:** 2.0
+- **.NET:** 8.0, 10.0
 
----
+See the [NuGet package page](https://www.nuget.org/packages/Wolfgang.Etl.Json/) for the authoritative per-TFM compatibility matrix.
 
 ## 🔍 Code Quality & Static Analysis
 
