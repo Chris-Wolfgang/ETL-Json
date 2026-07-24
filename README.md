@@ -2,7 +2,10 @@
 
 Extractors and Loaders for reading and writing JSON, JSONL, and multi-stream JSON files, built on [Wolfgang.Etl.Abstractions](https://github.com/Chris-Wolfgang/ETL-Abstractions).
 
-[![NuGet](https://img.shields.io/nuget/v/Wolfgang.Etl.Json.svg)](https://www.nuget.org/packages/Wolfgang.Etl.Json)
+[![NuGet](https://img.shields.io/nuget/v/Wolfgang.Etl.Json.svg?logo=nuget&label=NuGet)](https://www.nuget.org/packages/Wolfgang.Etl.Json/)
+[![Downloads](https://img.shields.io/nuget/dt/Wolfgang.Etl.Json.svg?logo=nuget&label=downloads)](https://www.nuget.org/packages/Wolfgang.Etl.Json/)
+[![PR build](https://img.shields.io/github/actions/workflow/status/Chris-Wolfgang/ETL-Json/pr.yaml?event=pull_request_target&label=PR%20build&logo=github)](https://github.com/Chris-Wolfgang/ETL-Json/actions/workflows/pr.yaml)
+[![release](https://img.shields.io/github/actions/workflow/status/Chris-Wolfgang/ETL-Json/release.yaml?event=release&label=release&logo=github)](https://github.com/Chris-Wolfgang/ETL-Json/actions/workflows/release.yaml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![.NET](https://img.shields.io/badge/.NET-Multi--Targeted-purple.svg)](https://dotnet.microsoft.com/)
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?logo=github)](https://github.com/Chris-Wolfgang/ETL-Json)
