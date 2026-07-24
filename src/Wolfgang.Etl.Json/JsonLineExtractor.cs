@@ -306,6 +306,39 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 
 
 
+    /// <summary>
+    /// Translates <see cref="ErrorHandling"/> into the base error-handling contract (#84): captures
+    /// the failure (when <see cref="ErrorHandling.CaptureAndContinue"/>), logs it, and returns
+    /// <see cref="ItemErrorAction.Skip"/> — or <see cref="ItemErrorAction.Abort"/> for
+    /// <see cref="ErrorHandling.Throw"/>. The base then counts the skip in <c>CurrentErrorItemCount</c>.
+    /// </summary>
+    // context is guaranteed non-null: the base HandleItemError validates it before calling this.
+#pragma warning disable CA1062
+    protected override ItemErrorAction OnItemError(ItemErrorContext context)
+    {
+        if (ErrorHandling == ErrorHandling.Throw)
+        {
+            return ItemErrorAction.Abort;
+        }
+
+        var error = new JsonDeserializationError(
+            itemIndex: _errors.Count + CurrentItemCount + CurrentSkippedItemCount + CurrentErrorItemCount,
+            lineNumber: context.RecordNumber,
+            rawContent: context.RawContent?.Invoke(),
+            exception: context.Exception);
+
+        if (ErrorHandling == ErrorHandling.CaptureAndContinue)
+        {
+            _errors.Add(error);
+        }
+
+        JsonLogMessages.DeserializationErrorAtLine(_logger, context.RecordNumber, context.Exception);
+        return ItemErrorAction.Skip;
+    }
+#pragma warning restore CA1062
+
+
+
     private StreamReader CreateStreamReader()
     {
 #if NETSTANDARD2_0 || NET462 || NET481
@@ -468,14 +501,13 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
         catch (JsonException ex)
 #pragma warning restore CA1031
         {
-            if (ErrorHandling == ErrorHandling.Throw) { throw; }
-            var error = new JsonDeserializationError(
-                itemIndex: _errors.Count + CurrentItemCount + CurrentSkippedItemCount,
-                lineNumber: lineNum,
-                rawContent: line,
-                exception: ex);
-            if (ErrorHandling == ErrorHandling.CaptureAndContinue) { _errors.Add(error); }
-            JsonLogMessages.DeserializationErrorAtLine(_logger, lineNum, ex);
+            // Defer the policy (throw / capture / skip) to the base #84 mechanism: OnItemError
+            // records + decides, HandleItemError counts the skip. The worker only owns the catch.
+            if (HandleItemError(new ItemErrorContext(lineNum, ex, () => line)) == ItemErrorAction.Abort)
+            {
+                throw;
+            }
+
             item = default;
             return false;
         }
