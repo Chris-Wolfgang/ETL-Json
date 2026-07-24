@@ -330,7 +330,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 
         var error = new JsonDeserializationError(
             itemIndex: _errors.Count + CurrentItemCount + CurrentSkippedItemCount + CurrentErrorItemCount,
-            lineNumber: context.RecordNumber,
+            lineNumber: context.ItemNumber,
             rawContent: context.RawContent?.Invoke(),
             exception: context.Exception);
 
@@ -339,7 +339,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
             _errors.Add(error);
         }
 
-        JsonLogMessages.DeserializationErrorAtLine(_logger, context.RecordNumber, context.Exception);
+        JsonLogMessages.DeserializationErrorAtLine(_logger, context.ItemNumber, context.Exception);
         return ItemErrorAction.Skip;
     }
 
