@@ -81,6 +81,20 @@
 Classes
 </h3>
     <dl class="jumplist">
+      <dt><a class="xref" href="Wolfgang.Etl.Json.EtlPipelineJsonSinkExtensions.html">EtlPipelineJsonSinkExtensions</a></dt>
+      <dd><p>Class-named JSON sink terminators for the fluent <span class="xref">Wolfgang.Etl.Abstractions.EtlPipeline</span> chain. Each terminator
+constructs the matching loader and terminates the pipeline, enabling
+<code>… .JsonLineLoader&lt;Person&gt;(&quot;people.jsonl&quot;)</code>.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
+      <dt><a class="xref" href="Wolfgang.Etl.Json.EtlPipelineJsonSourceExtensions.html">EtlPipelineJsonSourceExtensions</a></dt>
+      <dd><p>Class-named JSON source factories for the fluent <span class="xref">Wolfgang.Etl.Abstractions.EtlPipeline</span> chain. Each factory
+constructs the matching extractor and seeds the pipeline, enabling
+<code>EtlPipeline.Create().JsonLineExtractor&lt;Person&gt;(&quot;people.jsonl&quot;)</code>.</p>
+</dd>
+    </dl>
+    <dl class="jumplist">
       <dt><a class="xref" href="Wolfgang.Etl.Json.JsonDeserializationError.html">JsonDeserializationError</a></dt>
       <dd><p>Represents a record that could not be deserialized during extraction.</p>
 </dd>
