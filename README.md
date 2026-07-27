@@ -2,7 +2,10 @@
 
 Extractors and Loaders for reading and writing JSON, JSONL, and multi-stream JSON files, built on [Wolfgang.Etl.Abstractions](https://github.com/Chris-Wolfgang/ETL-Abstractions).
 
-[![NuGet](https://img.shields.io/nuget/v/Wolfgang.Etl.Json.svg)](https://www.nuget.org/packages/Wolfgang.Etl.Json)
+[![NuGet](https://img.shields.io/nuget/v/Wolfgang.Etl.Json.svg?logo=nuget&label=NuGet)](https://www.nuget.org/packages/Wolfgang.Etl.Json/)
+[![Downloads](https://img.shields.io/nuget/dt/Wolfgang.Etl.Json.svg?logo=nuget&label=downloads)](https://www.nuget.org/packages/Wolfgang.Etl.Json/)
+[![PR build](https://img.shields.io/github/actions/workflow/status/Chris-Wolfgang/ETL-Json/pr.yaml?event=pull_request_target&label=PR%20build&logo=github)](https://github.com/Chris-Wolfgang/ETL-Json/actions/workflows/pr.yaml)
+[![release](https://img.shields.io/github/actions/workflow/status/Chris-Wolfgang/ETL-Json/release.yaml?event=release&label=release&logo=github)](https://github.com/Chris-Wolfgang/ETL-Json/actions/workflows/release.yaml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![.NET](https://img.shields.io/badge/.NET-Multi--Targeted-purple.svg)](https://dotnet.microsoft.com/)
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?logo=github)](https://github.com/Chris-Wolfgang/ETL-Json)
@@ -136,17 +139,15 @@ var loader = new JsonLineLoader<Person>(stream, AppJsonContext.Default.Person, l
 
 ---
 
-## 🎯 Target Frameworks
+## 🎯 Supported Frameworks
 
-| Platform | Versions |
-|----------|----------|
-| .NET Framework | 4.6.2, 4.8.1 |
-| .NET Standard | 2.0 |
-| .NET | 8.0, 10.0 |
+This library targets:
 
-Test coverage spans: .NET Framework 4.6.2 through 4.8.1, .NET Core 3.1, .NET 5.0 through 10.0.
+- **.NET Framework:** 4.6.2, 4.8.1
+- **.NET Standard:** 2.0
+- **.NET:** 8.0, 10.0
 
----
+See the [NuGet package page](https://www.nuget.org/packages/Wolfgang.Etl.Json/) for the authoritative per-TFM compatibility matrix.
 
 ## 🔍 Code Quality & Static Analysis
 
