@@ -69,6 +69,12 @@ public static class JsonErrorPolicy
     /// <param name="deadLetters">The caller-owned collection each failed item is added to.</param>
     /// <returns>A policy that dead-letters and returns <see cref="ItemErrorAction.Skip"/>.</returns>
     /// <exception cref="ArgumentNullException"><paramref name="deadLetters"/> is <see langword="null"/>.</exception>
+    /// <remarks>
+    /// A single stage invokes this policy serially, so a plain <see cref="List{T}"/> is safe. If you
+    /// share one collection across stages running concurrently, either supply a thread-safe collection
+    /// or use the <see cref="SkipAndDeadLetter(ChannelWriter{ItemErrorContext})"/> overload — the policy
+    /// adds to the collection without locking.
+    /// </remarks>
     public static Func<ItemErrorContext, ItemErrorAction> SkipAndDeadLetter(ICollection<ItemErrorContext> deadLetters)
     {
         if (deadLetters is null)
@@ -120,6 +126,12 @@ public static class JsonErrorPolicy
     /// <exception cref="ArgumentNullException">
     /// <paramref name="deadLetters"/> or <paramref name="logger"/> is <see langword="null"/>.
     /// </exception>
+    /// <remarks>
+    /// A single stage invokes this policy serially, so a plain <see cref="List{T}"/> is safe. If you
+    /// share one collection across stages running concurrently, either supply a thread-safe collection
+    /// or use the <see cref="SkipDeadLetterAndLog(ChannelWriter{ItemErrorContext}, ILogger)"/> overload —
+    /// the policy adds to the collection without locking.
+    /// </remarks>
     public static Func<ItemErrorContext, ItemErrorAction> SkipDeadLetterAndLog
     (
         ICollection<ItemErrorContext> deadLetters,
