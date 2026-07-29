@@ -454,7 +454,7 @@ public class JsonLineExtractorTests
 
 
     [Fact]
-    public async Task ExtractAsync_when_ErrorHandling_is_Throw_throws_JsonException_on_bad_line()
+    public async Task ExtractAsync_when_OnError_is_unset_throws_JsonException_on_bad_line()
     {
         const string content = "{\"FirstName\":\"Alice\",\"LastName\":\"Smith\",\"Age\":30}\nnot-valid-json\n";
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
@@ -463,10 +463,7 @@ public class JsonLineExtractorTests
         (
             stream,
             new JsonSerializerOptions()
-        )
-        {
-            ErrorHandling = ErrorHandling.Throw,
-        };
+        );
 
         await Assert.ThrowsAsync<JsonException>
         (
@@ -482,20 +479,21 @@ public class JsonLineExtractorTests
 
 
     [Fact]
-    public async Task ExtractAsync_when_ErrorHandling_is_CaptureAndContinue_skips_bad_lines_and_populates_Errors()
+    public async Task ExtractAsync_when_OnError_dead_letters_skips_bad_lines_and_records_them()
     {
         var good1 = JsonSerializer.Serialize(ExpectedItems[0]);
         var good2 = JsonSerializer.Serialize(ExpectedItems[1]);
         var content = $"{good1}\nnot-valid-json\n{good2}\n";
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
 
+        var deadLetters = new List<ItemErrorContext>();
         var sut = new JsonLineExtractor<PersonRecord>
         (
             stream,
             new JsonSerializerOptions()
         )
         {
-            ErrorHandling = ErrorHandling.CaptureAndContinue,
+            OnError = JsonErrorPolicy.SkipAndDeadLetter(deadLetters),
         };
 
         var results = new List<PersonRecord>();
@@ -507,16 +505,16 @@ public class JsonLineExtractorTests
         Assert.Equal(2, results.Count);
         Assert.Equal("Alice", results[0].FirstName);
         Assert.Equal("Bob", results[1].FirstName);
-        Assert.Single(sut.Errors);
-        Assert.IsType<JsonException>(sut.Errors[0].Exception);
-        Assert.Equal("not-valid-json", sut.Errors[0].RawContent);
-        Assert.Equal(2L, sut.Errors[0].LineNumber);
+        Assert.Single(deadLetters);
+        Assert.IsType<JsonException>(deadLetters[0].Exception);
+        Assert.Equal("not-valid-json", deadLetters[0].RawContent!());
+        Assert.Equal(1, sut.CurrentErrorItemCount);
     }
 
 
 
     [Fact]
-    public async Task ExtractAsync_when_ErrorHandling_is_SkipAndLog_skips_bad_lines_without_collecting_errors()
+    public async Task ExtractAsync_when_OnError_skips_discards_bad_lines_and_counts_them()
     {
         var good1 = JsonSerializer.Serialize(ExpectedItems[0]);
         var content = $"{good1}\nnot-valid-json\n";
@@ -528,7 +526,7 @@ public class JsonLineExtractorTests
             new JsonSerializerOptions()
         )
         {
-            ErrorHandling = ErrorHandling.SkipAndLog,
+            OnError = JsonErrorPolicy.Skip,
         };
 
         var results = new List<PersonRecord>();
@@ -539,13 +537,13 @@ public class JsonLineExtractorTests
 
         Assert.Single(results);
         Assert.Equal("Alice", results[0].FirstName);
-        Assert.Empty(sut.Errors);
+        Assert.Equal(1, sut.CurrentErrorItemCount);
     }
 
 
 
     [Fact]
-    public async Task ExtractAsync_when_re_run_on_same_instance_clears_errors_from_previous_run()
+    public async Task ExtractAsync_when_re_run_on_same_instance_resets_error_count_from_previous_run()
     {
         var good = JsonSerializer.Serialize(ExpectedItems[0]);
         var badContent = $"not-valid-json\n{good}\n";
@@ -557,24 +555,24 @@ public class JsonLineExtractorTests
             new JsonSerializerOptions()
         )
         {
-            ErrorHandling = ErrorHandling.CaptureAndContinue,
+            OnError = JsonErrorPolicy.Skip,
         };
 
-        // First run: populates errors
+        // First run: one bad line skipped
         await foreach (var _ in sut.ExtractAsync())
         {
         }
 
-        Assert.Single(sut.Errors);
+        Assert.Equal(1, sut.CurrentErrorItemCount);
 
-        // Second run: seek back and re-run the same instance; Errors must be cleared before re-populating
+        // Second run: seek back and re-run the same instance; the error count must reset, not accumulate
         stream.Seek(0, System.IO.SeekOrigin.Begin);
 
         await foreach (var _ in sut.ExtractAsync())
         {
         }
 
-        Assert.Single(sut.Errors);
+        Assert.Equal(1, sut.CurrentErrorItemCount);
     }
 
 

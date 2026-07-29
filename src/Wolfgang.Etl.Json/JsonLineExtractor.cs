@@ -47,7 +47,6 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     private readonly JsonTypeInfo<TRecord>? _typeInfo;
     private readonly ILogger _logger;
     private readonly IProgressTimer? _progressTimer;
-    private readonly List<JsonDeserializationError> _errors = new();
     private int _progressTimerWired;
     private long _currentLineNumber;
     private long _currentByteOffset;
@@ -291,18 +290,19 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 
 
     /// <summary>
-    /// Gets or sets how deserialization errors are handled during extraction.
-    /// Default is <see cref="ErrorHandling.Throw"/>.
+    /// Gets the policy invoked when a line fails to deserialize. Return
+    /// <see cref="ItemErrorAction.Skip"/> to discard the line and continue, or
+    /// <see cref="ItemErrorAction.Abort"/> to re-throw and stop the run. When <see langword="null"/>
+    /// (the default) extraction is fail-fast — the first error aborts the run. See
+    /// <see cref="JsonErrorPolicy"/> for ready-made policies.
     /// </summary>
-    public ErrorHandling ErrorHandling { get; init; } = ErrorHandling.Throw;
+    public Func<ItemErrorContext, ItemErrorAction>? OnError { get; init; }
 
 
 
-    /// <summary>
-    /// Gets the collection of deserialization errors captured during the most recent extraction.
-    /// Only populated when <see cref="ErrorHandling"/> is <see cref="ErrorHandling.CaptureAndContinue"/>.
-    /// </summary>
-    public IReadOnlyList<JsonDeserializationError> Errors => _errors.AsReadOnly();
+    /// <inheritdoc />
+    protected override ItemErrorAction OnItemError(ItemErrorContext context) =>
+        OnError?.Invoke(context) ?? base.OnItemError(context);
 
 
 
@@ -327,7 +327,6 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
         [EnumeratorCancellation] CancellationToken token
     )
     {
-        _errors.Clear();
         JsonLogMessages.StartingOperation(_logger, OperationName, null);
         var track = EnableCheckpointing;
         var (newlineSize, lineEncoding) = await PrepareForExtractionAsync(token).ConfigureAwait(false);
@@ -350,7 +349,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
                 JsonLogMessages.SkippingBlankLine(_logger, lineNum, null);
                 continue;
             }
-            if (!TryDeserializeLine(line, lineNum, out var item))
+            if (!TryDeserializeLine(line, out var item))
             {
                 Interlocked.Add(ref _currentByteOffset, lineBytes);
                 continue;
@@ -455,7 +454,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 
 
 
-    private bool TryDeserializeLine(string line, long lineNum, out TRecord? item)
+    private bool TryDeserializeLine(string line, out TRecord? item)
     {
         try
         {
@@ -468,14 +467,13 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
         catch (JsonException ex)
 #pragma warning restore CA1031
         {
-            if (ErrorHandling == ErrorHandling.Throw) { throw; }
-            var error = new JsonDeserializationError(
-                itemIndex: _errors.Count + CurrentItemCount + CurrentSkippedItemCount,
-                lineNumber: lineNum,
-                rawContent: line,
-                exception: ex);
-            if (ErrorHandling == ErrorHandling.CaptureAndContinue) { _errors.Add(error); }
-            JsonLogMessages.DeserializationErrorAtLine(_logger, lineNum, ex);
+            var context = new ItemErrorContext
+            (
+                CurrentItemCount + CurrentSkippedItemCount + CurrentErrorItemCount + 1,
+                ex,
+                () => line
+            );
+            if (HandleItemError(context) == ItemErrorAction.Abort) { throw; }
             item = default;
             return false;
         }

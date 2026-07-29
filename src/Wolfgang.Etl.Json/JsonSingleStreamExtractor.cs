@@ -49,7 +49,6 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     private readonly JsonTypeInfo<TRecord>? _typeInfo;
     private readonly ILogger _logger;
     private readonly IProgressTimer? _progressTimer;
-    private readonly List<JsonDeserializationError> _errors = new();
     private int _progressTimerWired;
 
 
@@ -241,24 +240,25 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
 
 
     /// <summary>
-    /// Gets or sets how deserialization errors are handled during extraction.
-    /// Default is <see cref="ErrorHandling.Throw"/>.
+    /// Gets the policy invoked when a record fails to deserialize. Return
+    /// <see cref="ItemErrorAction.Skip"/> to discard the failure and continue, or
+    /// <see cref="ItemErrorAction.Abort"/> to re-throw and stop the run. When <see langword="null"/>
+    /// (the default) extraction is fail-fast — the first error aborts the run. See
+    /// <see cref="JsonErrorPolicy"/> for ready-made policies.
     /// </summary>
     /// <remarks>
     /// Because JSON array deserialization is streaming, a <see cref="System.Text.Json.JsonException"/>
-    /// leaves the underlying reader in an unrecoverable state. When
-    /// <see cref="ErrorHandling.CaptureAndContinue"/> is set, the error is captured and enumeration
-    /// stops at the point of failure; subsequent records in the array are not returned.
+    /// leaves the underlying reader in an unrecoverable state. A policy that returns
+    /// <see cref="ItemErrorAction.Skip"/> discards the failure and enumeration stops at the point of
+    /// failure; subsequent records in the array are not returned.
     /// </remarks>
-    public ErrorHandling ErrorHandling { get; init; } = ErrorHandling.Throw;
+    public Func<ItemErrorContext, ItemErrorAction>? OnError { get; init; }
 
 
 
-    /// <summary>
-    /// Gets the collection of deserialization errors captured during the most recent extraction.
-    /// Only populated when <see cref="ErrorHandling"/> is <see cref="ErrorHandling.CaptureAndContinue"/>.
-    /// </summary>
-    public IReadOnlyList<JsonDeserializationError> Errors => _errors.AsReadOnly();
+    /// <inheritdoc />
+    protected override ItemErrorAction OnItemError(ItemErrorContext context) =>
+        OnError?.Invoke(context) ?? base.OnItemError(context);
 
 
 
@@ -268,7 +268,6 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
         [EnumeratorCancellation] CancellationToken token
     )
     {
-        _errors.Clear();
         JsonLogMessages.StartingOperation(_logger, OperationName, null);
 
         var skipBudget = SkipItemCount;
@@ -329,22 +328,16 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
 
     private void HandleDeserializationError(JsonException ex)
     {
-        if (ErrorHandling == ErrorHandling.Throw)
+        var context = new ItemErrorContext
+        (
+            CurrentItemCount + CurrentSkippedItemCount + CurrentErrorItemCount + 1,
+            ex,
+            rawContent: null
+        );
+        if (HandleItemError(context) == ItemErrorAction.Abort)
         {
             System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(ex).Throw();
         }
-
-        var error = new JsonDeserializationError(
-            itemIndex: _errors.Count + CurrentItemCount + CurrentSkippedItemCount,
-            lineNumber: null,
-            rawContent: null,
-            exception: ex);
-        if (ErrorHandling == ErrorHandling.CaptureAndContinue)
-        {
-            _errors.Add(error);
-        }
-
-        JsonLogMessages.DeserializationErrorAtIndex(_logger, error.ItemIndex, ex);
     }
 
 

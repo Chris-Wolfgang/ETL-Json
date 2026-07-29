@@ -53,6 +53,12 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.10" />
   </ItemGroup>
 
+  <!-- System.Threading.Channels is in-box on net8.0+; the older TFMs need the package
+       (used by JsonErrorPolicy's ChannelWriter dead-letter overloads). -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net462' or '$(TargetFramework)' == 'net481' or '$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="System.Threading.Channels" Version="10.0.10" />
+  </ItemGroup>
+
   <!-- Analyzer PackageReferences are centralized in Directory.Build.props -->
 
 

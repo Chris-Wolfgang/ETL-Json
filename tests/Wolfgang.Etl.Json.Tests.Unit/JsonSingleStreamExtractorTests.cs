@@ -429,7 +429,7 @@ public class JsonSingleStreamExtractorTests
 
 
     [Fact]
-    public async Task ExtractAsync_when_ErrorHandling_is_Throw_throws_JsonException_on_bad_input()
+    public async Task ExtractAsync_when_OnError_is_unset_throws_JsonException_on_bad_input()
     {
         var content = Encoding.UTF8.GetBytes("[not-valid-json]");
         var stream = new MemoryStream(content);
@@ -438,10 +438,7 @@ public class JsonSingleStreamExtractorTests
         (
             stream,
             new JsonSerializerOptions()
-        )
-        {
-            ErrorHandling = ErrorHandling.Throw,
-        };
+        );
 
         await Assert.ThrowsAsync<JsonException>
         (
@@ -457,20 +454,21 @@ public class JsonSingleStreamExtractorTests
 
 
     [Fact]
-    public async Task ExtractAsync_when_ErrorHandling_is_CaptureAndContinue_captures_error_and_stops()
+    public async Task ExtractAsync_when_OnError_dead_letters_records_error_and_stops()
     {
         // DeserializeAsyncEnumerable can't resume from a corrupt position in the stream;
-        // CaptureAndContinue captures the error and stops enumeration without throwing.
+        // a Skip policy records the error and stops enumeration without throwing.
         var content = Encoding.UTF8.GetBytes("[not-valid-json]");
         var stream = new MemoryStream(content);
 
+        var deadLetters = new List<ItemErrorContext>();
         var sut = new JsonSingleStreamExtractor<PersonRecord>
         (
             stream,
             new JsonSerializerOptions()
         )
         {
-            ErrorHandling = ErrorHandling.CaptureAndContinue,
+            OnError = JsonErrorPolicy.SkipAndDeadLetter(deadLetters),
         };
 
         var results = new List<PersonRecord>();
@@ -480,14 +478,15 @@ public class JsonSingleStreamExtractorTests
         }
 
         Assert.Empty(results);
-        Assert.Single(sut.Errors);
-        Assert.IsType<JsonException>(sut.Errors[0].Exception);
+        Assert.Single(deadLetters);
+        Assert.IsType<JsonException>(deadLetters[0].Exception);
+        Assert.Equal(1, sut.CurrentErrorItemCount);
     }
 
 
 
     [Fact]
-    public async Task ExtractAsync_when_ErrorHandling_is_SkipAndLog_skips_without_collecting_errors()
+    public async Task ExtractAsync_when_OnError_skips_discards_error_and_counts_it()
     {
         var content = Encoding.UTF8.GetBytes("[not-valid-json]");
         var stream = new MemoryStream(content);
@@ -498,7 +497,7 @@ public class JsonSingleStreamExtractorTests
             new JsonSerializerOptions()
         )
         {
-            ErrorHandling = ErrorHandling.SkipAndLog,
+            OnError = JsonErrorPolicy.Skip,
         };
 
         var results = new List<PersonRecord>();
@@ -508,6 +507,6 @@ public class JsonSingleStreamExtractorTests
         }
 
         Assert.Empty(results);
-        Assert.Empty(sut.Errors);
+        Assert.Equal(1, sut.CurrentErrorItemCount);
     }
 }
