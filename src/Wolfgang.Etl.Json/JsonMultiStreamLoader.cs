@@ -396,6 +396,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     )
     {
         JsonLogMessages.StartingOperation(_logger, OperationName, null);
+        token.ThrowIfCancellationRequested();
 
         var streamIndex = 0;
         var sw = Stopwatch.StartNew();
