@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Wolfgang.Etl.Abstractions;
+using Wolfgang.Etl.ErrorPolicies;
 using Wolfgang.Etl.Json.Tests.Unit.TestModels;
 using Wolfgang.Etl.TestKit.Xunit;
 using Xunit;
@@ -476,7 +477,7 @@ public class JsonMultiStreamExtractorTests
 
 
     [Fact]
-    public async Task ExtractAsync_when_OnError_is_unset_throws_JsonException_on_bad_stream()
+    public async Task ExtractAsync_when_ErrorPolicy_is_unset_throws_JsonException_on_bad_stream()
     {
         var goodJson = JsonSerializer.Serialize(ExpectedItems[0]);
         var streams = new List<Stream>
@@ -519,7 +520,7 @@ public class JsonMultiStreamExtractorTests
 
 
     [Fact]
-    public async Task ExtractAsync_when_OnError_dead_letters_skips_bad_streams_and_records_them()
+    public async Task ExtractAsync_when_ErrorPolicy_dead_letters_skips_bad_streams_and_records_them()
     {
         var goodJson = JsonSerializer.Serialize(ExpectedItems[0]);
         var good2Json = JsonSerializer.Serialize(ExpectedItems[1]);
@@ -537,7 +538,7 @@ public class JsonMultiStreamExtractorTests
             new JsonSerializerOptions()
         )
         {
-            OnError = JsonErrorPolicy.SkipAndDeadLetter(deadLetters),
+            ErrorPolicy = ItemErrorPolicy.SkipAndDeadLetter(deadLetters),
         };
 
         var results = new List<PersonRecord>();
@@ -595,7 +596,7 @@ public class JsonMultiStreamExtractorTests
 
 
     [Fact]
-    public async Task ExtractAsync_when_OnError_skips_discards_bad_streams_and_counts_them()
+    public async Task ExtractAsync_when_ErrorPolicy_skips_discards_bad_streams_and_counts_them()
     {
         var goodJson = JsonSerializer.Serialize(ExpectedItems[0]);
         var streams = new List<Stream>
@@ -610,7 +611,7 @@ public class JsonMultiStreamExtractorTests
             new JsonSerializerOptions()
         )
         {
-            OnError = JsonErrorPolicy.Skip,
+            ErrorPolicy = ItemErrorPolicy.Skip,
         };
 
         var results = new List<PersonRecord>();

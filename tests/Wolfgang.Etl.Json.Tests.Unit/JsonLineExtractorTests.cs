@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging.Abstractions;
 using Wolfgang.Etl.Abstractions;
+using Wolfgang.Etl.ErrorPolicies;
 using Wolfgang.Etl.Json.Tests.Unit.TestModels;
 using Wolfgang.Etl.TestKit.Xunit;
 using Xunit;
@@ -454,7 +455,7 @@ public class JsonLineExtractorTests
 
 
     [Fact]
-    public async Task ExtractAsync_when_OnError_is_unset_throws_JsonException_on_bad_line()
+    public async Task ExtractAsync_when_ErrorPolicy_is_unset_throws_JsonException_on_bad_line()
     {
         const string content = "{\"FirstName\":\"Alice\",\"LastName\":\"Smith\",\"Age\":30}\nnot-valid-json\n";
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
@@ -479,7 +480,7 @@ public class JsonLineExtractorTests
 
 
     [Fact]
-    public async Task ExtractAsync_when_OnError_dead_letters_skips_bad_lines_and_records_them()
+    public async Task ExtractAsync_when_ErrorPolicy_dead_letters_skips_bad_lines_and_records_them()
     {
         var good1 = JsonSerializer.Serialize(ExpectedItems[0]);
         var good2 = JsonSerializer.Serialize(ExpectedItems[1]);
@@ -493,7 +494,7 @@ public class JsonLineExtractorTests
             new JsonSerializerOptions()
         )
         {
-            OnError = JsonErrorPolicy.SkipAndDeadLetter(deadLetters),
+            ErrorPolicy = ItemErrorPolicy.SkipAndDeadLetter(deadLetters),
         };
 
         var results = new List<PersonRecord>();
@@ -514,7 +515,7 @@ public class JsonLineExtractorTests
 
 
     [Fact]
-    public async Task ExtractAsync_when_OnError_skips_discards_bad_lines_and_counts_them()
+    public async Task ExtractAsync_when_ErrorPolicy_skips_discards_bad_lines_and_counts_them()
     {
         var good1 = JsonSerializer.Serialize(ExpectedItems[0]);
         var content = $"{good1}\nnot-valid-json\n";
@@ -526,7 +527,7 @@ public class JsonLineExtractorTests
             new JsonSerializerOptions()
         )
         {
-            OnError = JsonErrorPolicy.Skip,
+            ErrorPolicy = ItemErrorPolicy.Skip,
         };
 
         var results = new List<PersonRecord>();
@@ -555,7 +556,7 @@ public class JsonLineExtractorTests
             new JsonSerializerOptions()
         )
         {
-            OnError = JsonErrorPolicy.Skip,
+            ErrorPolicy = ItemErrorPolicy.Skip,
         };
 
         // First run: one bad line skipped

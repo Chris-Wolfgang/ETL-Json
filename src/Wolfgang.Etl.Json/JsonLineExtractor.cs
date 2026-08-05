@@ -289,21 +289,6 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 
 
 
-    /// <summary>
-    /// Gets the policy invoked when a line fails to deserialize. Return
-    /// <see cref="ItemErrorAction.Skip"/> to discard the line and continue, or
-    /// <see cref="ItemErrorAction.Abort"/> to re-throw and stop the run. When <see langword="null"/>
-    /// (the default) extraction is fail-fast — the first error aborts the run. See
-    /// <see cref="JsonErrorPolicy"/> for ready-made policies.
-    /// </summary>
-    public Func<ItemErrorContext, ItemErrorAction>? OnError { get; init; }
-
-
-
-    /// <inheritdoc />
-    protected override ItemErrorAction OnItemError(ItemErrorContext context) =>
-        OnError?.Invoke(context) ?? base.OnItemError(context);
-
 
 
     private StreamReader CreateStreamReader()

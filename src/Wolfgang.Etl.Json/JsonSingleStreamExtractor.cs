@@ -239,27 +239,6 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
 
 
 
-    /// <summary>
-    /// Gets the policy invoked when a record fails to deserialize. Return
-    /// <see cref="ItemErrorAction.Skip"/> to discard the failure and continue, or
-    /// <see cref="ItemErrorAction.Abort"/> to re-throw and stop the run. When <see langword="null"/>
-    /// (the default) extraction is fail-fast — the first error aborts the run. See
-    /// <see cref="JsonErrorPolicy"/> for ready-made policies.
-    /// </summary>
-    /// <remarks>
-    /// Because JSON array deserialization is streaming, a <see cref="System.Text.Json.JsonException"/>
-    /// leaves the underlying reader in an unrecoverable state. A policy that returns
-    /// <see cref="ItemErrorAction.Skip"/> discards the failure and enumeration stops at the point of
-    /// failure; subsequent records in the array are not returned.
-    /// </remarks>
-    public Func<ItemErrorContext, ItemErrorAction>? OnError { get; init; }
-
-
-
-    /// <inheritdoc />
-    protected override ItemErrorAction OnItemError(ItemErrorContext context) =>
-        OnError?.Invoke(context) ?? base.OnItemError(context);
-
 
 
     /// <inheritdoc />

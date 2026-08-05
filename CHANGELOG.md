@@ -9,30 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `JsonErrorPolicy` — ready-made error policies for the extractors' new `OnError` hook: `Skip`,
-  `Abort`, `SkipAndLog(logger)`, `SkipAndDeadLetter(...)` and `SkipDeadLetterAndLog(..., logger)`.
-  The dead-letter factories have two overloads — one takes an `ICollection<ItemErrorContext>`, the
-  other a `System.Threading.Channels.ChannelWriter<ItemErrorContext>` — and write to a caller-owned
-  sink so its size (and the memory a bad feed can consume) stays under the caller's control.
-- `OnError` property on `JsonLineExtractor<TRecord>`, `JsonSingleStreamExtractor<TRecord>` and
-  `JsonMultiStreamExtractor<TRecord>` — a `Func<ItemErrorContext, ItemErrorAction>?` invoked when a
-  record fails to deserialize. `null` (the default) is fail-fast; return `ItemErrorAction.Skip` to
-  discard the record and continue, or `ItemErrorAction.Abort` to re-throw.
+- The extractors now inherit the base **`ErrorPolicy`** property (from `Wolfgang.Etl.Abstractions`
+  0.21+): assign a `Func<ItemErrorContext, ItemErrorAction>` to skip, log, and/or dead-letter records
+  that fail to deserialize. Ready-made policies live in the new **`Wolfgang.Etl.ErrorPolicies`** package
+  (`ItemErrorPolicy.Skip` / `Abort` / `SkipAndLog(logger)` / `SkipAndDeadLetter(...)` /
+  `SkipDeadLetterAndLog(..., logger)`, the dead-letter factories overloaded for an
+  `ICollection<ItemErrorContext>` or a `System.Threading.Channels.ChannelWriter<ItemErrorContext>`).
+  Unset is fail-fast; failed records flow through the base `HandleItemError` and are counted by
+  `CurrentErrorItemCount`, so a skip surfaces in the pipeline's aggregate like every other stage.
 
 ### Changed
 
-- **Breaking:** adopted the base error-handling mechanism from `Wolfgang.Etl.Abstractions` #84.
-  Failed records now flow through the base `HandleItemError` / `OnItemError` model and are counted by
-  `CurrentErrorItemCount`, so a skipped record surfaces in the pipeline's aggregate consistently with
-  every other stage instead of being silent. Requires `Wolfgang.Etl.Abstractions` 0.20.0.
+- **Breaking:** upgraded to `Wolfgang.Etl.Abstractions` 0.22.0 and `Wolfgang.Etl.TestKit` 0.22.0.
 
 ### Removed
 
 - **Breaking:** the local `ErrorHandling` enum, the `Errors` collection on each extractor, and the
-  `JsonDeserializationError` type. These were a parallel error mechanism that did not report through
-  the pipeline; they are replaced by the `OnError` hook + `JsonErrorPolicy` above (capture the raw
-  content and exception via a dead-letter policy). Breaking is acceptable pre-1.0; the base names are
-  preferred to keep one vocabulary across the ETL family.
+  `JsonDeserializationError` type — a parallel error mechanism that did not report through the
+  pipeline. Replaced by the inherited base `ErrorPolicy` hook + the shared `ItemErrorPolicy` factory
+  (capture the raw content and exception via a dead-letter policy). Breaking is acceptable pre-1.0; the
+  base names keep one vocabulary across the ETL family.
 
 ## [0.5.0] - 2026-07-22
 

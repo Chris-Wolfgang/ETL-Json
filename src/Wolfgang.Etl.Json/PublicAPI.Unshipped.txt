@@ -8,17 +8,3 @@
 *REMOVED*Wolfgang.Etl.Json.JsonDeserializationError.ItemIndex.get -> long
 *REMOVED*Wolfgang.Etl.Json.JsonDeserializationError.LineNumber.get -> long?
 *REMOVED*Wolfgang.Etl.Json.JsonDeserializationError.RawContent.get -> string?
-Wolfgang.Etl.Json.JsonErrorPolicy
-Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.OnError.get -> System.Func<Wolfgang.Etl.Abstractions.ItemErrorContext!, Wolfgang.Etl.Abstractions.ItemErrorAction>?
-Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.OnError.init -> void
-Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.OnError.get -> System.Func<Wolfgang.Etl.Abstractions.ItemErrorContext!, Wolfgang.Etl.Abstractions.ItemErrorAction>?
-Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.OnError.init -> void
-Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.OnError.get -> System.Func<Wolfgang.Etl.Abstractions.ItemErrorContext!, Wolfgang.Etl.Abstractions.ItemErrorAction>?
-Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.OnError.init -> void
-static Wolfgang.Etl.Json.JsonErrorPolicy.Abort.get -> System.Func<Wolfgang.Etl.Abstractions.ItemErrorContext!, Wolfgang.Etl.Abstractions.ItemErrorAction>!
-static Wolfgang.Etl.Json.JsonErrorPolicy.Skip.get -> System.Func<Wolfgang.Etl.Abstractions.ItemErrorContext!, Wolfgang.Etl.Abstractions.ItemErrorAction>!
-static Wolfgang.Etl.Json.JsonErrorPolicy.SkipAndDeadLetter(System.Collections.Generic.ICollection<Wolfgang.Etl.Abstractions.ItemErrorContext!>! deadLetters) -> System.Func<Wolfgang.Etl.Abstractions.ItemErrorContext!, Wolfgang.Etl.Abstractions.ItemErrorAction>!
-static Wolfgang.Etl.Json.JsonErrorPolicy.SkipAndDeadLetter(System.Threading.Channels.ChannelWriter<Wolfgang.Etl.Abstractions.ItemErrorContext!>! deadLetters) -> System.Func<Wolfgang.Etl.Abstractions.ItemErrorContext!, Wolfgang.Etl.Abstractions.ItemErrorAction>!
-static Wolfgang.Etl.Json.JsonErrorPolicy.SkipAndLog(Microsoft.Extensions.Logging.ILogger! logger) -> System.Func<Wolfgang.Etl.Abstractions.ItemErrorContext!, Wolfgang.Etl.Abstractions.ItemErrorAction>!
-static Wolfgang.Etl.Json.JsonErrorPolicy.SkipDeadLetterAndLog(System.Collections.Generic.ICollection<Wolfgang.Etl.Abstractions.ItemErrorContext!>! deadLetters, Microsoft.Extensions.Logging.ILogger! logger) -> System.Func<Wolfgang.Etl.Abstractions.ItemErrorContext!, Wolfgang.Etl.Abstractions.ItemErrorAction>!
-static Wolfgang.Etl.Json.JsonErrorPolicy.SkipDeadLetterAndLog(System.Threading.Channels.ChannelWriter<Wolfgang.Etl.Abstractions.ItemErrorContext!>! deadLetters, Microsoft.Extensions.Logging.ILogger! logger) -> System.Func<Wolfgang.Etl.Abstractions.ItemErrorContext!, Wolfgang.Etl.Abstractions.ItemErrorAction>!

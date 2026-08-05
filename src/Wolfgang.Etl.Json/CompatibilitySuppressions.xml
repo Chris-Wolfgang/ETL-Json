@@ -45,6 +45,12 @@
   </Suppression>
   <Suppression>
     <DiagnosticId>CP0001</DiagnosticId>
+    <Target>T:Wolfgang.Etl.Json.JsonErrorPolicy</Target>
+    <Left>lib/net8.0/Wolfgang.Etl.Json.dll</Left>
+    <Right>lib/net10.0/Wolfgang.Etl.Json.dll</Right>
+  </Suppression>
+  <Suppression>
+    <DiagnosticId>CP0001</DiagnosticId>
     <Target>T:Wolfgang.Etl.Json.ErrorHandling</Target>
     <Left>lib/net8.0/Wolfgang.Etl.Json.dll</Left>
     <Right>lib/net8.0/Wolfgang.Etl.Json.dll</Right>
@@ -56,6 +62,12 @@
     <Left>lib/net8.0/Wolfgang.Etl.Json.dll</Left>
     <Right>lib/net8.0/Wolfgang.Etl.Json.dll</Right>
     <IsBaselineSuppression>true</IsBaselineSuppression>
+  </Suppression>
+  <Suppression>
+    <DiagnosticId>CP0001</DiagnosticId>
+    <Target>T:Wolfgang.Etl.Json.JsonErrorPolicy</Target>
+    <Left>lib/netstandard2.0/Wolfgang.Etl.Json.dll</Left>
+    <Right>lib/net462/Wolfgang.Etl.Json.dll</Right>
   </Suppression>
   <Suppression>
     <DiagnosticId>CP0001</DiagnosticId>
@@ -262,6 +274,42 @@
   </Suppression>
   <Suppression>
     <DiagnosticId>CP0002</DiagnosticId>
+    <Target>M:Wolfgang.Etl.Json.JsonLineExtractor`1.get_OnError</Target>
+    <Left>lib/net8.0/Wolfgang.Etl.Json.dll</Left>
+    <Right>lib/net10.0/Wolfgang.Etl.Json.dll</Right>
+  </Suppression>
+  <Suppression>
+    <DiagnosticId>CP0002</DiagnosticId>
+    <Target>M:Wolfgang.Etl.Json.JsonLineExtractor`1.set_OnError(System.Func{Wolfgang.Etl.Abstractions.ItemErrorContext,Wolfgang.Etl.Abstractions.ItemErrorAction})</Target>
+    <Left>lib/net8.0/Wolfgang.Etl.Json.dll</Left>
+    <Right>lib/net10.0/Wolfgang.Etl.Json.dll</Right>
+  </Suppression>
+  <Suppression>
+    <DiagnosticId>CP0002</DiagnosticId>
+    <Target>M:Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.get_OnError</Target>
+    <Left>lib/net8.0/Wolfgang.Etl.Json.dll</Left>
+    <Right>lib/net10.0/Wolfgang.Etl.Json.dll</Right>
+  </Suppression>
+  <Suppression>
+    <DiagnosticId>CP0002</DiagnosticId>
+    <Target>M:Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.set_OnError(System.Func{Wolfgang.Etl.Abstractions.ItemErrorContext,Wolfgang.Etl.Abstractions.ItemErrorAction})</Target>
+    <Left>lib/net8.0/Wolfgang.Etl.Json.dll</Left>
+    <Right>lib/net10.0/Wolfgang.Etl.Json.dll</Right>
+  </Suppression>
+  <Suppression>
+    <DiagnosticId>CP0002</DiagnosticId>
+    <Target>M:Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.get_OnError</Target>
+    <Left>lib/net8.0/Wolfgang.Etl.Json.dll</Left>
+    <Right>lib/net10.0/Wolfgang.Etl.Json.dll</Right>
+  </Suppression>
+  <Suppression>
+    <DiagnosticId>CP0002</DiagnosticId>
+    <Target>M:Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.set_OnError(System.Func{Wolfgang.Etl.Abstractions.ItemErrorContext,Wolfgang.Etl.Abstractions.ItemErrorAction})</Target>
+    <Left>lib/net8.0/Wolfgang.Etl.Json.dll</Left>
+    <Right>lib/net10.0/Wolfgang.Etl.Json.dll</Right>
+  </Suppression>
+  <Suppression>
+    <DiagnosticId>CP0002</DiagnosticId>
     <Target>M:Wolfgang.Etl.Json.JsonLineExtractor`1.get_ErrorHandling</Target>
     <Left>lib/net8.0/Wolfgang.Etl.Json.dll</Left>
     <Right>lib/net8.0/Wolfgang.Etl.Json.dll</Right>
@@ -322,6 +370,42 @@
     <Left>lib/net8.0/Wolfgang.Etl.Json.dll</Left>
     <Right>lib/net8.0/Wolfgang.Etl.Json.dll</Right>
     <IsBaselineSuppression>true</IsBaselineSuppression>
+  </Suppression>
+  <Suppression>
+    <DiagnosticId>CP0002</DiagnosticId>
+    <Target>M:Wolfgang.Etl.Json.JsonLineExtractor`1.get_OnError</Target>
+    <Left>lib/netstandard2.0/Wolfgang.Etl.Json.dll</Left>
+    <Right>lib/net462/Wolfgang.Etl.Json.dll</Right>
+  </Suppression>
+  <Suppression>
+    <DiagnosticId>CP0002</DiagnosticId>
+    <Target>M:Wolfgang.Etl.Json.JsonLineExtractor`1.set_OnError(System.Func{Wolfgang.Etl.Abstractions.ItemErrorContext,Wolfgang.Etl.Abstractions.ItemErrorAction})</Target>
+    <Left>lib/netstandard2.0/Wolfgang.Etl.Json.dll</Left>
+    <Right>lib/net462/Wolfgang.Etl.Json.dll</Right>
+  </Suppression>
+  <Suppression>
+    <DiagnosticId>CP0002</DiagnosticId>
+    <Target>M:Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.get_OnError</Target>
+    <Left>lib/netstandard2.0/Wolfgang.Etl.Json.dll</Left>
+    <Right>lib/net462/Wolfgang.Etl.Json.dll</Right>
+  </Suppression>
+  <Suppression>
+    <DiagnosticId>CP0002</DiagnosticId>
+    <Target>M:Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.set_OnError(System.Func{Wolfgang.Etl.Abstractions.ItemErrorContext,Wolfgang.Etl.Abstractions.ItemErrorAction})</Target>
+    <Left>lib/netstandard2.0/Wolfgang.Etl.Json.dll</Left>
+    <Right>lib/net462/Wolfgang.Etl.Json.dll</Right>
+  </Suppression>
+  <Suppression>
+    <DiagnosticId>CP0002</DiagnosticId>
+    <Target>M:Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.get_OnError</Target>
+    <Left>lib/netstandard2.0/Wolfgang.Etl.Json.dll</Left>
+    <Right>lib/net462/Wolfgang.Etl.Json.dll</Right>
+  </Suppression>
+  <Suppression>
+    <DiagnosticId>CP0002</DiagnosticId>
+    <Target>M:Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.set_OnError(System.Func{Wolfgang.Etl.Abstractions.ItemErrorContext,Wolfgang.Etl.Abstractions.ItemErrorAction})</Target>
+    <Left>lib/netstandard2.0/Wolfgang.Etl.Json.dll</Left>
+    <Right>lib/net462/Wolfgang.Etl.Json.dll</Right>
   </Suppression>
   <Suppression>
     <DiagnosticId>CP0002</DiagnosticId>

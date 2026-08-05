@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging.Abstractions;
 using Wolfgang.Etl.Abstractions;
+using Wolfgang.Etl.ErrorPolicies;
 using Wolfgang.Etl.Json.Tests.Unit.TestModels;
 using Wolfgang.Etl.TestKit.Xunit;
 using Xunit;
@@ -429,7 +430,7 @@ public class JsonSingleStreamExtractorTests
 
 
     [Fact]
-    public async Task ExtractAsync_when_OnError_is_unset_throws_JsonException_on_bad_input()
+    public async Task ExtractAsync_when_ErrorPolicy_is_unset_throws_JsonException_on_bad_input()
     {
         var content = Encoding.UTF8.GetBytes("[not-valid-json]");
         var stream = new MemoryStream(content);
@@ -454,7 +455,7 @@ public class JsonSingleStreamExtractorTests
 
 
     [Fact]
-    public async Task ExtractAsync_when_OnError_dead_letters_records_error_and_stops()
+    public async Task ExtractAsync_when_ErrorPolicy_dead_letters_records_error_and_stops()
     {
         // DeserializeAsyncEnumerable can't resume from a corrupt position in the stream;
         // a Skip policy records the error and stops enumeration without throwing.
@@ -468,7 +469,7 @@ public class JsonSingleStreamExtractorTests
             new JsonSerializerOptions()
         )
         {
-            OnError = JsonErrorPolicy.SkipAndDeadLetter(deadLetters),
+            ErrorPolicy = ItemErrorPolicy.SkipAndDeadLetter(deadLetters),
         };
 
         var results = new List<PersonRecord>();
@@ -486,7 +487,7 @@ public class JsonSingleStreamExtractorTests
 
 
     [Fact]
-    public async Task ExtractAsync_when_OnError_skips_discards_error_and_counts_it()
+    public async Task ExtractAsync_when_ErrorPolicy_skips_discards_error_and_counts_it()
     {
         var content = Encoding.UTF8.GetBytes("[not-valid-json]");
         var stream = new MemoryStream(content);
@@ -497,7 +498,7 @@ public class JsonSingleStreamExtractorTests
             new JsonSerializerOptions()
         )
         {
-            OnError = JsonErrorPolicy.Skip,
+            ErrorPolicy = ItemErrorPolicy.Skip,
         };
 
         var results = new List<PersonRecord>();
