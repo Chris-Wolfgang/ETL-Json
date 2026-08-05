@@ -318,23 +318,23 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
         var skipBudget = SkipItemCount;
         var sw = Stopwatch.StartNew();
         using var reader = CreateStreamReader();
-        string? line;
+        string? lineText;
 #if NETSTANDARD2_0 || NET462 || NET481
-        while ((line = await reader.ReadLineAsync().ConfigureAwait(false)) is not null)
+        while ((lineText = await reader.ReadLineAsync().ConfigureAwait(false)) is not null)
 #else
-        while ((line = await reader.ReadLineAsync(token).ConfigureAwait(false)) is not null)
+        while ((lineText = await reader.ReadLineAsync(token).ConfigureAwait(false)) is not null)
 #endif
         {
             token.ThrowIfCancellationRequested();
-            var lineBytes = track ? lineEncoding.GetByteCount(line) + newlineSize : 0;
-            var lineNum = Interlocked.Increment(ref _currentLineNumber);
-            if (string.IsNullOrWhiteSpace(line))
+            var lineBytes = track ? lineEncoding.GetByteCount(lineText) + newlineSize : 0;
+            var lineNumber = Interlocked.Increment(ref _currentLineNumber);
+            if (string.IsNullOrWhiteSpace(lineText))
             {
                 Interlocked.Add(ref _currentByteOffset, lineBytes);
-                JsonLogMessages.SkippingBlankLine(_logger, lineNum, null);
+                JsonLogMessages.SkippingBlankLine(_logger, lineNumber, null);
                 continue;
             }
-            if (!TryDeserializeLine(line, out var item))
+            if (!TryDeserializeLine(lineText, out var item))
             {
                 Interlocked.Add(ref _currentByteOffset, lineBytes);
                 continue;
@@ -343,7 +343,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
             if (item is null)
             {
                 Interlocked.Add(ref _currentByteOffset, lineBytes);
-                JsonLogMessages.LineDeserializedToNull(_logger, lineNum, null);
+                JsonLogMessages.LineDeserializedToNull(_logger, lineNumber, null);
                 continue;
             }
             if (skipBudget > 0)
@@ -352,7 +352,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
                 Interlocked.Add(ref _currentByteOffset, lineBytes);
                 IncrementCurrentSkippedItemCount();
                 JsonMetrics.AddSkipped(_operationTag, _componentTag, _recordTypeTag);
-                JsonLogMessages.SkippedItemAtLine(_logger, CurrentSkippedItemCount, SkipItemCount, lineNum, null);
+                JsonLogMessages.SkippedItemAtLine(_logger, CurrentSkippedItemCount, SkipItemCount, lineNumber, null);
                 continue;
             }
             if (CurrentItemCount >= MaximumItemCount)
@@ -363,7 +363,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
             Interlocked.Add(ref _currentByteOffset, lineBytes);
             IncrementCurrentItemCount();
             JsonMetrics.AddExtracted(_operationTag, _componentTag, _recordTypeTag);
-            JsonLogMessages.ExtractedItemFromLine(_logger, CurrentItemCount, lineNum, null);
+            JsonLogMessages.ExtractedItemFromLine(_logger, CurrentItemCount, lineNumber, null);
             yield return item;
         }
 
@@ -439,13 +439,13 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 
 
 
-    private bool TryDeserializeLine(string line, out TRecord? item)
+    private bool TryDeserializeLine(string lineText, out TRecord? item)
     {
         try
         {
             item = _typeInfo is not null
-                ? JsonSerializer.Deserialize(line, _typeInfo)
-                : JsonSerializer.Deserialize<TRecord>(line, _options);
+                ? JsonSerializer.Deserialize(lineText, _typeInfo)
+                : JsonSerializer.Deserialize<TRecord>(lineText, _options);
             return true;
         }
 #pragma warning disable CA1031 // catch JsonException to implement error-handling policy
@@ -456,7 +456,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
             (
                 CurrentItemCount + CurrentSkippedItemCount + CurrentErrorItemCount + 1,
                 ex,
-                () => line
+                () => lineText
             );
             if (HandleItemError(context) == ItemErrorAction.Abort) { throw; }
             item = default;
