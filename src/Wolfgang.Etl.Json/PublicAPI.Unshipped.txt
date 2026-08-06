@@ -1,1 +1,10 @@
 #nullable enable
+*REMOVED*Wolfgang.Etl.Json.ErrorHandling
+*REMOVED*Wolfgang.Etl.Json.ErrorHandling.CaptureAndContinue = 1 -> Wolfgang.Etl.Json.ErrorHandling
+*REMOVED*Wolfgang.Etl.Json.ErrorHandling.SkipAndLog = 2 -> Wolfgang.Etl.Json.ErrorHandling
+*REMOVED*Wolfgang.Etl.Json.ErrorHandling.Throw = 0 -> Wolfgang.Etl.Json.ErrorHandling
+*REMOVED*Wolfgang.Etl.Json.JsonDeserializationError
+*REMOVED*Wolfgang.Etl.Json.JsonDeserializationError.Exception.get -> System.Exception!
+*REMOVED*Wolfgang.Etl.Json.JsonDeserializationError.ItemIndex.get -> long
+*REMOVED*Wolfgang.Etl.Json.JsonDeserializationError.LineNumber.get -> long?
+*REMOVED*Wolfgang.Etl.Json.JsonDeserializationError.RawContent.get -> string?

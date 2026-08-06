@@ -49,7 +49,6 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     private readonly JsonTypeInfo<TRecord>? _typeInfo;
     private readonly ILogger _logger;
     private readonly IProgressTimer? _progressTimer;
-    private readonly List<JsonDeserializationError> _errors = new();
     private int _progressTimerWired;
 
 
@@ -240,26 +239,6 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
 
 
 
-    /// <summary>
-    /// Gets or sets how deserialization errors are handled during extraction.
-    /// Default is <see cref="ErrorHandling.Throw"/>.
-    /// </summary>
-    /// <remarks>
-    /// Because JSON array deserialization is streaming, a <see cref="System.Text.Json.JsonException"/>
-    /// leaves the underlying reader in an unrecoverable state. When
-    /// <see cref="ErrorHandling.CaptureAndContinue"/> is set, the error is captured and enumeration
-    /// stops at the point of failure; subsequent records in the array are not returned.
-    /// </remarks>
-    public ErrorHandling ErrorHandling { get; init; } = ErrorHandling.Throw;
-
-
-
-    /// <summary>
-    /// Gets the collection of deserialization errors captured during the most recent extraction.
-    /// Only populated when <see cref="ErrorHandling"/> is <see cref="ErrorHandling.CaptureAndContinue"/>.
-    /// </summary>
-    public IReadOnlyList<JsonDeserializationError> Errors => _errors.AsReadOnly();
-
 
 
     /// <inheritdoc />
@@ -268,7 +247,6 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
         [EnumeratorCancellation] CancellationToken token
     )
     {
-        _errors.Clear();
         JsonLogMessages.StartingOperation(_logger, OperationName, null);
 
         var skipBudget = SkipItemCount;
@@ -329,22 +307,16 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
 
     private void HandleDeserializationError(JsonException ex)
     {
-        if (ErrorHandling == ErrorHandling.Throw)
+        var context = new ItemErrorContext
+        (
+            CurrentItemCount + CurrentSkippedItemCount + CurrentErrorItemCount + 1,
+            ex,
+            rawContent: null
+        );
+        if (HandleItemError(context) == ItemErrorAction.Abort)
         {
             System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(ex).Throw();
         }
-
-        var error = new JsonDeserializationError(
-            itemIndex: _errors.Count + CurrentItemCount + CurrentSkippedItemCount,
-            lineNumber: null,
-            rawContent: null,
-            exception: ex);
-        if (ErrorHandling == ErrorHandling.CaptureAndContinue)
-        {
-            _errors.Add(error);
-        }
-
-        JsonLogMessages.DeserializationErrorAtIndex(_logger, error.ItemIndex, ex);
     }
 
 

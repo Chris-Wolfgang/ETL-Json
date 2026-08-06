@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- The extractors now inherit the base **`ErrorPolicy`** property (from `Wolfgang.Etl.Abstractions`
+  0.21+): assign a `Func<ItemErrorContext, ItemErrorAction>` to skip, log, and/or dead-letter records
+  that fail to deserialize. Ready-made policies live in the new **`Wolfgang.Etl.ErrorPolicies`** package
+  (`ItemErrorPolicy.Skip` / `Abort` / `SkipAndLog(logger)` / `SkipAndDeadLetter(...)` /
+  `SkipDeadLetterAndLog(..., logger)`, the dead-letter factories overloaded for an
+  `ICollection<ItemErrorContext>` or a `System.Threading.Channels.ChannelWriter<ItemErrorContext>`).
+  Unset is fail-fast; failed records flow through the base `HandleItemError` and are counted by
+  `CurrentErrorItemCount`, so a skip surfaces in the pipeline's aggregate like every other stage.
+
+### Changed
+
+- **Breaking:** upgraded to `Wolfgang.Etl.Abstractions` 0.22.0 and `Wolfgang.Etl.TestKit` 0.22.0.
+
+### Removed
+
+- **Breaking:** the local `ErrorHandling` enum, the `Errors` collection on each extractor, and the
+  `JsonDeserializationError` type — a parallel error mechanism that did not report through the
+  pipeline. Replaced by the inherited base `ErrorPolicy` hook + the shared `ItemErrorPolicy` factory
+  (capture the raw content and exception via a dead-letter policy). Breaking is acceptable pre-1.0; the
+  base names keep one vocabulary across the ETL family.
+
 ## [0.5.0] - 2026-07-22
 
 ### Added

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Wolfgang.Etl.Abstractions;
+using Wolfgang.Etl.ErrorPolicies;
 using Wolfgang.Etl.Json.Tests.Unit.TestModels;
 using Wolfgang.Etl.TestKit.Xunit;
 using Xunit;
@@ -476,7 +477,7 @@ public class JsonMultiStreamExtractorTests
 
 
     [Fact]
-    public async Task ExtractAsync_when_ErrorHandling_is_Throw_throws_JsonException_on_bad_stream()
+    public async Task ExtractAsync_when_ErrorPolicy_is_unset_throws_JsonException_on_bad_stream()
     {
         var goodJson = JsonSerializer.Serialize(ExpectedItems[0]);
         var streams = new List<Stream>
@@ -489,10 +490,7 @@ public class JsonMultiStreamExtractorTests
         (
             streams,
             new JsonSerializerOptions()
-        )
-        {
-            ErrorHandling = ErrorHandling.Throw,
-        };
+        );
 
         await Assert.ThrowsAsync<JsonException>
         (
@@ -522,7 +520,7 @@ public class JsonMultiStreamExtractorTests
 
 
     [Fact]
-    public async Task ExtractAsync_when_ErrorHandling_is_CaptureAndContinue_skips_bad_streams_and_populates_Errors()
+    public async Task ExtractAsync_when_ErrorPolicy_dead_letters_skips_bad_streams_and_records_them()
     {
         var goodJson = JsonSerializer.Serialize(ExpectedItems[0]);
         var good2Json = JsonSerializer.Serialize(ExpectedItems[1]);
@@ -533,13 +531,14 @@ public class JsonMultiStreamExtractorTests
             new MemoryStream(Encoding.UTF8.GetBytes(good2Json)),
         };
 
+        var deadLetters = new List<ItemErrorContext>();
         var sut = new JsonMultiStreamExtractor<PersonRecord>
         (
             streams,
             new JsonSerializerOptions()
         )
         {
-            ErrorHandling = ErrorHandling.CaptureAndContinue,
+            ErrorPolicy = ItemErrorPolicy.SkipAndDeadLetter(deadLetters),
         };
 
         var results = new List<PersonRecord>();
@@ -551,9 +550,10 @@ public class JsonMultiStreamExtractorTests
         Assert.Equal(2, results.Count);
         Assert.Equal("Alice", results[0].FirstName);
         Assert.Equal("Bob", results[1].FirstName);
-        Assert.Single(sut.Errors);
-        Assert.IsType<JsonException>(sut.Errors[0].Exception);
-        Assert.Equal(1L, sut.Errors[0].ItemIndex);
+        Assert.Single(deadLetters);
+        Assert.IsType<JsonException>(deadLetters[0].Exception);
+        Assert.Equal(2L, deadLetters[0].ItemNumber);
+        Assert.Equal(1, sut.CurrentErrorItemCount);
     }
 
 
@@ -596,7 +596,7 @@ public class JsonMultiStreamExtractorTests
 
 
     [Fact]
-    public async Task ExtractAsync_when_ErrorHandling_is_SkipAndLog_skips_bad_streams_without_collecting_errors()
+    public async Task ExtractAsync_when_ErrorPolicy_skips_discards_bad_streams_and_counts_them()
     {
         var goodJson = JsonSerializer.Serialize(ExpectedItems[0]);
         var streams = new List<Stream>
@@ -611,7 +611,7 @@ public class JsonMultiStreamExtractorTests
             new JsonSerializerOptions()
         )
         {
-            ErrorHandling = ErrorHandling.SkipAndLog,
+            ErrorPolicy = ItemErrorPolicy.Skip,
         };
 
         var results = new List<PersonRecord>();
@@ -622,7 +622,7 @@ public class JsonMultiStreamExtractorTests
 
         Assert.Single(results);
         Assert.Equal("Alice", results[0].FirstName);
-        Assert.Empty(sut.Errors);
+        Assert.Equal(1, sut.CurrentErrorItemCount);
     }
 
 
