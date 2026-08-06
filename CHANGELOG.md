@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [0.6.0] - 2026-08-06
+
+Minor release (pre-1.0 breaking): adopts the per-item error-handling model from
+`Wolfgang.Etl.Abstractions` 0.21+ and retires the parallel local error surface, so a failed record is
+handled and counted consistently with every other stage in a pipeline. Validates against the 0.5.0
+baseline with the intentional removals waived in `CompatibilitySuppressions.xml`.
+
+### Added
+
 - The extractors now inherit the base **`ErrorPolicy`** property (from `Wolfgang.Etl.Abstractions`
   0.21+): assign a `Func<ItemErrorContext, ItemErrorAction>` to skip, log, and/or dead-letter records
   that fail to deserialize. Ready-made policies live in the new **`Wolfgang.Etl.ErrorPolicies`** package
