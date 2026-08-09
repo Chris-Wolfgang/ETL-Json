@@ -39,7 +39,8 @@ baseline with the intentional removals waived in `CompatibilitySuppressions.xml`
 
 ### Changed
 
-- **Breaking:** upgraded to `Wolfgang.Etl.Abstractions` 0.22.0 and `Wolfgang.Etl.TestKit` 0.22.0.
+- **Breaking:** upgraded to `Wolfgang.Etl.Abstractions` 0.21.0 (the base `ErrorPolicy` +
+  `Wolfgang.Etl.ErrorPolicies` 0.21.0) and `Wolfgang.Etl.TestKit` 0.14.0.
 
 ### Removed
 
