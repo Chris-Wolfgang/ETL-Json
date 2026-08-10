@@ -140,3 +140,4 @@ if ($breakingTotal -gt 0) {
     exit 1
 }
 Write-Host "✅ ApiCompat: no disallowed ABI breaks."
+exit 0
