@@ -70,6 +70,7 @@ function Get-PreviousVersion([string]$packageId, [string]$currentVersion) {
 }
 
 $breakingTotal = 0
+$toolErrorTotal = 0
 $projects = Get-ChildItem -Path (Join-Path $repoRoot 'src') -Recurse -Filter '*.csproj'
 
 foreach ($proj in $projects) {
@@ -113,9 +114,22 @@ foreach ($proj in $projects) {
 
         Write-Host "--- $packageId [$tfm]: $prev -> $version ---"
         $raw = & apicompat --left $prevDll --right $curDll 2>&1
+        $apiExit = $LASTEXITCODE
 
-        $breaks = $raw |
-            Where-Object { $_ -match 'CP[0-9]{4}' } |
+        $cpLines = @($raw | Where-Object { $_ -match 'CP[0-9]{4}' })
+
+        # apicompat exits non-zero when it FINDS ABI differences (which we filter /
+        # suppress below). A non-zero exit with NO CP-code output means apicompat
+        # itself failed to run (bad args, crash, missing input) — that must fail the
+        # gate rather than be masked by the success 'exit 0'.
+        if ($apiExit -ne 0 -and $cpLines.Count -eq 0) {
+            Write-Host "  ❌ apicompat failed for [$tfm] (exit $apiExit, no CP-code output — tool error):"
+            $raw | ForEach-Object { Write-Host "     $_" }
+            $toolErrorTotal += 1
+            continue
+        }
+
+        $breaks = $cpLines |
             Where-Object { $line = $_; -not ($suppressions | Where-Object { $line -like "*$_*" }) }
 
         if ($breaks) {
@@ -135,9 +149,16 @@ foreach ($proj in $projects) {
     }
 }
 
+if ($toolErrorTotal -gt 0) {
+    Write-Error "❌ apicompat failed to run for $toolErrorTotal target(s) (tool/internal error, not a suppressible ABI break). See the log above."
+    exit 1
+}
 if ($breakingTotal -gt 0) {
     Write-Error "❌ $breakingTotal unsuppressed ABI break(s) in a non-major release. Bump MAJOR or record intentional breaks in compat-suppressions.txt."
     exit 1
 }
+# Reached only when apicompat ran for every target and left no unsuppressed breaks;
+# force exit 0 so apicompat's non-zero 'differences found' code does not leak through
+# CI's 'pwsh -command' shell (see the tool-error guard above for real failures).
 Write-Host "✅ ApiCompat: no disallowed ABI breaks."
 exit 0
