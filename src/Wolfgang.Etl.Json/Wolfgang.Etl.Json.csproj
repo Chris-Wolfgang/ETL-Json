@@ -6,10 +6,13 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <Version>0.6.0</Version>
     <!-- Pin AssemblyVersion to a fixed binding-stability baseline so consumers
-         do not need to recompile / add binding redirects on every minor/patch
-         bump. Bump only on a deliberate breaking API change. FileVersion +
-         InformationalVersion (the latter auto-derived from <Version>) carry
-         the actual release version. -->
+         do not need to recompile / add binding redirects on version bumps.
+         Pre-1.0 it stays 1.0.0.0 even across the breaking changes a 0.x minor is
+         allowed to make (0.6.0 removes the old error-handling API): the package
+         <Version> and Package Validation convey those breaks, and holding the
+         AssemblyVersion avoids churning every consumer's binding redirects.
+         Revisit the pin at 1.0. FileVersion + InformationalVersion (auto-derived
+         from <Version>) carry the actual release version. -->
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>$([System.Text.RegularExpressions.Regex]::Replace("$(Version)", "[-+].*$", "")).0</FileVersion>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
