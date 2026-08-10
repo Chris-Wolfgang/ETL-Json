@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
-## [0.6.0] - 2026-08-06
+## [0.6.0] - 2026-08-10
 
 Minor release (pre-1.0 breaking): adopts the per-item error-handling model from
 `Wolfgang.Etl.Abstractions` 0.21+ and retires the parallel local error surface, so a failed record is

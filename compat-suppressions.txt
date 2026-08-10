@@ -6,3 +6,11 @@
 #
 # Example:
 #   CP0002: Member 'SomeMethod()' exists in the contract but not in the implementation
+
+# 0.6.0 (#252): intentional removal of the local error-handling surface, replaced
+# by the inherited base ErrorPolicy + the shared Wolfgang.Etl.ErrorPolicies package.
+# These three substrings cover all 11 breaks (the removed types plus the
+# ErrorHandling/Errors get/init members on the three extractors that reference them).
+Wolfgang.Etl.Json.ErrorHandling
+Wolfgang.Etl.Json.JsonDeserializationError
+ErrorHandling.init
