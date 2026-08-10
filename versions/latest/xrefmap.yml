@@ -7,30 +7,6 @@ references:
   commentId: N:Wolfgang.Etl.Json
   fullName: Wolfgang.Etl.Json
   nameWithType: Wolfgang.Etl.Json
-- uid: Wolfgang.Etl.Json.ErrorHandling
-  name: ErrorHandling
-  href: api/Wolfgang.Etl.Json.ErrorHandling.html
-  commentId: T:Wolfgang.Etl.Json.ErrorHandling
-  fullName: Wolfgang.Etl.Json.ErrorHandling
-  nameWithType: ErrorHandling
-- uid: Wolfgang.Etl.Json.ErrorHandling.CaptureAndContinue
-  name: CaptureAndContinue
-  href: api/Wolfgang.Etl.Json.ErrorHandling.html#Wolfgang_Etl_Json_ErrorHandling_CaptureAndContinue
-  commentId: F:Wolfgang.Etl.Json.ErrorHandling.CaptureAndContinue
-  fullName: Wolfgang.Etl.Json.ErrorHandling.CaptureAndContinue
-  nameWithType: ErrorHandling.CaptureAndContinue
-- uid: Wolfgang.Etl.Json.ErrorHandling.SkipAndLog
-  name: SkipAndLog
-  href: api/Wolfgang.Etl.Json.ErrorHandling.html#Wolfgang_Etl_Json_ErrorHandling_SkipAndLog
-  commentId: F:Wolfgang.Etl.Json.ErrorHandling.SkipAndLog
-  fullName: Wolfgang.Etl.Json.ErrorHandling.SkipAndLog
-  nameWithType: ErrorHandling.SkipAndLog
-- uid: Wolfgang.Etl.Json.ErrorHandling.Throw
-  name: Throw
-  href: api/Wolfgang.Etl.Json.ErrorHandling.html#Wolfgang_Etl_Json_ErrorHandling_Throw
-  commentId: F:Wolfgang.Etl.Json.ErrorHandling.Throw
-  fullName: Wolfgang.Etl.Json.ErrorHandling.Throw
-  nameWithType: ErrorHandling.Throw
 - uid: Wolfgang.Etl.Json.EtlPipelineJsonSinkExtensions
   name: EtlPipelineJsonSinkExtensions
   href: api/Wolfgang.Etl.Json.EtlPipelineJsonSinkExtensions.html
@@ -143,64 +119,6 @@ references:
   fullName.vb: Wolfgang.Etl.Json.EtlPipelineJsonSourceExtensions.JsonSingleStreamExtractor(Of T)(Wolfgang.Etl.Abstractions.EtlPipeline, String, System.Text.Json.JsonSerializerOptions)
   nameWithType: EtlPipelineJsonSourceExtensions.JsonSingleStreamExtractor<T>(EtlPipeline, string, JsonSerializerOptions?)
   nameWithType.vb: EtlPipelineJsonSourceExtensions.JsonSingleStreamExtractor(Of T)(EtlPipeline, String, JsonSerializerOptions)
-- uid: Wolfgang.Etl.Json.JsonDeserializationError
-  name: JsonDeserializationError
-  href: api/Wolfgang.Etl.Json.JsonDeserializationError.html
-  commentId: T:Wolfgang.Etl.Json.JsonDeserializationError
-  fullName: Wolfgang.Etl.Json.JsonDeserializationError
-  nameWithType: JsonDeserializationError
-- uid: Wolfgang.Etl.Json.JsonDeserializationError.Exception
-  name: Exception
-  href: api/Wolfgang.Etl.Json.JsonDeserializationError.html#Wolfgang_Etl_Json_JsonDeserializationError_Exception
-  commentId: P:Wolfgang.Etl.Json.JsonDeserializationError.Exception
-  fullName: Wolfgang.Etl.Json.JsonDeserializationError.Exception
-  nameWithType: JsonDeserializationError.Exception
-- uid: Wolfgang.Etl.Json.JsonDeserializationError.Exception*
-  name: Exception
-  href: api/Wolfgang.Etl.Json.JsonDeserializationError.html#Wolfgang_Etl_Json_JsonDeserializationError_Exception_
-  commentId: Overload:Wolfgang.Etl.Json.JsonDeserializationError.Exception
-  isSpec: "True"
-  fullName: Wolfgang.Etl.Json.JsonDeserializationError.Exception
-  nameWithType: JsonDeserializationError.Exception
-- uid: Wolfgang.Etl.Json.JsonDeserializationError.ItemIndex
-  name: ItemIndex
-  href: api/Wolfgang.Etl.Json.JsonDeserializationError.html#Wolfgang_Etl_Json_JsonDeserializationError_ItemIndex
-  commentId: P:Wolfgang.Etl.Json.JsonDeserializationError.ItemIndex
-  fullName: Wolfgang.Etl.Json.JsonDeserializationError.ItemIndex
-  nameWithType: JsonDeserializationError.ItemIndex
-- uid: Wolfgang.Etl.Json.JsonDeserializationError.ItemIndex*
-  name: ItemIndex
-  href: api/Wolfgang.Etl.Json.JsonDeserializationError.html#Wolfgang_Etl_Json_JsonDeserializationError_ItemIndex_
-  commentId: Overload:Wolfgang.Etl.Json.JsonDeserializationError.ItemIndex
-  isSpec: "True"
-  fullName: Wolfgang.Etl.Json.JsonDeserializationError.ItemIndex
-  nameWithType: JsonDeserializationError.ItemIndex
-- uid: Wolfgang.Etl.Json.JsonDeserializationError.LineNumber
-  name: LineNumber
-  href: api/Wolfgang.Etl.Json.JsonDeserializationError.html#Wolfgang_Etl_Json_JsonDeserializationError_LineNumber
-  commentId: P:Wolfgang.Etl.Json.JsonDeserializationError.LineNumber
-  fullName: Wolfgang.Etl.Json.JsonDeserializationError.LineNumber
-  nameWithType: JsonDeserializationError.LineNumber
-- uid: Wolfgang.Etl.Json.JsonDeserializationError.LineNumber*
-  name: LineNumber
-  href: api/Wolfgang.Etl.Json.JsonDeserializationError.html#Wolfgang_Etl_Json_JsonDeserializationError_LineNumber_
-  commentId: Overload:Wolfgang.Etl.Json.JsonDeserializationError.LineNumber
-  isSpec: "True"
-  fullName: Wolfgang.Etl.Json.JsonDeserializationError.LineNumber
-  nameWithType: JsonDeserializationError.LineNumber
-- uid: Wolfgang.Etl.Json.JsonDeserializationError.RawContent
-  name: RawContent
-  href: api/Wolfgang.Etl.Json.JsonDeserializationError.html#Wolfgang_Etl_Json_JsonDeserializationError_RawContent
-  commentId: P:Wolfgang.Etl.Json.JsonDeserializationError.RawContent
-  fullName: Wolfgang.Etl.Json.JsonDeserializationError.RawContent
-  nameWithType: JsonDeserializationError.RawContent
-- uid: Wolfgang.Etl.Json.JsonDeserializationError.RawContent*
-  name: RawContent
-  href: api/Wolfgang.Etl.Json.JsonDeserializationError.html#Wolfgang_Etl_Json_JsonDeserializationError_RawContent_
-  commentId: Overload:Wolfgang.Etl.Json.JsonDeserializationError.RawContent
-  isSpec: "True"
-  fullName: Wolfgang.Etl.Json.JsonDeserializationError.RawContent
-  nameWithType: JsonDeserializationError.RawContent
 - uid: Wolfgang.Etl.Json.JsonLineExtractor`1
   name: JsonLineExtractor<TRecord>
   href: api/Wolfgang.Etl.Json.JsonLineExtractor-1.html
@@ -369,40 +287,6 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonLineExtractor(Of TRecord).Encoding
   nameWithType: JsonLineExtractor<TRecord>.Encoding
   nameWithType.vb: JsonLineExtractor(Of TRecord).Encoding
-- uid: Wolfgang.Etl.Json.JsonLineExtractor`1.ErrorHandling
-  name: ErrorHandling
-  href: api/Wolfgang.Etl.Json.JsonLineExtractor-1.html#Wolfgang_Etl_Json_JsonLineExtractor_1_ErrorHandling
-  commentId: P:Wolfgang.Etl.Json.JsonLineExtractor`1.ErrorHandling
-  fullName: Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.ErrorHandling
-  fullName.vb: Wolfgang.Etl.Json.JsonLineExtractor(Of TRecord).ErrorHandling
-  nameWithType: JsonLineExtractor<TRecord>.ErrorHandling
-  nameWithType.vb: JsonLineExtractor(Of TRecord).ErrorHandling
-- uid: Wolfgang.Etl.Json.JsonLineExtractor`1.ErrorHandling*
-  name: ErrorHandling
-  href: api/Wolfgang.Etl.Json.JsonLineExtractor-1.html#Wolfgang_Etl_Json_JsonLineExtractor_1_ErrorHandling_
-  commentId: Overload:Wolfgang.Etl.Json.JsonLineExtractor`1.ErrorHandling
-  isSpec: "True"
-  fullName: Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.ErrorHandling
-  fullName.vb: Wolfgang.Etl.Json.JsonLineExtractor(Of TRecord).ErrorHandling
-  nameWithType: JsonLineExtractor<TRecord>.ErrorHandling
-  nameWithType.vb: JsonLineExtractor(Of TRecord).ErrorHandling
-- uid: Wolfgang.Etl.Json.JsonLineExtractor`1.Errors
-  name: Errors
-  href: api/Wolfgang.Etl.Json.JsonLineExtractor-1.html#Wolfgang_Etl_Json_JsonLineExtractor_1_Errors
-  commentId: P:Wolfgang.Etl.Json.JsonLineExtractor`1.Errors
-  fullName: Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.Errors
-  fullName.vb: Wolfgang.Etl.Json.JsonLineExtractor(Of TRecord).Errors
-  nameWithType: JsonLineExtractor<TRecord>.Errors
-  nameWithType.vb: JsonLineExtractor(Of TRecord).Errors
-- uid: Wolfgang.Etl.Json.JsonLineExtractor`1.Errors*
-  name: Errors
-  href: api/Wolfgang.Etl.Json.JsonLineExtractor-1.html#Wolfgang_Etl_Json_JsonLineExtractor_1_Errors_
-  commentId: Overload:Wolfgang.Etl.Json.JsonLineExtractor`1.Errors
-  isSpec: "True"
-  fullName: Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.Errors
-  fullName.vb: Wolfgang.Etl.Json.JsonLineExtractor(Of TRecord).Errors
-  nameWithType: JsonLineExtractor<TRecord>.Errors
-  nameWithType.vb: JsonLineExtractor(Of TRecord).Errors
 - uid: Wolfgang.Etl.Json.JsonLineExtractor`1.ExtractWorkerAsync(System.Threading.CancellationToken)
   name: ExtractWorkerAsync(CancellationToken)
   href: api/Wolfgang.Etl.Json.JsonLineExtractor-1.html#Wolfgang_Etl_Json_JsonLineExtractor_1_ExtractWorkerAsync_System_Threading_CancellationToken_
@@ -705,40 +589,6 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord).CreateProgressTimer
   nameWithType: JsonMultiStreamExtractor<TRecord>.CreateProgressTimer
   nameWithType.vb: JsonMultiStreamExtractor(Of TRecord).CreateProgressTimer
-- uid: Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.ErrorHandling
-  name: ErrorHandling
-  href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html#Wolfgang_Etl_Json_JsonMultiStreamExtractor_1_ErrorHandling
-  commentId: P:Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.ErrorHandling
-  fullName: Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.ErrorHandling
-  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord).ErrorHandling
-  nameWithType: JsonMultiStreamExtractor<TRecord>.ErrorHandling
-  nameWithType.vb: JsonMultiStreamExtractor(Of TRecord).ErrorHandling
-- uid: Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.ErrorHandling*
-  name: ErrorHandling
-  href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html#Wolfgang_Etl_Json_JsonMultiStreamExtractor_1_ErrorHandling_
-  commentId: Overload:Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.ErrorHandling
-  isSpec: "True"
-  fullName: Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.ErrorHandling
-  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord).ErrorHandling
-  nameWithType: JsonMultiStreamExtractor<TRecord>.ErrorHandling
-  nameWithType.vb: JsonMultiStreamExtractor(Of TRecord).ErrorHandling
-- uid: Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.Errors
-  name: Errors
-  href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html#Wolfgang_Etl_Json_JsonMultiStreamExtractor_1_Errors
-  commentId: P:Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.Errors
-  fullName: Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.Errors
-  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord).Errors
-  nameWithType: JsonMultiStreamExtractor<TRecord>.Errors
-  nameWithType.vb: JsonMultiStreamExtractor(Of TRecord).Errors
-- uid: Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.Errors*
-  name: Errors
-  href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html#Wolfgang_Etl_Json_JsonMultiStreamExtractor_1_Errors_
-  commentId: Overload:Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.Errors
-  isSpec: "True"
-  fullName: Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.Errors
-  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord).Errors
-  nameWithType: JsonMultiStreamExtractor<TRecord>.Errors
-  nameWithType.vb: JsonMultiStreamExtractor(Of TRecord).Errors
 - uid: Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.ExtractWorkerAsync(System.Threading.CancellationToken)
   name: ExtractWorkerAsync(CancellationToken)
   href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html#Wolfgang_Etl_Json_JsonMultiStreamExtractor_1_ExtractWorkerAsync_System_Threading_CancellationToken_
@@ -1196,40 +1046,6 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonSingleStreamExtractor(Of TRecord).Dispose
   nameWithType: JsonSingleStreamExtractor<TRecord>.Dispose
   nameWithType.vb: JsonSingleStreamExtractor(Of TRecord).Dispose
-- uid: Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.ErrorHandling
-  name: ErrorHandling
-  href: api/Wolfgang.Etl.Json.JsonSingleStreamExtractor-1.html#Wolfgang_Etl_Json_JsonSingleStreamExtractor_1_ErrorHandling
-  commentId: P:Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.ErrorHandling
-  fullName: Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.ErrorHandling
-  fullName.vb: Wolfgang.Etl.Json.JsonSingleStreamExtractor(Of TRecord).ErrorHandling
-  nameWithType: JsonSingleStreamExtractor<TRecord>.ErrorHandling
-  nameWithType.vb: JsonSingleStreamExtractor(Of TRecord).ErrorHandling
-- uid: Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.ErrorHandling*
-  name: ErrorHandling
-  href: api/Wolfgang.Etl.Json.JsonSingleStreamExtractor-1.html#Wolfgang_Etl_Json_JsonSingleStreamExtractor_1_ErrorHandling_
-  commentId: Overload:Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.ErrorHandling
-  isSpec: "True"
-  fullName: Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.ErrorHandling
-  fullName.vb: Wolfgang.Etl.Json.JsonSingleStreamExtractor(Of TRecord).ErrorHandling
-  nameWithType: JsonSingleStreamExtractor<TRecord>.ErrorHandling
-  nameWithType.vb: JsonSingleStreamExtractor(Of TRecord).ErrorHandling
-- uid: Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.Errors
-  name: Errors
-  href: api/Wolfgang.Etl.Json.JsonSingleStreamExtractor-1.html#Wolfgang_Etl_Json_JsonSingleStreamExtractor_1_Errors
-  commentId: P:Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.Errors
-  fullName: Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.Errors
-  fullName.vb: Wolfgang.Etl.Json.JsonSingleStreamExtractor(Of TRecord).Errors
-  nameWithType: JsonSingleStreamExtractor<TRecord>.Errors
-  nameWithType.vb: JsonSingleStreamExtractor(Of TRecord).Errors
-- uid: Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.Errors*
-  name: Errors
-  href: api/Wolfgang.Etl.Json.JsonSingleStreamExtractor-1.html#Wolfgang_Etl_Json_JsonSingleStreamExtractor_1_Errors_
-  commentId: Overload:Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.Errors
-  isSpec: "True"
-  fullName: Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.Errors
-  fullName.vb: Wolfgang.Etl.Json.JsonSingleStreamExtractor(Of TRecord).Errors
-  nameWithType: JsonSingleStreamExtractor<TRecord>.Errors
-  nameWithType.vb: JsonSingleStreamExtractor(Of TRecord).Errors
 - uid: Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.ExtractWorkerAsync(System.Threading.CancellationToken)
   name: ExtractWorkerAsync(CancellationToken)
   href: api/Wolfgang.Etl.Json.JsonSingleStreamExtractor-1.html#Wolfgang_Etl_Json_JsonSingleStreamExtractor_1_ExtractWorkerAsync_System_Threading_CancellationToken_

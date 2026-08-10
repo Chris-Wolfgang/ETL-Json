@@ -22,20 +22,6 @@
     },
     {
       "type": "ManagedReference",
-      "source_relative_path": "api/Wolfgang.Etl.Json.ErrorHandling.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/Wolfgang.Etl.Json.ErrorHandling.html"
-        }
-      },
-      "version": "",
-      "Uid": null,
-      "IsMRef": true,
-      "Title": "Wolfgang.Etl.Json.ErrorHandling",
-      "Summary": "<p sourcefile=\"api/Wolfgang.Etl.Json.ErrorHandling.yml\" sourcestartlinenumber=\"1\">Controls how deserialization errors are handled during extraction.</p>\n"
-    },
-    {
-      "type": "ManagedReference",
       "source_relative_path": "api/Wolfgang.Etl.Json.EtlPipelineJsonSinkExtensions.yml",
       "output": {
         ".html": {
@@ -61,20 +47,6 @@
       "IsMRef": true,
       "Title": "Wolfgang.Etl.Json.EtlPipelineJsonSourceExtensions",
       "Summary": "<p sourcefile=\"api/Wolfgang.Etl.Json.EtlPipelineJsonSourceExtensions.yml\" sourcestartlinenumber=\"1\">Class-named JSON source factories for the fluent <xref href=\"Wolfgang.Etl.Abstractions.EtlPipeline\" data-throw-if-not-resolved=\"false\"></xref> chain. Each factory\nconstructs the matching extractor and seeds the pipeline, enabling\n<code>EtlPipeline.Create().JsonLineExtractor&lt;Person&gt;(&quot;people.jsonl&quot;)</code>.</p>\n"
-    },
-    {
-      "type": "ManagedReference",
-      "source_relative_path": "api/Wolfgang.Etl.Json.JsonDeserializationError.yml",
-      "output": {
-        ".html": {
-          "relative_path": "api/Wolfgang.Etl.Json.JsonDeserializationError.html"
-        }
-      },
-      "version": "",
-      "Uid": null,
-      "IsMRef": true,
-      "Title": "Wolfgang.Etl.Json.JsonDeserializationError",
-      "Summary": "<p sourcefile=\"api/Wolfgang.Etl.Json.JsonDeserializationError.yml\" sourcestartlinenumber=\"1\">Represents a record that could not be deserialized during extraction.</p>\n"
     },
     {
       "type": "ManagedReference",
