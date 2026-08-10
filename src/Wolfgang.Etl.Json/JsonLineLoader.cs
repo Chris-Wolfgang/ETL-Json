@@ -225,6 +225,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, I
     )
     {
         JsonLogMessages.StartingOperation(_logger, OperationName, null);
+        token.ThrowIfCancellationRequested();
 
         var newLine = Encoding is null ? _newLineUtf8 : Encoding.GetBytes(Environment.NewLine);
         var sw = Stopwatch.StartNew();

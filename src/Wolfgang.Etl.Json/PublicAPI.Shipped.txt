@@ -60,3 +60,31 @@ Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>.JsonSingleStreamLoader(System.
 Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>.JsonSingleStreamLoader(System.IO.Stream stream, System.Text.Json.Serialization.Metadata.JsonTypeInfo<TRecord> typeInfo, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>> logger = null) -> void
 Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>.IsDryRun.get -> bool
 Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>.IsDryRun.set -> void
+Wolfgang.Etl.Json.ErrorHandling
+Wolfgang.Etl.Json.ErrorHandling.CaptureAndContinue = 1 -> Wolfgang.Etl.Json.ErrorHandling
+Wolfgang.Etl.Json.ErrorHandling.SkipAndLog = 2 -> Wolfgang.Etl.Json.ErrorHandling
+Wolfgang.Etl.Json.ErrorHandling.Throw = 0 -> Wolfgang.Etl.Json.ErrorHandling
+Wolfgang.Etl.Json.JsonDeserializationError
+Wolfgang.Etl.Json.JsonDeserializationError.Exception.get -> System.Exception!
+Wolfgang.Etl.Json.JsonDeserializationError.ItemIndex.get -> long
+Wolfgang.Etl.Json.JsonDeserializationError.LineNumber.get -> long?
+Wolfgang.Etl.Json.JsonDeserializationError.RawContent.get -> string?
+Wolfgang.Etl.Json.EtlPipelineJsonSinkExtensions
+static Wolfgang.Etl.Json.EtlPipelineJsonSinkExtensions.JsonLineLoader<T>(this Wolfgang.Etl.Abstractions.IEtlPipeline<T>! pipeline, System.IO.Stream! stream, System.Text.Json.JsonSerializerOptions? options = null) -> Wolfgang.Etl.Abstractions.IEtlPipelineSink!
+static Wolfgang.Etl.Json.EtlPipelineJsonSinkExtensions.JsonLineLoader<T>(this Wolfgang.Etl.Abstractions.IEtlPipeline<T>! pipeline, string! path, System.Text.Json.JsonSerializerOptions? options = null) -> Wolfgang.Etl.Abstractions.IEtlPipelineSink!
+static Wolfgang.Etl.Json.EtlPipelineJsonSinkExtensions.JsonSingleStreamLoader<T>(this Wolfgang.Etl.Abstractions.IEtlPipeline<T>! pipeline, System.IO.Stream! stream, System.Text.Json.JsonSerializerOptions? options = null) -> Wolfgang.Etl.Abstractions.IEtlPipelineSink!
+static Wolfgang.Etl.Json.EtlPipelineJsonSinkExtensions.JsonSingleStreamLoader<T>(this Wolfgang.Etl.Abstractions.IEtlPipeline<T>! pipeline, string! path, System.Text.Json.JsonSerializerOptions? options = null) -> Wolfgang.Etl.Abstractions.IEtlPipelineSink!
+Wolfgang.Etl.Json.EtlPipelineJsonSourceExtensions
+static Wolfgang.Etl.Json.EtlPipelineJsonSourceExtensions.JsonLineExtractor<T>(this Wolfgang.Etl.Abstractions.EtlPipeline! pipeline, System.IO.Stream! stream, System.Text.Json.JsonSerializerOptions? options = null) -> Wolfgang.Etl.Abstractions.IEtlPipeline<T>!
+static Wolfgang.Etl.Json.EtlPipelineJsonSourceExtensions.JsonLineExtractor<T>(this Wolfgang.Etl.Abstractions.EtlPipeline! pipeline, string! path, System.Text.Json.JsonSerializerOptions? options = null) -> Wolfgang.Etl.Abstractions.IEtlPipeline<T>!
+static Wolfgang.Etl.Json.EtlPipelineJsonSourceExtensions.JsonSingleStreamExtractor<T>(this Wolfgang.Etl.Abstractions.EtlPipeline! pipeline, System.IO.Stream! stream, System.Text.Json.JsonSerializerOptions? options = null) -> Wolfgang.Etl.Abstractions.IEtlPipeline<T>!
+static Wolfgang.Etl.Json.EtlPipelineJsonSourceExtensions.JsonSingleStreamExtractor<T>(this Wolfgang.Etl.Abstractions.EtlPipeline! pipeline, string! path, System.Text.Json.JsonSerializerOptions? options = null) -> Wolfgang.Etl.Abstractions.IEtlPipeline<T>!
+Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.ErrorHandling.get -> Wolfgang.Etl.Json.ErrorHandling
+Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.ErrorHandling.init -> void
+Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.Errors.get -> System.Collections.Generic.IReadOnlyList<Wolfgang.Etl.Json.JsonDeserializationError!>!
+Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.ErrorHandling.get -> Wolfgang.Etl.Json.ErrorHandling
+Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.ErrorHandling.init -> void
+Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.Errors.get -> System.Collections.Generic.IReadOnlyList<Wolfgang.Etl.Json.JsonDeserializationError!>!
+Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.ErrorHandling.get -> Wolfgang.Etl.Json.ErrorHandling
+Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.ErrorHandling.init -> void
+Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.Errors.get -> System.Collections.Generic.IReadOnlyList<Wolfgang.Etl.Json.JsonDeserializationError!>!

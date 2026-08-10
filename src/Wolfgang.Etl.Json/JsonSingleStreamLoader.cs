@@ -214,6 +214,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     )
     {
         JsonLogMessages.StartingOperation(_logger, OperationName, null);
+        token.ThrowIfCancellationRequested();
 
         var sw = Stopwatch.StartNew();
 

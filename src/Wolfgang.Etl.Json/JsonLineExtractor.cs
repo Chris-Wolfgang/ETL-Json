@@ -47,7 +47,6 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     private readonly JsonTypeInfo<TRecord>? _typeInfo;
     private readonly ILogger _logger;
     private readonly IProgressTimer? _progressTimer;
-    private readonly List<JsonDeserializationError> _errors = new();
     private int _progressTimerWired;
     private long _currentLineNumber;
     private long _currentByteOffset;
@@ -290,20 +289,6 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 
 
 
-    /// <summary>
-    /// Gets or sets how deserialization errors are handled during extraction.
-    /// Default is <see cref="ErrorHandling.Throw"/>.
-    /// </summary>
-    public ErrorHandling ErrorHandling { get; init; } = ErrorHandling.Throw;
-
-
-
-    /// <summary>
-    /// Gets the collection of deserialization errors captured during the most recent extraction.
-    /// Only populated when <see cref="ErrorHandling"/> is <see cref="ErrorHandling.CaptureAndContinue"/>.
-    /// </summary>
-    public IReadOnlyList<JsonDeserializationError> Errors => _errors.AsReadOnly();
-
 
 
     private StreamReader CreateStreamReader()
@@ -327,30 +312,29 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
         [EnumeratorCancellation] CancellationToken token
     )
     {
-        _errors.Clear();
         JsonLogMessages.StartingOperation(_logger, OperationName, null);
         var track = EnableCheckpointing;
         var (newlineSize, lineEncoding) = await PrepareForExtractionAsync(token).ConfigureAwait(false);
         var skipBudget = SkipItemCount;
         var sw = Stopwatch.StartNew();
         using var reader = CreateStreamReader();
-        string? line;
+        string? lineText;
 #if NETSTANDARD2_0 || NET462 || NET481
-        while ((line = await reader.ReadLineAsync().ConfigureAwait(false)) is not null)
+        while ((lineText = await reader.ReadLineAsync().ConfigureAwait(false)) is not null)
 #else
-        while ((line = await reader.ReadLineAsync(token).ConfigureAwait(false)) is not null)
+        while ((lineText = await reader.ReadLineAsync(token).ConfigureAwait(false)) is not null)
 #endif
         {
             token.ThrowIfCancellationRequested();
-            var lineBytes = track ? lineEncoding.GetByteCount(line) + newlineSize : 0;
-            var lineNum = Interlocked.Increment(ref _currentLineNumber);
-            if (string.IsNullOrWhiteSpace(line))
+            var lineBytes = track ? lineEncoding.GetByteCount(lineText) + newlineSize : 0;
+            var lineNumber = Interlocked.Increment(ref _currentLineNumber);
+            if (string.IsNullOrWhiteSpace(lineText))
             {
                 Interlocked.Add(ref _currentByteOffset, lineBytes);
-                JsonLogMessages.SkippingBlankLine(_logger, lineNum, null);
+                JsonLogMessages.SkippingBlankLine(_logger, lineNumber, null);
                 continue;
             }
-            if (!TryDeserializeLine(line, lineNum, out var item))
+            if (!TryDeserializeLine(lineText, out var item))
             {
                 Interlocked.Add(ref _currentByteOffset, lineBytes);
                 continue;
@@ -359,7 +343,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
             if (item is null)
             {
                 Interlocked.Add(ref _currentByteOffset, lineBytes);
-                JsonLogMessages.LineDeserializedToNull(_logger, lineNum, null);
+                JsonLogMessages.LineDeserializedToNull(_logger, lineNumber, null);
                 continue;
             }
             if (skipBudget > 0)
@@ -368,7 +352,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
                 Interlocked.Add(ref _currentByteOffset, lineBytes);
                 IncrementCurrentSkippedItemCount();
                 JsonMetrics.AddSkipped(_operationTag, _componentTag, _recordTypeTag);
-                JsonLogMessages.SkippedItemAtLine(_logger, CurrentSkippedItemCount, SkipItemCount, lineNum, null);
+                JsonLogMessages.SkippedItemAtLine(_logger, CurrentSkippedItemCount, SkipItemCount, lineNumber, null);
                 continue;
             }
             if (CurrentItemCount >= MaximumItemCount)
@@ -379,7 +363,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
             Interlocked.Add(ref _currentByteOffset, lineBytes);
             IncrementCurrentItemCount();
             JsonMetrics.AddExtracted(_operationTag, _componentTag, _recordTypeTag);
-            JsonLogMessages.ExtractedItemFromLine(_logger, CurrentItemCount, lineNum, null);
+            JsonLogMessages.ExtractedItemFromLine(_logger, CurrentItemCount, lineNumber, null);
             yield return item;
         }
 
@@ -455,27 +439,26 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 
 
 
-    private bool TryDeserializeLine(string line, long lineNum, out TRecord? item)
+    private bool TryDeserializeLine(string lineText, out TRecord? item)
     {
         try
         {
             item = _typeInfo is not null
-                ? JsonSerializer.Deserialize(line, _typeInfo)
-                : JsonSerializer.Deserialize<TRecord>(line, _options);
+                ? JsonSerializer.Deserialize(lineText, _typeInfo)
+                : JsonSerializer.Deserialize<TRecord>(lineText, _options);
             return true;
         }
 #pragma warning disable CA1031 // catch JsonException to implement error-handling policy
         catch (JsonException ex)
 #pragma warning restore CA1031
         {
-            if (ErrorHandling == ErrorHandling.Throw) { throw; }
-            var error = new JsonDeserializationError(
-                itemIndex: _errors.Count + CurrentItemCount + CurrentSkippedItemCount,
-                lineNumber: lineNum,
-                rawContent: line,
-                exception: ex);
-            if (ErrorHandling == ErrorHandling.CaptureAndContinue) { _errors.Add(error); }
-            JsonLogMessages.DeserializationErrorAtLine(_logger, lineNum, ex);
+            var context = new ItemErrorContext
+            (
+                CurrentItemCount + CurrentSkippedItemCount + CurrentErrorItemCount + 1,
+                ex,
+                () => lineText
+            );
+            if (HandleItemError(context) == ItemErrorAction.Abort) { throw; }
             item = default;
             return false;
         }
