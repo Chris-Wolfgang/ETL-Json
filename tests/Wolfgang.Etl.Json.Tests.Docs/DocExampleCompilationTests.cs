@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -9,6 +6,14 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
 namespace Wolfgang.Etl.Json.Tests.Docs;
+
+// Timeout applied to every Regex call below: input comes from doc XML fixtures we
+// author, so pathological patterns are not expected — the bounded timeout is defensive
+// (MA0009) rather than tuned.
+file static class DocRegexDefaults
+{
+    public static readonly TimeSpan Timeout = TimeSpan.FromSeconds(5);
+}
 
 /// <summary>
 /// Compiles every <c>&lt;example&gt;&lt;code&gt;</c> block found in the XML-doc comments of
@@ -90,13 +95,13 @@ public class DocExampleCompilationTests
     private static string BuildProgram(string snippet)
     {
         var declared = new HashSet<string>(
-            Regex.Matches(snippet, @"\b(?:using\s+)?var\s+(\w+)\s*=")
+            Regex.Matches(snippet, @"\b(?:using\s+)?var\s+(\w+)\s*=", RegexOptions.None, DocRegexDefaults.Timeout)
                  .Select(m => m.Groups[1].Value));
 
         var ambient = new StringBuilder();
         foreach (var (name, declaration) in AmbientCandidates)
         {
-            var usesIt = Regex.IsMatch(snippet, $@"\b{name}\b");
+            var usesIt = Regex.IsMatch(snippet, $@"\b{name}\b", RegexOptions.None, DocRegexDefaults.Timeout);
             if (usesIt && !declared.Contains(name))
             {
                 ambient.Append("        ").Append(declaration).Append('\n');
@@ -124,7 +129,7 @@ public class DocExampleCompilationTests
 
     private static IEnumerable<string> ExtractCodeBlocks(string fileText)
     {
-        foreach (Match m in Regex.Matches(fileText, @"///\s*<code>\s*\r?\n(?<body>.*?)///\s*</code>", RegexOptions.Singleline))
+        foreach (Match m in Regex.Matches(fileText, @"///\s*<code>\s*\r?\n(?<body>.*?)///\s*</code>", RegexOptions.Singleline, DocRegexDefaults.Timeout))
         {
             var body = m.Groups["body"].Value;
             var lines = body.Split('\n')

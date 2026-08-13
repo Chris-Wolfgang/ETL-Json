@@ -701,7 +701,7 @@ public class JsonMultiStreamExtractorTests
             () => new JsonMultiStreamExtractor<PersonRecord>
             (
                 new[] { new MemoryStream() },
-                (ILogger<JsonMultiStreamExtractor<PersonRecord>>)null!
+                logger: null!
             )
         );
     }
@@ -750,7 +750,7 @@ public class JsonMultiStreamExtractorTests
             () => new JsonMultiStreamExtractor<PersonRecord>
             (
                 sources,
-                (ILogger<JsonMultiStreamExtractor<PersonRecord>>)null!
+                logger: null!
             )
         );
     }

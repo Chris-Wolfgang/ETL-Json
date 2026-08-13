@@ -567,7 +567,7 @@ public class JsonLineExtractorTests
         Assert.Equal(1, sut.CurrentErrorItemCount);
 
         // Second run: seek back and re-run the same instance; the error count must reset, not accumulate
-        stream.Seek(0, System.IO.SeekOrigin.Begin);
+        stream.Seek(0, SeekOrigin.Begin);
 
         await foreach (var _ in sut.ExtractAsync())
         {
