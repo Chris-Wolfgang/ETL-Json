@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+#if NET5_0_OR_GREATER
 using System.Diagnostics.CodeAnalysis;
+#endif
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
@@ -32,8 +34,6 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSON single-stream loading of {typeof(TRecord).Name}";
-    private static readonly KeyValuePair<string, object?> _operationTag = new("etl.operation", "load");
-    private static readonly KeyValuePair<string, object?> _componentTag = new("etl.component", "JsonSingleStream");
     private static readonly KeyValuePair<string, object?> _recordTypeTag = new("etl.record_type", typeof(TRecord).Name);
     private readonly Stream _stream;
     private readonly JsonSerializerOptions? _options;
@@ -152,7 +152,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
         _options = options ?? throw new ArgumentNullException(nameof(options));
-        _logger = logger ?? (ILogger)NullLogger.Instance;
+        _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
 
@@ -200,7 +200,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
         _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
-        _logger = logger ?? (ILogger)NullLogger.Instance;
+        _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
 
@@ -232,7 +232,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
             if (CurrentSkippedItemCount < SkipItemCount)
             {
                 IncrementCurrentSkippedItemCount();
-                JsonMetrics.AddSkipped(_operationTag, _componentTag, _recordTypeTag);
+                JsonMetrics.AddSkipped(JsonMetrics.LoadOperationTag, JsonMetrics.JsonSingleStreamComponentTag, _recordTypeTag);
                 JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
                 continue;
             }
@@ -256,7 +256,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
             }
 
             IncrementCurrentItemCount();
-            JsonMetrics.AddLoaded(_operationTag, _componentTag, _recordTypeTag);
+            JsonMetrics.AddLoaded(JsonMetrics.LoadOperationTag, JsonMetrics.JsonSingleStreamComponentTag, _recordTypeTag);
             JsonLogMessages.LoadedItem(_logger, CurrentItemCount, null);
         }
 
@@ -267,7 +267,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
         }
 
         JsonLogMessages.SingleStreamLoadingCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, null);
-        JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, _operationTag, _componentTag, _recordTypeTag);
+        JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, JsonMetrics.LoadOperationTag, JsonMetrics.JsonSingleStreamComponentTag, _recordTypeTag);
     }
 
 

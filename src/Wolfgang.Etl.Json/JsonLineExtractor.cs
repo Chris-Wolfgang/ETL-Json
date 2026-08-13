@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+#if NET5_0_OR_GREATER
 using System.Diagnostics.CodeAnalysis;
+#endif
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -38,8 +40,6 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSONL extraction of {typeof(TRecord).Name}";
-    private static readonly KeyValuePair<string, object?> _operationTag = new("etl.operation", "extract");
-    private static readonly KeyValuePair<string, object?> _componentTag = new("etl.component", "JsonLine");
     private static readonly KeyValuePair<string, object?> _recordTypeTag = new("etl.record_type", typeof(TRecord).Name);
     private readonly Stream _stream;
     private readonly bool _ownsStream;
@@ -235,7 +235,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
         _options = options ?? throw new ArgumentNullException(nameof(options));
-        _logger = logger ?? (ILogger)NullLogger.Instance;
+        _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
 
@@ -283,7 +283,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
         _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
-        _logger = logger ?? (ILogger)NullLogger.Instance;
+        _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
 
@@ -351,7 +351,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
                 skipBudget--;
                 Interlocked.Add(ref _currentByteOffset, lineBytes);
                 IncrementCurrentSkippedItemCount();
-                JsonMetrics.AddSkipped(_operationTag, _componentTag, _recordTypeTag);
+                JsonMetrics.AddSkipped(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonLineComponentTag, _recordTypeTag);
                 JsonLogMessages.SkippedItemAtLine(_logger, CurrentSkippedItemCount, SkipItemCount, lineNumber, null);
                 continue;
             }
@@ -362,7 +362,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
             }
             Interlocked.Add(ref _currentByteOffset, lineBytes);
             IncrementCurrentItemCount();
-            JsonMetrics.AddExtracted(_operationTag, _componentTag, _recordTypeTag);
+            JsonMetrics.AddExtracted(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonLineComponentTag, _recordTypeTag);
             JsonLogMessages.ExtractedItemFromLine(_logger, CurrentItemCount, lineNumber, null);
             yield return item;
         }
@@ -380,7 +380,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
         }
 
         JsonLogMessages.JsonlExtractionCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, Interlocked.Read(ref _currentLineNumber), null);
-        JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, _operationTag, _componentTag, _recordTypeTag);
+        JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, JsonMetrics.ExtractOperationTag, JsonMetrics.JsonLineComponentTag, _recordTypeTag);
     }
 
 
@@ -419,9 +419,9 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
         _stream.Seek(0, SeekOrigin.Begin);
         var buffer = new byte[256];
 #if NETSTANDARD2_0 || NET462 || NET481
-#pragma warning disable CA2016, MA0040 // old TFM overload has no CancellationToken parameter
+#pragma warning disable CA2016, MA0040, S8949 // old TFM overload has no CancellationToken parameter
         var bytesRead = await _stream.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
-#pragma warning restore CA2016, MA0040
+#pragma warning restore CA2016, MA0040, S8949
         _ = token;
 #else
         var bytesRead = await _stream.ReadAsync(buffer.AsMemory(0, buffer.Length), token).ConfigureAwait(false);
