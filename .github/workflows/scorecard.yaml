@@ -17,8 +17,12 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# Top-level read-only default; jobs declare narrower writes where required.
-permissions: read-all
+# Top-level minimum permissions; the analysis job opts in to narrower writes.
+# Explicit permissions are strictly less privileged than `read-all` (which
+# grants read on every scope, including issues/PRs/actions/etc.) and satisfy
+# zizmor's excessive-permissions check.
+permissions:
+  contents: read
 
 jobs:
   analysis:
