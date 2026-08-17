@@ -118,10 +118,10 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, I
     /// with custom serialization options.
     /// </summary>
     /// <param name="stream">The stream to write JSONL data to.</param>
-    /// <param name="options">The JSON serializer options to use for serialization.</param>
+    /// <param name="options">The JSON serializer options to use for serialization, or <c>null</c> for the serializer default.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="stream"/> or <paramref name="options"/> is <c>null</c>.
+    /// Thrown when <paramref name="stream"/> is <c>null</c>.
     /// </exception>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
@@ -130,12 +130,12 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, I
     public JsonLineLoader
     (
         Stream stream,
-        JsonSerializerOptions options,
+        JsonSerializerOptions? options = null,
         ILogger<JsonLineLoader<TRecord>>? logger = null
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        _options = options;
         _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
@@ -146,7 +146,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, I
     /// with an injected progress timer for testing.
     /// </summary>
     /// <param name="stream">The stream to write JSONL data to.</param>
-    /// <param name="options">The JSON serializer options to use for serialization.</param>
+    /// <param name="options">The JSON serializer options to use for serialization, or <c>null</c> for the serializer default.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <param name="timer">The progress timer to inject.</param>
 #if NET5_0_OR_GREATER

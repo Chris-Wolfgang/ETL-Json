@@ -228,17 +228,16 @@ public class JsonMultiStreamLoaderTests
 
 
     [Fact]
-    public void Constructor_with_options_when_options_is_null_throws_ArgumentNullException()
+    public void Constructor_with_options_when_options_is_null_uses_serializer_default()
     {
-        Assert.Throws<ArgumentNullException>
+        var sut = new JsonMultiStreamLoader<PersonRecord>
         (
-            () => new JsonMultiStreamLoader<PersonRecord>
-            (
                 _ => new MemoryStream(),
-                options: null!,
+                options: null,
                 NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
-            )
         );
+
+        Assert.NotNull(sut);
     }
 
 
@@ -750,16 +749,15 @@ public class JsonMultiStreamLoaderTests
 
 
     [Fact]
-    public void Constructor_with_destinationFactory_and_options_when_options_is_null_throws_ArgumentNullException()
+    public void Constructor_with_destinationFactory_and_options_when_options_is_null_uses_serializer_default()
     {
-        Assert.Throws<ArgumentNullException>
+        var sut = new JsonMultiStreamLoader<PersonRecord>
         (
-            () => new JsonMultiStreamLoader<PersonRecord>
-            (
                 _ => new JsonNamedDestination(new MemoryStream()),
-                options: null!
-            )
+                options: null
         );
+
+        Assert.NotNull(sut);
     }
 
 
