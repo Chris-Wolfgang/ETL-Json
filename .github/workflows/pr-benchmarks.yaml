@@ -12,9 +12,10 @@ on:
       - 'benchmarks/**'
       - '.github/workflows/pr-benchmarks.yaml'
 
+# Default to minimum permissions at the workflow level. The single job that
+# needs pull-requests:write (the delta-comment poster) opts in explicitly.
 permissions:
   contents: read
-  pull-requests: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -28,6 +29,9 @@ jobs:
   benchmark-delta:
     name: BDN delta (HEAD vs base)
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write   # required by the "Compute delta and post PR comment" step
 
     steps:
       - name: Checkout (full history)
@@ -45,8 +49,10 @@ jobs:
       # ── Base run ──────────────────────────────────────────────────────────
 
       - name: Run benchmarks on base (${{ github.event.pull_request.base.sha }})
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
-          git checkout ${{ github.event.pull_request.base.sha }}
+          git checkout "$BASE_SHA"
           dotnet restore "$BENCH_PROJECT"
           dotnet build -c Release --no-restore "$BENCH_PROJECT"
           cd "$BENCH_DIR"
@@ -63,8 +69,10 @@ jobs:
       # ── HEAD run ──────────────────────────────────────────────────────────
 
       - name: Run benchmarks on HEAD (${{ github.event.pull_request.head.sha }})
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          git checkout ${{ github.event.pull_request.head.sha }}
+          git checkout "$HEAD_SHA"
           rm -rf "$BENCH_DIR/BenchmarkDotNet.Artifacts"
           dotnet restore "$BENCH_PROJECT"
           dotnet build -c Release --no-restore "$BENCH_PROJECT"
