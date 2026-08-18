@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+#if NET5_0_OR_GREATER
 using System.Diagnostics.CodeAnalysis;
+#endif
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -41,8 +43,6 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSON multi-stream extraction of {typeof(TRecord).Name}";
-    private static readonly KeyValuePair<string, object?> _operationTag = new("etl.operation", "extract");
-    private static readonly KeyValuePair<string, object?> _componentTag = new("etl.component", "JsonMultiStream");
     private static readonly KeyValuePair<string, object?> _recordTypeTag = new("etl.record_type", typeof(TRecord).Name);
     private readonly IEnumerable<JsonNamedStream> _sources;
     private readonly JsonSerializerOptions? _options;
@@ -245,7 +245,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
 
         _sources = streams.Select(s => new JsonNamedStream(s));
         _options = options ?? throw new ArgumentNullException(nameof(options));
-        _logger = logger ?? (ILogger)NullLogger.Instance;
+        _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
 
@@ -269,7 +269,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     {
         _sources = sources ?? throw new ArgumentNullException(nameof(sources));
         _options = options ?? throw new ArgumentNullException(nameof(options));
-        _logger = logger ?? (ILogger)NullLogger.Instance;
+        _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
 
@@ -353,7 +353,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
 
         _sources = streams.Select(s => new JsonNamedStream(s));
         _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
-        _logger = logger ?? (ILogger)NullLogger.Instance;
+        _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
 
@@ -395,7 +395,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
                 {
                     skipBudget--;
                     IncrementCurrentSkippedItemCount();
-                    JsonMetrics.AddSkipped(_operationTag, _componentTag, _recordTypeTag);
+                    JsonMetrics.AddSkipped(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonMultiStreamComponentTag, _recordTypeTag);
                     JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
                     continue;
                 }
@@ -407,7 +407,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
                 }
 
                 IncrementCurrentItemCount();
-                JsonMetrics.AddExtracted(_operationTag, _componentTag, _recordTypeTag);
+                JsonMetrics.AddExtracted(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonMultiStreamComponentTag, _recordTypeTag);
                 JsonLogMessages.ExtractedItemFromStream(_logger, CurrentItemCount, streamIndex - 1, null);
 
                 yield return item;
@@ -417,7 +417,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
         }
         finally
         {
-            JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, _operationTag, _componentTag, _recordTypeTag);
+            JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, JsonMetrics.ExtractOperationTag, JsonMetrics.JsonMultiStreamComponentTag, _recordTypeTag);
         }
     }
 

@@ -1,10 +1,24 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
+using System.Text.Json;
 
 namespace Wolfgang.Etl.Json;
 
 internal static class JsonMetrics
 {
+    // Constants shared across all component classes. Hoisted here (non-generic)
+    // so the CLR shares a single instance across every TRecord instantiation instead
+    // of allocating one per closed generic type.
+    internal static readonly KeyValuePair<string, object?> ExtractOperationTag = new("etl.operation", "extract");
+    internal static readonly KeyValuePair<string, object?> LoadOperationTag = new("etl.operation", "load");
+    internal static readonly KeyValuePair<string, object?> JsonLineComponentTag = new("etl.component", "JsonLine");
+    internal static readonly KeyValuePair<string, object?> JsonSingleStreamComponentTag = new("etl.component", "JsonSingleStream");
+    internal static readonly KeyValuePair<string, object?> JsonMultiStreamComponentTag = new("etl.component", "JsonMultiStream");
+    internal static readonly JsonSerializerOptions DefaultSerializerOptions = new();
+    internal static readonly byte[] NewLineUtf8Bytes = System.Text.Encoding.UTF8.GetBytes(Environment.NewLine);
+
+
     internal static readonly Meter Meter = new("Wolfgang.Etl.Json");
 
 

@@ -4,6 +4,7 @@
 #if !NET5_0_OR_GREATER
 using System.ComponentModel;
 
+// ReSharper disable once CheckNamespace -- polyfill must live in the target BCL namespace
 namespace System.Runtime.CompilerServices
 {
     /// <summary>Reserved for compiler use.</summary>
