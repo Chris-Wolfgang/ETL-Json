@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -484,6 +485,8 @@ public class JsonLineLoaderTests
 
 
     [Fact]
+    [SuppressMessage("SonarAnalyzer", "S125",
+        Justification = "Prose comment explaining why UTF-8 vs ISO-8859-1 matters for the test; not commented-out code.")]
     public async Task LoadAsync_when_Encoding_is_set_writes_stream_with_that_encoding()
     {
         // UnsafeRelaxedJsonEscaping forces raw non-ASCII bytes into the stream, so the

@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 using BenchmarkDotNet.Attributes;
 
 
@@ -16,6 +17,13 @@ public class JsonSingleStreamLoaderBenchmarks
 
 
     [Params(10, 100, 1000)]
+
+
+
+    [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Setter is invoked by BenchmarkDotNet via reflection per Params combination.")]
+
+
+
     public int ItemCount { get; set; }
 
 
