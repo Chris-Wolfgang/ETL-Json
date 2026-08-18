@@ -173,17 +173,16 @@ public class JsonSingleStreamExtractorTests
 
 
     [Fact]
-    public void Constructor_with_options_when_options_is_null_throws_ArgumentNullException()
+    public void Constructor_with_options_when_options_is_null_uses_serializer_default()
     {
-        Assert.Throws<ArgumentNullException>
+        var sut = new JsonSingleStreamExtractor<PersonRecord>
         (
-            () => new JsonSingleStreamExtractor<PersonRecord>
-            (
                 new MemoryStream(),
-                options: null!,
+                options: null,
                 NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance
-            )
         );
+
+        Assert.NotNull(sut);
     }
 
 

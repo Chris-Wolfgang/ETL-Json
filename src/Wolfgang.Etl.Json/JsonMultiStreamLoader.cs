@@ -181,10 +181,10 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     /// A factory function that receives the item to be written and returns a <see cref="Stream"/> to write it to.
     /// The loader will dispose the stream after writing.
     /// </param>
-    /// <param name="options">The JSON serializer options to use for serialization.</param>
+    /// <param name="options">The JSON serializer options to use for serialization, or <c>null</c> for the serializer default.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="streamFactory"/> or <paramref name="options"/> is <c>null</c>.
+    /// Thrown when <paramref name="streamFactory"/> is <c>null</c>.
     /// </exception>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
@@ -193,7 +193,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     public JsonMultiStreamLoader
     (
         Func<TRecord, Stream> streamFactory,
-        JsonSerializerOptions options,
+        JsonSerializerOptions? options = null,
         ILogger<JsonMultiStreamLoader<TRecord>>? logger = null
     )
     {
@@ -203,7 +203,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
         }
 
         _destinationFactory = item => new JsonNamedDestination(streamFactory(item));
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        _options = options;
         _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
@@ -217,20 +217,20 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     /// A factory function that receives the item to be written and returns a <see cref="JsonNamedDestination"/>
     /// containing the stream and an optional name. The loader will dispose the stream after writing.
     /// </param>
-    /// <param name="options">The JSON serializer options to use for serialization.</param>
+    /// <param name="options">The JSON serializer options to use for serialization, or <c>null</c> for the serializer default.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="destinationFactory"/> or <paramref name="options"/> is <c>null</c>.
+    /// Thrown when <paramref name="destinationFactory"/> is <c>null</c>.
     /// </exception>
     public JsonMultiStreamLoader
     (
         Func<TRecord, JsonNamedDestination> destinationFactory,
-        JsonSerializerOptions options,
+        JsonSerializerOptions? options = null,
         ILogger<JsonMultiStreamLoader<TRecord>>? logger = null
     )
     {
         _destinationFactory = destinationFactory ?? throw new ArgumentNullException(nameof(destinationFactory));
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        _options = options;
         _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
@@ -243,7 +243,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     /// <param name="streamFactory">
     /// A factory function that receives the item to be written and returns a <see cref="Stream"/> to write it to.
     /// </param>
-    /// <param name="options">The JSON serializer options to use for serialization.</param>
+    /// <param name="options">The JSON serializer options to use for serialization, or <c>null</c> for the serializer default.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <param name="timer">The progress timer to inject.</param>
 #if NET5_0_OR_GREATER
@@ -279,7 +279,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     /// A factory function that returns a <see cref="JsonNamedDestination"/> for each item.
     /// The loader will dispose the stream after writing.
     /// </param>
-    /// <param name="options">The JSON serializer options to use for serialization.</param>
+    /// <param name="options">The JSON serializer options to use for serialization, or <c>null</c> for the serializer default.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <param name="timer">The progress timer to inject.</param>
     internal JsonMultiStreamLoader
