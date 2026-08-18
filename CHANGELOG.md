@@ -19,6 +19,71 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+## [0.8.0] - 2026-08-17
+
+Minor release. Two consumer-visible changes: (1) `JsonSerializerOptions` is now optional on every
+public stream/source constructor so a logger can be supplied without also building an
+`JsonSerializerOptions`; (2) the ETL core dependency floor moves to `Wolfgang.Etl.Abstractions`
+0.23.1. The rest of the release is repo hygiene — code-scanning cleanup that killed the ~600-alert
+InspectCode flood tracked in #267, plus workflow-security hardening.
+
+### Added
+
+- Optional `options` parameter on the public `(stream / source, JsonSerializerOptions, ILogger?)`
+  constructors of every extractor and loader. `null` now means "use the `System.Text.Json`
+  serializer default" (matches the framework's own `JsonSerializer.Serialize<T>` /
+  `Deserialize<T>` convention). Consumers can now write, for example,
+  `new JsonSingleStreamLoader<Person>(stream, logger: myLogger)` instead of
+  `new JsonSingleStreamLoader<Person>(stream, new JsonSerializerOptions(), myLogger)`.
+  The stored `_options` field was already nullable and every downstream `JsonSerializer.*` call
+  site already handled it, so no other behaviour changes. Closes #266.
+
+### Changed
+
+- Adopted **ETL core 0.23.1** — `Wolfgang.Etl.Abstractions` / `.TestKit` / `.TestKit.Xunit` /
+  `.ErrorPolicies` all bumped 0.22.0 -> 0.23.1. The Abstractions 0.23.1 dependency floor
+  (`Microsoft.Bcl.AsyncInterfaces >= 10.0.5`) is already satisfied by the existing 10.0.10 pins,
+  so no transitive cascade.
+- Hoisted per-`TRecord`-instantiation constants (`_operationTag`, `_componentTag`,
+  `_newLineUtf8`, `DefaultOptions`) from every generic `Json*Extractor` / `Json*Loader<T>` up to
+  non-generic `JsonMetrics`. The CLR now allocates each constant once instead of duplicating it
+  per closed generic type. Internal refactor; no consumer-visible change.
+
+### Fixed
+
+- **Fleet-wide fix — `PublicApiAnalyzer` false-positive flood.** `Directory.Build.props` now
+  gates the `Microsoft.CodeAnalysis.PublicApiAnalyzers` `PackageReference` on
+  `Exists('PublicAPI.Shipped.txt')`. Without this gate the analyzer loaded in every project
+  (src, tests, benchmarks, examples) and emitted `RS0016` / `RS0037` / `RS0036` for every public
+  member in projects without PublicAPI tracking, producing ~524 false-positive alerts. Zero
+  behaviour change for src/ projects that already track PublicAPI. Closes #267.
+- **`PublicAPI.Shipped.txt` catch-up.** Fourteen members that shipped in 0.7.0 but were never
+  tracked (record `init` setters + `override ToString` / `EqualityContract` on
+  `JsonNamedStream` / `JsonNamedDestination` / `JsonReport`, the `string!`-path constructors on
+  `JsonSingleStreamExtractor` / `JsonLineExtractor`, and the checkpointing surface on
+  `JsonLineExtractor`) plus nullability annotations on 40 pre-existing entries. Also closes #254.
+
+### Security
+
+- `aot-smoke.yaml` migrated from `pull_request_target` to `pull_request` (safer default for a
+  workflow that only builds and runs example code). Added a top-level `permissions: contents: read`
+  block.
+- `pr-benchmarks.yaml` moved its `pull-requests: write` grant from workflow-level down to the
+  single job that needs it, and now sinks `github.event.pull_request.*.sha` into env vars before
+  `git checkout` to eliminate the template-injection surface.
+- `codeql.yaml`'s "Complete Security Scan" step sinks four `steps.*.outcome` template expansions
+  into a step-level `env:` block.
+- `scorecard.yaml` replaced `permissions: read-all` with the explicit `permissions: contents: read`.
+- Hash-pinned `pip install zizmor==1.5.2` in `workflow-security.yaml` via a new
+  `.github/workflows/zizmor-requirements.txt` listing every 1.5.2 wheel + sdist SHA-256 from PyPI.
+
+Not addressed in this release (intentional / deferred): the `pull_request_target` trigger on
+`pr.yaml` (deliberate — see its 15-line security-note; carries the protected-file guard for
+`.editorconfig` / `Directory.Build.props` / `BannedSymbols.txt` / workflow files), the
+`dotnet restore` `PinnedDependenciesID` alerts (needs a fleet-wide `packages.lock.json` +
+`--locked-mode` initiative), and the `contents: write` grants on `benchmarks` / `docfx` / `release`
+(legitimate — required to publish to `gh-pages` and upload release assets).
+
 ## [0.7.0] - 2026-08-13
 
 ### Changed
