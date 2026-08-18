@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Minor release. Two consumer-visible changes: (1) `JsonSerializerOptions` is now optional on every
 public stream/source constructor so a logger can be supplied without also building an
 `JsonSerializerOptions`; (2) the ETL core dependency floor moves to `Wolfgang.Etl.Abstractions`
-0.23.1. The rest of the release is repo hygiene — code-scanning cleanup that killed the ~600-alert
+0.23.2. The rest of the release is repo hygiene — code-scanning cleanup that killed the ~600-alert
 InspectCode flood tracked in #267, plus workflow-security hardening.
 
 ### Added
@@ -40,8 +40,8 @@ InspectCode flood tracked in #267, plus workflow-security hardening.
 
 ### Changed
 
-- Adopted **ETL core 0.23.1** — `Wolfgang.Etl.Abstractions` / `.TestKit` / `.TestKit.Xunit` /
-  `.ErrorPolicies` all bumped 0.22.0 -> 0.23.1. The Abstractions 0.23.1 dependency floor
+- Adopted **ETL core 0.23.2** — `Wolfgang.Etl.Abstractions` / `.TestKit` / `.TestKit.Xunit` /
+  `.ErrorPolicies` all bumped 0.22.0 -> 0.23.2. The Abstractions 0.23.2 dependency floor
   (`Microsoft.Bcl.AsyncInterfaces >= 10.0.5`) is already satisfied by the existing 10.0.10 pins,
   so no transitive cascade.
 - Hoisted per-`TRecord`-instantiation constants (`_operationTag`, `_componentTag`,
