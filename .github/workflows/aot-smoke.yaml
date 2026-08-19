@@ -15,8 +15,13 @@
 # Refs #130.
 name: AOT + trim smoke
 
+# Uses `pull_request` (not `pull_request_target`): this workflow only
+# builds and runs example code, never publishes or authenticates as the
+# repository, so running with PR-scoped permissions is the right default.
+# See pr.yaml for the pull_request_target rationale that applies where
+# workflow-YAML immutability across PRs matters.
 on:
-  pull_request_target:
+  pull_request:
     paths:
       - "src/**"
       - "examples/Wolfgang.Etl.Json.Example.AotSmoke/**"
@@ -29,6 +34,10 @@ on:
       - ".github/workflows/aot-smoke.yaml"
   workflow_dispatch:
 
+# Top-level minimum permissions. Individual jobs opt in to more where needed.
+permissions:
+  contents: read
+
 jobs:
   aot-smoke:
     name: PublishAot + PublishTrimmed
@@ -40,7 +49,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
 
       - name: Setup .NET
