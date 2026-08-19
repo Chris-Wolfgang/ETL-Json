@@ -6,11 +6,15 @@
 #
 # Example:
 #   CP0002: Member 'SomeMethod()' exists in the contract but not in the implementation
-
-# 0.6.0 (#252): intentional removal of the local error-handling surface, replaced
-# by the inherited base ErrorPolicy + the shared Wolfgang.Etl.ErrorPolicies package.
-# These three substrings cover all 11 breaks (the removed types plus the
-# ErrorHandling/Errors get/init members on the three extractors that reference them).
-Wolfgang.Etl.Json.ErrorHandling
-Wolfgang.Etl.Json.JsonDeserializationError
-ErrorHandling.init
+#
+# Entries here have a SHELF LIFE. scripts/Check-ApiCompatibility.ps1 compares the
+# current build against the highest version published below <Version> — so a
+# suppression only does work while the break is visible across that one hop. Once
+# a release ships without the removed API, the following release's comparison no
+# longer sees the break and the entry becomes dead weight. Prune entries when the
+# release that introduced them is no longer the comparison baseline, so this file
+# never accumulates rules that quietly match something they were not written for.
+#
+# Currently empty: the 0.6.0 (#252) error-surface removals were pruned once the
+# baseline advanced to 0.8.0. Verified by running the script with an empty
+# suppressions file — 0 breaks across all five TFMs.
