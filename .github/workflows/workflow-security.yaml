@@ -70,8 +70,8 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install zizmor
-        run: pip install --user 'zizmor==1.5.2'
+      - name: Install zizmor (hash-pinned)
+        run: pip install --user --require-hashes --requirement .github/workflows/zizmor-requirements.txt
 
       - name: Run zizmor (SARIF output)
         # --offline avoids GitHub API calls during the lint.
