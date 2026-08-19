@@ -1,0 +1,40 @@
+<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+
+	<!--
+	  ReSharper InspectCode noise-floor profile.
+
+	  Goal: 0 noise findings on a clean main, so the first finding after the
+	  inspectcode job lands is always actionable.
+
+	  Scoped deliberately narrow. ETL-Json reached a low alert count by fixing
+	  findings at the source rather than silencing rules, so only rules that
+	  InspectCode cannot evaluate correctly are listed here — not rules whose
+	  findings are merely inconvenient.
+	-->
+
+	<!-- PublicApiAnalyzers (RS0016 "not part of the declared public API",
+	     RS0036/RS0037 nullability annotations).
+
+	     InspectCode runs its own copy of these analyzers and does not load the
+	     PublicAPI.Shipped.txt / PublicAPI.Unshipped.txt AdditionalFiles, so it
+	     reports members that ARE tracked as untracked. The in-build analyzer
+	     (Microsoft.CodeAnalysis.PublicApiAnalyzers, gated on
+	     Exists('PublicAPI.Shipped.txt') in Directory.Build.props) evaluates the
+	     baseline correctly and emits none of these — a Release build runs with
+	     TreatWarningsAsErrors, so RS0016 is genuinely enforced there.
+
+	     Confirmed empirically: adding the three members InspectCode named
+	     (JsonReport.ToString, operator != on the two named record types) to
+	     PublicAPI.Shipped.txt did not clear the alerts — it simply moved them
+	     onto the next synthesized record members (PrintMembers, operator ==).
+	     The set of compiler-synthesized record members is reported one at a
+	     time, so chasing them is unbounded work that also pollutes the baseline
+	     with entries the real analyzer does not want.
+
+	     Matches ETL-Abstractions and Extensions-Logging-Data, which suppress
+	     the same rules for the same reason. The build remains the authority. -->
+	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=RS0016/@EntryIndexedValue">DO_NOT_SHOW</s:String>
+	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=RS0036/@EntryIndexedValue">DO_NOT_SHOW</s:String>
+	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=RS0037/@EntryIndexedValue">DO_NOT_SHOW</s:String>
+
+</wpf:ResourceDictionary>
