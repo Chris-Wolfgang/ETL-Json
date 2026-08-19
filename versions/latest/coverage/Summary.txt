@@ -1,29 +1,29 @@
 Summary
-  Generated on: 8/13/2026 - 5:31:18 PM
-  Coverage date: 8/13/2026 - 5:31:11 PM - 8/13/2026 - 5:31:12 PM
+  Generated on: 8/19/2026 - 2:12:14 AM
+  Coverage date: 8/19/2026 - 2:12:04 AM - 8/19/2026 - 2:12:06 AM
   Parser: MultiReport (3x Cobertura)
   Assemblies: 1
   Classes: 13
   Files: 13
-  Line coverage: 96.7%
-  Covered lines: 1028
+  Line coverage: 96.6%
+  Covered lines: 1021
   Uncovered lines: 35
-  Coverable lines: 1063
-  Total lines: 3170
-  Branch coverage: 86.1% (424 of 492)
-  Covered branches: 424
-  Total branches: 492
+  Coverable lines: 1056
+  Total lines: 3186
+  Branch coverage: 86% (406 of 472)
+  Covered branches: 406
+  Total branches: 472
   Method coverage: 98.2% (111 of 113)
   Full method coverage: 84.9% (96 of 113)
   Covered methods: 111
   Fully covered methods: 96
   Total methods: 113
 
-Wolfgang.Etl.Json                                     96.7%
+Wolfgang.Etl.Json                                     96.6%
   Wolfgang.Etl.Json.EtlPipelineJsonSinkExtensions     94.1%
   Wolfgang.Etl.Json.EtlPipelineJsonSourceExtensions   96.1%
   Wolfgang.Etl.Json.JsonLineExtractor<T>              95.6%
-  Wolfgang.Etl.Json.JsonLineLoader<T>                 95.4%
+  Wolfgang.Etl.Json.JsonLineLoader<T>                 95.3%
   Wolfgang.Etl.Json.JsonLogMessages                    100%
   Wolfgang.Etl.Json.JsonMetrics                        100%
   Wolfgang.Etl.Json.JsonMultiStreamExtractor<T>        100%
@@ -31,5 +31,5 @@ Wolfgang.Etl.Json                                     96.7%
   Wolfgang.Etl.Json.JsonNamedDestination               100%
   Wolfgang.Etl.Json.JsonNamedStream                    100%
   Wolfgang.Etl.Json.JsonReport                         100%
-  Wolfgang.Etl.Json.JsonSingleStreamExtractor<T>      93.1%
-  Wolfgang.Etl.Json.JsonSingleStreamLoader<T>         95.1%
+  Wolfgang.Etl.Json.JsonSingleStreamExtractor<T>      92.9%
+  Wolfgang.Etl.Json.JsonSingleStreamLoader<T>           95%
