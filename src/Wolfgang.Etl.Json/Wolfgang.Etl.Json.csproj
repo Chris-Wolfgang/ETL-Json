@@ -4,7 +4,7 @@
     <TargetFrameworks>net462;net481;netstandard2.0;net8.0;net10.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>disable</ImplicitUsings>
-    <Version>0.7.0</Version>
+    <Version>0.8.0</Version>
     <!-- Pin AssemblyVersion to a fixed binding-stability baseline so consumers
          do not need to recompile / add binding redirects on version bumps.
          Pre-1.0 it stays 1.0.0.0 even across the breaking changes a 0.x minor is
