@@ -156,7 +156,7 @@ public class JsonMultiStreamLoaderTests
     {
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
-            (Func<PersonRecord, JsonNamedDestination>)(_ => new JsonNamedDestination(null!, "no-stream"))
+            _ => new JsonNamedDestination(null!, "no-stream")
         );
 
         var items = new List<PersonRecord>

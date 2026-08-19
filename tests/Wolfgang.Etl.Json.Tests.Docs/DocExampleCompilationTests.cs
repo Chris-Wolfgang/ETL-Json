@@ -31,6 +31,16 @@ public class DocExampleCompilationTests
         ("options", "System.Text.Json.JsonSerializerOptions options = null!;"),
     };
 
+    // Hoisted rather than passed inline. An inline `Split(a, b)` reads as a partial match
+    // for the non-params Split(char, StringSplitOptions) overload (S3220), while an inline
+    // `Split(new[] { a, b })` trips "remove this array creation" (S3878) — the two rules
+    // contradict each other. A named array satisfies both, and avoids re-allocating per call.
+    private static readonly char[] PathSeparators =
+    {
+        Path.DirectorySeparatorChar,
+        Path.AltDirectorySeparatorChar,
+    };
+
     public static IEnumerable<object[]> Examples()
     {
         var srcDir = FindSourceDirectory();
@@ -160,7 +170,7 @@ public class DocExampleCompilationTests
 
     private static bool IsUnderBuildOutput(string path)
     {
-        var parts = path.Split(new[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar });
+        var parts = path.Split(PathSeparators);
         return parts.Any(p => string.Equals(p, "bin", StringComparison.OrdinalIgnoreCase)
                            || string.Equals(p, "obj", StringComparison.OrdinalIgnoreCase));
     }
