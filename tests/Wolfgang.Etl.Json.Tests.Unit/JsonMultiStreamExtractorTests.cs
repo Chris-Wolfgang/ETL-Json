@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Wolfgang.Etl.Abstractions;
 using Wolfgang.Etl.ErrorPolicies;

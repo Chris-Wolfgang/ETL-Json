@@ -58,7 +58,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// When <see langword="null"/> (the default), the encoding is inferred from the
     /// stream's byte-order mark (BOM), falling back to UTF-8.
     /// </summary>
-    public System.Text.Encoding? Encoding { get; set; }
+    public Encoding? Encoding { get; set; }
 
 
 
@@ -295,7 +295,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     {
 #if NETSTANDARD2_0 || NET462 || NET481
         return Encoding is null
-            ? new StreamReader(_stream, System.Text.Encoding.UTF8, detectEncodingFromByteOrderMarks: true, bufferSize: 1024, leaveOpen: !_ownsStream)
+            ? new StreamReader(_stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, bufferSize: 1024, leaveOpen: !_ownsStream)
             : new StreamReader(_stream, Encoding, detectEncodingFromByteOrderMarks: false, bufferSize: 1024, leaveOpen: !_ownsStream);
 #else
         return Encoding is null
@@ -389,7 +389,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     {
         Interlocked.Exchange(ref _currentLineNumber, 0);
         Interlocked.Exchange(ref _currentByteOffset, StartByteOffset);
-        var lineEncoding = Encoding ?? System.Text.Encoding.UTF8;
+        var lineEncoding = Encoding ?? Encoding.UTF8;
         var newlineSize = EnableCheckpointing
             ? await DetectNewlineSizeAsync(token).ConfigureAwait(false)
             : 0;
