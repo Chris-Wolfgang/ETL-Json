@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -32,6 +33,8 @@ public class MultiStreamRoundTripIntegrationTests
 
 
     [Fact]
+    [SuppressMessage("ReSharper", "AccessToDisposedClosure",
+        Justification = "Factory lambda runs synchronously inside the awaited LoadAsync, before the enclosing using disposes workspace.")]
     public async Task JsonMultiStream_when_round_tripped_one_file_per_item_preserves_all_items()
     {
         using var workspace = new TempWorkspace();
@@ -63,6 +66,8 @@ public class MultiStreamRoundTripIntegrationTests
 
 
     [Fact]
+    [SuppressMessage("ReSharper", "AccessToDisposedClosure",
+        Justification = "Factory lambda runs synchronously inside the awaited LoadAsync, before the enclosing using disposes workspace.")]
     public async Task JsonMultiStreamLoader_when_loading_writes_exactly_one_file_per_item()
     {
         using var workspace = new TempWorkspace();

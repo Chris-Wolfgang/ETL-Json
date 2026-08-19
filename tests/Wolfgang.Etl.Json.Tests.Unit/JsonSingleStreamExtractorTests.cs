@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -172,17 +173,16 @@ public class JsonSingleStreamExtractorTests
 
 
     [Fact]
-    public void Constructor_with_options_when_options_is_null_throws_ArgumentNullException()
+    public void Constructor_with_options_when_options_is_null_uses_serializer_default()
     {
-        Assert.Throws<ArgumentNullException>
+        var sut = new JsonSingleStreamExtractor<PersonRecord>
         (
-            () => new JsonSingleStreamExtractor<PersonRecord>
-            (
                 new MemoryStream(),
-                options: null!,
+                options: null,
                 NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance
-            )
         );
+
+        Assert.NotNull(sut);
     }
 
 
@@ -455,6 +455,8 @@ public class JsonSingleStreamExtractorTests
 
 
     [Fact]
+    [SuppressMessage("SonarAnalyzer", "S125",
+        Justification = "Prose comment explaining why the Skip policy stops enumeration here; not commented-out code.")]
     public async Task ExtractAsync_when_ErrorPolicy_dead_letters_records_error_and_stops()
     {
         // DeserializeAsyncEnumerable can't resume from a corrupt position in the stream;

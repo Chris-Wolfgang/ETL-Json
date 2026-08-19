@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+#if NET5_0_OR_GREATER
 using System.Diagnostics.CodeAnalysis;
+#endif
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
@@ -33,10 +35,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, I
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSONL loading of {typeof(TRecord).Name}";
-    private static readonly KeyValuePair<string, object?> _operationTag = new("etl.operation", "load");
-    private static readonly KeyValuePair<string, object?> _componentTag = new("etl.component", "JsonLine");
     private static readonly KeyValuePair<string, object?> _recordTypeTag = new("etl.record_type", typeof(TRecord).Name);
-    private static readonly byte[] _newLineUtf8 = System.Text.Encoding.UTF8.GetBytes(Environment.NewLine);
     private readonly Stream _stream;
     private readonly JsonSerializerOptions? _options;
     private readonly JsonTypeInfo<TRecord>? _typeInfo;
@@ -118,10 +117,10 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, I
     /// with custom serialization options.
     /// </summary>
     /// <param name="stream">The stream to write JSONL data to.</param>
-    /// <param name="options">The JSON serializer options to use for serialization.</param>
+    /// <param name="options">The JSON serializer options to use for serialization, or <c>null</c> for the serializer default.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="stream"/> or <paramref name="options"/> is <c>null</c>.
+    /// Thrown when <paramref name="stream"/> is <c>null</c>.
     /// </exception>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
@@ -130,12 +129,12 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, I
     public JsonLineLoader
     (
         Stream stream,
-        JsonSerializerOptions options,
+        JsonSerializerOptions? options = null,
         ILogger<JsonLineLoader<TRecord>>? logger = null
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        _options = options;
         _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
@@ -146,7 +145,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, I
     /// with an injected progress timer for testing.
     /// </summary>
     /// <param name="stream">The stream to write JSONL data to.</param>
-    /// <param name="options">The JSON serializer options to use for serialization.</param>
+    /// <param name="options">The JSON serializer options to use for serialization, or <c>null</c> for the serializer default.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <param name="timer">The progress timer to inject.</param>
 #if NET5_0_OR_GREATER
@@ -163,7 +162,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, I
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
         _options = options ?? throw new ArgumentNullException(nameof(options));
-        _logger = logger ?? (ILogger)NullLogger.Instance;
+        _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
 
@@ -211,7 +210,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, I
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
         _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
-        _logger = logger ?? (ILogger)NullLogger.Instance;
+        _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
 
@@ -227,7 +226,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, I
         JsonLogMessages.StartingOperation(_logger, OperationName, null);
         token.ThrowIfCancellationRequested();
 
-        var newLine = Encoding is null ? _newLineUtf8 : Encoding.GetBytes(Environment.NewLine);
+        var newLine = Encoding is null ? JsonMetrics.NewLineUtf8Bytes : Encoding.GetBytes(Environment.NewLine);
         var sw = Stopwatch.StartNew();
 
         await foreach (var item in items.WithCancellation(token).ConfigureAwait(false))
@@ -237,7 +236,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, I
             if (CurrentSkippedItemCount < SkipItemCount)
             {
                 IncrementCurrentSkippedItemCount();
-                JsonMetrics.AddSkipped(_operationTag, _componentTag, _recordTypeTag);
+                JsonMetrics.AddSkipped(JsonMetrics.LoadOperationTag, JsonMetrics.JsonLineComponentTag, _recordTypeTag);
                 JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
                 continue;
             }
@@ -273,12 +272,12 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, I
             }
 
             IncrementCurrentItemCount();
-            JsonMetrics.AddLoaded(_operationTag, _componentTag, _recordTypeTag);
+            JsonMetrics.AddLoaded(JsonMetrics.LoadOperationTag, JsonMetrics.JsonLineComponentTag, _recordTypeTag);
             JsonLogMessages.LoadedItemAtLine(_logger, CurrentItemCount, Interlocked.Read(ref _currentLineNumber), null);
         }
 
         JsonLogMessages.JsonlLoadingCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, Interlocked.Read(ref _currentLineNumber), null);
-        JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, _operationTag, _componentTag, _recordTypeTag);
+        JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, JsonMetrics.LoadOperationTag, JsonMetrics.JsonLineComponentTag, _recordTypeTag);
     }
 
 

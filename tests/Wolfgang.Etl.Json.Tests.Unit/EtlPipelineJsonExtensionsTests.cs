@@ -32,7 +32,7 @@ public sealed class EtlPipelineJsonExtensionsTests
         await EtlPipeline
             .Create()
             .JsonLineExtractor<PersonRecord>(source)
-            .JsonLineLoader<PersonRecord>(destination)
+            .JsonLineLoader(destination)
             .RunAsync();
 
         // Assert: reading the destination back yields the same records.
@@ -60,7 +60,7 @@ public sealed class EtlPipelineJsonExtensionsTests
             await EtlPipeline
                 .Create()
                 .JsonLineExtractor<PersonRecord>(inPath)
-                .JsonLineLoader<PersonRecord>(outPath)
+                .JsonLineLoader(outPath)
                 .RunAsync();
 
             // If the factory-owned streams were not disposed, these opens would throw IOException.
@@ -94,7 +94,7 @@ public sealed class EtlPipelineJsonExtensionsTests
         await EtlPipeline
             .Create()
             .JsonSingleStreamExtractor<PersonRecord>(source)
-            .JsonLineLoader<PersonRecord>(destination)
+            .JsonLineLoader(destination)
             .RunAsync();
 
         destination.Position = 0;
@@ -117,7 +117,7 @@ public sealed class EtlPipelineJsonExtensionsTests
             .Create()
             .JsonLineExtractor<PersonRecord>(source)
             .Through<PersonRecord>(items => Filter(items, p => p.Age >= 30))
-            .JsonLineLoader<PersonRecord>(destination)
+            .JsonLineLoader(destination)
             .RunAsync();
 
         destination.Position = 0;
@@ -143,7 +143,7 @@ public sealed class EtlPipelineJsonExtensionsTests
     public void JsonLineLoader_null_path_throws()
     {
         var pipeline = EtlPipeline.Create().JsonLineExtractor<PersonRecord>(new MemoryStream());
-        Assert.Throws<ArgumentNullException>(() => pipeline.JsonLineLoader<PersonRecord>((string)null!));
+        Assert.Throws<ArgumentNullException>(() => pipeline.JsonLineLoader((string)null!));
     }
 
 
@@ -157,7 +157,7 @@ public sealed class EtlPipelineJsonExtensionsTests
         await EtlPipeline
             .Create()
             .JsonSingleStreamExtractor<PersonRecord>(source)
-            .JsonSingleStreamLoader<PersonRecord>(destination)
+            .JsonSingleStreamLoader(destination)
             .RunAsync();
 
         destination.Position = 0;
@@ -179,7 +179,7 @@ public sealed class EtlPipelineJsonExtensionsTests
             await EtlPipeline
                 .Create()
                 .JsonSingleStreamExtractor<PersonRecord>(inPath)
-                .JsonSingleStreamLoader<PersonRecord>(outPath)
+                .JsonSingleStreamLoader(outPath)
                 .RunAsync();
 
             // Re-opening the output proves the factory-owned streams were disposed.
@@ -210,7 +210,7 @@ public sealed class EtlPipelineJsonExtensionsTests
         await EtlPipeline
             .Create()
             .JsonLineExtractor<PersonRecord>(source, options)
-            .JsonLineLoader<PersonRecord>(destination, options)
+            .JsonLineLoader(destination, options)
             .RunAsync();
 
         destination.Position = 0;
@@ -234,11 +234,11 @@ public sealed class EtlPipelineJsonExtensionsTests
         Assert.Throws<ArgumentNullException>(() => EtlPipeline.Create().JsonSingleStreamExtractor<PersonRecord>((string)null!));
 
         // Sink terminators.
-        Assert.Throws<ArgumentNullException>(() => ((IEtlPipeline<PersonRecord>)null!).JsonLineLoader<PersonRecord>("x"));
-        Assert.Throws<ArgumentNullException>(() => pipeline.JsonLineLoader<PersonRecord>((Stream)null!));
-        Assert.Throws<ArgumentNullException>(() => ((IEtlPipeline<PersonRecord>)null!).JsonSingleStreamLoader<PersonRecord>("x"));
-        Assert.Throws<ArgumentNullException>(() => pipeline.JsonSingleStreamLoader<PersonRecord>((string)null!));
-        Assert.Throws<ArgumentNullException>(() => pipeline.JsonSingleStreamLoader<PersonRecord>((Stream)null!));
+        Assert.Throws<ArgumentNullException>(() => ((IEtlPipeline<PersonRecord>)null!).JsonLineLoader("x"));
+        Assert.Throws<ArgumentNullException>(() => pipeline.JsonLineLoader((Stream)null!));
+        Assert.Throws<ArgumentNullException>(() => ((IEtlPipeline<PersonRecord>)null!).JsonSingleStreamLoader("x"));
+        Assert.Throws<ArgumentNullException>(() => pipeline.JsonSingleStreamLoader((string)null!));
+        Assert.Throws<ArgumentNullException>(() => pipeline.JsonSingleStreamLoader((Stream)null!));
     }
 
 

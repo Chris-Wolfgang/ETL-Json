@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+#if NET5_0_OR_GREATER
 using System.Diagnostics.CodeAnalysis;
+#endif
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
@@ -38,10 +40,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSON single-stream extraction of {typeof(TRecord).Name}";
-    private static readonly KeyValuePair<string, object?> _operationTag = new("etl.operation", "extract");
-    private static readonly KeyValuePair<string, object?> _componentTag = new("etl.component", "JsonSingleStream");
     private static readonly KeyValuePair<string, object?> _recordTypeTag = new("etl.record_type", typeof(TRecord).Name);
-    private static readonly JsonSerializerOptions DefaultOptions = new();
 
     private readonly Stream _stream;
     private readonly bool _ownsStream;
@@ -140,10 +139,10 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     /// with custom serialization options.
     /// </summary>
     /// <param name="stream">The stream containing a JSON array to read from.</param>
-    /// <param name="options">The JSON serializer options to use for deserialization.</param>
+    /// <param name="options">The JSON serializer options to use for deserialization, or <c>null</c> for the serializer default.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="stream"/> or <paramref name="options"/> is <c>null</c>.
+    /// Thrown when <paramref name="stream"/> is <c>null</c>.
     /// </exception>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
@@ -152,12 +151,12 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     public JsonSingleStreamExtractor
     (
         Stream stream,
-        JsonSerializerOptions options,
+        JsonSerializerOptions? options = null,
         ILogger<JsonSingleStreamExtractor<TRecord>>? logger = null
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        _options = options;
         _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
@@ -168,7 +167,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     /// with an injected progress timer for testing.
     /// </summary>
     /// <param name="stream">The stream containing a JSON array to read from.</param>
-    /// <param name="options">The JSON serializer options to use for deserialization.</param>
+    /// <param name="options">The JSON serializer options to use for deserialization, or <c>null</c> for the serializer default.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <param name="timer">The progress timer to inject.</param>
 #if NET5_0_OR_GREATER
@@ -185,7 +184,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
         _options = options ?? throw new ArgumentNullException(nameof(options));
-        _logger = logger ?? (ILogger)NullLogger.Instance;
+        _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
 
@@ -233,7 +232,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
         _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
-        _logger = logger ?? (ILogger)NullLogger.Instance;
+        _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
 
@@ -253,7 +252,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
         var sw = Stopwatch.StartNew();
         var enumerable = _typeInfo is not null
             ? JsonSerializer.DeserializeAsyncEnumerable(_stream, _typeInfo, token)
-            : JsonSerializer.DeserializeAsyncEnumerable<TRecord>(_stream, _options ?? DefaultOptions, token);
+            : JsonSerializer.DeserializeAsyncEnumerable<TRecord>(_stream, _options ?? JsonMetrics.DefaultSerializerOptions, token);
 
         var enumerator = enumerable.GetAsyncEnumerator(token);
         try
@@ -279,7 +278,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
                 {
                     skipBudget--;
                     IncrementCurrentSkippedItemCount();
-                    JsonMetrics.AddSkipped(_operationTag, _componentTag, _recordTypeTag);
+                    JsonMetrics.AddSkipped(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonSingleStreamComponentTag, _recordTypeTag);
                     JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
                     continue;
                 }
@@ -289,7 +288,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
                     break;
                 }
                 IncrementCurrentItemCount();
-                JsonMetrics.AddExtracted(_operationTag, _componentTag, _recordTypeTag);
+                JsonMetrics.AddExtracted(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonSingleStreamComponentTag, _recordTypeTag);
                 JsonLogMessages.ExtractedItem(_logger, CurrentItemCount, null);
                 yield return item;
             }
@@ -297,7 +296,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
         finally
         {
             await CleanupAsync(enumerator).ConfigureAwait(false);
-            JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, _operationTag, _componentTag, _recordTypeTag);
+            JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, JsonMetrics.ExtractOperationTag, JsonMetrics.JsonSingleStreamComponentTag, _recordTypeTag);
         }
 
         JsonLogMessages.SingleStreamExtractionCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, null);

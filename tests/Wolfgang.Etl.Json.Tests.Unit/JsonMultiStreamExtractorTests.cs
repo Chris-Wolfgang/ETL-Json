@@ -179,17 +179,16 @@ public class JsonMultiStreamExtractorTests
 
 
     [Fact]
-    public void Constructor_with_options_when_options_is_null_throws_ArgumentNullException()
+    public void Constructor_with_options_when_options_is_null_uses_serializer_default()
     {
-        Assert.Throws<ArgumentNullException>
+        var sut = new JsonMultiStreamExtractor<PersonRecord>
         (
-            () => new JsonMultiStreamExtractor<PersonRecord>
-            (
                 streams: [],
-                options: null!,
+                options: null,
                 NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
-            )
         );
+
+        Assert.NotNull(sut);
     }
 
 
@@ -701,7 +700,7 @@ public class JsonMultiStreamExtractorTests
             () => new JsonMultiStreamExtractor<PersonRecord>
             (
                 new[] { new MemoryStream() },
-                (ILogger<JsonMultiStreamExtractor<PersonRecord>>)null!
+                logger: null!
             )
         );
     }
@@ -750,7 +749,7 @@ public class JsonMultiStreamExtractorTests
             () => new JsonMultiStreamExtractor<PersonRecord>
             (
                 sources,
-                (ILogger<JsonMultiStreamExtractor<PersonRecord>>)null!
+                logger: null!
             )
         );
     }
@@ -807,18 +806,17 @@ public class JsonMultiStreamExtractorTests
 
 
     [Fact]
-    public void Constructor_with_named_sources_and_options_when_options_is_null_throws_ArgumentNullException()
+    public void Constructor_with_named_sources_and_options_when_options_is_null_uses_serializer_default()
     {
         var sources = new[] { new JsonNamedStream(new MemoryStream()) };
 
-        Assert.Throws<ArgumentNullException>
+        var sut = new JsonMultiStreamExtractor<PersonRecord>
         (
-            () => new JsonMultiStreamExtractor<PersonRecord>
-            (
-                sources,
-                (JsonSerializerOptions)null!
-            )
+            sources,
+            (JsonSerializerOptions?)null
         );
+
+        Assert.NotNull(sut);
     }
 
 

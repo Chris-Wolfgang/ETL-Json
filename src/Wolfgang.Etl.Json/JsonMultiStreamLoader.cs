@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+#if NET5_0_OR_GREATER
 using System.Diagnostics.CodeAnalysis;
+#endif
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
@@ -37,8 +39,6 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSON multi-stream loading of {typeof(TRecord).Name}";
-    private static readonly KeyValuePair<string, object?> _operationTag = new("etl.operation", "load");
-    private static readonly KeyValuePair<string, object?> _componentTag = new("etl.component", "JsonMultiStream");
     private static readonly KeyValuePair<string, object?> _recordTypeTag = new("etl.record_type", typeof(TRecord).Name);
     private readonly Func<TRecord, JsonNamedDestination> _destinationFactory;
     private readonly JsonSerializerOptions? _options;
@@ -181,10 +181,10 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     /// A factory function that receives the item to be written and returns a <see cref="Stream"/> to write it to.
     /// The loader will dispose the stream after writing.
     /// </param>
-    /// <param name="options">The JSON serializer options to use for serialization.</param>
+    /// <param name="options">The JSON serializer options to use for serialization, or <c>null</c> for the serializer default.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="streamFactory"/> or <paramref name="options"/> is <c>null</c>.
+    /// Thrown when <paramref name="streamFactory"/> is <c>null</c>.
     /// </exception>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
@@ -193,7 +193,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     public JsonMultiStreamLoader
     (
         Func<TRecord, Stream> streamFactory,
-        JsonSerializerOptions options,
+        JsonSerializerOptions? options = null,
         ILogger<JsonMultiStreamLoader<TRecord>>? logger = null
     )
     {
@@ -203,7 +203,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
         }
 
         _destinationFactory = item => new JsonNamedDestination(streamFactory(item));
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        _options = options;
         _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
@@ -217,20 +217,20 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     /// A factory function that receives the item to be written and returns a <see cref="JsonNamedDestination"/>
     /// containing the stream and an optional name. The loader will dispose the stream after writing.
     /// </param>
-    /// <param name="options">The JSON serializer options to use for serialization.</param>
+    /// <param name="options">The JSON serializer options to use for serialization, or <c>null</c> for the serializer default.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="destinationFactory"/> or <paramref name="options"/> is <c>null</c>.
+    /// Thrown when <paramref name="destinationFactory"/> is <c>null</c>.
     /// </exception>
     public JsonMultiStreamLoader
     (
         Func<TRecord, JsonNamedDestination> destinationFactory,
-        JsonSerializerOptions options,
+        JsonSerializerOptions? options = null,
         ILogger<JsonMultiStreamLoader<TRecord>>? logger = null
     )
     {
         _destinationFactory = destinationFactory ?? throw new ArgumentNullException(nameof(destinationFactory));
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        _options = options;
         _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
@@ -243,7 +243,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     /// <param name="streamFactory">
     /// A factory function that receives the item to be written and returns a <see cref="Stream"/> to write it to.
     /// </param>
-    /// <param name="options">The JSON serializer options to use for serialization.</param>
+    /// <param name="options">The JSON serializer options to use for serialization, or <c>null</c> for the serializer default.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <param name="timer">The progress timer to inject.</param>
 #if NET5_0_OR_GREATER
@@ -265,7 +265,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
 
         _destinationFactory = item => new JsonNamedDestination(streamFactory(item));
         _options = options ?? throw new ArgumentNullException(nameof(options));
-        _logger = logger ?? (ILogger)NullLogger.Instance;
+        _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
 
@@ -279,7 +279,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     /// A factory function that returns a <see cref="JsonNamedDestination"/> for each item.
     /// The loader will dispose the stream after writing.
     /// </param>
-    /// <param name="options">The JSON serializer options to use for serialization.</param>
+    /// <param name="options">The JSON serializer options to use for serialization, or <c>null</c> for the serializer default.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <param name="timer">The progress timer to inject.</param>
     internal JsonMultiStreamLoader
@@ -292,7 +292,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     {
         _destinationFactory = destinationFactory ?? throw new ArgumentNullException(nameof(destinationFactory));
         _options = options ?? throw new ArgumentNullException(nameof(options));
-        _logger = logger ?? (ILogger)NullLogger.Instance;
+        _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
 
@@ -382,7 +382,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
 
         _destinationFactory = item => new JsonNamedDestination(streamFactory(item));
         _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
-        _logger = logger ?? (ILogger)NullLogger.Instance;
+        _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
 
@@ -410,7 +410,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
                 if (CurrentSkippedItemCount < SkipItemCount)
                 {
                     IncrementCurrentSkippedItemCount();
-                    JsonMetrics.AddSkipped(_operationTag, _componentTag, _recordTypeTag);
+                    JsonMetrics.AddSkipped(JsonMetrics.LoadOperationTag, JsonMetrics.JsonMultiStreamComponentTag, _recordTypeTag);
                     JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
                     continue;
                 }
@@ -425,22 +425,22 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
                 {
                     _currentDestinationName = null;
                     IncrementCurrentItemCount();
-                    JsonMetrics.AddLoaded(_operationTag, _componentTag, _recordTypeTag);
+                    JsonMetrics.AddLoaded(JsonMetrics.LoadOperationTag, JsonMetrics.JsonMultiStreamComponentTag, _recordTypeTag);
                     streamIndex++;
                     JsonLogMessages.LoadedItemToStream(_logger, CurrentItemCount, streamIndex - 1, null);
                     continue;
                 }
 
                 var destination = _destinationFactory(item);
-                _currentDestinationName = destination?.Name;
-                if (destination?.Stream is null)
+                _currentDestinationName = destination.Name;
+                if (destination.Stream is null)
                 {
                     JsonLogMessages.StreamFactoryReturnedNull(_logger, streamIndex, null);
-                    throw new InvalidOperationException($"Destination factory returned null or a null stream for item at index {streamIndex}.");
+                    throw new InvalidOperationException($"Destination factory returned a null stream for item at index {streamIndex}.");
                 }
-                await WriteItemToStreamAsync(destination.Stream, item, streamIndex, token).ConfigureAwait(false);
+                await WriteItemToStreamAsync(destination.Stream, item, token).ConfigureAwait(false);
                 IncrementCurrentItemCount();
-                JsonMetrics.AddLoaded(_operationTag, _componentTag, _recordTypeTag);
+                JsonMetrics.AddLoaded(JsonMetrics.LoadOperationTag, JsonMetrics.JsonMultiStreamComponentTag, _recordTypeTag);
                 streamIndex++;
                 JsonLogMessages.LoadedItemToStream(_logger, CurrentItemCount, streamIndex - 1, null);
             }
@@ -449,21 +449,21 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
         }
         finally
         {
-            JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, _operationTag, _componentTag, _recordTypeTag);
+            JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, JsonMetrics.LoadOperationTag, JsonMetrics.JsonMultiStreamComponentTag, _recordTypeTag);
         }
     }
 
 
 
-    private async Task WriteItemToStreamAsync(Stream stream, TRecord item, int _, CancellationToken token)
+    private async Task WriteItemToStreamAsync(Stream stream, TRecord item, CancellationToken token)
     {
         try
         {
             await SerializeToStreamAsync(stream, item, token).ConfigureAwait(false);
 #if NETSTANDARD2_0 || NET462 || NET481
-#pragma warning disable CA2016, MA0040 // FlushAsync(CancellationToken) not available on this TFM
+#pragma warning disable CA2016, MA0040, S8949 // FlushAsync(CancellationToken) not available on this TFM
             await stream.FlushAsync().ConfigureAwait(false);
-#pragma warning restore CA2016, MA0040
+#pragma warning restore CA2016, MA0040, S8949
 #else
             await stream.FlushAsync(token).ConfigureAwait(false);
 #endif

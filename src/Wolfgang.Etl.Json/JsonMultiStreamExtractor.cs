@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+#if NET5_0_OR_GREATER
 using System.Diagnostics.CodeAnalysis;
+#endif
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -41,8 +43,6 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSON multi-stream extraction of {typeof(TRecord).Name}";
-    private static readonly KeyValuePair<string, object?> _operationTag = new("etl.operation", "extract");
-    private static readonly KeyValuePair<string, object?> _componentTag = new("etl.component", "JsonMultiStream");
     private static readonly KeyValuePair<string, object?> _recordTypeTag = new("etl.record_type", typeof(TRecord).Name);
     private readonly IEnumerable<JsonNamedStream> _sources;
     private readonly JsonSerializerOptions? _options;
@@ -164,10 +164,10 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// with custom serialization options.
     /// </summary>
     /// <param name="streams">An enumerable of streams, each containing a single JSON object.</param>
-    /// <param name="options">The JSON serializer options to use for deserialization.</param>
+    /// <param name="options">The JSON serializer options to use for deserialization, or <c>null</c> for the serializer default.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="streams"/> or <paramref name="options"/> is <c>null</c>.
+    /// Thrown when <paramref name="streams"/> is <c>null</c>.
     /// </exception>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
@@ -176,7 +176,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     public JsonMultiStreamExtractor
     (
         IEnumerable<Stream> streams,
-        JsonSerializerOptions options,
+        JsonSerializerOptions? options = null,
         ILogger<JsonMultiStreamExtractor<TRecord>>? logger = null
     )
     {
@@ -186,7 +186,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
         }
 
         _sources = streams.Select(s => new JsonNamedStream(s));
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        _options = options;
         _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
@@ -199,20 +199,20 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// <param name="sources">
     /// An enumerable of <see cref="JsonNamedStream"/> instances, each containing a stream and an optional name.
     /// </param>
-    /// <param name="options">The JSON serializer options to use for deserialization.</param>
+    /// <param name="options">The JSON serializer options to use for deserialization, or <c>null</c> for the serializer default.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="sources"/> or <paramref name="options"/> is <c>null</c>.
+    /// Thrown when <paramref name="sources"/> is <c>null</c>.
     /// </exception>
     public JsonMultiStreamExtractor
     (
         IEnumerable<JsonNamedStream> sources,
-        JsonSerializerOptions options,
+        JsonSerializerOptions? options = null,
         ILogger<JsonMultiStreamExtractor<TRecord>>? logger = null
     )
     {
         _sources = sources ?? throw new ArgumentNullException(nameof(sources));
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        _options = options;
         _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
@@ -223,7 +223,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// with an injected progress timer for testing.
     /// </summary>
     /// <param name="streams">An enumerable of streams, each containing a single JSON object.</param>
-    /// <param name="options">The JSON serializer options to use for deserialization.</param>
+    /// <param name="options">The JSON serializer options to use for deserialization, or <c>null</c> for the serializer default.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <param name="timer">The progress timer to inject.</param>
 #if NET5_0_OR_GREATER
@@ -245,7 +245,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
 
         _sources = streams.Select(s => new JsonNamedStream(s));
         _options = options ?? throw new ArgumentNullException(nameof(options));
-        _logger = logger ?? (ILogger)NullLogger.Instance;
+        _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
 
@@ -256,7 +256,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// with named sources and an injected progress timer for testing.
     /// </summary>
     /// <param name="sources">An enumerable of <see cref="JsonNamedStream"/> instances.</param>
-    /// <param name="options">The JSON serializer options to use for deserialization.</param>
+    /// <param name="options">The JSON serializer options to use for deserialization, or <c>null</c> for the serializer default.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <param name="timer">The progress timer to inject.</param>
     internal JsonMultiStreamExtractor
@@ -269,7 +269,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     {
         _sources = sources ?? throw new ArgumentNullException(nameof(sources));
         _options = options ?? throw new ArgumentNullException(nameof(options));
-        _logger = logger ?? (ILogger)NullLogger.Instance;
+        _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
 
@@ -353,7 +353,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
 
         _sources = streams.Select(s => new JsonNamedStream(s));
         _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
-        _logger = logger ?? (ILogger)NullLogger.Instance;
+        _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
 
@@ -395,7 +395,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
                 {
                     skipBudget--;
                     IncrementCurrentSkippedItemCount();
-                    JsonMetrics.AddSkipped(_operationTag, _componentTag, _recordTypeTag);
+                    JsonMetrics.AddSkipped(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonMultiStreamComponentTag, _recordTypeTag);
                     JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
                     continue;
                 }
@@ -407,7 +407,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
                 }
 
                 IncrementCurrentItemCount();
-                JsonMetrics.AddExtracted(_operationTag, _componentTag, _recordTypeTag);
+                JsonMetrics.AddExtracted(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonMultiStreamComponentTag, _recordTypeTag);
                 JsonLogMessages.ExtractedItemFromStream(_logger, CurrentItemCount, streamIndex - 1, null);
 
                 yield return item;
@@ -417,7 +417,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
         }
         finally
         {
-            JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, _operationTag, _componentTag, _recordTypeTag);
+            JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, JsonMetrics.ExtractOperationTag, JsonMetrics.JsonMultiStreamComponentTag, _recordTypeTag);
         }
     }
 

@@ -1,19 +1,1 @@
 #nullable enable
-*REMOVED*Wolfgang.Etl.Json.ErrorHandling
-*REMOVED*Wolfgang.Etl.Json.ErrorHandling.CaptureAndContinue = 1 -> Wolfgang.Etl.Json.ErrorHandling
-*REMOVED*Wolfgang.Etl.Json.ErrorHandling.SkipAndLog = 2 -> Wolfgang.Etl.Json.ErrorHandling
-*REMOVED*Wolfgang.Etl.Json.ErrorHandling.Throw = 0 -> Wolfgang.Etl.Json.ErrorHandling
-*REMOVED*Wolfgang.Etl.Json.JsonDeserializationError
-*REMOVED*Wolfgang.Etl.Json.JsonDeserializationError.Exception.get -> System.Exception!
-*REMOVED*Wolfgang.Etl.Json.JsonDeserializationError.ItemIndex.get -> long
-*REMOVED*Wolfgang.Etl.Json.JsonDeserializationError.LineNumber.get -> long?
-*REMOVED*Wolfgang.Etl.Json.JsonDeserializationError.RawContent.get -> string?
-*REMOVED*Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.ErrorHandling.get -> Wolfgang.Etl.Json.ErrorHandling
-*REMOVED*Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.ErrorHandling.init -> void
-*REMOVED*Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.Errors.get -> System.Collections.Generic.IReadOnlyList<Wolfgang.Etl.Json.JsonDeserializationError!>!
-*REMOVED*Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.ErrorHandling.get -> Wolfgang.Etl.Json.ErrorHandling
-*REMOVED*Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.ErrorHandling.init -> void
-*REMOVED*Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.Errors.get -> System.Collections.Generic.IReadOnlyList<Wolfgang.Etl.Json.JsonDeserializationError!>!
-*REMOVED*Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.ErrorHandling.get -> Wolfgang.Etl.Json.ErrorHandling
-*REMOVED*Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.ErrorHandling.init -> void
-*REMOVED*Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.Errors.get -> System.Collections.Generic.IReadOnlyList<Wolfgang.Etl.Json.JsonDeserializationError!>!
