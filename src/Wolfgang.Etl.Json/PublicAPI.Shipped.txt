@@ -76,6 +76,7 @@ Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>.JsonSingleStreamLoader(System.
 override Wolfgang.Etl.Json.JsonNamedDestination.ToString() -> string!
 override Wolfgang.Etl.Json.JsonNamedStream.ToString() -> string!
 override Wolfgang.Etl.Json.JsonReport.EqualityContract.get -> System.Type!
+override Wolfgang.Etl.Json.JsonReport.ToString() -> string!
 static Wolfgang.Etl.Json.EtlPipelineJsonSinkExtensions.JsonLineLoader<T>(this Wolfgang.Etl.Abstractions.IEtlPipeline<T>! pipeline, System.IO.Stream! stream, System.Text.Json.JsonSerializerOptions? options = null) -> Wolfgang.Etl.Abstractions.IEtlPipelineSink!
 static Wolfgang.Etl.Json.EtlPipelineJsonSinkExtensions.JsonLineLoader<T>(this Wolfgang.Etl.Abstractions.IEtlPipeline<T>! pipeline, string! path, System.Text.Json.JsonSerializerOptions? options = null) -> Wolfgang.Etl.Abstractions.IEtlPipelineSink!
 static Wolfgang.Etl.Json.EtlPipelineJsonSinkExtensions.JsonSingleStreamLoader<T>(this Wolfgang.Etl.Abstractions.IEtlPipeline<T>! pipeline, System.IO.Stream! stream, System.Text.Json.JsonSerializerOptions? options = null) -> Wolfgang.Etl.Abstractions.IEtlPipelineSink!
@@ -84,3 +85,5 @@ static Wolfgang.Etl.Json.EtlPipelineJsonSourceExtensions.JsonLineExtractor<T>(th
 static Wolfgang.Etl.Json.EtlPipelineJsonSourceExtensions.JsonLineExtractor<T>(this Wolfgang.Etl.Abstractions.EtlPipeline! pipeline, string! path, System.Text.Json.JsonSerializerOptions? options = null) -> Wolfgang.Etl.Abstractions.IEtlPipeline<T>!
 static Wolfgang.Etl.Json.EtlPipelineJsonSourceExtensions.JsonSingleStreamExtractor<T>(this Wolfgang.Etl.Abstractions.EtlPipeline! pipeline, System.IO.Stream! stream, System.Text.Json.JsonSerializerOptions? options = null) -> Wolfgang.Etl.Abstractions.IEtlPipeline<T>!
 static Wolfgang.Etl.Json.EtlPipelineJsonSourceExtensions.JsonSingleStreamExtractor<T>(this Wolfgang.Etl.Abstractions.EtlPipeline! pipeline, string! path, System.Text.Json.JsonSerializerOptions? options = null) -> Wolfgang.Etl.Abstractions.IEtlPipeline<T>!
+static Wolfgang.Etl.Json.JsonNamedDestination.operator !=(Wolfgang.Etl.Json.JsonNamedDestination? left, Wolfgang.Etl.Json.JsonNamedDestination? right) -> bool
+static Wolfgang.Etl.Json.JsonNamedStream.operator !=(Wolfgang.Etl.Json.JsonNamedStream? left, Wolfgang.Etl.Json.JsonNamedStream? right) -> bool

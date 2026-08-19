@@ -1,4 +1,3 @@
-using System;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -95,8 +94,8 @@ public class DocExampleCompilationTests
     private static string BuildProgram(string snippet)
     {
         var declared = new HashSet<string>(
-            Regex.Matches(snippet, @"\b(?:using\s+)?var\s+(\w+)\s*=", RegexOptions.None, DocRegexDefaults.Timeout)
-                 .Select(m => m.Groups[1].Value));
+            Regex.Matches(snippet, @"\b(?:using\s+)?var\s+(?<name>\w+)\s*=", RegexOptions.ExplicitCapture, DocRegexDefaults.Timeout)
+                 .Select(m => m.Groups["name"].Value));
 
         var ambient = new StringBuilder();
         foreach (var (name, declaration) in AmbientCandidates)
@@ -161,7 +160,7 @@ public class DocExampleCompilationTests
 
     private static bool IsUnderBuildOutput(string path)
     {
-        var parts = path.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        var parts = path.Split(new[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar });
         return parts.Any(p => string.Equals(p, "bin", StringComparison.OrdinalIgnoreCase)
                            || string.Equals(p, "obj", StringComparison.OrdinalIgnoreCase));
     }

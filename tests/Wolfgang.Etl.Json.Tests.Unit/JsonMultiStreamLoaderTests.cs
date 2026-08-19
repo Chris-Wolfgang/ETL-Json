@@ -150,6 +150,29 @@ public class JsonMultiStreamLoaderTests
 
 
 
+#pragma warning disable AsyncFixer01
+    [Fact]
+    public async Task LoadAsync_when_destination_factory_returns_a_null_stream_throws_InvalidOperationException()
+    {
+        var sut = new JsonMultiStreamLoader<PersonRecord>
+        (
+            (Func<PersonRecord, JsonNamedDestination>)(_ => new JsonNamedDestination(null!, "no-stream"))
+        );
+
+        var items = new List<PersonRecord>
+        {
+            new() { FirstName = "Alice", LastName = "Smith", Age = 30 },
+        };
+
+        await Assert.ThrowsAsync<InvalidOperationException>
+        (
+            () => sut.LoadAsync(items.ToAsyncEnumerable())
+        );
+#pragma warning restore AsyncFixer01
+    }
+
+
+
     [Fact]
     public async Task LoadAsync_disposes_each_stream_after_writing()
     {

@@ -433,12 +433,8 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
 
                 var destination = _destinationFactory(item);
                 _currentDestinationName = destination.Name;
-                if (destination.Stream is null)
-                {
-                    JsonLogMessages.StreamFactoryReturnedNull(_logger, streamIndex, null);
-                    throw new InvalidOperationException($"Destination factory returned a null stream for item at index {streamIndex}.");
-                }
-                await WriteItemToStreamAsync(destination.Stream, item, token).ConfigureAwait(false);
+                var destinationStream = ResolveDestinationStream(destination, streamIndex);
+                await WriteItemToStreamAsync(destinationStream, item, token).ConfigureAwait(false);
                 IncrementCurrentItemCount();
                 JsonMetrics.AddLoaded(JsonMetrics.LoadOperationTag, JsonMetrics.JsonMultiStreamComponentTag, _recordTypeTag);
                 streamIndex++;
@@ -451,6 +447,42 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
         {
             JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, JsonMetrics.LoadOperationTag, JsonMetrics.JsonMultiStreamComponentTag, _recordTypeTag);
         }
+    }
+
+
+
+    /// <summary>
+    /// Returns the stream carried by <paramref name="destination"/>, throwing if the
+    /// caller-supplied factory produced one without a stream.
+    /// </summary>
+    /// <remarks>
+    /// The destination factory is a caller-supplied delegate, so the nullable annotation on
+    /// <see cref="JsonNamedDestination.Stream"/> is a compile-time contract only — nothing
+    /// stops a caller handing back a destination whose stream is <see langword="null"/>.
+    /// Static analysis sees only the non-nullable annotation and reports the guard as dead;
+    /// it is not. Both entry points are covered by
+    /// <c>LoadAsync_when_stream_factory_returns_null_throws_InvalidOperationException</c> and
+    /// <c>LoadAsync_when_destination_factory_returns_a_null_stream_throws_InvalidOperationException</c>.
+    /// </remarks>
+    /// <param name="destination">The destination produced by the caller-supplied factory.</param>
+    /// <param name="streamIndex">The zero-based index of the destination, used in diagnostics.</param>
+    /// <returns>The non-null stream carried by <paramref name="destination"/>.</returns>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when <paramref name="destination"/> carries no stream.
+    /// </exception>
+    private Stream ResolveDestinationStream(JsonNamedDestination destination, int streamIndex)
+    {
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        if (destination.Stream is null)
+        {
+            JsonLogMessages.StreamFactoryReturnedNull(_logger, streamIndex, null);
+            throw new InvalidOperationException
+            (
+                $"Destination factory returned a null stream for item at index {streamIndex}."
+            );
+        }
+
+        return destination.Stream;
     }
 
 
