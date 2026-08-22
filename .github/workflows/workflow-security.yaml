@@ -16,13 +16,13 @@ on:
     paths:
       - '.github/workflows/**'
       - '.github/actionlint.yaml'
-      - '.zizmor.yml'
+      - '.github/zizmor.yml'
   push:
     branches: [main]
     paths:
       - '.github/workflows/**'
       - '.github/actionlint.yaml'
-      - '.zizmor.yml'
+      - '.github/zizmor.yml'
   workflow_dispatch:
 
 permissions:
