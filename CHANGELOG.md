@@ -19,6 +19,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+## [0.8.1] - 2026-08-22
+
+Patch release. **Zero source or public-API changes** — consumers of `Wolfgang.Etl.Json`
+0.8.1 receive byte-identical assemblies to 0.8.0. The delta is entirely maintainer-facing
+code-scanning hygiene.
+
+### Security
+
+- **Scorecard SARIF layer suppression.** `.github/workflows/scorecard.yaml` now filters
+  `results.sarif` before upload, dropping five whole rules (`DangerousWorkflowID`,
+  `BranchProtectionID`, `CodeReviewID`, `CIIBestPracticesID`, `FuzzingID`) and the
+  `nugetCommand` / `pipCommand` sub-checks of `PinnedDependenciesID` that are structurally
+  won't-fix on this repo. `gitHubAction` pin regressions still fire — the filter is scoped to
+  structurally-not-actionable findings. Applies the pattern from
+  Chris-Wolfgang/Extensions-Logging-Data#188; brings open Scorecard alerts from 23 down to
+  1 (SASTID, kept as real signal). Refs #267.
+- **zizmor `dangerous-triggers` waiver.** New `.github/zizmor.yml` waives
+  `dangerous-triggers` on `pr.yaml`, where `pull_request_target` is intentional (see the
+  `pr.yaml` SECURITY NOTE header — workflow YAML runs from trusted `main`, PR head is scan
+  input only). Auto-discovered by zizmor 1.5.2 per the fleet standard. Also updated
+  `workflow-security.yaml`'s path trigger from the ignored root `.zizmor.yml` to the
+  discovered `.github/zizmor.yml` so edits actually re-run zizmor.
+
 ## [0.8.0] - 2026-08-17
 
 Minor release. Two consumer-visible changes: (1) `JsonSerializerOptions` is now optional on every
@@ -271,7 +294,8 @@ baseline with the intentional removals waived in `CompatibilitySuppressions.xml`
 - Cached the default `JsonSerializerOptions` and log operation-name strings as
   static fields; sealed the extractor and loader classes.
 
-[Unreleased]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.8.1...HEAD
+[0.8.1]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.8.0...v0.8.1
 [0.5.0]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.2.2...v0.3.0
