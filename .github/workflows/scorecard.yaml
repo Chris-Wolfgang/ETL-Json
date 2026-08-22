@@ -51,6 +51,100 @@ jobs:
           # published, never code.
           publish_results: true
 
+      # Suppress Scorecard checks whose findings are known won't-fix or false
+      # positives for this repo, BEFORE the SARIF reaches code-scanning. Doing
+      # it here (rather than dismissing individual alerts) makes the suppression
+      # durable across weekly re-runs — Scorecard emits a fresh SARIF each run,
+      # and fingerprint drift means dismissals don't always survive.
+      #
+      # Suppressed rule IDs (whole rule):
+      #   DangerousWorkflowID  — pr.yaml deliberately uses pull_request_target
+      #                          so the workflow definition comes from trusted
+      #                          main (a PR branch can't weaken its own CI).
+      #                          The "Detect .NET Projects" step re-fetches
+      #                          every protected config file from main before
+      #                          any build runs. See the pr.yaml SECURITY NOTE
+      #                          header (and .github/zizmor.yml, which also
+      #                          waives dangerous-triggers on pr.yaml for the
+      #                          same reason).
+      #   BranchProtectionID   — solo-maintainer repo; approver / codeowner /
+      #                          last-push-approval would force admin-bypass on
+      #                          every PR without adding a real review gate.
+      #   CodeReviewID         — same underlying reason (solo maintainer).
+      #   CIIBestPracticesID   — external bestpractices.dev registration; not
+      #                          in scope for CI, tracked separately if pursued.
+      #   FuzzingID            — no fuzz-test integration in this repo (a JSON
+      #                          extractor/loader library). Scorecard's heuristic
+      #                          detects only OSS-Fuzz / ClusterFuzzLite
+      #                          integrations, which .NET libraries in this
+      #                          fleet do not use (see
+      #                          reference_scorecard_fuzzing_unfixable_for_dotnet).
+      #
+      # Suppressed PinnedDependenciesID sub-checks (partial rule):
+      #   nugetCommand — `dotnet tool install` (ReSharper CLT, reportgenerator,
+      #                  DevSkim) and `dotnet restore` are not hash-pinned. Every
+      #                  csproj already uses explicit PackageReference Versions
+      #                  ("no floating"), Dependabot's `nuget` ecosystem bumps
+      #                  transitives weekly, and no repo in the fleet ships
+      #                  packages.lock.json. Adopting `--locked-mode` fleet-wide
+      #                  is a separate decision.
+      #   pipCommand   — future-proofing: today only zizmor is pip-installed and
+      #                  it already uses `--require-hashes` against a pinned
+      #                  requirements.txt, but Scorecard's `pipCommand` heuristic
+      #                  doesn't recognise `--require-hashes`. Any future pip
+      #                  install added without hash-pinning would also match this
+      #                  suppression, so a fleet-wide policy decision belongs
+      #                  upstream in the workflow template.
+      # gitHubAction rows are NOT suppressed: any regression to an @vN action
+      # ref without a SHA pin should still fire on the next scan.
+      #
+      # NOT suppressed (real actionable signal):
+      #   SASTID — one older commit escaped CodeQL when the workflow was first
+      #            introduced; the score will recover as newer commits accrue.
+      #            InspectCode is a SAST tool but Scorecard's heuristic doesn't
+      #            detect it.
+      #
+      # The scorecard.dev score published to the transparency log (README badge)
+      # still counts every check; this only trims the code-scanning-tab noise.
+      - name: Filter suppressed findings from SARIF
+        shell: bash
+        env:
+          SUPPRESSED_RULES: 'DangerousWorkflowID BranchProtectionID CodeReviewID CIIBestPracticesID FuzzingID'
+          # Substrings matched against each PinnedDependenciesID result's
+          # message text. Order-independent; a single match suppresses.
+          SUPPRESSED_PIN_KINDS: 'nugetCommand not pinned|pipCommand not pinned'
+        run: |
+          if ! command -v jq >/dev/null 2>&1; then
+            echo "::error::jq not available on the runner; cannot filter SARIF."
+            exit 1
+          fi
+          # Word-split SUPPRESSED_RULES intentionally — one rule per line for the
+          # jq -R/-s pipeline. shellcheck's default "quote to prevent globbing"
+          # rule (SC2086) would break this.
+          # shellcheck disable=SC2086
+          rules_json=$(printf '%s\n' $SUPPRESSED_RULES | jq -R . | jq -s .)
+          # jq's `not` is a POSTFIX filter, not a prefix operator — the correct
+          # form is `(EXPR) | not`, never `not (EXPR)`. Using `and not (...)`
+          # yields "jq: error: not/1 is not defined at <top-level>" and the
+          # step exits 3 without writing any output.
+          jq \
+            --argjson suppressed "$rules_json" \
+            --arg pinKinds "$SUPPRESSED_PIN_KINDS" \
+            '
+              .runs |= map(
+                .results |= map(select(
+                  (.ruleId // "") as $r
+                  | (.message.text // "") as $t
+                  | (($suppressed | index($r)) == null)
+                    and (($r == "PinnedDependenciesID" and ($t | test($pinKinds))) | not)
+                ))
+              )
+            ' results.sarif > results.filtered.sarif
+          before=$(jq '[.runs[].results[]] | length' results.sarif)
+          after=$(jq '[.runs[].results[]] | length' results.filtered.sarif)
+          echo "Scorecard SARIF results: $before -> $after after suppression"
+          mv results.filtered.sarif results.sarif
+
       - name: Upload artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
