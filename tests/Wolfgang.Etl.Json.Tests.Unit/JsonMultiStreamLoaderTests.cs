@@ -221,16 +221,17 @@ public class JsonMultiStreamLoaderTests
 
 
     [Fact]
-    public void Constructor_with_logger_when_logger_is_null_throws_ArgumentNullException()
+    public void Constructor_with_logger_when_logger_is_null_uses_NullLogger()
     {
-        Assert.Throws<ArgumentNullException>
+        // logger is now an optional trailing parameter: null means "no logging"
+        // (NullLogger.Instance) rather than an argument error.
+        var sut = new JsonMultiStreamLoader<PersonRecord>
         (
-            () => new JsonMultiStreamLoader<PersonRecord>
-            (
-                _ => new MemoryStream(),
-                logger: null!
-            )
+            _ => new MemoryStream(),
+            logger: null
         );
+
+        Assert.NotNull(sut);
     }
 
 
@@ -728,16 +729,17 @@ public class JsonMultiStreamLoaderTests
 
 
     [Fact]
-    public void Constructor_with_destinationFactory_and_logger_when_logger_is_null_throws_ArgumentNullException()
+    public void Constructor_with_destinationFactory_and_logger_when_logger_is_null_uses_NullLogger()
     {
-        Assert.Throws<ArgumentNullException>
+        // logger is now an optional trailing parameter: null means "no logging"
+        // (NullLogger.Instance) rather than an argument error.
+        var sut = new JsonMultiStreamLoader<PersonRecord>
         (
-            () => new JsonMultiStreamLoader<PersonRecord>
-            (
-                _ => new JsonNamedDestination(new MemoryStream()),
-                logger: null!
-            )
+            _ => new JsonNamedDestination(new MemoryStream()),
+            logger: null
         );
+
+        Assert.NotNull(sut);
     }
 
 

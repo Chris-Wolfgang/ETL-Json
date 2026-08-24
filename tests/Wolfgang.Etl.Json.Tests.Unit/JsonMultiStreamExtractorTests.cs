@@ -148,16 +148,17 @@ public class JsonMultiStreamExtractorTests
 
 
     [Fact]
-    public void Constructor_with_logger_when_logger_is_null_throws_ArgumentNullException()
+    public void Constructor_with_logger_when_logger_is_null_uses_NullLogger()
     {
-        Assert.Throws<ArgumentNullException>
+        // logger is now an optional trailing parameter: null means "no logging"
+        // (NullLogger.Instance) rather than an argument error.
+        var sut = new JsonMultiStreamExtractor<PersonRecord>
         (
-            () => new JsonMultiStreamExtractor<PersonRecord>
-            (
-                Array.Empty<Stream>(),
-                logger: null!
-            )
+            Array.Empty<Stream>(),
+            logger: null
         );
+
+        Assert.NotNull(sut);
     }
 
 
@@ -692,16 +693,17 @@ public class JsonMultiStreamExtractorTests
 
 
     [Fact]
-    public void Constructor_with_streams_and_logger_when_logger_is_null_throws_ArgumentNullException()
+    public void Constructor_with_streams_and_logger_when_logger_is_null_uses_NullLogger()
     {
-        Assert.Throws<ArgumentNullException>
+        // logger is now an optional trailing parameter: null means "no logging"
+        // (NullLogger.Instance) rather than an argument error.
+        var sut = new JsonMultiStreamExtractor<PersonRecord>
         (
-            () => new JsonMultiStreamExtractor<PersonRecord>
-            (
-                new[] { new MemoryStream() },
-                logger: null!
-            )
+            new[] { new MemoryStream() },
+            logger: null
         );
+
+        Assert.NotNull(sut);
     }
 
 
@@ -739,18 +741,19 @@ public class JsonMultiStreamExtractorTests
 
 
     [Fact]
-    public void Constructor_with_named_sources_and_logger_when_logger_is_null_throws_ArgumentNullException()
+    public void Constructor_with_named_sources_and_logger_when_logger_is_null_uses_NullLogger()
     {
+        // logger is now an optional trailing parameter: null means "no logging"
+        // (NullLogger.Instance) rather than an argument error.
         var sources = new[] { new JsonNamedStream(new MemoryStream()) };
 
-        Assert.Throws<ArgumentNullException>
+        var sut = new JsonMultiStreamExtractor<PersonRecord>
         (
-            () => new JsonMultiStreamExtractor<PersonRecord>
-            (
-                sources,
-                logger: null!
-            )
+            sources,
+            logger: null
         );
+
+        Assert.NotNull(sut);
     }
 
 
