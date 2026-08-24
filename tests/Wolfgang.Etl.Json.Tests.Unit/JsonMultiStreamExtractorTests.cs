@@ -65,8 +65,8 @@ public class JsonMultiStreamExtractorTests
         (
             CreateStreams(ExpectedItems.Count),
             new JsonSerializerOptions(),
-            NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance,
-            timer
+            timer,
+            NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
         );
 
 
@@ -202,8 +202,8 @@ public class JsonMultiStreamExtractorTests
             (
                 streams: null!,
                 new JsonSerializerOptions(),
-                NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance,
-                new ManualProgressTimer()
+                new ManualProgressTimer(),
+                NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
             )
         );
     }
@@ -217,8 +217,8 @@ public class JsonMultiStreamExtractorTests
         (
             streams: [],
             new JsonSerializerOptions(),
-            logger: null,
-            new ManualProgressTimer()
+            new ManualProgressTimer(),
+            logger: null
         );
 
         Assert.NotNull(sut);
@@ -235,8 +235,8 @@ public class JsonMultiStreamExtractorTests
             (
                 streams: [],
                 new JsonSerializerOptions(),
-                NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance,
-                timer: null!
+                timer: null!,
+                NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
             )
         );
     }
@@ -417,8 +417,8 @@ public class JsonMultiStreamExtractorTests
             (
                 streams: null!,
                 TestJsonContext.Default.PersonRecord,
-                NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance,
-                new ManualProgressTimer()
+                new ManualProgressTimer(),
+                NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
             )
         );
     }
@@ -434,8 +434,8 @@ public class JsonMultiStreamExtractorTests
             (
                 streams: Array.Empty<Stream>(),
                 typeInfo: null!,
-                NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance,
-                new ManualProgressTimer()
+                new ManualProgressTimer(),
+                NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
             )
         );
     }
@@ -449,8 +449,8 @@ public class JsonMultiStreamExtractorTests
         (
             Array.Empty<Stream>(),
             TestJsonContext.Default.PersonRecord,
-            logger: null,
-            new ManualProgressTimer()
+            new ManualProgressTimer(),
+            logger: null
         );
 
         Assert.NotNull(sut);
@@ -467,8 +467,8 @@ public class JsonMultiStreamExtractorTests
             (
                 Array.Empty<Stream>(),
                 TestJsonContext.Default.PersonRecord,
-                NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance,
-                timer: null!
+                timer: null!,
+                NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
             )
         );
     }
@@ -574,8 +574,8 @@ public class JsonMultiStreamExtractorTests
         (
             sources,
             new JsonSerializerOptions(),
-            logger: null,
-            timer
+            timer,
+            logger: null
         );
 
         var enumerator = sut.ExtractAsync(progress).GetAsyncEnumerator();
@@ -642,8 +642,8 @@ public class JsonMultiStreamExtractorTests
         (
             new[] { stream },
             new JsonSerializerOptions(),
-            logger: null,
-            timer
+            timer,
+            logger: null
         );
 
         var enumerator = sut.ExtractAsync(progress).GetAsyncEnumerator();
