@@ -141,16 +141,17 @@ public class JsonSingleStreamLoaderTests
 
 
     [Fact]
-    public void Constructor_with_logger_when_logger_is_null_throws_ArgumentNullException()
+    public void Constructor_with_logger_when_logger_is_null_uses_NullLogger()
     {
-        Assert.Throws<ArgumentNullException>
+        // logger is now an optional trailing parameter: null means "no logging"
+        // (NullLogger.Instance) rather than an argument error.
+        var sut = new JsonSingleStreamLoader<PersonRecord>
         (
-            () => new JsonSingleStreamLoader<PersonRecord>
-            (
-                new MemoryStream(),
-                logger: null!
-            )
+            new MemoryStream(),
+            logger: null
         );
+
+        Assert.NotNull(sut);
     }
 
 

@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **`logger` is now an optional trailing constructor parameter across all six extractor / loader
+  types.** The eight `(source, ILogger<T> logger)` constructors on `JsonLineExtractor<T>`,
+  `JsonLineLoader<T>`, `JsonSingleStreamExtractor<T>`, `JsonSingleStreamLoader<T>`,
+  `JsonMultiStreamExtractor<T>` (stream and named-source forms) and `JsonMultiStreamLoader<T>`
+  (stream-factory and named-destination forms) now declare `ILogger<T>? logger = null`. Passing
+  `null` — or omitting it — resolves to `NullLogger.Instance` instead of throwing
+  `ArgumentNullException`.
+
+  Not a breaking change: each parameter list is unchanged, so the emitted signatures are identical
+  and PackageValidation against the published baseline passes. Only the nullability annotation and
+  the default were added.
+
+  This aligns ETL-Json with the fleet-wide convention — logger always last, always optional —
+  already followed by `Etl-DbClient`. The `JsonTypeInfo<TRecord>` overloads are unchanged; they
+  remain a separate AOT-safe family.
+
 ### Added
 
 ### Changed
