@@ -149,8 +149,8 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, I
     /// </summary>
     /// <param name="stream">The stream to write JSONL data to.</param>
     /// <param name="options">The JSON serializer options to use for serialization, or <c>null</c> for the serializer default.</param>
-    /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <param name="timer">The progress timer to inject.</param>
+    /// <param name="logger">An optional logger instance for diagnostic output.</param>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
     [RequiresDynamicCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
@@ -159,8 +159,8 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, I
     (
         Stream stream,
         JsonSerializerOptions options,
-        ILogger? logger,
-        IProgressTimer timer
+        IProgressTimer timer,
+        ILogger? logger = null
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
@@ -201,14 +201,14 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, I
     /// </summary>
     /// <param name="stream">The stream to write JSONL data to.</param>
     /// <param name="typeInfo">The source-generated type metadata for <typeparamref name="TRecord"/>.</param>
-    /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <param name="timer">The progress timer to inject.</param>
+    /// <param name="logger">An optional logger instance for diagnostic output.</param>
     internal JsonLineLoader
     (
         Stream stream,
         JsonTypeInfo<TRecord> typeInfo,
-        ILogger? logger,
-        IProgressTimer timer
+        IProgressTimer timer,
+        ILogger? logger = null
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));

@@ -230,8 +230,8 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// </summary>
     /// <param name="streams">An enumerable of streams, each containing a single JSON object.</param>
     /// <param name="options">The JSON serializer options to use for deserialization, or <c>null</c> for the serializer default.</param>
-    /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <param name="timer">The progress timer to inject.</param>
+    /// <param name="logger">An optional logger instance for diagnostic output.</param>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
     [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
@@ -240,8 +240,8 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     (
         IEnumerable<Stream> streams,
         JsonSerializerOptions options,
-        ILogger? logger,
-        IProgressTimer timer
+        IProgressTimer timer,
+        ILogger? logger = null
     )
     {
         if (streams is null)
@@ -263,14 +263,14 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// </summary>
     /// <param name="sources">An enumerable of <see cref="JsonNamedStream"/> instances.</param>
     /// <param name="options">The JSON serializer options to use for deserialization, or <c>null</c> for the serializer default.</param>
-    /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <param name="timer">The progress timer to inject.</param>
+    /// <param name="logger">An optional logger instance for diagnostic output.</param>
     internal JsonMultiStreamExtractor
     (
         IEnumerable<JsonNamedStream> sources,
         JsonSerializerOptions options,
-        ILogger? logger,
-        IProgressTimer timer
+        IProgressTimer timer,
+        ILogger? logger = null
     )
     {
         _sources = sources ?? throw new ArgumentNullException(nameof(sources));
@@ -342,14 +342,14 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// </summary>
     /// <param name="streams">An enumerable of streams, each containing a single JSON object.</param>
     /// <param name="typeInfo">The source-generated type metadata for <typeparamref name="TRecord"/>.</param>
-    /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <param name="timer">The progress timer to inject.</param>
+    /// <param name="logger">An optional logger instance for diagnostic output.</param>
     internal JsonMultiStreamExtractor
     (
         IEnumerable<Stream> streams,
         JsonTypeInfo<TRecord> typeInfo,
-        ILogger? logger,
-        IProgressTimer timer
+        IProgressTimer timer,
+        ILogger? logger = null
     )
     {
         if (streams is null)

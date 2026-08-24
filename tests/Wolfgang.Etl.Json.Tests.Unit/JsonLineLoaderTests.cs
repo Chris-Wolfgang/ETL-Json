@@ -58,8 +58,8 @@ public class JsonLineLoaderTests
         (
             stream,
             new JsonSerializerOptions(),
-            NullLogger<JsonLineLoader<PersonRecord>>.Instance,
-            timer
+            timer,
+            NullLogger<JsonLineLoader<PersonRecord>>.Instance
         );
     }
 
@@ -202,8 +202,8 @@ public class JsonLineLoaderTests
             (
                 null!,
                 new JsonSerializerOptions(),
-                NullLogger<JsonLineLoader<PersonRecord>>.Instance,
-                new ManualProgressTimer()
+                new ManualProgressTimer(),
+                NullLogger<JsonLineLoader<PersonRecord>>.Instance
             )
         );
     }
@@ -217,8 +217,8 @@ public class JsonLineLoaderTests
         (
             new MemoryStream(),
             new JsonSerializerOptions(),
-            logger: null,
-            new ManualProgressTimer()
+            new ManualProgressTimer(),
+            logger: null
         );
 
         Assert.NotNull(sut);
@@ -235,8 +235,8 @@ public class JsonLineLoaderTests
             (
                 new MemoryStream(),
                 new JsonSerializerOptions(),
-                NullLogger<JsonLineLoader<PersonRecord>>.Instance,
-                timer: null!
+                timer: null!,
+                NullLogger<JsonLineLoader<PersonRecord>>.Instance
             )
         );
     }
@@ -417,8 +417,8 @@ public class JsonLineLoaderTests
             (
                 null!,
                 TestJsonContext.Default.PersonRecord,
-                NullLogger<JsonLineLoader<PersonRecord>>.Instance,
-                new ManualProgressTimer()
+                new ManualProgressTimer(),
+                NullLogger<JsonLineLoader<PersonRecord>>.Instance
             )
         );
     }
@@ -434,8 +434,8 @@ public class JsonLineLoaderTests
             (
                 new MemoryStream(),
                 typeInfo: null!,
-                NullLogger<JsonLineLoader<PersonRecord>>.Instance,
-                new ManualProgressTimer()
+                new ManualProgressTimer(),
+                NullLogger<JsonLineLoader<PersonRecord>>.Instance
             )
         );
     }
@@ -449,8 +449,8 @@ public class JsonLineLoaderTests
         (
             new MemoryStream(),
             TestJsonContext.Default.PersonRecord,
-            logger: null,
-            new ManualProgressTimer()
+            new ManualProgressTimer(),
+            logger: null
         );
 
         Assert.NotNull(sut);
@@ -467,8 +467,8 @@ public class JsonLineLoaderTests
             (
                 new MemoryStream(),
                 TestJsonContext.Default.PersonRecord,
-                NullLogger<JsonLineLoader<PersonRecord>>.Instance,
-                timer: null!
+                timer: null!,
+                NullLogger<JsonLineLoader<PersonRecord>>.Instance
             )
         );
     }
