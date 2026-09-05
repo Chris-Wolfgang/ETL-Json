@@ -109,9 +109,12 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// with diagnostic logging.
     /// </summary>
     /// <param name="streams">An enumerable of streams, each containing a single JSON object.</param>
-    /// <param name="logger">The logger instance for diagnostic output.</param>
+    /// <param name="logger">
+    /// An optional logger instance for diagnostic output. When <c>null</c> — or omitted —
+    /// <see cref="NullLogger.Instance"/> is used and logging is disabled.
+    /// </param>
     /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="streams"/> or <paramref name="logger"/> is <c>null</c>.
+    /// Thrown when <paramref name="streams"/> is <c>null</c>.
     /// </exception>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
@@ -120,7 +123,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     public JsonMultiStreamExtractor
     (
         IEnumerable<Stream> streams,
-        ILogger<JsonMultiStreamExtractor<TRecord>> logger
+        ILogger<JsonMultiStreamExtractor<TRecord>>? logger = null
     )
     {
         if (streams is null)
@@ -129,7 +132,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
         }
 
         _sources = streams.Select(s => new JsonNamedStream(s));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _logger = logger ?? (ILogger)NullLogger.Instance;
         _options = null;
     }
 
@@ -142,18 +145,21 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// <param name="sources">
     /// An enumerable of <see cref="JsonNamedStream"/> instances, each containing a stream and an optional name.
     /// </param>
-    /// <param name="logger">The logger instance for diagnostic output.</param>
+    /// <param name="logger">
+    /// An optional logger instance for diagnostic output. When <c>null</c> — or omitted —
+    /// <see cref="NullLogger.Instance"/> is used and logging is disabled.
+    /// </param>
     /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="sources"/> or <paramref name="logger"/> is <c>null</c>.
+    /// Thrown when <paramref name="sources"/> is <c>null</c>.
     /// </exception>
     public JsonMultiStreamExtractor
     (
         IEnumerable<JsonNamedStream> sources,
-        ILogger<JsonMultiStreamExtractor<TRecord>> logger
+        ILogger<JsonMultiStreamExtractor<TRecord>>? logger = null
     )
     {
         _sources = sources ?? throw new ArgumentNullException(nameof(sources));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _logger = logger ?? (ILogger)NullLogger.Instance;
         _options = null;
     }
 
