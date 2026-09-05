@@ -55,8 +55,8 @@ public class JsonMultiStreamLoaderTests
         (
             _ => new MemoryStream(),
             new JsonSerializerOptions(),
-            NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance,
-            timer
+            timer,
+            NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
         );
     }
 
@@ -275,8 +275,8 @@ public class JsonMultiStreamLoaderTests
             (
                 (Func<PersonRecord, Stream>)null!,
                 new JsonSerializerOptions(),
-                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance,
-                new ManualProgressTimer()
+                new ManualProgressTimer(),
+                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
             )
         );
     }
@@ -290,8 +290,8 @@ public class JsonMultiStreamLoaderTests
         (
             _ => new MemoryStream(),
             new JsonSerializerOptions(),
-            logger: null,
-            new ManualProgressTimer()
+            new ManualProgressTimer(),
+            logger: null
         );
 
         Assert.NotNull(sut);
@@ -308,8 +308,8 @@ public class JsonMultiStreamLoaderTests
             (
                 _ => new MemoryStream(),
                 new JsonSerializerOptions(),
-                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance,
-                null!
+                null!,
+                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
             )
         );
     }
@@ -498,8 +498,8 @@ public class JsonMultiStreamLoaderTests
             (
                 streamFactory: null!,
                 TestJsonContext.Default.PersonRecord,
-                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance,
-                new ManualProgressTimer()
+                new ManualProgressTimer(),
+                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
             )
         );
     }
@@ -515,8 +515,8 @@ public class JsonMultiStreamLoaderTests
             (
                 _ => new MemoryStream(),
                 typeInfo: null!,
-                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance,
-                new ManualProgressTimer()
+                new ManualProgressTimer(),
+                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
             )
         );
     }
@@ -530,8 +530,8 @@ public class JsonMultiStreamLoaderTests
         (
             _ => new MemoryStream(),
             TestJsonContext.Default.PersonRecord,
-            logger: null,
-            new ManualProgressTimer()
+            new ManualProgressTimer(),
+            logger: null
         );
 
         Assert.NotNull(sut);
@@ -548,8 +548,8 @@ public class JsonMultiStreamLoaderTests
             (
                 _ => new MemoryStream(),
                 TestJsonContext.Default.PersonRecord,
-                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance,
-                timer: null!
+                timer: null!,
+                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
             )
         );
     }
@@ -810,8 +810,8 @@ public class JsonMultiStreamLoaderTests
             (
                 (Func<PersonRecord, JsonNamedDestination>)null!,
                 new JsonSerializerOptions(),
-                logger: null,
-                new ManualProgressTimer()
+                new ManualProgressTimer(),
+                logger: null
             )
         );
     }
@@ -827,8 +827,8 @@ public class JsonMultiStreamLoaderTests
             (
                 _ => new JsonNamedDestination(new MemoryStream()),
                 new JsonSerializerOptions(),
-                logger: null,
-                null!
+                null!,
+                logger: null
             )
         );
     }
@@ -842,8 +842,8 @@ public class JsonMultiStreamLoaderTests
         (
             _ => new JsonNamedDestination(new MemoryStream()),
             new JsonSerializerOptions(),
-            logger: null,
-            new ManualProgressTimer()
+            new ManualProgressTimer(),
+            logger: null
         );
 
         Assert.NotNull(sut);

@@ -64,8 +64,8 @@ public class JsonLineExtractorTests
         (
             CreateJsonlStream(ExpectedItems.Count),
             new JsonSerializerOptions(),
-            NullLogger<JsonLineExtractor<PersonRecord>>.Instance,
-            timer
+            timer,
+            NullLogger<JsonLineExtractor<PersonRecord>>.Instance
         );
 
 
@@ -195,8 +195,8 @@ public class JsonLineExtractorTests
             (
                 null!,
                 new JsonSerializerOptions(),
-                NullLogger<JsonLineExtractor<PersonRecord>>.Instance,
-                new ManualProgressTimer()
+                new ManualProgressTimer(),
+                NullLogger<JsonLineExtractor<PersonRecord>>.Instance
             )
         );
     }
@@ -210,8 +210,8 @@ public class JsonLineExtractorTests
         (
             new MemoryStream(),
             new JsonSerializerOptions(),
-            logger: null,
-            new ManualProgressTimer()
+            new ManualProgressTimer(),
+            logger: null
         );
 
         Assert.NotNull(sut);
@@ -228,8 +228,8 @@ public class JsonLineExtractorTests
             (
                 new MemoryStream(),
                 new JsonSerializerOptions(),
-                NullLogger<JsonLineExtractor<PersonRecord>>.Instance,
-                timer: null!
+                timer: null!,
+                NullLogger<JsonLineExtractor<PersonRecord>>.Instance
             )
         );
     }
@@ -396,8 +396,8 @@ public class JsonLineExtractorTests
             (
                 null!,
                 TestJsonContext.Default.PersonRecord,
-                NullLogger<JsonLineExtractor<PersonRecord>>.Instance,
-                new ManualProgressTimer()
+                new ManualProgressTimer(),
+                NullLogger<JsonLineExtractor<PersonRecord>>.Instance
             )
         );
     }
@@ -413,8 +413,8 @@ public class JsonLineExtractorTests
             (
                 new MemoryStream(),
                 typeInfo: null!,
-                NullLogger<JsonLineExtractor<PersonRecord>>.Instance,
-                new ManualProgressTimer()
+                new ManualProgressTimer(),
+                NullLogger<JsonLineExtractor<PersonRecord>>.Instance
             )
         );
     }
@@ -428,8 +428,8 @@ public class JsonLineExtractorTests
         (
             new MemoryStream(),
             TestJsonContext.Default.PersonRecord,
-            logger: null,
-            new ManualProgressTimer()
+            new ManualProgressTimer(),
+            logger: null
         );
 
         Assert.NotNull(sut);
@@ -446,8 +446,8 @@ public class JsonLineExtractorTests
             (
                 new MemoryStream(),
                 TestJsonContext.Default.PersonRecord,
-                NullLogger<JsonLineExtractor<PersonRecord>>.Instance,
-                timer: null!
+                timer: null!,
+                NullLogger<JsonLineExtractor<PersonRecord>>.Instance
             )
         );
     }
@@ -587,8 +587,8 @@ public class JsonLineExtractorTests
         (
             CreateJsonlStream(ExpectedItems.Count),
             new JsonSerializerOptions(),
-            NullLogger<JsonLineExtractor<PersonRecord>>.Instance,
-            timer
+            timer,
+            NullLogger<JsonLineExtractor<PersonRecord>>.Instance
         );
 
         var progress = new SynchronousProgress<JsonReport>(_ => callbackCount++);
