@@ -62,8 +62,8 @@ public class JsonSingleStreamExtractorTests
         (
             stream,
             new JsonSerializerOptions(),
-            NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance,
-            timer
+            timer,
+            NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance
         );
     }
 
@@ -143,16 +143,17 @@ public class JsonSingleStreamExtractorTests
 
 
     [Fact]
-    public void Constructor_with_logger_when_logger_is_null_throws_ArgumentNullException()
+    public void Constructor_with_logger_when_logger_is_null_uses_NullLogger()
     {
-        Assert.Throws<ArgumentNullException>
+        // logger is now an optional trailing parameter: null means "no logging"
+        // (NullLogger.Instance) rather than an argument error.
+        var sut = new JsonSingleStreamExtractor<PersonRecord>
         (
-            () => new JsonSingleStreamExtractor<PersonRecord>
-            (
-                new MemoryStream(),
-                logger: null!
-            )
+            new MemoryStream(),
+            logger: null
         );
+
+        Assert.NotNull(sut);
     }
 
 
@@ -196,8 +197,8 @@ public class JsonSingleStreamExtractorTests
             (
                 null!,
                 new JsonSerializerOptions(),
-                NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance,
-                new ManualProgressTimer()
+                new ManualProgressTimer(),
+                NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance
             )
         );
     }
@@ -211,8 +212,8 @@ public class JsonSingleStreamExtractorTests
         (
             new MemoryStream(),
             new JsonSerializerOptions(),
-            logger: null,
-            new ManualProgressTimer()
+            new ManualProgressTimer(),
+            logger: null
         );
 
         Assert.NotNull(sut);
@@ -229,8 +230,8 @@ public class JsonSingleStreamExtractorTests
             (
                 new MemoryStream(),
                 new JsonSerializerOptions(),
-                NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance,
-                null!
+                null!,
+                NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance
             )
         );
     }
@@ -371,8 +372,8 @@ public class JsonSingleStreamExtractorTests
             (
                 null!,
                 TestJsonContext.Default.PersonRecord,
-                NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance,
-                new ManualProgressTimer()
+                new ManualProgressTimer(),
+                NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance
             )
         );
     }
@@ -388,8 +389,8 @@ public class JsonSingleStreamExtractorTests
             (
                 new MemoryStream(),
                 typeInfo: null!,
-                NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance,
-                new ManualProgressTimer()
+                new ManualProgressTimer(),
+                NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance
             )
         );
     }
@@ -403,8 +404,8 @@ public class JsonSingleStreamExtractorTests
         (
             new MemoryStream(),
             TestJsonContext.Default.PersonRecord,
-            logger: null,
-            new ManualProgressTimer()
+            new ManualProgressTimer(),
+            logger: null
         );
 
         Assert.NotNull(sut);
@@ -421,8 +422,8 @@ public class JsonSingleStreamExtractorTests
             (
                 new MemoryStream(),
                 TestJsonContext.Default.PersonRecord,
-                NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance,
-                timer: null!
+                timer: null!,
+                NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance
             )
         );
     }
