@@ -141,7 +141,7 @@ public class JsonOptionsRecordTests
     [Fact]
     public void JsonLineExtractor_when_options_is_null_throws_ArgumentNullException()
     {
-        var ex = Assert.Throws<ArgumentNullException>(() => new JsonLineExtractor<PersonRecord>(new MemoryStream(), options: null!));
+        var ex = Assert.Throws<ArgumentNullException>(() => new JsonLineExtractor<PersonRecord>(new MemoryStream(), (JsonLineExtractorOptions)null!));
 
         Assert.Equal("options", ex.ParamName);
     }
