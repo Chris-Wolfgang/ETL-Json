@@ -185,7 +185,7 @@ public class JsonLineLoaderTests
         var sut = new JsonLineLoader<PersonRecord>
         (
                 new MemoryStream(),
-                serializerOptions: null,
+                (JsonSerializerOptions?)null,
                 NullLogger<JsonLineLoader<PersonRecord>>.Instance
         );
 

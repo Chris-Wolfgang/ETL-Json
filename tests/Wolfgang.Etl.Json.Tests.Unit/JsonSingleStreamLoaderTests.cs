@@ -178,7 +178,7 @@ public class JsonSingleStreamLoaderTests
         var sut = new JsonSingleStreamLoader<PersonRecord>
         (
                 new MemoryStream(),
-                serializerOptions: null,
+                (JsonSerializerOptions?)null,
                 NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance
         );
 
