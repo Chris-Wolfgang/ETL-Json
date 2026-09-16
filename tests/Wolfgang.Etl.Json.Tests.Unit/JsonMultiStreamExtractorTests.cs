@@ -148,10 +148,11 @@ public class JsonMultiStreamExtractorTests
 
 
     [Fact]
-    public void Constructor_with_logger_when_logger_is_null_uses_NullLogger()
+    public void Constructor_with_logger_when_logger_is_null_does_not_throw()
     {
-        // logger is now an optional trailing parameter: null means "no logging"
-        // (NullLogger.Instance) rather than an argument error.
+        // logger is an optional trailing parameter: null means "no logging" rather than an
+        // argument error. The fallback to NullLogger.Instance is private state, so what this
+        // fact can assert is that construction succeeds.
         var sut = new JsonMultiStreamExtractor<PersonRecord>
         (
             Array.Empty<Stream>(),
@@ -693,10 +694,11 @@ public class JsonMultiStreamExtractorTests
 
 
     [Fact]
-    public void Constructor_with_streams_and_logger_when_logger_is_null_uses_NullLogger()
+    public void Constructor_with_streams_and_logger_when_logger_is_null_does_not_throw()
     {
-        // logger is now an optional trailing parameter: null means "no logging"
-        // (NullLogger.Instance) rather than an argument error.
+        // logger is an optional trailing parameter: null means "no logging" rather than an
+        // argument error. The fallback to NullLogger.Instance is private state, so what this
+        // fact can assert is that construction succeeds.
         var sut = new JsonMultiStreamExtractor<PersonRecord>
         (
             new[] { new MemoryStream() },
@@ -741,10 +743,11 @@ public class JsonMultiStreamExtractorTests
 
 
     [Fact]
-    public void Constructor_with_named_sources_and_logger_when_logger_is_null_uses_NullLogger()
+    public void Constructor_with_named_sources_and_logger_when_logger_is_null_does_not_throw()
     {
-        // logger is now an optional trailing parameter: null means "no logging"
-        // (NullLogger.Instance) rather than an argument error.
+        // logger is an optional trailing parameter: null means "no logging" rather than an
+        // argument error. The fallback to NullLogger.Instance is private state, so what this
+        // fact can assert is that construction succeeds.
         var sources = new[] { new JsonNamedStream(new MemoryStream()) };
 
         var sut = new JsonMultiStreamExtractor<PersonRecord>
