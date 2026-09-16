@@ -506,8 +506,8 @@ public class JsonLineLoaderTests
             new JsonLineLoaderOptions
             {
                 Encoding = iso,
-            },
-            opts
+                SerializerOptions = opts,
+            }
         );
 
         var items = new List<PersonRecord>
