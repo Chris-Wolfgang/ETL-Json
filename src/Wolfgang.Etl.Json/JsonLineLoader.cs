@@ -157,7 +157,6 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     /// </summary>
     /// <param name="stream">The stream to write JSON Lines to.</param>
     /// <param name="options">The construction-time configuration for this stage, including the settings inherited from <see cref="LoaderOptions"/>.</param>
-    /// <param name="serializerOptions">Optional <see cref="JsonSerializerOptions"/> for the serializer; <see langword="null"/> uses the defaults.</param>
     /// <param name="logger">An optional logger; <see langword="null"/> disables logging.</param>
     /// <exception cref="ArgumentNullException">A required argument is <see langword="null"/>.</exception>
 #if NET5_0_OR_GREATER
@@ -168,13 +167,12 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     (
         Stream stream,
         JsonLineLoaderOptions options,
-        JsonSerializerOptions? serializerOptions = null,
         ILogger<JsonLineLoader<TRecord>>? logger = null
     )
         : base(options)
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _options = serializerOptions;
+        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
     }
@@ -187,6 +185,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     /// <param name="options">The construction-time configuration for this stage, including the settings inherited from <see cref="LoaderOptions"/>.</param>
     /// <param name="logger">An optional logger; <see langword="null"/> disables logging.</param>
     /// <exception cref="ArgumentNullException">A required argument is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentException"><paramref name="options"/> sets <see cref="JsonLineLoaderOptions.SerializerOptions"/>, which cannot be combined with a <paramref name="typeInfo"/>; the type info carries its own serializer options.</exception>
     public JsonLineLoader
     (
         Stream stream,
@@ -196,10 +195,32 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     )
         : base(options)
     {
+        RejectSerializerOptions(options);
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
         _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
+    }
+
+
+
+    /// <summary>
+    /// Rejects a record that sets <see cref="JsonLineLoaderOptions.SerializerOptions"/> when a source-generated type info is
+    /// supplied: the type info carries its own serializer options, so the record's would be ignored, and an ignored
+    /// setting is worse than an error.
+    /// </summary>
+    /// <param name="options">The record to check.</param>
+    /// <exception cref="ArgumentException">The record sets <see cref="JsonLineLoaderOptions.SerializerOptions"/>.</exception>
+    private static void RejectSerializerOptions(JsonLineLoaderOptions options)
+    {
+        if (options?.SerializerOptions is not null)
+        {
+            throw new ArgumentException
+            (
+                "SerializerOptions cannot be combined with a JsonTypeInfo; the type info carries its own serializer options.",
+                nameof(options)
+            );
+        }
     }
 
 
@@ -245,7 +266,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _options = serializerOptions ?? throw new ArgumentNullException(nameof(serializerOptions));
+        _options = serializerOptions;
         _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }

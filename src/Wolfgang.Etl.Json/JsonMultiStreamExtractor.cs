@@ -246,7 +246,6 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// </summary>
     /// <param name="streams">The streams to read from, in order.</param>
     /// <param name="options">The construction-time configuration for this stage, including the settings inherited from <see cref="ExtractorOptions"/>.</param>
-    /// <param name="serializerOptions">Optional <see cref="JsonSerializerOptions"/> for the deserializer; <see langword="null"/> uses the defaults.</param>
     /// <param name="logger">An optional logger; <see langword="null"/> disables logging.</param>
     /// <exception cref="ArgumentNullException">A required argument is <see langword="null"/>.</exception>
 #if NET5_0_OR_GREATER
@@ -257,7 +256,6 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     (
         IEnumerable<Stream> streams,
         JsonMultiStreamExtractorOptions options,
-        JsonSerializerOptions? serializerOptions = null,
         ILogger<JsonMultiStreamExtractor<TRecord>>? logger = null
     )
         : base(options)
@@ -268,7 +266,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
         }
 
         _sources = streams.Select(s => new JsonNamedStream(s));
-        _options = serializerOptions;
+        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
     }
@@ -281,6 +279,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// <param name="options">The construction-time configuration for this stage, including the settings inherited from <see cref="ExtractorOptions"/>.</param>
     /// <param name="logger">An optional logger; <see langword="null"/> disables logging.</param>
     /// <exception cref="ArgumentNullException">A required argument is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentException"><paramref name="options"/> sets <see cref="JsonMultiStreamExtractorOptions.SerializerOptions"/>, which cannot be combined with a <paramref name="typeInfo"/>; the type info carries its own serializer options.</exception>
     public JsonMultiStreamExtractor
     (
         IEnumerable<Stream> streams,
@@ -290,6 +289,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     )
         : base(options)
     {
+        RejectSerializerOptions(options);
         if (streams is null)
         {
             throw new ArgumentNullException(nameof(streams));
@@ -306,20 +306,18 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// </summary>
     /// <param name="sources">The named sources to read from, in order.</param>
     /// <param name="options">The construction-time configuration for this stage, including the settings inherited from <see cref="ExtractorOptions"/>.</param>
-    /// <param name="serializerOptions">Optional <see cref="JsonSerializerOptions"/> for the deserializer; <see langword="null"/> uses the defaults.</param>
     /// <param name="logger">An optional logger; <see langword="null"/> disables logging.</param>
     /// <exception cref="ArgumentNullException">A required argument is <see langword="null"/>.</exception>
     public JsonMultiStreamExtractor
     (
         IEnumerable<JsonNamedStream> sources,
         JsonMultiStreamExtractorOptions options,
-        JsonSerializerOptions? serializerOptions = null,
         ILogger<JsonMultiStreamExtractor<TRecord>>? logger = null
     )
         : base(options)
     {
         _sources = sources ?? throw new ArgumentNullException(nameof(sources));
-        _options = serializerOptions;
+        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
     }
@@ -332,6 +330,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// <param name="options">The construction-time configuration for this stage, including the settings inherited from <see cref="ExtractorOptions"/>.</param>
     /// <param name="logger">An optional logger; <see langword="null"/> disables logging.</param>
     /// <exception cref="ArgumentNullException">A required argument is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentException"><paramref name="options"/> sets <see cref="JsonMultiStreamExtractorOptions.SerializerOptions"/>, which cannot be combined with a <paramref name="typeInfo"/>; the type info carries its own serializer options.</exception>
     public JsonMultiStreamExtractor
     (
         IEnumerable<JsonNamedStream> sources,
@@ -341,10 +340,32 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     )
         : base(options)
     {
+        RejectSerializerOptions(options);
         _sources = sources ?? throw new ArgumentNullException(nameof(sources));
         _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
+    }
+
+
+
+    /// <summary>
+    /// Rejects a record that sets <see cref="JsonMultiStreamExtractorOptions.SerializerOptions"/> when a source-generated type info is
+    /// supplied: the type info carries its own serializer options, so the record's would be ignored, and an ignored
+    /// setting is worse than an error.
+    /// </summary>
+    /// <param name="options">The record to check.</param>
+    /// <exception cref="ArgumentException">The record sets <see cref="JsonMultiStreamExtractorOptions.SerializerOptions"/>.</exception>
+    private static void RejectSerializerOptions(JsonMultiStreamExtractorOptions options)
+    {
+        if (options?.SerializerOptions is not null)
+        {
+            throw new ArgumentException
+            (
+                "SerializerOptions cannot be combined with a JsonTypeInfo; the type info carries its own serializer options.",
+                nameof(options)
+            );
+        }
     }
 
 
@@ -390,7 +411,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
         }
 
         _sources = streams.Select(s => new JsonNamedStream(s));
-        _options = serializerOptions ?? throw new ArgumentNullException(nameof(serializerOptions));
+        _options = serializerOptions;
         _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
@@ -414,7 +435,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     )
     {
         _sources = sources ?? throw new ArgumentNullException(nameof(sources));
-        _options = serializerOptions ?? throw new ArgumentNullException(nameof(serializerOptions));
+        _options = serializerOptions;
         _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
