@@ -110,18 +110,48 @@ var loader = new JsonLineLoader<Person>(stream, logger);
 await loader.LoadAsync(items, cancellationToken);
 ```
 
-### Custom serialization options
+### Configuring a stage
 
-All extractors and loaders accept an optional `JsonSerializerOptions`:
+Every stage takes an options record right after its source. The record carries the stage's own settings
+together with the ones every extractor or loader shares (`ReportingInterval`, `MaximumItemCount`,
+`SkipItemCount`, `ErrorPolicy`), so one object configures the whole stage:
 
 ```csharp
-var options = new JsonSerializerOptions
+var extractor = new JsonLineExtractor<Person>
+(
+    stream,
+    new JsonLineExtractorOptions
+    {
+        EnableCheckpointing = true,
+        MaximumItemCount = 1_000,
+    }
+);
+
+var loader = new JsonLineLoader<Person>(stream, new JsonLineLoaderOptions { IsDryRun = true });
+```
+
+| Stage | Record | Own members |
+|-------|--------|-------------|
+| `JsonLineExtractor<T>` | `JsonLineExtractorOptions` | `Encoding`, `EnableCheckpointing`, `StartByteOffset` |
+| `JsonSingleStreamExtractor<T>` / `JsonMultiStreamExtractor<T>` | `JsonSingleStreamExtractorOptions` / `JsonMultiStreamExtractorOptions` | — |
+| `JsonLineLoader<T>` | `JsonLineLoaderOptions` | `Encoding`, `IsDryRun` |
+| `JsonSingleStreamLoader<T>` / `JsonMultiStreamLoader<T>` | `JsonSingleStreamLoaderOptions` / `JsonMultiStreamLoaderOptions` | `IsDryRun` |
+
+A stage constructed without a record keeps every default.
+
+### Custom serialization options
+
+Serializer configuration is separate from the stage record: every extractor and loader accepts an optional
+`JsonSerializerOptions` after it.
+
+```csharp
+var serializerOptions = new JsonSerializerOptions
 {
     PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
     PropertyNameCaseInsensitive = true,
 };
 
-var extractor = new JsonSingleStreamExtractor<Person>(stream, options, logger);
+var extractor = new JsonSingleStreamExtractor<Person>(stream, new JsonSingleStreamExtractorOptions(), serializerOptions, logger);
 ```
 
 ### Source generation (AOT-friendly)

@@ -144,10 +144,18 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// <param name="serializerOptions">The JSON serializer options to use, or <c>null</c> for the default.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="path"/> is <c>null</c>.</exception>
+    /// <remarks>
+    /// Superseded by the overload that takes a <see cref="JsonLineExtractorOptions"/> record before the serializer options.
+    /// Retained for binary compatibility with assemblies compiled against 0.8.x, which are bound to this exact
+    /// signature; removing it would fail them at runtime with <see cref="MissingMethodException"/> with no
+    /// compile-time signal. Hidden from IntelliSense; source code binds here too, so nothing changes for callers.
+    /// New code passes the record.
+    /// </remarks>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
     [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
 #endif
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public JsonLineExtractor
     (
         string path,
@@ -207,10 +215,18 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="stream"/> is <c>null</c>.
     /// </exception>
+    /// <remarks>
+    /// Superseded by the overload that takes a <see cref="JsonLineExtractorOptions"/> record before the serializer options.
+    /// Retained for binary compatibility with assemblies compiled against 0.8.x, which are bound to this exact
+    /// signature; removing it would fail them at runtime with <see cref="MissingMethodException"/> with no
+    /// compile-time signal. Hidden from IntelliSense; source code binds here too, so nothing changes for callers.
+    /// New code passes the record.
+    /// </remarks>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
     [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
 #endif
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public JsonLineExtractor
     (
         Stream stream,
