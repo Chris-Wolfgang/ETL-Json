@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `Wolfgang.Etl.Abstractions` / `.ErrorPolicies` 0.23.4 → 0.24.0 (`.TestKit` / `.TestKit.Xunit` for the test project).
   The three dry-run contract tests use the now non-generic TestKit base.
+- The ten `(source, JsonSerializerOptions?, ILogger?)` constructors are hidden from IntelliSense and retained permanently,
+  superseded by the record constructors (`(source, options, logger)`, with `SerializerOptions` on the record); same rule and reasoning as
+  the single-argument constructors below. Nothing changes for callers.
 - The eight single-argument constructors — `(Stream)` on the four single-stream stages, `(IEnumerable<Stream>)` /
   `(IEnumerable<JsonNamedStream>)` on `JsonMultiStreamExtractor<T>` and the two factory forms on
   `JsonMultiStreamLoader<T>` — are hidden from IntelliSense (`[EditorBrowsable(Never)]`) and retained permanently
@@ -36,6 +39,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- README section *Configuring a stage* and `docs/migrations/v0.8-to-v0.9.md` covering the records, the
+  `serializerOptions` rename, the deprecated setters and the hidden constructors.
 - **Options records for all six stages** (ADR-0009, first half of #303; Chris-Wolfgang/ETL-Abstractions#455):
   `JsonLineExtractorOptions`, `JsonSingleStreamExtractorOptions`, `JsonMultiStreamExtractorOptions` (inheriting
   `ExtractorOptions`) and `JsonLineLoaderOptions`, `JsonSingleStreamLoaderOptions`, `JsonMultiStreamLoaderOptions`

@@ -124,10 +124,18 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="stream"/> is <c>null</c>.
     /// </exception>
+    /// <remarks>
+    /// Superseded by the overload that takes a <see cref="JsonSingleStreamLoaderOptions"/> record before the serializer options.
+    /// Retained for binary compatibility with assemblies compiled against 0.8.x, which are bound to this exact
+    /// signature; removing it would fail them at runtime with <see cref="MissingMethodException"/> with no
+    /// compile-time signal. Hidden from IntelliSense; source code binds here too, so nothing changes for callers.
+    /// New code passes the record.
+    /// </remarks>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
     [RequiresDynamicCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
 #endif
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public JsonSingleStreamLoader
     (
         Stream stream,
