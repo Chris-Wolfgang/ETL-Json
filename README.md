@@ -112,7 +112,9 @@ await loader.LoadAsync(items, cancellationToken);
 
 ### Configuring a stage
 
-Every stage takes an options record right after its source. The record carries the stage's own settings
+Every stage takes an options record: right after the source on the reflection-based constructors
+(`(source, options, serializerOptions, logger)`), and right after the type info on the source-generated ones
+(`(source, typeInfo, options, logger)`). The record carries the stage's own settings
 together with the ones every extractor or loader shares (`ReportingInterval`, `MaximumItemCount`,
 `SkipItemCount`, `ErrorPolicy`), so one object configures the whole stage:
 
