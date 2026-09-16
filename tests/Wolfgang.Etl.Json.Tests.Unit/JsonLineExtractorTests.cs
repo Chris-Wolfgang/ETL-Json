@@ -640,10 +640,14 @@ public class JsonLineExtractorTests
         var json = JsonSerializer.Serialize(item, opts);
         var stream = new MemoryStream(iso.GetBytes(json + "\n"));
 
-        var sut = new JsonLineExtractor<PersonRecord>(stream)
-        {
-            Encoding = iso,
-        };
+        var sut = new JsonLineExtractor<PersonRecord>
+        (
+            stream,
+            new JsonLineExtractorOptions
+            {
+                Encoding = iso,
+            }
+        );
 
         var results = await sut.ExtractAsync().ToListAsync();
 
@@ -698,10 +702,14 @@ public class JsonLineExtractorTests
     public async Task CurrentByteOffset_advances_to_stream_length_after_full_extraction()
     {
         var stream = CreateJsonlStream(3);
-        var sut = new JsonLineExtractor<PersonRecord>(stream)
-        {
-            EnableCheckpointing = true,
-        };
+        var sut = new JsonLineExtractor<PersonRecord>
+        (
+            stream,
+            new JsonLineExtractorOptions
+            {
+                EnableCheckpointing = true,
+            }
+        );
 
         await sut.ExtractAsync().ToListAsync();
 
@@ -716,20 +724,28 @@ public class JsonLineExtractorTests
         var stream = CreateJsonlStream(ExpectedItems.Count);
 
         // First pass — extract the first two items and capture the checkpoint.
-        var sut1 = new JsonLineExtractor<PersonRecord>(stream)
-        {
-            MaximumItemCount = 2,
-            EnableCheckpointing = true,
-        };
+        var sut1 = new JsonLineExtractor<PersonRecord>
+        (
+            stream,
+            new JsonLineExtractorOptions
+            {
+                MaximumItemCount = 2,
+                EnableCheckpointing = true,
+            }
+        );
         var firstBatch = await sut1.ExtractAsync().ToListAsync();
         var checkpoint = sut1.CurrentByteOffset;
 
         // Second pass — seek to checkpoint and extract the remainder.
         // Resuming via StartByteOffset works even without EnableCheckpointing.
-        var sut2 = new JsonLineExtractor<PersonRecord>(stream)
-        {
-            StartByteOffset = checkpoint,
-        };
+        var sut2 = new JsonLineExtractor<PersonRecord>
+        (
+            stream,
+            new JsonLineExtractorOptions
+            {
+                StartByteOffset = checkpoint,
+            }
+        );
         var secondBatch = await sut2.ExtractAsync().ToListAsync();
 
         Assert.Equal(ExpectedItems.Take(2).ToList(), firstBatch);
@@ -742,11 +758,11 @@ public class JsonLineExtractorTests
     public async Task ExtractAsync_when_StartByteOffset_set_extracts_items_from_checkpoint()
     {
         var stream = CreateJsonlStream(3);
-        var sut1 = new JsonLineExtractor<PersonRecord>(stream) { MaximumItemCount = 1, EnableCheckpointing = true };
+        var sut1 = new JsonLineExtractor<PersonRecord>(stream, new JsonLineExtractorOptions { MaximumItemCount = 1, EnableCheckpointing = true });
         await sut1.ExtractAsync().ToListAsync();
         var checkpoint = sut1.CurrentByteOffset;
 
-        var sut2 = new JsonLineExtractor<PersonRecord>(stream) { StartByteOffset = checkpoint };
+        var sut2 = new JsonLineExtractor<PersonRecord>(stream, new JsonLineExtractorOptions { StartByteOffset = checkpoint });
         var results = await sut2.ExtractAsync().ToListAsync();
 
         Assert.Equal(ExpectedItems.Skip(1).Take(2).ToList(), results);
@@ -759,10 +775,14 @@ public class JsonLineExtractorTests
     {
         using var ms = CreateJsonlStream(3);
         using var nonSeekable = new NonSeekableStream(ms);
-        var sut = new JsonLineExtractor<PersonRecord>(nonSeekable)
-        {
-            StartByteOffset = 10,
-        };
+        var sut = new JsonLineExtractor<PersonRecord>
+        (
+            nonSeekable,
+            new JsonLineExtractorOptions
+            {
+                StartByteOffset = 10,
+            }
+        );
 
         await Assert.ThrowsAsync<InvalidOperationException>
         (
@@ -778,10 +798,14 @@ public class JsonLineExtractorTests
         var lines = ExpectedItems.Take(3).Select(item => JsonSerializer.Serialize(item));
         var content = string.Join("\r\n", lines);
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
-        var sut = new JsonLineExtractor<PersonRecord>(stream)
-        {
-            EnableCheckpointing = true,
-        };
+        var sut = new JsonLineExtractor<PersonRecord>
+        (
+            stream,
+            new JsonLineExtractorOptions
+            {
+                EnableCheckpointing = true,
+            }
+        );
 
         await sut.ExtractAsync().ToListAsync();
 

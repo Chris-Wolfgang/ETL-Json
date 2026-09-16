@@ -54,6 +54,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Deprecated
 
+- The seven configuration setters — `Encoding`, `EnableCheckpointing`, `StartByteOffset` on `JsonLineExtractor<T>`;
+  `Encoding` and `IsDryRun` on `JsonLineLoader<T>`; `IsDryRun` on `JsonSingleStreamLoader<T>` and
+  `JsonMultiStreamLoader<T>` — are `[Obsolete]` on the **setter accessor** (reads stay warning-free), pointing at the
+  options record to use instead (second half of #303). Nothing is removed; removal follows in a later release.
+
 ### Removed
 
 - `JsonLineLoader<TRecord>`, `JsonSingleStreamLoader<TRecord>` and `JsonMultiStreamLoader<TRecord>` no longer implement

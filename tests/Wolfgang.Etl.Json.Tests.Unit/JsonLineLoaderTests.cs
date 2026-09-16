@@ -500,10 +500,15 @@ public class JsonLineLoaderTests
             Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
         };
         var stream = new MemoryStream();
-        var sut = new JsonLineLoader<PersonRecord>(stream, opts)
-        {
-            Encoding = iso,
-        };
+        var sut = new JsonLineLoader<PersonRecord>
+        (
+            stream,
+            new JsonLineLoaderOptions
+            {
+                Encoding = iso,
+            },
+            opts
+        );
 
         var items = new List<PersonRecord>
         {

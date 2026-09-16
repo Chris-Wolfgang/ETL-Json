@@ -57,7 +57,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     /// progress counters as usual but skips calling the stream factory and writing
     /// any JSON to output streams.
     /// </remarks>
-    public bool IsDryRun { get; set; }
+    public bool IsDryRun { get; [Obsolete("Configure IsDryRun through JsonMultiStreamLoaderOptions passed to the constructor instead. The setter will be removed in a later release.")] set; }
 
 
 
@@ -372,6 +372,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     /// settings were applied by the <see cref="LoaderBase{TDestination, TProgress}"/> constructor.
     /// </summary>
     /// <exception cref="ArgumentNullException"><paramref name="options"/> is <see langword="null"/>.</exception>
+#pragma warning disable CS0618 // ApplyOptions is the supported replacement for these setters; it necessarily writes them.
     private void ApplyOptions(JsonMultiStreamLoaderOptions options)
     {
         if (options is null)
@@ -381,6 +382,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
 
         IsDryRun = options.IsDryRun;
     }
+#pragma warning restore CS0618
 
 
 

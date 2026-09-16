@@ -59,7 +59,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// When <see langword="null"/> (the default), the encoding is inferred from the
     /// stream's byte-order mark (BOM), falling back to UTF-8.
     /// </summary>
-    public Encoding? Encoding { get; set; }
+    public Encoding? Encoding { get; [Obsolete("Configure Encoding through JsonLineExtractorOptions passed to the constructor instead. The setter will be removed in a later release.")] set; }
 
 
 
@@ -75,7 +75,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// prior run via <see cref="StartByteOffset"/> does not by itself require this flag — set it only
     /// when you also need to capture new checkpoints during the resumed run.
     /// </remarks>
-    public bool EnableCheckpointing { get; set; }
+    public bool EnableCheckpointing { get; [Obsolete("Configure EnableCheckpointing through JsonLineExtractorOptions passed to the constructor instead. The setter will be removed in a later release.")] set; }
 
 
 
@@ -85,7 +85,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// The stream must be seekable when this value is greater than zero.
     /// Default is <c>0</c> (start of stream).
     /// </summary>
-    public long StartByteOffset { get; set; }
+    public long StartByteOffset { get; [Obsolete("Configure StartByteOffset through JsonLineExtractorOptions passed to the constructor instead. The setter will be removed in a later release.")] set; }
 
 
 
@@ -315,6 +315,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// settings were applied by the <see cref="ExtractorBase{TSource, TProgress}"/> constructor.
     /// </summary>
     /// <exception cref="ArgumentNullException"><paramref name="options"/> is <see langword="null"/>.</exception>
+#pragma warning disable CS0618 // ApplyOptions is the supported replacement for these setters; it necessarily writes them.
     private void ApplyOptions(JsonLineExtractorOptions options)
     {
         if (options is null)
@@ -326,6 +327,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
         EnableCheckpointing = options.EnableCheckpointing;
         StartByteOffset = options.StartByteOffset;
     }
+#pragma warning restore CS0618
 
 
 
