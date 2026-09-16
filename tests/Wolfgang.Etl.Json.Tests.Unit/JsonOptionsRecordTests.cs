@@ -103,13 +103,37 @@ public class JsonOptionsRecordTests
 
 
     [Fact]
-    public void JsonLineExtractor_when_constructed_with_options_keeps_the_serializer_options_beside_the_record()
+    public void JsonLineExtractor_when_the_record_carries_SerializerOptions_uses_them()
     {
         var serializerOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
-        using var sut = new JsonLineExtractor<PersonRecord>(new MemoryStream(), new JsonLineExtractorOptions(), serializerOptions);
+        using var sut = new JsonLineExtractor<PersonRecord>(new MemoryStream(), new JsonLineExtractorOptions { SerializerOptions = serializerOptions });
 
         Assert.NotNull(sut);
+    }
+
+
+
+    [Fact]
+    public void JsonLineExtractor_when_typeInfo_and_SerializerOptions_are_both_supplied_throws_ArgumentException()
+    {
+        var options = new JsonLineExtractorOptions { SerializerOptions = new JsonSerializerOptions() };
+
+        var ex = Assert.Throws<ArgumentException>(() => new JsonLineExtractor<PersonRecord>(new MemoryStream(), TestJsonContext.Default.PersonRecord, options));
+
+        Assert.Equal("options", ex.ParamName);
+    }
+
+
+
+    [Fact]
+    public void JsonLineLoader_when_typeInfo_and_SerializerOptions_are_both_supplied_throws_ArgumentException()
+    {
+        var options = new JsonLineLoaderOptions { SerializerOptions = new JsonSerializerOptions() };
+
+        var ex = Assert.Throws<ArgumentException>(() => new JsonLineLoader<PersonRecord>(new MemoryStream(), TestJsonContext.Default.PersonRecord, options));
+
+        Assert.Equal("options", ex.ParamName);
     }
 
 

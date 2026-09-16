@@ -74,8 +74,12 @@ public class ConstructorOverloadResolutionTests
 
         using var typed = new JsonLineExtractor<PersonRecord>(new MemoryStream(), serializerOptions);
         using var typedWithLogger = new JsonLineExtractor<PersonRecord>(new MemoryStream(), serializerOptions, null);
+        using var record = new JsonLineExtractor<PersonRecord>(new MemoryStream(), new JsonLineExtractorOptions());
+        using var recordWithLogger = new JsonLineExtractor<PersonRecord>(new MemoryStream(), new JsonLineExtractorOptions(), null);
 
         Assert.NotNull(typed);
         Assert.NotNull(typedWithLogger);
+        Assert.NotNull(record);
+        Assert.NotNull(recordWithLogger);
     }
 }
