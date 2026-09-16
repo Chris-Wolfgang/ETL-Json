@@ -280,7 +280,6 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     /// </summary>
     /// <param name="streamFactory">The factory that supplies the destination stream for each record.</param>
     /// <param name="options">The construction-time configuration for this stage, including the settings inherited from <see cref="LoaderOptions"/>.</param>
-    /// <param name="serializerOptions">Optional <see cref="JsonSerializerOptions"/> for the serializer; <see langword="null"/> uses the defaults.</param>
     /// <param name="logger">An optional logger; <see langword="null"/> disables logging.</param>
     /// <exception cref="ArgumentNullException">A required argument is <see langword="null"/>.</exception>
 #if NET5_0_OR_GREATER
@@ -291,7 +290,6 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     (
         Func<TRecord, Stream> streamFactory,
         JsonMultiStreamLoaderOptions options,
-        JsonSerializerOptions? serializerOptions = null,
         ILogger<JsonMultiStreamLoader<TRecord>>? logger = null
     )
         : base(options)
@@ -302,7 +300,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
         }
 
         _destinationFactory = item => new JsonNamedDestination(streamFactory(item));
-        _options = serializerOptions;
+        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
     }
@@ -315,6 +313,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     /// <param name="options">The construction-time configuration for this stage, including the settings inherited from <see cref="LoaderOptions"/>.</param>
     /// <param name="logger">An optional logger; <see langword="null"/> disables logging.</param>
     /// <exception cref="ArgumentNullException">A required argument is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentException"><paramref name="options"/> sets <see cref="JsonMultiStreamLoaderOptions.SerializerOptions"/>, which cannot be combined with a <paramref name="typeInfo"/>; the type info carries its own serializer options.</exception>
     public JsonMultiStreamLoader
     (
         Func<TRecord, Stream> streamFactory,
@@ -324,6 +323,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     )
         : base(options)
     {
+        RejectSerializerOptions(options);
         if (streamFactory is null)
         {
             throw new ArgumentNullException(nameof(streamFactory));
@@ -340,20 +340,18 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     /// </summary>
     /// <param name="destinationFactory">The factory that supplies the named destination for each record.</param>
     /// <param name="options">The construction-time configuration for this stage, including the settings inherited from <see cref="LoaderOptions"/>.</param>
-    /// <param name="serializerOptions">Optional <see cref="JsonSerializerOptions"/> for the serializer; <see langword="null"/> uses the defaults.</param>
     /// <param name="logger">An optional logger; <see langword="null"/> disables logging.</param>
     /// <exception cref="ArgumentNullException">A required argument is <see langword="null"/>.</exception>
     public JsonMultiStreamLoader
     (
         Func<TRecord, JsonNamedDestination> destinationFactory,
         JsonMultiStreamLoaderOptions options,
-        JsonSerializerOptions? serializerOptions = null,
         ILogger<JsonMultiStreamLoader<TRecord>>? logger = null
     )
         : base(options)
     {
         _destinationFactory = destinationFactory ?? throw new ArgumentNullException(nameof(destinationFactory));
-        _options = serializerOptions;
+        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
     }
@@ -366,6 +364,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     /// <param name="options">The construction-time configuration for this stage, including the settings inherited from <see cref="LoaderOptions"/>.</param>
     /// <param name="logger">An optional logger; <see langword="null"/> disables logging.</param>
     /// <exception cref="ArgumentNullException">A required argument is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentException"><paramref name="options"/> sets <see cref="JsonMultiStreamLoaderOptions.SerializerOptions"/>, which cannot be combined with a <paramref name="typeInfo"/>; the type info carries its own serializer options.</exception>
     public JsonMultiStreamLoader
     (
         Func<TRecord, JsonNamedDestination> destinationFactory,
@@ -375,10 +374,32 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     )
         : base(options)
     {
+        RejectSerializerOptions(options);
         _destinationFactory = destinationFactory ?? throw new ArgumentNullException(nameof(destinationFactory));
         _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
+    }
+
+
+
+    /// <summary>
+    /// Rejects a record that sets <see cref="JsonMultiStreamLoaderOptions.SerializerOptions"/> when a source-generated type info is
+    /// supplied: the type info carries its own serializer options, so the record's would be ignored, and an ignored
+    /// setting is worse than an error.
+    /// </summary>
+    /// <param name="options">The record to check.</param>
+    /// <exception cref="ArgumentException">The record sets <see cref="JsonMultiStreamLoaderOptions.SerializerOptions"/>.</exception>
+    private static void RejectSerializerOptions(JsonMultiStreamLoaderOptions options)
+    {
+        if (options?.SerializerOptions is not null)
+        {
+            throw new ArgumentException
+            (
+                "SerializerOptions cannot be combined with a JsonTypeInfo; the type info carries its own serializer options.",
+                nameof(options)
+            );
+        }
     }
 
 
@@ -430,7 +451,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
         }
 
         _destinationFactory = item => new JsonNamedDestination(streamFactory(item));
-        _options = serializerOptions ?? throw new ArgumentNullException(nameof(serializerOptions));
+        _options = serializerOptions;
         _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
@@ -457,7 +478,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     )
     {
         _destinationFactory = destinationFactory ?? throw new ArgumentNullException(nameof(destinationFactory));
-        _options = serializerOptions ?? throw new ArgumentNullException(nameof(serializerOptions));
+        _options = serializerOptions;
         _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }

@@ -52,11 +52,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (inheriting `LoaderOptions`) from Wolfgang.Etl.Abstractions 0.24. Each carries the stage's own settings
   (`Encoding`, `EnableCheckpointing`, `StartByteOffset` on the line extractor; `Encoding` and `IsDryRun` on the
   line loader; `IsDryRun` on the other loaders) plus the inherited `ReportingInterval`, `MaximumItemCount`,
-  `SkipItemCount` and `ErrorPolicy`, all `{ get; init; }`. Serializer configuration is deliberately not in the
-  record: it stays a constructor parameter, because a `JsonTypeInfo<TRecord>` already carries its options.
+  `SkipItemCount` and `ErrorPolicy`, all `{ get; init; }`, plus `SerializerOptions` for the reflection-based serializer.
+  The source-generated path keeps `JsonTypeInfo<TRecord>` as a constructor parameter (the type info carries its own
+  serializer options); a record that sets `SerializerOptions` is rejected by those constructors.
 - **Constructors taking the record**, one per input shape and serializer family, with the record as a required
-  parameter directly after the source (`(source, options, serializerOptions = null, logger = null)` and
-  `(source, typeInfo, options, logger = null)`; the file-path forms likewise). Required rather than defaulted so
+  parameter directly after the source (`(source, options, logger = null)` and `(source, typeInfo, options, logger = null)`;
+  the file-path forms likewise). Required rather than defaulted so
   every existing call keeps binding to the constructor it binds to today. The existing constructors keep their
   binary signatures (see *Changed* for the one parameter rename); the `{ get; set; }` properties are unchanged in this
   release and deprecated in the next.
