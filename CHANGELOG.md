@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `Wolfgang.Etl.Abstractions` / `.ErrorPolicies` 0.23.4 → 0.24.0 (`.TestKit` / `.TestKit.Xunit` for the test project).
+  The three dry-run contract tests use the now non-generic TestKit base.
 - The eight single-argument constructors — `(Stream)` on the four single-stream stages, `(IEnumerable<Stream>)` /
   `(IEnumerable<JsonNamedStream>)` on `JsonMultiStreamExtractor<T>` and the two factory forms on
   `JsonMultiStreamLoader<T>` — are hidden from IntelliSense (`[EditorBrowsable(Never)]`) and retained permanently
@@ -34,11 +36,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Options records for all six stages** (ADR-0009, first half of #303; Chris-Wolfgang/ETL-Abstractions#455):
+  `JsonLineExtractorOptions`, `JsonSingleStreamExtractorOptions`, `JsonMultiStreamExtractorOptions` (inheriting
+  `ExtractorOptions`) and `JsonLineLoaderOptions`, `JsonSingleStreamLoaderOptions`, `JsonMultiStreamLoaderOptions`
+  (inheriting `LoaderOptions`) from Wolfgang.Etl.Abstractions 0.24. Each carries the stage's own settings
+  (`Encoding`, `EnableCheckpointing`, `StartByteOffset` on the line extractor; `Encoding` and `IsDryRun` on the
+  line loader; `IsDryRun` on the other loaders) plus the inherited `ReportingInterval`, `MaximumItemCount`,
+  `SkipItemCount` and `ErrorPolicy`, all `{ get; init; }`. Serializer configuration is deliberately not in the
+  record: it stays a constructor parameter, because a `JsonTypeInfo<TRecord>` already carries its options.
+- **Constructors taking the record**, one per input shape and serializer family, with the record as a required
+  parameter directly after the source (`(source, options, serializerOptions = null, logger = null)` and
+  `(source, typeInfo, options, logger = null)`; the file-path forms likewise). Required rather than defaulted so
+  every existing call keeps binding to the constructor it binds to today. The existing constructors are
+  unchanged; the `{ get; set; }` properties are unchanged in this release and deprecated in the next.
+
 ### Changed
 
 ### Deprecated
 
 ### Removed
+
+- `JsonLineLoader<TRecord>`, `JsonSingleStreamLoader<TRecord>` and `JsonMultiStreamLoader<TRecord>` no longer implement
+  `ISupportDryRun`; Wolfgang.Etl.Abstractions 0.24 removes the interface (Chris-Wolfgang/ETL-Abstractions#457).
+  `IsDryRun` itself is unchanged for readers and now also configurable through the options records.
 
 ### Fixed
 

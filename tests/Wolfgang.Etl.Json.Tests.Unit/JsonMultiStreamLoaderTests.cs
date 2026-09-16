@@ -258,7 +258,7 @@ public class JsonMultiStreamLoaderTests
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
                 _ => new MemoryStream(),
-                options: null,
+                serializerOptions: null,
                 NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
         );
 
@@ -781,7 +781,7 @@ public class JsonMultiStreamLoaderTests
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
                 _ => new JsonNamedDestination(new MemoryStream()),
-                options: null
+                serializerOptions: null
         );
 
         Assert.NotNull(sut);

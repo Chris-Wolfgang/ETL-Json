@@ -31,7 +31,7 @@ namespace Wolfgang.Etl.Json;
 /// await loader.LoadAsync(items, cancellationToken);
 /// </code>
 /// </example>
-public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonReport>, ISupportDryRun
+public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSON single-stream loading of {typeof(TRecord).Name}";
@@ -119,7 +119,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     /// with custom serialization options.
     /// </summary>
     /// <param name="stream">The stream to write the JSON array to.</param>
-    /// <param name="options">The JSON serializer options to use for serialization, or <c>null</c> for the serializer default.</param>
+    /// <param name="serializerOptions">The JSON serializer options to use for serialization, or <c>null</c> for the serializer default.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="stream"/> is <c>null</c>.
@@ -131,13 +131,82 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     public JsonSingleStreamLoader
     (
         Stream stream,
-        JsonSerializerOptions? options = null,
+        JsonSerializerOptions? serializerOptions = null,
         ILogger<JsonSingleStreamLoader<TRecord>>? logger = null
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _options = options;
+        _options = serializerOptions;
         _logger = logger ?? (ILogger)NullLogger.Instance;
+    }
+
+
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonSingleStreamLoader{TRecord}"/> class configured through an options record.
+    /// </summary>
+    /// <param name="stream">The stream to write a single JSON array to.</param>
+    /// <param name="options">The construction-time configuration for this stage, including the settings inherited from <see cref="LoaderOptions"/>.</param>
+    /// <param name="serializerOptions">Optional <see cref="JsonSerializerOptions"/> for the serializer; <see langword="null"/> uses the defaults.</param>
+    /// <param name="logger">An optional logger; <see langword="null"/> disables logging.</param>
+    /// <exception cref="ArgumentNullException">A required argument is <see langword="null"/>.</exception>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+    [RequiresDynamicCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
+    public JsonSingleStreamLoader
+    (
+        Stream stream,
+        JsonSingleStreamLoaderOptions options,
+        JsonSerializerOptions? serializerOptions = null,
+        ILogger<JsonSingleStreamLoader<TRecord>>? logger = null
+    )
+        : base(options)
+    {
+        _stream = stream ?? throw new ArgumentNullException(nameof(stream));
+        _options = serializerOptions;
+        _logger = logger ?? (ILogger)NullLogger.Instance;
+        ApplyOptions(options);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonSingleStreamLoader{TRecord}"/> class configured through an options record and a source-generated <see cref="JsonTypeInfo{TRecord}"/>.
+    /// </summary>
+    /// <param name="stream">The stream to write a single JSON array to.</param>
+    /// <param name="typeInfo">The source-generated type information used to serialize <typeparamref name="TRecord"/>; it carries its own serializer options.</param>
+    /// <param name="options">The construction-time configuration for this stage, including the settings inherited from <see cref="LoaderOptions"/>.</param>
+    /// <param name="logger">An optional logger; <see langword="null"/> disables logging.</param>
+    /// <exception cref="ArgumentNullException">A required argument is <see langword="null"/>.</exception>
+    public JsonSingleStreamLoader
+    (
+        Stream stream,
+        JsonTypeInfo<TRecord> typeInfo,
+        JsonSingleStreamLoaderOptions options,
+        ILogger<JsonSingleStreamLoader<TRecord>>? logger = null
+    )
+        : base(options)
+    {
+        _stream = stream ?? throw new ArgumentNullException(nameof(stream));
+        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _logger = logger ?? (ILogger)NullLogger.Instance;
+        ApplyOptions(options);
+    }
+
+
+
+    /// <summary>
+    /// Copies the stage-specific settings from <paramref name="options"/> onto this instance; the inherited
+    /// settings were applied by the <see cref="LoaderBase{TDestination, TProgress}"/> constructor.
+    /// </summary>
+    /// <exception cref="ArgumentNullException"><paramref name="options"/> is <see langword="null"/>.</exception>
+    private void ApplyOptions(JsonSingleStreamLoaderOptions options)
+    {
+        if (options is null)
+        {
+            throw new ArgumentNullException(nameof(options));
+        }
+
+        IsDryRun = options.IsDryRun;
     }
 
 
@@ -147,7 +216,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     /// with an injected progress timer for testing.
     /// </summary>
     /// <param name="stream">The stream to write the JSON array to.</param>
-    /// <param name="options">The JSON serializer options to use for serialization, or <c>null</c> for the serializer default.</param>
+    /// <param name="serializerOptions">The JSON serializer options to use for serialization, or <c>null</c> for the serializer default.</param>
     /// <param name="timer">The progress timer to inject.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
 #if NET5_0_OR_GREATER
@@ -157,13 +226,13 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     internal JsonSingleStreamLoader
     (
         Stream stream,
-        JsonSerializerOptions options,
+        JsonSerializerOptions serializerOptions,
         IProgressTimer timer,
         ILogger? logger = null
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        _options = serializerOptions ?? throw new ArgumentNullException(nameof(serializerOptions));
         _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }

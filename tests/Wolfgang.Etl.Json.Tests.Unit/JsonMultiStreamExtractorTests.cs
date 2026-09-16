@@ -185,7 +185,7 @@ public class JsonMultiStreamExtractorTests
         var sut = new JsonMultiStreamExtractor<PersonRecord>
         (
                 streams: [],
-                options: null,
+                serializerOptions: null,
                 NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
         );
 

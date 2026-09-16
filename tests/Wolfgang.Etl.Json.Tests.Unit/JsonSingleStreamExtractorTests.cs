@@ -180,7 +180,7 @@ public class JsonSingleStreamExtractorTests
         var sut = new JsonSingleStreamExtractor<PersonRecord>
         (
                 new MemoryStream(),
-                options: null,
+                serializerOptions: null,
                 NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance
         );
 
