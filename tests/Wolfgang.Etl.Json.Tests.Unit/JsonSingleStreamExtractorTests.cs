@@ -61,7 +61,7 @@ public class JsonSingleStreamExtractorTests
         return new JsonSingleStreamExtractor<PersonRecord>
         (
             stream,
-            new JsonSerializerOptions(),
+            new JsonSingleStreamExtractorOptions(),
             timer,
             NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance
         );
@@ -197,7 +197,7 @@ public class JsonSingleStreamExtractorTests
             () => new JsonSingleStreamExtractor<PersonRecord>
             (
                 null!,
-                new JsonSerializerOptions(),
+                new JsonSingleStreamExtractorOptions(),
                 new ManualProgressTimer(),
                 NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance
             )
@@ -212,7 +212,7 @@ public class JsonSingleStreamExtractorTests
         var sut = new JsonSingleStreamExtractor<PersonRecord>
         (
             new MemoryStream(),
-            new JsonSerializerOptions(),
+            new JsonSingleStreamExtractorOptions(),
             new ManualProgressTimer(),
             logger: null
         );
@@ -230,7 +230,7 @@ public class JsonSingleStreamExtractorTests
             () => new JsonSingleStreamExtractor<PersonRecord>
             (
                 new MemoryStream(),
-                new JsonSerializerOptions(),
+                new JsonSingleStreamExtractorOptions(),
                 null!,
                 NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance
             )

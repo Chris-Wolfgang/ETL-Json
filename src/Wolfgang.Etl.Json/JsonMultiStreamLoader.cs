@@ -430,7 +430,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     /// <param name="streamFactory">
     /// A factory function that receives the item to be written and returns a <see cref="Stream"/> to write it to.
     /// </param>
-    /// <param name="serializerOptions">The JSON serializer options to use for serialization, or <c>null</c> for the serializer default.</param>
+    /// <param name="options">The construction-time configuration, including <see cref="JsonMultiStreamLoaderOptions.SerializerOptions"/>.</param>
     /// <param name="timer">The progress timer to inject.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
 #if NET5_0_OR_GREATER
@@ -440,10 +440,11 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     internal JsonMultiStreamLoader
     (
         Func<TRecord, Stream> streamFactory,
-        JsonSerializerOptions serializerOptions,
+        JsonMultiStreamLoaderOptions options,
         IProgressTimer timer,
         ILogger? logger = null
     )
+        : base(options)
     {
         if (streamFactory is null)
         {
@@ -451,9 +452,10 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
         }
 
         _destinationFactory = item => new JsonNamedDestination(streamFactory(item));
-        _options = serializerOptions;
+        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
         _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
+        ApplyOptions(options);
     }
 
 
@@ -466,21 +468,23 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     /// A factory function that returns a <see cref="JsonNamedDestination"/> for each item.
     /// The loader will dispose the stream after writing.
     /// </param>
-    /// <param name="serializerOptions">The JSON serializer options to use for serialization, or <c>null</c> for the serializer default.</param>
+    /// <param name="options">The construction-time configuration, including <see cref="JsonMultiStreamLoaderOptions.SerializerOptions"/>.</param>
     /// <param name="timer">The progress timer to inject.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     internal JsonMultiStreamLoader
     (
         Func<TRecord, JsonNamedDestination> destinationFactory,
-        JsonSerializerOptions serializerOptions,
+        JsonMultiStreamLoaderOptions options,
         IProgressTimer timer,
         ILogger? logger = null
     )
+        : base(options)
     {
         _destinationFactory = destinationFactory ?? throw new ArgumentNullException(nameof(destinationFactory));
-        _options = serializerOptions;
+        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
         _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
+        ApplyOptions(options);
     }
 
 

@@ -54,7 +54,7 @@ public class JsonMultiStreamLoaderTests
         return new JsonMultiStreamLoader<PersonRecord>
         (
             _ => new MemoryStream(),
-            new JsonSerializerOptions(),
+            new JsonMultiStreamLoaderOptions(),
             timer,
             NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
         );
@@ -275,7 +275,7 @@ public class JsonMultiStreamLoaderTests
             () => new JsonMultiStreamLoader<PersonRecord>
             (
                 (Func<PersonRecord, Stream>)null!,
-                new JsonSerializerOptions(),
+                new JsonMultiStreamLoaderOptions(),
                 new ManualProgressTimer(),
                 NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
             )
@@ -290,7 +290,7 @@ public class JsonMultiStreamLoaderTests
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
             _ => new MemoryStream(),
-            new JsonSerializerOptions(),
+            new JsonMultiStreamLoaderOptions(),
             new ManualProgressTimer(),
             logger: null
         );
@@ -308,7 +308,7 @@ public class JsonMultiStreamLoaderTests
             () => new JsonMultiStreamLoader<PersonRecord>
             (
                 _ => new MemoryStream(),
-                new JsonSerializerOptions(),
+                new JsonMultiStreamLoaderOptions(),
                 null!,
                 NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
             )
@@ -811,7 +811,7 @@ public class JsonMultiStreamLoaderTests
             () => new JsonMultiStreamLoader<PersonRecord>
             (
                 (Func<PersonRecord, JsonNamedDestination>)null!,
-                new JsonSerializerOptions(),
+                new JsonMultiStreamLoaderOptions(),
                 new ManualProgressTimer(),
                 logger: null
             )
@@ -828,7 +828,7 @@ public class JsonMultiStreamLoaderTests
             () => new JsonMultiStreamLoader<PersonRecord>
             (
                 _ => new JsonNamedDestination(new MemoryStream()),
-                new JsonSerializerOptions(),
+                new JsonMultiStreamLoaderOptions(),
                 null!,
                 logger: null
             )
@@ -843,7 +843,7 @@ public class JsonMultiStreamLoaderTests
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
             _ => new JsonNamedDestination(new MemoryStream()),
-            new JsonSerializerOptions(),
+            new JsonMultiStreamLoaderOptions(),
             new ManualProgressTimer(),
             logger: null
         );
