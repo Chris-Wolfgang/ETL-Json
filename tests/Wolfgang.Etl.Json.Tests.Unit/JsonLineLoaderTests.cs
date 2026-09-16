@@ -57,7 +57,7 @@ public class JsonLineLoaderTests
         return new JsonLineLoader<PersonRecord>
         (
             stream,
-            new JsonSerializerOptions(),
+            new JsonLineLoaderOptions(),
             timer,
             NullLogger<JsonLineLoader<PersonRecord>>.Instance
         );
@@ -185,7 +185,7 @@ public class JsonLineLoaderTests
         var sut = new JsonLineLoader<PersonRecord>
         (
                 new MemoryStream(),
-                options: null,
+                (JsonSerializerOptions?)null,
                 NullLogger<JsonLineLoader<PersonRecord>>.Instance
         );
 
@@ -202,7 +202,7 @@ public class JsonLineLoaderTests
             () => new JsonLineLoader<PersonRecord>
             (
                 null!,
-                new JsonSerializerOptions(),
+                new JsonLineLoaderOptions(),
                 new ManualProgressTimer(),
                 NullLogger<JsonLineLoader<PersonRecord>>.Instance
             )
@@ -217,7 +217,7 @@ public class JsonLineLoaderTests
         var sut = new JsonLineLoader<PersonRecord>
         (
             new MemoryStream(),
-            new JsonSerializerOptions(),
+            new JsonLineLoaderOptions(),
             new ManualProgressTimer(),
             logger: null
         );
@@ -235,7 +235,7 @@ public class JsonLineLoaderTests
             () => new JsonLineLoader<PersonRecord>
             (
                 new MemoryStream(),
-                new JsonSerializerOptions(),
+                new JsonLineLoaderOptions(),
                 timer: null!,
                 NullLogger<JsonLineLoader<PersonRecord>>.Instance
             )

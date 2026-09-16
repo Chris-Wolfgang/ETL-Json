@@ -63,7 +63,7 @@ public class JsonLineExtractorTests
         new
         (
             CreateJsonlStream(ExpectedItems.Count),
-            new JsonSerializerOptions(),
+            new JsonLineExtractorOptions(),
             timer,
             NullLogger<JsonLineExtractor<PersonRecord>>.Instance
         );
@@ -178,7 +178,7 @@ public class JsonLineExtractorTests
         var sut = new JsonLineExtractor<PersonRecord>
         (
                 new MemoryStream(),
-                options: null,
+                (JsonSerializerOptions?)null,
                 NullLogger<JsonLineExtractor<PersonRecord>>.Instance
         );
 
@@ -195,7 +195,7 @@ public class JsonLineExtractorTests
             () => new JsonLineExtractor<PersonRecord>
             (
                 null!,
-                new JsonSerializerOptions(),
+                new JsonLineExtractorOptions(),
                 new ManualProgressTimer(),
                 NullLogger<JsonLineExtractor<PersonRecord>>.Instance
             )
@@ -210,7 +210,7 @@ public class JsonLineExtractorTests
         var sut = new JsonLineExtractor<PersonRecord>
         (
             new MemoryStream(),
-            new JsonSerializerOptions(),
+            new JsonLineExtractorOptions(),
             new ManualProgressTimer(),
             logger: null
         );
@@ -228,7 +228,7 @@ public class JsonLineExtractorTests
             () => new JsonLineExtractor<PersonRecord>
             (
                 new MemoryStream(),
-                new JsonSerializerOptions(),
+                new JsonLineExtractorOptions(),
                 timer: null!,
                 NullLogger<JsonLineExtractor<PersonRecord>>.Instance
             )
@@ -587,7 +587,7 @@ public class JsonLineExtractorTests
         var sut = new JsonLineExtractor<PersonRecord>
         (
             CreateJsonlStream(ExpectedItems.Count),
-            new JsonSerializerOptions(),
+            new JsonLineExtractorOptions(),
             timer,
             NullLogger<JsonLineExtractor<PersonRecord>>.Instance
         );

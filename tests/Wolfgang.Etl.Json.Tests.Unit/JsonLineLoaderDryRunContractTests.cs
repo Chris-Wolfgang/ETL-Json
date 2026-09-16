@@ -8,7 +8,7 @@ using Wolfgang.Etl.TestKit.Xunit;
 namespace Wolfgang.Etl.Json.Tests.Unit;
 
 public class JsonLineLoaderDryRunContractTests
-    : SupportsDryRunContractTests<JsonLineLoader<PersonRecord>>
+    : SupportsDryRunContractTests
 {
     private static readonly IReadOnlyList<PersonRecord> SourceItems = new List<PersonRecord>
     {
@@ -18,15 +18,10 @@ public class JsonLineLoaderDryRunContractTests
 
 
 
-    protected override JsonLineLoader<PersonRecord> CreateSut() =>
-        new(new MemoryStream());
-
-
-
     protected override async Task<bool> RunAndReportSideEffectAsync(bool isDryRun)
     {
         var stream = new MemoryStream();
-        var sut = new JsonLineLoader<PersonRecord>(stream) { IsDryRun = isDryRun };
+        var sut = new JsonLineLoader<PersonRecord>(stream, new JsonLineLoaderOptions { IsDryRun = isDryRun });
         await sut.LoadAsync(SourceItems.ToAsyncEnumerable());
         return stream.Length > 0;
     }

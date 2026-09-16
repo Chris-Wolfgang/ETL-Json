@@ -56,7 +56,7 @@ public class JsonSingleStreamLoaderTests
         return new JsonSingleStreamLoader<PersonRecord>
         (
             stream,
-            new JsonSerializerOptions(),
+            new JsonSingleStreamLoaderOptions(),
             timer,
             NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance
         );
@@ -178,7 +178,7 @@ public class JsonSingleStreamLoaderTests
         var sut = new JsonSingleStreamLoader<PersonRecord>
         (
                 new MemoryStream(),
-                options: null,
+                (JsonSerializerOptions?)null,
                 NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance
         );
 
@@ -195,7 +195,7 @@ public class JsonSingleStreamLoaderTests
             () => new JsonSingleStreamLoader<PersonRecord>
             (
                 stream: null!,
-                new JsonSerializerOptions(),
+                new JsonSingleStreamLoaderOptions(),
                 new ManualProgressTimer(),
                 NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance
             )
@@ -210,7 +210,7 @@ public class JsonSingleStreamLoaderTests
         var sut = new JsonSingleStreamLoader<PersonRecord>
         (
             new MemoryStream(),
-            new JsonSerializerOptions(),
+            new JsonSingleStreamLoaderOptions(),
             new ManualProgressTimer(),
             logger: null
         );
@@ -228,7 +228,7 @@ public class JsonSingleStreamLoaderTests
             () => new JsonSingleStreamLoader<PersonRecord>
             (
                 new MemoryStream(),
-                new JsonSerializerOptions(),
+                new JsonSingleStreamLoaderOptions(),
                 timer: null!,
                 NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance
             )

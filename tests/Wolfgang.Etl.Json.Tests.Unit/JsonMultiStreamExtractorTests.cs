@@ -64,7 +64,7 @@ public class JsonMultiStreamExtractorTests
         new
         (
             CreateStreams(ExpectedItems.Count),
-            new JsonSerializerOptions(),
+            new JsonMultiStreamExtractorOptions(),
             timer,
             NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
         );
@@ -185,7 +185,7 @@ public class JsonMultiStreamExtractorTests
         var sut = new JsonMultiStreamExtractor<PersonRecord>
         (
                 streams: [],
-                options: null,
+                (JsonSerializerOptions?)null,
                 NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
         );
 
@@ -202,7 +202,7 @@ public class JsonMultiStreamExtractorTests
             () => new JsonMultiStreamExtractor<PersonRecord>
             (
                 streams: null!,
-                new JsonSerializerOptions(),
+                new JsonMultiStreamExtractorOptions(),
                 new ManualProgressTimer(),
                 NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
             )
@@ -217,7 +217,7 @@ public class JsonMultiStreamExtractorTests
         var sut = new JsonMultiStreamExtractor<PersonRecord>
         (
             streams: [],
-            new JsonSerializerOptions(),
+            new JsonMultiStreamExtractorOptions(),
             new ManualProgressTimer(),
             logger: null
         );
@@ -235,7 +235,7 @@ public class JsonMultiStreamExtractorTests
             () => new JsonMultiStreamExtractor<PersonRecord>
             (
                 streams: [],
-                new JsonSerializerOptions(),
+                new JsonMultiStreamExtractorOptions(),
                 timer: null!,
                 NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
             )
@@ -574,7 +574,7 @@ public class JsonMultiStreamExtractorTests
         var sut = new JsonMultiStreamExtractor<PersonRecord>
         (
             sources,
-            new JsonSerializerOptions(),
+            new JsonMultiStreamExtractorOptions(),
             timer,
             logger: null
         );
@@ -642,7 +642,7 @@ public class JsonMultiStreamExtractorTests
         var sut = new JsonMultiStreamExtractor<PersonRecord>
         (
             new[] { stream },
-            new JsonSerializerOptions(),
+            new JsonMultiStreamExtractorOptions(),
             timer,
             logger: null
         );
