@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- The eight single-argument constructors — `(Stream)` on the four single-stream stages, `(IEnumerable<Stream>)` /
+  `(IEnumerable<JsonNamedStream>)` on `JsonMultiStreamExtractor<T>` and the two factory forms on
+  `JsonMultiStreamLoader<T>` — are hidden from IntelliSense (`[EditorBrowsable(Never)]`) and retained permanently
+  for binary compatibility, the rule the fleet applies to constructors superseded by an optional-parameter
+  overload (Chris-Wolfgang/ETL-Abstractions#461, Chris-Wolfgang/ETL-Csv#284). Not `[Obsolete]`: `new X(source)`
+  binds to them by exact match, so a warning could only be silenced with a redundant `logger: null`. Nothing
+  changes for callers.
 - **`logger` is now an optional trailing constructor parameter across all six extractor / loader
   types.** The eight `(source, ILogger<T> logger)` constructors on `JsonLineExtractor<T>`,
   `JsonLineLoader<T>`, `JsonSingleStreamExtractor<T>`, `JsonSingleStreamLoader<T>`,

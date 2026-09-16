@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 #if NET5_0_OR_GREATER
 using System.Diagnostics.CodeAnalysis;
@@ -70,10 +71,18 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>, I
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="stream"/> is <c>null</c>.
     /// </exception>
+    /// <remarks>
+    /// Retained for binary compatibility with assemblies compiled before the optional-logger overload
+    /// existed: <c>new JsonLineLoader&lt;T&gt;(stream)</c> in such an assembly is bound to this exact signature,
+    /// and removing it would fail at runtime with <see cref="MissingMethodException"/> with no compile-time
+    /// signal. Hidden from IntelliSense; source code binds here too, so nothing changes for callers. New
+    /// code has no reason to name this overload.
+    /// </remarks>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
     [RequiresDynamicCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
 #endif
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public JsonLineLoader
     (
         Stream stream

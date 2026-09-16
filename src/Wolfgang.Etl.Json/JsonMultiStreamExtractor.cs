@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 #if NET5_0_OR_GREATER
 using System.Diagnostics.CodeAnalysis;
@@ -61,10 +62,18 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="streams"/> is <c>null</c>.
     /// </exception>
+    /// <remarks>
+    /// Retained for binary compatibility with assemblies compiled before the optional-logger overload
+    /// existed: <c>new JsonMultiStreamExtractor&lt;T&gt;(streams)</c> in such an assembly is bound to this exact signature,
+    /// and removing it would fail at runtime with <see cref="MissingMethodException"/> with no compile-time
+    /// signal. Hidden from IntelliSense; source code binds here too, so nothing changes for callers. New
+    /// code has no reason to name this overload.
+    /// </remarks>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
     [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
 #endif
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public JsonMultiStreamExtractor
     (
         IEnumerable<Stream> streams
@@ -92,6 +101,14 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="sources"/> is <c>null</c>.
     /// </exception>
+    /// <remarks>
+    /// Retained for binary compatibility with assemblies compiled before the optional-logger overload
+    /// existed: <c>new JsonMultiStreamExtractor&lt;T&gt;(sources)</c> in such an assembly is bound to this exact signature,
+    /// and removing it would fail at runtime with <see cref="MissingMethodException"/> with no compile-time
+    /// signal. Hidden from IntelliSense; source code binds here too, so nothing changes for callers. New
+    /// code has no reason to name this overload.
+    /// </remarks>
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public JsonMultiStreamExtractor
     (
         IEnumerable<JsonNamedStream> sources
