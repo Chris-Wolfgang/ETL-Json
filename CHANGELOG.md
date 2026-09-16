@@ -11,17 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `Wolfgang.Etl.Abstractions` / `.ErrorPolicies` 0.23.4 → 0.24.0 (`.TestKit` / `.TestKit.Xunit` for the test project).
   The three dry-run contract tests use the now non-generic TestKit base.
-<<<<<<< HEAD
-- **Source break for named arguments only:** the `JsonSerializerOptions` parameter of every existing constructor is
-  renamed `options` → `serializerOptions`, so that `options` names the stage's options record on every stage in the
-  fleet. Binary signatures are unchanged; positional calls are unchanged; a call that passed the argument by name
-  (`options: x`) becomes `serializerOptions: x`.
 - The ten `(source, JsonSerializerOptions?, ILogger?)` constructors are hidden from IntelliSense and retained permanently,
   superseded by the record constructors (`(source, options, logger)`, with `SerializerOptions` on the record); same rule and reasoning as
-  the single-argument constructors below. Nothing changes for positional callers (the named-argument rename above
-  applies to these constructors as to every other).
-=======
->>>>>>> feat/303-obsolete-setters
+  the single-argument constructors below. Nothing changes for callers.
 - The eight single-argument constructors — `(Stream)` on the four single-stream stages, `(IEnumerable<Stream>)` /
   `(IEnumerable<JsonNamedStream>)` on `JsonMultiStreamExtractor<T>` and the two factory forms on
   `JsonMultiStreamLoader<T>` — are hidden from IntelliSense (`[EditorBrowsable(Never)]`) and retained permanently
