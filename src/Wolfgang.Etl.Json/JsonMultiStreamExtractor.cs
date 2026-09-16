@@ -390,7 +390,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// with an injected progress timer for testing.
     /// </summary>
     /// <param name="streams">An enumerable of streams, each containing a single JSON object.</param>
-    /// <param name="serializerOptions">The JSON serializer options to use for deserialization, or <c>null</c> for the serializer default.</param>
+    /// <param name="options">The construction-time configuration, including <see cref="JsonMultiStreamExtractorOptions.SerializerOptions"/>.</param>
     /// <param name="timer">The progress timer to inject.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
 #if NET5_0_OR_GREATER
@@ -400,10 +400,11 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     internal JsonMultiStreamExtractor
     (
         IEnumerable<Stream> streams,
-        JsonSerializerOptions serializerOptions,
+        JsonMultiStreamExtractorOptions options,
         IProgressTimer timer,
         ILogger? logger = null
     )
+        : base(options)
     {
         if (streams is null)
         {
@@ -411,9 +412,10 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
         }
 
         _sources = streams.Select(s => new JsonNamedStream(s));
-        _options = serializerOptions;
+        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
         _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
+        ApplyOptions(options);
     }
 
 
@@ -423,21 +425,23 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// with named sources and an injected progress timer for testing.
     /// </summary>
     /// <param name="sources">An enumerable of <see cref="JsonNamedStream"/> instances.</param>
-    /// <param name="serializerOptions">The JSON serializer options to use for deserialization, or <c>null</c> for the serializer default.</param>
+    /// <param name="options">The construction-time configuration, including <see cref="JsonMultiStreamExtractorOptions.SerializerOptions"/>.</param>
     /// <param name="timer">The progress timer to inject.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     internal JsonMultiStreamExtractor
     (
         IEnumerable<JsonNamedStream> sources,
-        JsonSerializerOptions serializerOptions,
+        JsonMultiStreamExtractorOptions options,
         IProgressTimer timer,
         ILogger? logger = null
     )
+        : base(options)
     {
         _sources = sources ?? throw new ArgumentNullException(nameof(sources));
-        _options = serializerOptions;
+        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
         _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
+        ApplyOptions(options);
     }
 
 

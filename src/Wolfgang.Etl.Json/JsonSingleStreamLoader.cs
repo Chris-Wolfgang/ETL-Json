@@ -237,7 +237,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     /// with an injected progress timer for testing.
     /// </summary>
     /// <param name="stream">The stream to write the JSON array to.</param>
-    /// <param name="serializerOptions">The JSON serializer options to use for serialization, or <c>null</c> for the serializer default.</param>
+    /// <param name="options">The construction-time configuration, including <see cref="JsonSingleStreamLoaderOptions.SerializerOptions"/>.</param>
     /// <param name="timer">The progress timer to inject.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
 #if NET5_0_OR_GREATER
@@ -247,15 +247,17 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     internal JsonSingleStreamLoader
     (
         Stream stream,
-        JsonSerializerOptions serializerOptions,
+        JsonSingleStreamLoaderOptions options,
         IProgressTimer timer,
         ILogger? logger = null
     )
+        : base(options)
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _options = serializerOptions;
+        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
         _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
+        ApplyOptions(options);
     }
 
 
