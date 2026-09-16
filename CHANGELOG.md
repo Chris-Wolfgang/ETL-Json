@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   fleet. Binary signatures are unchanged; positional calls are unchanged; a call that passed the argument by name
   (`options: x`) becomes `serializerOptions: x`.
 - The ten `(source, JsonSerializerOptions?, ILogger?)` constructors are hidden from IntelliSense and retained permanently,
-  superseded by the record constructors (`(source, options, serializerOptions, logger)`); same rule and reasoning as
+  superseded by the record constructors (`(source, options, logger)`, with `SerializerOptions` on the record); same rule and reasoning as
   the single-argument constructors below. Nothing changes for positional callers (the named-argument rename above
   applies to these constructors as to every other).
 - The eight single-argument constructors — `(Stream)` on the four single-stream stages, `(IEnumerable<Stream>)` /

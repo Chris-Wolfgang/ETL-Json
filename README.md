@@ -113,9 +113,9 @@ await loader.LoadAsync(items, cancellationToken);
 ### Configuring a stage
 
 Every stage takes an options record: right after the source on the reflection-based constructors
-(`(source, options, serializerOptions, logger)`), and right after the type info on the source-generated ones
-(`(source, typeInfo, options, logger)`). The record carries the stage's own settings
-together with the ones every extractor or loader shares (`ReportingInterval`, `MaximumItemCount`,
+(`(source, options, logger)`), and right after the type info on the source-generated ones
+(`(source, typeInfo, options, logger)`). The record carries the stage's own settings, the serializer options,
+and the ones every extractor or loader shares (`ReportingInterval`, `MaximumItemCount`,
 `SkipItemCount`, `ErrorPolicy`), so one object configures the whole stage:
 
 ```csharp
@@ -134,17 +134,17 @@ var loader = new JsonLineLoader<Person>(stream, new JsonLineLoaderOptions { IsDr
 
 | Stage | Record | Own members |
 |-------|--------|-------------|
-| `JsonLineExtractor<T>` | `JsonLineExtractorOptions` | `Encoding`, `EnableCheckpointing`, `StartByteOffset` |
-| `JsonSingleStreamExtractor<T>` / `JsonMultiStreamExtractor<T>` | `JsonSingleStreamExtractorOptions` / `JsonMultiStreamExtractorOptions` | — |
-| `JsonLineLoader<T>` | `JsonLineLoaderOptions` | `Encoding`, `IsDryRun` |
-| `JsonSingleStreamLoader<T>` / `JsonMultiStreamLoader<T>` | `JsonSingleStreamLoaderOptions` / `JsonMultiStreamLoaderOptions` | `IsDryRun` |
+| `JsonLineExtractor<T>` | `JsonLineExtractorOptions` | `SerializerOptions`, `Encoding`, `EnableCheckpointing`, `StartByteOffset` |
+| `JsonSingleStreamExtractor<T>` / `JsonMultiStreamExtractor<T>` | `JsonSingleStreamExtractorOptions` / `JsonMultiStreamExtractorOptions` | `SerializerOptions` |
+| `JsonLineLoader<T>` | `JsonLineLoaderOptions` | `SerializerOptions`, `Encoding`, `IsDryRun` |
+| `JsonSingleStreamLoader<T>` / `JsonMultiStreamLoader<T>` | `JsonSingleStreamLoaderOptions` / `JsonMultiStreamLoaderOptions` | `SerializerOptions`, `IsDryRun` |
 
 A stage constructed without a record keeps every default.
 
 ### Custom serialization options
 
-Serializer configuration is separate from the stage record: every extractor and loader accepts an optional
-`JsonSerializerOptions` after it.
+The record's `SerializerOptions` configures the reflection-based serializer. The source-generated constructors
+take a `JsonTypeInfo<T>` instead and reject a record that also sets `SerializerOptions`.
 
 ```csharp
 var serializerOptions = new JsonSerializerOptions
@@ -153,7 +153,12 @@ var serializerOptions = new JsonSerializerOptions
     PropertyNameCaseInsensitive = true,
 };
 
-var extractor = new JsonSingleStreamExtractor<Person>(stream, new JsonSingleStreamExtractorOptions(), serializerOptions, logger);
+var extractor = new JsonSingleStreamExtractor<Person>
+(
+    stream,
+    new JsonSingleStreamExtractorOptions { SerializerOptions = serializerOptions },
+    logger
+);
 ```
 
 ### Source generation (AOT-friendly)
