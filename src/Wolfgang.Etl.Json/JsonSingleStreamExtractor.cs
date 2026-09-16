@@ -90,7 +90,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     /// extraction completes or the extractor is disposed.
     /// </summary>
     /// <param name="path">The path of the JSON array file to read.</param>
-    /// <param name="serializerOptions">The JSON serializer options to use, or <c>null</c> for the default.</param>
+    /// <param name="options">The JSON serializer options to use, or <c>null</c> for the default.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="path"/> is <c>null</c>.</exception>
     /// <remarks>
@@ -108,7 +108,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     public JsonSingleStreamExtractor
     (
         string path,
-        JsonSerializerOptions? serializerOptions = null,
+        JsonSerializerOptions? options = null,
         ILogger<JsonSingleStreamExtractor<TRecord>>? logger = null
     )
     {
@@ -119,7 +119,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
 
         _stream = File.OpenRead(path);
         _ownsStream = true;
-        _options = serializerOptions;
+        _options = options;
         _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
@@ -159,7 +159,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     /// with custom serialization options.
     /// </summary>
     /// <param name="stream">The stream containing a JSON array to read from.</param>
-    /// <param name="serializerOptions">The JSON serializer options to use for deserialization, or <c>null</c> for the serializer default.</param>
+    /// <param name="options">The JSON serializer options to use for deserialization, or <c>null</c> for the serializer default.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="stream"/> is <c>null</c>.
@@ -179,12 +179,12 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     public JsonSingleStreamExtractor
     (
         Stream stream,
-        JsonSerializerOptions? serializerOptions = null,
+        JsonSerializerOptions? options = null,
         ILogger<JsonSingleStreamExtractor<TRecord>>? logger = null
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _options = serializerOptions;
+        _options = options;
         _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 

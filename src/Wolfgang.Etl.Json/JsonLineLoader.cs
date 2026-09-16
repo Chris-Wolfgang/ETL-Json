@@ -129,7 +129,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     /// with custom serialization options.
     /// </summary>
     /// <param name="stream">The stream to write JSONL data to.</param>
-    /// <param name="serializerOptions">The JSON serializer options to use for serialization, or <c>null</c> for the serializer default.</param>
+    /// <param name="options">The JSON serializer options to use for serialization, or <c>null</c> for the serializer default.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="stream"/> is <c>null</c>.
@@ -149,12 +149,12 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     public JsonLineLoader
     (
         Stream stream,
-        JsonSerializerOptions? serializerOptions = null,
+        JsonSerializerOptions? options = null,
         ILogger<JsonLineLoader<TRecord>>? logger = null
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _options = serializerOptions;
+        _options = options;
         _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 

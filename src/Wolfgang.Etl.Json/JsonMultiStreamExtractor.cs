@@ -187,7 +187,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// with custom serialization options.
     /// </summary>
     /// <param name="streams">An enumerable of streams, each containing a single JSON object.</param>
-    /// <param name="serializerOptions">The JSON serializer options to use for deserialization, or <c>null</c> for the serializer default.</param>
+    /// <param name="options">The JSON serializer options to use for deserialization, or <c>null</c> for the serializer default.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="streams"/> is <c>null</c>.
@@ -207,7 +207,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     public JsonMultiStreamExtractor
     (
         IEnumerable<Stream> streams,
-        JsonSerializerOptions? serializerOptions = null,
+        JsonSerializerOptions? options = null,
         ILogger<JsonMultiStreamExtractor<TRecord>>? logger = null
     )
     {
@@ -217,7 +217,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
         }
 
         _sources = streams.Select(s => new JsonNamedStream(s));
-        _options = serializerOptions;
+        _options = options;
         _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
@@ -230,7 +230,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// <param name="sources">
     /// An enumerable of <see cref="JsonNamedStream"/> instances, each containing a stream and an optional name.
     /// </param>
-    /// <param name="serializerOptions">The JSON serializer options to use for deserialization, or <c>null</c> for the serializer default.</param>
+    /// <param name="options">The JSON serializer options to use for deserialization, or <c>null</c> for the serializer default.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="sources"/> is <c>null</c>.
@@ -246,12 +246,12 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     public JsonMultiStreamExtractor
     (
         IEnumerable<JsonNamedStream> sources,
-        JsonSerializerOptions? serializerOptions = null,
+        JsonSerializerOptions? options = null,
         ILogger<JsonMultiStreamExtractor<TRecord>>? logger = null
     )
     {
         _sources = sources ?? throw new ArgumentNullException(nameof(sources));
-        _options = serializerOptions;
+        _options = options;
         _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 

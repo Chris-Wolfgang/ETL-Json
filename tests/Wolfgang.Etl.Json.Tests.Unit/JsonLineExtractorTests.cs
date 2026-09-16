@@ -178,7 +178,7 @@ public class JsonLineExtractorTests
         var sut = new JsonLineExtractor<PersonRecord>
         (
                 new MemoryStream(),
-                serializerOptions: null,
+                (JsonSerializerOptions?)null,
                 NullLogger<JsonLineExtractor<PersonRecord>>.Instance
         );
 
