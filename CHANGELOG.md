@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+
+## [0.9.0] - 2026-09-16
+
 ### Changed
 
 - `Wolfgang.Etl.Abstractions` / `.ErrorPolicies` 0.23.4 → 0.24.0 (`.TestKit` / `.TestKit.Xunit` for the test project).
@@ -56,8 +71,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   every existing call keeps binding to the constructor it binds to today. The existing constructors are unchanged;
   the `{ get; set; }` properties are unchanged in this release and deprecated in the next.
 
-### Changed
-
 ### Deprecated
 
 - The seven configuration setters — `Encoding`, `EnableCheckpointing`, `StartByteOffset` on `JsonLineExtractor<T>`;
@@ -70,10 +83,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `JsonLineLoader<TRecord>`, `JsonSingleStreamLoader<TRecord>` and `JsonMultiStreamLoader<TRecord>` no longer implement
   `ISupportDryRun`; Wolfgang.Etl.Abstractions 0.24 removes the interface (Chris-Wolfgang/ETL-Abstractions#457).
   `IsDryRun` itself is unchanged on the loaders and now also configurable through their options records.
-
-### Fixed
-
-### Security
 
 ## [0.8.1] - 2026-08-22
 
@@ -350,7 +359,8 @@ baseline with the intentional removals waived in `CompatibilitySuppressions.xml`
 - Cached the default `JsonSerializerOptions` and log operation-name strings as
   static fields; sealed the extractor and loader classes.
 
-[Unreleased]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.8.1...HEAD
+[Unreleased]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.8.1...v0.9.0
 [0.8.1]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.8.0...v0.8.1
 [0.5.0]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.3.0...v0.4.0
