@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1789670899396,
+  "lastUpdate": 1789689179449,
   "repoUrl": "https://github.com/Chris-Wolfgang/ETL-Json",
   "entries": {
     "BenchmarkDotNet": [
@@ -4350,6 +4350,156 @@ window.BENCHMARK_DATA = {
             "value": 188491.24422200522,
             "unit": "ns",
             "range": "± 8586.350417901685"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "210299580+Chris-Wolfgang@users.noreply.github.com",
+            "name": "Chris Wolfgang",
+            "username": "Chris-Wolfgang"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "f117f3b4fca4c0a0fad049447356f82db20c25fc",
+          "message": "fix(tfm): ship net5.0/net6.0/net7.0 assemblies (inherited init-setter modreq hazard) (#327)\n\n* fix(test): restore test discovery on netcoreapp3.1 and net5.0\n\nSame defect as Chris-Wolfgang/Etl-Csv#254 and Chris-Wolfgang/ETL-FixedWidth#336: xunit.runner.visualstudio 2.8.2 ships build/lib assets for net462 and net6.0 only, so the netcoreapp3.1 and net5.0 slots loaded no test adapter and ran zero tests (\"No test is available\") while the suite still read as clean. Pin 2.4.5 on those two slots, 2.8.2 elsewhere, both capped below 3.0.0.\n\nCo-Authored-By: Claude Opus 5 <noreply@anthropic.com>\n\n* fix(tfm): ship net5.0/net6.0/net7.0 assemblies — inherited init setters would fail on .NET 5-7\n\nWolfgang.Etl.Abstractions ships per-runtime assemblies, and an init-only setter's IsExternalInit modreq has a different identity in its netstandard2.0 build (internal polyfill) and its net5.0+ builds (System.Runtime). This package's netstandard2.0 assembly is compiled against the former but, on .NET 5/6/7, runs beside the latter, so any write to an inherited options-record property from this assembly throws MissingMethodException — the defect Etl-Csv 0.9.0 hit in its release gate (Chris-Wolfgang/Etl-Csv#287). Same remedy as Abstractions, Etl-DbClient and Etl-Csv.\n\nCompiling for net5.0/net6.0 for the first time exposed two guards that assumed \"NET5_0_OR_GREATER\" meant \"net8.0+\": [RequiresDynamicCode] (42 sites) and StreamReader.ReadLineAsync(CancellationToken) both first shipped in .NET 7 and are now guarded with NET7_0_OR_GREATER; the net5/6 builds take the same path netstandard2.0 does.\n\nCo-Authored-By: Claude Opus 5 <noreply@anthropic.com>\n\n* docs: changelog fragment instead of a CHANGELOG.md edit; framework lists brought in line\n\nCo-Authored-By: Claude Opus 5 <noreply@anthropic.com>\n\n---------\n\nCo-authored-by: Claude Opus 5 <noreply@anthropic.com>",
+          "timestamp": "2026-09-17T19:49:36-04:00",
+          "tree_id": "2282a280cb64ca34bb8fd152003e38538844a01e",
+          "url": "https://github.com/Chris-Wolfgang/ETL-Json/commit/f117f3b4fca4c0a0fad049447356f82db20c25fc"
+        },
+        "date": 1789689175870,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineExtractorBenchmarks.ExtractAsync(ItemCount: 10)",
+            "value": 7007.3218510945635,
+            "unit": "ns",
+            "range": "± 95.6678931209035"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineExtractorBenchmarks.ExtractAsync(ItemCount: 100)",
+            "value": 64692.00107828776,
+            "unit": "ns",
+            "range": "± 411.65350315406647"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineExtractorBenchmarks.ExtractAsync(ItemCount: 1000)",
+            "value": 648383.6027018229,
+            "unit": "ns",
+            "range": "± 1437.6323557076973"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineLoaderBenchmarks.LoadAsync(ItemCount: 10)",
+            "value": 4528.237083435059,
+            "unit": "ns",
+            "range": "± 12.237686355348393"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineLoaderBenchmarks.LoadAsync(ItemCount: 100)",
+            "value": 41448.78135172526,
+            "unit": "ns",
+            "range": "± 61.395451882472045"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineLoaderBenchmarks.LoadAsync(ItemCount: 1000)",
+            "value": 504260.3167317708,
+            "unit": "ns",
+            "range": "± 2790.206591111909"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamExtractorBenchmarks.ExtractAsync(ItemCount: 10)",
+            "value": 8569.486017862955,
+            "unit": "ns",
+            "range": "± 24.72414747784798"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamExtractorBenchmarks.ExtractAsync(ItemCount: 100)",
+            "value": 79177.4912109375,
+            "unit": "ns",
+            "range": "± 83.01887234247867"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamExtractorBenchmarks.ExtractAsync(ItemCount: 1000)",
+            "value": 782435.8590494791,
+            "unit": "ns",
+            "range": "± 1100.2117053716977"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamLoaderBenchmarks.LoadAsync(ItemCount: 10)",
+            "value": 6145.260856628418,
+            "unit": "ns",
+            "range": "± 15.724517550117492"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamLoaderBenchmarks.LoadAsync(ItemCount: 100)",
+            "value": 56587.737630208336,
+            "unit": "ns",
+            "range": "± 258.92401549554734"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamLoaderBenchmarks.LoadAsync(ItemCount: 1000)",
+            "value": 604003.9270833334,
+            "unit": "ns",
+            "range": "± 1008.21017838827"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamExtractorBenchmarks.ExtractAsync(ItemCount: 10)",
+            "value": 6998.008389790853,
+            "unit": "ns",
+            "range": "± 5.84043644318961"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamExtractorBenchmarks.ExtractAsync(ItemCount: 100)",
+            "value": 59660.87325032552,
+            "unit": "ns",
+            "range": "± 105.84232454831908"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamExtractorBenchmarks.ExtractAsync(ItemCount: 1000)",
+            "value": 551699.8916015625,
+            "unit": "ns",
+            "range": "± 2576.0503340634527"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync(ItemCount: 10)",
+            "value": 3919.694048563639,
+            "unit": "ns",
+            "range": "± 23.7581645697488"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync_CamelCase(ItemCount: 10)",
+            "value": 4454.991905212402,
+            "unit": "ns",
+            "range": "± 10.97959962563216"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync(ItemCount: 100)",
+            "value": 36437.535481770836,
+            "unit": "ns",
+            "range": "± 167.21294543856033"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync_CamelCase(ItemCount: 100)",
+            "value": 35449.07354736328,
+            "unit": "ns",
+            "range": "± 225.54005353590392"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync(ItemCount: 1000)",
+            "value": 395365.37711588544,
+            "unit": "ns",
+            "range": "± 923.1099078067966"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync_CamelCase(ItemCount: 1000)",
+            "value": 396067.32438151044,
+            "unit": "ns",
+            "range": "± 226.58947576597652"
           }
         ]
       }
