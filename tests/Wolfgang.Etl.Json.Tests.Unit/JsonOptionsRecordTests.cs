@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Wolfgang.Etl.Abstractions;
 using Wolfgang.Etl.Json.Tests.Unit.TestModels;
 using Xunit;
@@ -103,13 +104,23 @@ public class JsonOptionsRecordTests
 
 
     [Fact]
-    public void JsonLineExtractor_when_the_record_carries_SerializerOptions_uses_them()
+    public async Task JsonLineExtractor_when_the_record_carries_SerializerOptions_uses_them()
     {
+        // camelCase on the wire; only PropertyNameCaseInsensitive from the record's SerializerOptions makes it bind.
+        var json = JsonSerializer.Serialize(new PersonRecord { FirstName = "Alice", LastName = "Smith", Age = 30 }, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
         var serializerOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
-        using var sut = new JsonLineExtractor<PersonRecord>(new MemoryStream(), new JsonLineExtractorOptions { SerializerOptions = serializerOptions });
+        using var sut = new JsonLineExtractor<PersonRecord>(stream, new JsonLineExtractorOptions { SerializerOptions = serializerOptions });
+        var results = new List<PersonRecord>();
+        await foreach (var item in sut.ExtractAsync())
+        {
+            results.Add(item);
+        }
 
-        Assert.NotNull(sut);
+        Assert.Single(results);
+        Assert.Equal("Alice", results[0].FirstName);
+        Assert.Equal(30, results[0].Age);
     }
 
 

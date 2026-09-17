@@ -24,6 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **`new X(source, options: null)` — a `null` passed by name — no longer compiles (`CS0121`)** on any stage: the new
+  record overloads name their parameter `options` too, deliberately. Every other existing spelling still binds the
+  serializer-options overload (`new X(source)`, `new X(source, null)`, a typed null); drop the name or type the null.
+  See the migration guide.
 - `Wolfgang.Etl.Abstractions` / `.ErrorPolicies` 0.23.4 → 0.24.0 (`.TestKit` / `.TestKit.Xunit` for the test project).
   The three dry-run contract tests use the now non-generic TestKit base.
 - The ten `(source, JsonSerializerOptions?, ILogger?)` constructors are hidden from IntelliSense and retained permanently,
