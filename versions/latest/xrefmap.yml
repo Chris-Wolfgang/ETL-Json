@@ -119,6 +119,64 @@ references:
   fullName.vb: Wolfgang.Etl.Json.EtlPipelineJsonSourceExtensions.JsonSingleStreamExtractor(Of T)(Wolfgang.Etl.Abstractions.EtlPipeline, String, System.Text.Json.JsonSerializerOptions)
   nameWithType: EtlPipelineJsonSourceExtensions.JsonSingleStreamExtractor<T>(EtlPipeline, string, JsonSerializerOptions?)
   nameWithType.vb: EtlPipelineJsonSourceExtensions.JsonSingleStreamExtractor(Of T)(EtlPipeline, String, JsonSerializerOptions)
+- uid: Wolfgang.Etl.Json.JsonLineExtractorOptions
+  name: JsonLineExtractorOptions
+  href: api/Wolfgang.Etl.Json.JsonLineExtractorOptions.html
+  commentId: T:Wolfgang.Etl.Json.JsonLineExtractorOptions
+  fullName: Wolfgang.Etl.Json.JsonLineExtractorOptions
+  nameWithType: JsonLineExtractorOptions
+- uid: Wolfgang.Etl.Json.JsonLineExtractorOptions.EnableCheckpointing
+  name: EnableCheckpointing
+  href: api/Wolfgang.Etl.Json.JsonLineExtractorOptions.html#Wolfgang_Etl_Json_JsonLineExtractorOptions_EnableCheckpointing
+  commentId: P:Wolfgang.Etl.Json.JsonLineExtractorOptions.EnableCheckpointing
+  fullName: Wolfgang.Etl.Json.JsonLineExtractorOptions.EnableCheckpointing
+  nameWithType: JsonLineExtractorOptions.EnableCheckpointing
+- uid: Wolfgang.Etl.Json.JsonLineExtractorOptions.EnableCheckpointing*
+  name: EnableCheckpointing
+  href: api/Wolfgang.Etl.Json.JsonLineExtractorOptions.html#Wolfgang_Etl_Json_JsonLineExtractorOptions_EnableCheckpointing_
+  commentId: Overload:Wolfgang.Etl.Json.JsonLineExtractorOptions.EnableCheckpointing
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonLineExtractorOptions.EnableCheckpointing
+  nameWithType: JsonLineExtractorOptions.EnableCheckpointing
+- uid: Wolfgang.Etl.Json.JsonLineExtractorOptions.Encoding
+  name: Encoding
+  href: api/Wolfgang.Etl.Json.JsonLineExtractorOptions.html#Wolfgang_Etl_Json_JsonLineExtractorOptions_Encoding
+  commentId: P:Wolfgang.Etl.Json.JsonLineExtractorOptions.Encoding
+  fullName: Wolfgang.Etl.Json.JsonLineExtractorOptions.Encoding
+  nameWithType: JsonLineExtractorOptions.Encoding
+- uid: Wolfgang.Etl.Json.JsonLineExtractorOptions.Encoding*
+  name: Encoding
+  href: api/Wolfgang.Etl.Json.JsonLineExtractorOptions.html#Wolfgang_Etl_Json_JsonLineExtractorOptions_Encoding_
+  commentId: Overload:Wolfgang.Etl.Json.JsonLineExtractorOptions.Encoding
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonLineExtractorOptions.Encoding
+  nameWithType: JsonLineExtractorOptions.Encoding
+- uid: Wolfgang.Etl.Json.JsonLineExtractorOptions.SerializerOptions
+  name: SerializerOptions
+  href: api/Wolfgang.Etl.Json.JsonLineExtractorOptions.html#Wolfgang_Etl_Json_JsonLineExtractorOptions_SerializerOptions
+  commentId: P:Wolfgang.Etl.Json.JsonLineExtractorOptions.SerializerOptions
+  fullName: Wolfgang.Etl.Json.JsonLineExtractorOptions.SerializerOptions
+  nameWithType: JsonLineExtractorOptions.SerializerOptions
+- uid: Wolfgang.Etl.Json.JsonLineExtractorOptions.SerializerOptions*
+  name: SerializerOptions
+  href: api/Wolfgang.Etl.Json.JsonLineExtractorOptions.html#Wolfgang_Etl_Json_JsonLineExtractorOptions_SerializerOptions_
+  commentId: Overload:Wolfgang.Etl.Json.JsonLineExtractorOptions.SerializerOptions
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonLineExtractorOptions.SerializerOptions
+  nameWithType: JsonLineExtractorOptions.SerializerOptions
+- uid: Wolfgang.Etl.Json.JsonLineExtractorOptions.StartByteOffset
+  name: StartByteOffset
+  href: api/Wolfgang.Etl.Json.JsonLineExtractorOptions.html#Wolfgang_Etl_Json_JsonLineExtractorOptions_StartByteOffset
+  commentId: P:Wolfgang.Etl.Json.JsonLineExtractorOptions.StartByteOffset
+  fullName: Wolfgang.Etl.Json.JsonLineExtractorOptions.StartByteOffset
+  nameWithType: JsonLineExtractorOptions.StartByteOffset
+- uid: Wolfgang.Etl.Json.JsonLineExtractorOptions.StartByteOffset*
+  name: StartByteOffset
+  href: api/Wolfgang.Etl.Json.JsonLineExtractorOptions.html#Wolfgang_Etl_Json_JsonLineExtractorOptions_StartByteOffset_
+  commentId: Overload:Wolfgang.Etl.Json.JsonLineExtractorOptions.StartByteOffset
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonLineExtractorOptions.StartByteOffset
+  nameWithType: JsonLineExtractorOptions.StartByteOffset
 - uid: Wolfgang.Etl.Json.JsonLineExtractor`1
   name: JsonLineExtractor<TRecord>
   href: api/Wolfgang.Etl.Json.JsonLineExtractor-1.html
@@ -128,33 +186,15 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonLineExtractor(Of TRecord)
   nameWithType: JsonLineExtractor<TRecord>
   nameWithType.vb: JsonLineExtractor(Of TRecord)
-- uid: Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor(System.IO.Stream)
-  name: JsonLineExtractor(Stream)
-  href: api/Wolfgang.Etl.Json.JsonLineExtractor-1.html#Wolfgang_Etl_Json_JsonLineExtractor_1__ctor_System_IO_Stream_
-  commentId: M:Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor(System.IO.Stream)
-  name.vb: New(Stream)
-  fullName: Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.JsonLineExtractor(System.IO.Stream)
-  fullName.vb: Wolfgang.Etl.Json.JsonLineExtractor(Of TRecord).New(System.IO.Stream)
-  nameWithType: JsonLineExtractor<TRecord>.JsonLineExtractor(Stream)
-  nameWithType.vb: JsonLineExtractor(Of TRecord).New(Stream)
 - uid: Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor(System.IO.Stream,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonLineExtractor{`0}})
-  name: JsonLineExtractor(Stream, ILogger<JsonLineExtractor<TRecord>>)
+  name: JsonLineExtractor(Stream, ILogger<JsonLineExtractor<TRecord>>?)
   href: api/Wolfgang.Etl.Json.JsonLineExtractor-1.html#Wolfgang_Etl_Json_JsonLineExtractor_1__ctor_System_IO_Stream_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonLineExtractor__0___
   commentId: M:Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor(System.IO.Stream,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonLineExtractor{`0}})
   name.vb: New(Stream, ILogger(Of JsonLineExtractor(Of TRecord)))
-  fullName: Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.JsonLineExtractor(System.IO.Stream, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonLineExtractor<TRecord>>)
+  fullName: Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.JsonLineExtractor(System.IO.Stream, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonLineExtractor<TRecord>>?)
   fullName.vb: Wolfgang.Etl.Json.JsonLineExtractor(Of TRecord).New(System.IO.Stream, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonLineExtractor(Of TRecord)))
-  nameWithType: JsonLineExtractor<TRecord>.JsonLineExtractor(Stream, ILogger<JsonLineExtractor<TRecord>>)
+  nameWithType: JsonLineExtractor<TRecord>.JsonLineExtractor(Stream, ILogger<JsonLineExtractor<TRecord>>?)
   nameWithType.vb: JsonLineExtractor(Of TRecord).New(Stream, ILogger(Of JsonLineExtractor(Of TRecord)))
-- uid: Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor(System.IO.Stream,System.Text.Json.JsonSerializerOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonLineExtractor{`0}})
-  name: JsonLineExtractor(Stream, JsonSerializerOptions?, ILogger<JsonLineExtractor<TRecord>>?)
-  href: api/Wolfgang.Etl.Json.JsonLineExtractor-1.html#Wolfgang_Etl_Json_JsonLineExtractor_1__ctor_System_IO_Stream_System_Text_Json_JsonSerializerOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonLineExtractor__0___
-  commentId: M:Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor(System.IO.Stream,System.Text.Json.JsonSerializerOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonLineExtractor{`0}})
-  name.vb: New(Stream, JsonSerializerOptions, ILogger(Of JsonLineExtractor(Of TRecord)))
-  fullName: Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.JsonLineExtractor(System.IO.Stream, System.Text.Json.JsonSerializerOptions?, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonLineExtractor<TRecord>>?)
-  fullName.vb: Wolfgang.Etl.Json.JsonLineExtractor(Of TRecord).New(System.IO.Stream, System.Text.Json.JsonSerializerOptions, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonLineExtractor(Of TRecord)))
-  nameWithType: JsonLineExtractor<TRecord>.JsonLineExtractor(Stream, JsonSerializerOptions?, ILogger<JsonLineExtractor<TRecord>>?)
-  nameWithType.vb: JsonLineExtractor(Of TRecord).New(Stream, JsonSerializerOptions, ILogger(Of JsonLineExtractor(Of TRecord)))
 - uid: Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor(System.IO.Stream,System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonLineExtractor{`0}})
   name: JsonLineExtractor(Stream, JsonTypeInfo<TRecord>, ILogger<JsonLineExtractor<TRecord>>?)
   href: api/Wolfgang.Etl.Json.JsonLineExtractor-1.html#Wolfgang_Etl_Json_JsonLineExtractor_1__ctor_System_IO_Stream_System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonLineExtractor__0___
@@ -164,15 +204,33 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonLineExtractor(Of TRecord).New(System.IO.Stream, System.Text.Json.Serialization.Metadata.JsonTypeInfo(Of TRecord), Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonLineExtractor(Of TRecord)))
   nameWithType: JsonLineExtractor<TRecord>.JsonLineExtractor(Stream, JsonTypeInfo<TRecord>, ILogger<JsonLineExtractor<TRecord>>?)
   nameWithType.vb: JsonLineExtractor(Of TRecord).New(Stream, JsonTypeInfo(Of TRecord), ILogger(Of JsonLineExtractor(Of TRecord)))
-- uid: Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor(System.String,System.Text.Json.JsonSerializerOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonLineExtractor{`0}})
-  name: JsonLineExtractor(string, JsonSerializerOptions?, ILogger<JsonLineExtractor<TRecord>>?)
-  href: api/Wolfgang.Etl.Json.JsonLineExtractor-1.html#Wolfgang_Etl_Json_JsonLineExtractor_1__ctor_System_String_System_Text_Json_JsonSerializerOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonLineExtractor__0___
-  commentId: M:Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor(System.String,System.Text.Json.JsonSerializerOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonLineExtractor{`0}})
-  name.vb: New(String, JsonSerializerOptions, ILogger(Of JsonLineExtractor(Of TRecord)))
-  fullName: Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.JsonLineExtractor(string, System.Text.Json.JsonSerializerOptions?, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonLineExtractor<TRecord>>?)
-  fullName.vb: Wolfgang.Etl.Json.JsonLineExtractor(Of TRecord).New(String, System.Text.Json.JsonSerializerOptions, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonLineExtractor(Of TRecord)))
-  nameWithType: JsonLineExtractor<TRecord>.JsonLineExtractor(string, JsonSerializerOptions?, ILogger<JsonLineExtractor<TRecord>>?)
-  nameWithType.vb: JsonLineExtractor(Of TRecord).New(String, JsonSerializerOptions, ILogger(Of JsonLineExtractor(Of TRecord)))
+- uid: Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor(System.IO.Stream,System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Wolfgang.Etl.Json.JsonLineExtractorOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonLineExtractor{`0}})
+  name: JsonLineExtractor(Stream, JsonTypeInfo<TRecord>, JsonLineExtractorOptions, ILogger<JsonLineExtractor<TRecord>>?)
+  href: api/Wolfgang.Etl.Json.JsonLineExtractor-1.html#Wolfgang_Etl_Json_JsonLineExtractor_1__ctor_System_IO_Stream_System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__Wolfgang_Etl_Json_JsonLineExtractorOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonLineExtractor__0___
+  commentId: M:Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor(System.IO.Stream,System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Wolfgang.Etl.Json.JsonLineExtractorOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonLineExtractor{`0}})
+  name.vb: New(Stream, JsonTypeInfo(Of TRecord), JsonLineExtractorOptions, ILogger(Of JsonLineExtractor(Of TRecord)))
+  fullName: Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.JsonLineExtractor(System.IO.Stream, System.Text.Json.Serialization.Metadata.JsonTypeInfo<TRecord>, Wolfgang.Etl.Json.JsonLineExtractorOptions, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonLineExtractor<TRecord>>?)
+  fullName.vb: Wolfgang.Etl.Json.JsonLineExtractor(Of TRecord).New(System.IO.Stream, System.Text.Json.Serialization.Metadata.JsonTypeInfo(Of TRecord), Wolfgang.Etl.Json.JsonLineExtractorOptions, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonLineExtractor(Of TRecord)))
+  nameWithType: JsonLineExtractor<TRecord>.JsonLineExtractor(Stream, JsonTypeInfo<TRecord>, JsonLineExtractorOptions, ILogger<JsonLineExtractor<TRecord>>?)
+  nameWithType.vb: JsonLineExtractor(Of TRecord).New(Stream, JsonTypeInfo(Of TRecord), JsonLineExtractorOptions, ILogger(Of JsonLineExtractor(Of TRecord)))
+- uid: Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor(System.IO.Stream,Wolfgang.Etl.Json.JsonLineExtractorOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonLineExtractor{`0}})
+  name: JsonLineExtractor(Stream, JsonLineExtractorOptions, ILogger<JsonLineExtractor<TRecord>>?)
+  href: api/Wolfgang.Etl.Json.JsonLineExtractor-1.html#Wolfgang_Etl_Json_JsonLineExtractor_1__ctor_System_IO_Stream_Wolfgang_Etl_Json_JsonLineExtractorOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonLineExtractor__0___
+  commentId: M:Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor(System.IO.Stream,Wolfgang.Etl.Json.JsonLineExtractorOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonLineExtractor{`0}})
+  name.vb: New(Stream, JsonLineExtractorOptions, ILogger(Of JsonLineExtractor(Of TRecord)))
+  fullName: Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.JsonLineExtractor(System.IO.Stream, Wolfgang.Etl.Json.JsonLineExtractorOptions, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonLineExtractor<TRecord>>?)
+  fullName.vb: Wolfgang.Etl.Json.JsonLineExtractor(Of TRecord).New(System.IO.Stream, Wolfgang.Etl.Json.JsonLineExtractorOptions, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonLineExtractor(Of TRecord)))
+  nameWithType: JsonLineExtractor<TRecord>.JsonLineExtractor(Stream, JsonLineExtractorOptions, ILogger<JsonLineExtractor<TRecord>>?)
+  nameWithType.vb: JsonLineExtractor(Of TRecord).New(Stream, JsonLineExtractorOptions, ILogger(Of JsonLineExtractor(Of TRecord)))
+- uid: Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor(System.String,Wolfgang.Etl.Json.JsonLineExtractorOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonLineExtractor{`0}})
+  name: JsonLineExtractor(string, JsonLineExtractorOptions, ILogger<JsonLineExtractor<TRecord>>?)
+  href: api/Wolfgang.Etl.Json.JsonLineExtractor-1.html#Wolfgang_Etl_Json_JsonLineExtractor_1__ctor_System_String_Wolfgang_Etl_Json_JsonLineExtractorOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonLineExtractor__0___
+  commentId: M:Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor(System.String,Wolfgang.Etl.Json.JsonLineExtractorOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonLineExtractor{`0}})
+  name.vb: New(String, JsonLineExtractorOptions, ILogger(Of JsonLineExtractor(Of TRecord)))
+  fullName: Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.JsonLineExtractor(string, Wolfgang.Etl.Json.JsonLineExtractorOptions, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonLineExtractor<TRecord>>?)
+  fullName.vb: Wolfgang.Etl.Json.JsonLineExtractor(Of TRecord).New(String, Wolfgang.Etl.Json.JsonLineExtractorOptions, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonLineExtractor(Of TRecord)))
+  nameWithType: JsonLineExtractor<TRecord>.JsonLineExtractor(string, JsonLineExtractorOptions, ILogger<JsonLineExtractor<TRecord>>?)
+  nameWithType.vb: JsonLineExtractor(Of TRecord).New(String, JsonLineExtractorOptions, ILogger(Of JsonLineExtractor(Of TRecord)))
 - uid: Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor*
   name: JsonLineExtractor
   href: api/Wolfgang.Etl.Json.JsonLineExtractor-1.html#Wolfgang_Etl_Json_JsonLineExtractor_1__ctor_
@@ -321,6 +379,51 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonLineExtractor(Of TRecord).StartByteOffset
   nameWithType: JsonLineExtractor<TRecord>.StartByteOffset
   nameWithType.vb: JsonLineExtractor(Of TRecord).StartByteOffset
+- uid: Wolfgang.Etl.Json.JsonLineLoaderOptions
+  name: JsonLineLoaderOptions
+  href: api/Wolfgang.Etl.Json.JsonLineLoaderOptions.html
+  commentId: T:Wolfgang.Etl.Json.JsonLineLoaderOptions
+  fullName: Wolfgang.Etl.Json.JsonLineLoaderOptions
+  nameWithType: JsonLineLoaderOptions
+- uid: Wolfgang.Etl.Json.JsonLineLoaderOptions.Encoding
+  name: Encoding
+  href: api/Wolfgang.Etl.Json.JsonLineLoaderOptions.html#Wolfgang_Etl_Json_JsonLineLoaderOptions_Encoding
+  commentId: P:Wolfgang.Etl.Json.JsonLineLoaderOptions.Encoding
+  fullName: Wolfgang.Etl.Json.JsonLineLoaderOptions.Encoding
+  nameWithType: JsonLineLoaderOptions.Encoding
+- uid: Wolfgang.Etl.Json.JsonLineLoaderOptions.Encoding*
+  name: Encoding
+  href: api/Wolfgang.Etl.Json.JsonLineLoaderOptions.html#Wolfgang_Etl_Json_JsonLineLoaderOptions_Encoding_
+  commentId: Overload:Wolfgang.Etl.Json.JsonLineLoaderOptions.Encoding
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonLineLoaderOptions.Encoding
+  nameWithType: JsonLineLoaderOptions.Encoding
+- uid: Wolfgang.Etl.Json.JsonLineLoaderOptions.IsDryRun
+  name: IsDryRun
+  href: api/Wolfgang.Etl.Json.JsonLineLoaderOptions.html#Wolfgang_Etl_Json_JsonLineLoaderOptions_IsDryRun
+  commentId: P:Wolfgang.Etl.Json.JsonLineLoaderOptions.IsDryRun
+  fullName: Wolfgang.Etl.Json.JsonLineLoaderOptions.IsDryRun
+  nameWithType: JsonLineLoaderOptions.IsDryRun
+- uid: Wolfgang.Etl.Json.JsonLineLoaderOptions.IsDryRun*
+  name: IsDryRun
+  href: api/Wolfgang.Etl.Json.JsonLineLoaderOptions.html#Wolfgang_Etl_Json_JsonLineLoaderOptions_IsDryRun_
+  commentId: Overload:Wolfgang.Etl.Json.JsonLineLoaderOptions.IsDryRun
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonLineLoaderOptions.IsDryRun
+  nameWithType: JsonLineLoaderOptions.IsDryRun
+- uid: Wolfgang.Etl.Json.JsonLineLoaderOptions.SerializerOptions
+  name: SerializerOptions
+  href: api/Wolfgang.Etl.Json.JsonLineLoaderOptions.html#Wolfgang_Etl_Json_JsonLineLoaderOptions_SerializerOptions
+  commentId: P:Wolfgang.Etl.Json.JsonLineLoaderOptions.SerializerOptions
+  fullName: Wolfgang.Etl.Json.JsonLineLoaderOptions.SerializerOptions
+  nameWithType: JsonLineLoaderOptions.SerializerOptions
+- uid: Wolfgang.Etl.Json.JsonLineLoaderOptions.SerializerOptions*
+  name: SerializerOptions
+  href: api/Wolfgang.Etl.Json.JsonLineLoaderOptions.html#Wolfgang_Etl_Json_JsonLineLoaderOptions_SerializerOptions_
+  commentId: Overload:Wolfgang.Etl.Json.JsonLineLoaderOptions.SerializerOptions
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonLineLoaderOptions.SerializerOptions
+  nameWithType: JsonLineLoaderOptions.SerializerOptions
 - uid: Wolfgang.Etl.Json.JsonLineLoader`1
   name: JsonLineLoader<TRecord>
   href: api/Wolfgang.Etl.Json.JsonLineLoader-1.html
@@ -330,33 +433,15 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonLineLoader(Of TRecord)
   nameWithType: JsonLineLoader<TRecord>
   nameWithType.vb: JsonLineLoader(Of TRecord)
-- uid: Wolfgang.Etl.Json.JsonLineLoader`1.#ctor(System.IO.Stream)
-  name: JsonLineLoader(Stream)
-  href: api/Wolfgang.Etl.Json.JsonLineLoader-1.html#Wolfgang_Etl_Json_JsonLineLoader_1__ctor_System_IO_Stream_
-  commentId: M:Wolfgang.Etl.Json.JsonLineLoader`1.#ctor(System.IO.Stream)
-  name.vb: New(Stream)
-  fullName: Wolfgang.Etl.Json.JsonLineLoader<TRecord>.JsonLineLoader(System.IO.Stream)
-  fullName.vb: Wolfgang.Etl.Json.JsonLineLoader(Of TRecord).New(System.IO.Stream)
-  nameWithType: JsonLineLoader<TRecord>.JsonLineLoader(Stream)
-  nameWithType.vb: JsonLineLoader(Of TRecord).New(Stream)
 - uid: Wolfgang.Etl.Json.JsonLineLoader`1.#ctor(System.IO.Stream,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonLineLoader{`0}})
-  name: JsonLineLoader(Stream, ILogger<JsonLineLoader<TRecord>>)
+  name: JsonLineLoader(Stream, ILogger<JsonLineLoader<TRecord>>?)
   href: api/Wolfgang.Etl.Json.JsonLineLoader-1.html#Wolfgang_Etl_Json_JsonLineLoader_1__ctor_System_IO_Stream_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonLineLoader__0___
   commentId: M:Wolfgang.Etl.Json.JsonLineLoader`1.#ctor(System.IO.Stream,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonLineLoader{`0}})
   name.vb: New(Stream, ILogger(Of JsonLineLoader(Of TRecord)))
-  fullName: Wolfgang.Etl.Json.JsonLineLoader<TRecord>.JsonLineLoader(System.IO.Stream, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonLineLoader<TRecord>>)
+  fullName: Wolfgang.Etl.Json.JsonLineLoader<TRecord>.JsonLineLoader(System.IO.Stream, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonLineLoader<TRecord>>?)
   fullName.vb: Wolfgang.Etl.Json.JsonLineLoader(Of TRecord).New(System.IO.Stream, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonLineLoader(Of TRecord)))
-  nameWithType: JsonLineLoader<TRecord>.JsonLineLoader(Stream, ILogger<JsonLineLoader<TRecord>>)
+  nameWithType: JsonLineLoader<TRecord>.JsonLineLoader(Stream, ILogger<JsonLineLoader<TRecord>>?)
   nameWithType.vb: JsonLineLoader(Of TRecord).New(Stream, ILogger(Of JsonLineLoader(Of TRecord)))
-- uid: Wolfgang.Etl.Json.JsonLineLoader`1.#ctor(System.IO.Stream,System.Text.Json.JsonSerializerOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonLineLoader{`0}})
-  name: JsonLineLoader(Stream, JsonSerializerOptions?, ILogger<JsonLineLoader<TRecord>>?)
-  href: api/Wolfgang.Etl.Json.JsonLineLoader-1.html#Wolfgang_Etl_Json_JsonLineLoader_1__ctor_System_IO_Stream_System_Text_Json_JsonSerializerOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonLineLoader__0___
-  commentId: M:Wolfgang.Etl.Json.JsonLineLoader`1.#ctor(System.IO.Stream,System.Text.Json.JsonSerializerOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonLineLoader{`0}})
-  name.vb: New(Stream, JsonSerializerOptions, ILogger(Of JsonLineLoader(Of TRecord)))
-  fullName: Wolfgang.Etl.Json.JsonLineLoader<TRecord>.JsonLineLoader(System.IO.Stream, System.Text.Json.JsonSerializerOptions?, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonLineLoader<TRecord>>?)
-  fullName.vb: Wolfgang.Etl.Json.JsonLineLoader(Of TRecord).New(System.IO.Stream, System.Text.Json.JsonSerializerOptions, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonLineLoader(Of TRecord)))
-  nameWithType: JsonLineLoader<TRecord>.JsonLineLoader(Stream, JsonSerializerOptions?, ILogger<JsonLineLoader<TRecord>>?)
-  nameWithType.vb: JsonLineLoader(Of TRecord).New(Stream, JsonSerializerOptions, ILogger(Of JsonLineLoader(Of TRecord)))
 - uid: Wolfgang.Etl.Json.JsonLineLoader`1.#ctor(System.IO.Stream,System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonLineLoader{`0}})
   name: JsonLineLoader(Stream, JsonTypeInfo<TRecord>, ILogger<JsonLineLoader<TRecord>>?)
   href: api/Wolfgang.Etl.Json.JsonLineLoader-1.html#Wolfgang_Etl_Json_JsonLineLoader_1__ctor_System_IO_Stream_System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonLineLoader__0___
@@ -366,6 +451,24 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonLineLoader(Of TRecord).New(System.IO.Stream, System.Text.Json.Serialization.Metadata.JsonTypeInfo(Of TRecord), Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonLineLoader(Of TRecord)))
   nameWithType: JsonLineLoader<TRecord>.JsonLineLoader(Stream, JsonTypeInfo<TRecord>, ILogger<JsonLineLoader<TRecord>>?)
   nameWithType.vb: JsonLineLoader(Of TRecord).New(Stream, JsonTypeInfo(Of TRecord), ILogger(Of JsonLineLoader(Of TRecord)))
+- uid: Wolfgang.Etl.Json.JsonLineLoader`1.#ctor(System.IO.Stream,System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Wolfgang.Etl.Json.JsonLineLoaderOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonLineLoader{`0}})
+  name: JsonLineLoader(Stream, JsonTypeInfo<TRecord>, JsonLineLoaderOptions, ILogger<JsonLineLoader<TRecord>>?)
+  href: api/Wolfgang.Etl.Json.JsonLineLoader-1.html#Wolfgang_Etl_Json_JsonLineLoader_1__ctor_System_IO_Stream_System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__Wolfgang_Etl_Json_JsonLineLoaderOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonLineLoader__0___
+  commentId: M:Wolfgang.Etl.Json.JsonLineLoader`1.#ctor(System.IO.Stream,System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Wolfgang.Etl.Json.JsonLineLoaderOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonLineLoader{`0}})
+  name.vb: New(Stream, JsonTypeInfo(Of TRecord), JsonLineLoaderOptions, ILogger(Of JsonLineLoader(Of TRecord)))
+  fullName: Wolfgang.Etl.Json.JsonLineLoader<TRecord>.JsonLineLoader(System.IO.Stream, System.Text.Json.Serialization.Metadata.JsonTypeInfo<TRecord>, Wolfgang.Etl.Json.JsonLineLoaderOptions, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonLineLoader<TRecord>>?)
+  fullName.vb: Wolfgang.Etl.Json.JsonLineLoader(Of TRecord).New(System.IO.Stream, System.Text.Json.Serialization.Metadata.JsonTypeInfo(Of TRecord), Wolfgang.Etl.Json.JsonLineLoaderOptions, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonLineLoader(Of TRecord)))
+  nameWithType: JsonLineLoader<TRecord>.JsonLineLoader(Stream, JsonTypeInfo<TRecord>, JsonLineLoaderOptions, ILogger<JsonLineLoader<TRecord>>?)
+  nameWithType.vb: JsonLineLoader(Of TRecord).New(Stream, JsonTypeInfo(Of TRecord), JsonLineLoaderOptions, ILogger(Of JsonLineLoader(Of TRecord)))
+- uid: Wolfgang.Etl.Json.JsonLineLoader`1.#ctor(System.IO.Stream,Wolfgang.Etl.Json.JsonLineLoaderOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonLineLoader{`0}})
+  name: JsonLineLoader(Stream, JsonLineLoaderOptions, ILogger<JsonLineLoader<TRecord>>?)
+  href: api/Wolfgang.Etl.Json.JsonLineLoader-1.html#Wolfgang_Etl_Json_JsonLineLoader_1__ctor_System_IO_Stream_Wolfgang_Etl_Json_JsonLineLoaderOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonLineLoader__0___
+  commentId: M:Wolfgang.Etl.Json.JsonLineLoader`1.#ctor(System.IO.Stream,Wolfgang.Etl.Json.JsonLineLoaderOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonLineLoader{`0}})
+  name.vb: New(Stream, JsonLineLoaderOptions, ILogger(Of JsonLineLoader(Of TRecord)))
+  fullName: Wolfgang.Etl.Json.JsonLineLoader<TRecord>.JsonLineLoader(System.IO.Stream, Wolfgang.Etl.Json.JsonLineLoaderOptions, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonLineLoader<TRecord>>?)
+  fullName.vb: Wolfgang.Etl.Json.JsonLineLoader(Of TRecord).New(System.IO.Stream, Wolfgang.Etl.Json.JsonLineLoaderOptions, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonLineLoader(Of TRecord)))
+  nameWithType: JsonLineLoader<TRecord>.JsonLineLoader(Stream, JsonLineLoaderOptions, ILogger<JsonLineLoader<TRecord>>?)
+  nameWithType.vb: JsonLineLoader(Of TRecord).New(Stream, JsonLineLoaderOptions, ILogger(Of JsonLineLoader(Of TRecord)))
 - uid: Wolfgang.Etl.Json.JsonLineLoader`1.#ctor*
   name: JsonLineLoader
   href: api/Wolfgang.Etl.Json.JsonLineLoader-1.html#Wolfgang_Etl_Json_JsonLineLoader_1__ctor_
@@ -463,6 +566,25 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonLineLoader(Of TRecord).LoadWorkerAsync
   nameWithType: JsonLineLoader<TRecord>.LoadWorkerAsync
   nameWithType.vb: JsonLineLoader(Of TRecord).LoadWorkerAsync
+- uid: Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions
+  name: JsonMultiStreamExtractorOptions
+  href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions.html
+  commentId: T:Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions
+  nameWithType: JsonMultiStreamExtractorOptions
+- uid: Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions.SerializerOptions
+  name: SerializerOptions
+  href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions.html#Wolfgang_Etl_Json_JsonMultiStreamExtractorOptions_SerializerOptions
+  commentId: P:Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions.SerializerOptions
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions.SerializerOptions
+  nameWithType: JsonMultiStreamExtractorOptions.SerializerOptions
+- uid: Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions.SerializerOptions*
+  name: SerializerOptions
+  href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions.html#Wolfgang_Etl_Json_JsonMultiStreamExtractorOptions_SerializerOptions_
+  commentId: Overload:Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions.SerializerOptions
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions.SerializerOptions
+  nameWithType: JsonMultiStreamExtractorOptions.SerializerOptions
 - uid: Wolfgang.Etl.Json.JsonMultiStreamExtractor`1
   name: JsonMultiStreamExtractor<TRecord>
   href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html
@@ -472,33 +594,15 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord)
   nameWithType: JsonMultiStreamExtractor<TRecord>
   nameWithType.vb: JsonMultiStreamExtractor(Of TRecord)
-- uid: Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{System.IO.Stream})
-  name: JsonMultiStreamExtractor(IEnumerable<Stream>)
-  href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html#Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_System_Collections_Generic_IEnumerable_System_IO_Stream__
-  commentId: M:Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{System.IO.Stream})
-  name.vb: New(IEnumerable(Of Stream))
-  fullName: Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(System.Collections.Generic.IEnumerable<System.IO.Stream>)
-  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord).New(System.Collections.Generic.IEnumerable(Of System.IO.Stream))
-  nameWithType: JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(IEnumerable<Stream>)
-  nameWithType.vb: JsonMultiStreamExtractor(Of TRecord).New(IEnumerable(Of Stream))
 - uid: Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{System.IO.Stream},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})
-  name: JsonMultiStreamExtractor(IEnumerable<Stream>, ILogger<JsonMultiStreamExtractor<TRecord>>)
+  name: JsonMultiStreamExtractor(IEnumerable<Stream>, ILogger<JsonMultiStreamExtractor<TRecord>>?)
   href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html#Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_System_Collections_Generic_IEnumerable_System_IO_Stream__Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamExtractor__0___
   commentId: M:Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{System.IO.Stream},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})
   name.vb: New(IEnumerable(Of Stream), ILogger(Of JsonMultiStreamExtractor(Of TRecord)))
-  fullName: Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(System.Collections.Generic.IEnumerable<System.IO.Stream>, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>>)
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(System.Collections.Generic.IEnumerable<System.IO.Stream>, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>>?)
   fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord).New(System.Collections.Generic.IEnumerable(Of System.IO.Stream), Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord)))
-  nameWithType: JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(IEnumerable<Stream>, ILogger<JsonMultiStreamExtractor<TRecord>>)
+  nameWithType: JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(IEnumerable<Stream>, ILogger<JsonMultiStreamExtractor<TRecord>>?)
   nameWithType.vb: JsonMultiStreamExtractor(Of TRecord).New(IEnumerable(Of Stream), ILogger(Of JsonMultiStreamExtractor(Of TRecord)))
-- uid: Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{System.IO.Stream},System.Text.Json.JsonSerializerOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})
-  name: JsonMultiStreamExtractor(IEnumerable<Stream>, JsonSerializerOptions?, ILogger<JsonMultiStreamExtractor<TRecord>>?)
-  href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html#Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_System_Collections_Generic_IEnumerable_System_IO_Stream__System_Text_Json_JsonSerializerOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamExtractor__0___
-  commentId: M:Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{System.IO.Stream},System.Text.Json.JsonSerializerOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})
-  name.vb: New(IEnumerable(Of Stream), JsonSerializerOptions, ILogger(Of JsonMultiStreamExtractor(Of TRecord)))
-  fullName: Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(System.Collections.Generic.IEnumerable<System.IO.Stream>, System.Text.Json.JsonSerializerOptions?, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>>?)
-  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord).New(System.Collections.Generic.IEnumerable(Of System.IO.Stream), System.Text.Json.JsonSerializerOptions, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord)))
-  nameWithType: JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(IEnumerable<Stream>, JsonSerializerOptions?, ILogger<JsonMultiStreamExtractor<TRecord>>?)
-  nameWithType.vb: JsonMultiStreamExtractor(Of TRecord).New(IEnumerable(Of Stream), JsonSerializerOptions, ILogger(Of JsonMultiStreamExtractor(Of TRecord)))
 - uid: Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{System.IO.Stream},System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})
   name: JsonMultiStreamExtractor(IEnumerable<Stream>, JsonTypeInfo<TRecord>, ILogger<JsonMultiStreamExtractor<TRecord>>?)
   href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html#Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_System_Collections_Generic_IEnumerable_System_IO_Stream__System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamExtractor__0___
@@ -508,33 +612,33 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord).New(System.Collections.Generic.IEnumerable(Of System.IO.Stream), System.Text.Json.Serialization.Metadata.JsonTypeInfo(Of TRecord), Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord)))
   nameWithType: JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(IEnumerable<Stream>, JsonTypeInfo<TRecord>, ILogger<JsonMultiStreamExtractor<TRecord>>?)
   nameWithType.vb: JsonMultiStreamExtractor(Of TRecord).New(IEnumerable(Of Stream), JsonTypeInfo(Of TRecord), ILogger(Of JsonMultiStreamExtractor(Of TRecord)))
-- uid: Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{Wolfgang.Etl.Json.JsonNamedStream})
-  name: JsonMultiStreamExtractor(IEnumerable<JsonNamedStream>)
-  href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html#Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_System_Collections_Generic_IEnumerable_Wolfgang_Etl_Json_JsonNamedStream__
-  commentId: M:Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{Wolfgang.Etl.Json.JsonNamedStream})
-  name.vb: New(IEnumerable(Of JsonNamedStream))
-  fullName: Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(System.Collections.Generic.IEnumerable<Wolfgang.Etl.Json.JsonNamedStream>)
-  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord).New(System.Collections.Generic.IEnumerable(Of Wolfgang.Etl.Json.JsonNamedStream))
-  nameWithType: JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(IEnumerable<JsonNamedStream>)
-  nameWithType.vb: JsonMultiStreamExtractor(Of TRecord).New(IEnumerable(Of JsonNamedStream))
+- uid: Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{System.IO.Stream},System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})
+  name: JsonMultiStreamExtractor(IEnumerable<Stream>, JsonTypeInfo<TRecord>, JsonMultiStreamExtractorOptions, ILogger<JsonMultiStreamExtractor<TRecord>>?)
+  href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html#Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_System_Collections_Generic_IEnumerable_System_IO_Stream__System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__Wolfgang_Etl_Json_JsonMultiStreamExtractorOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamExtractor__0___
+  commentId: M:Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{System.IO.Stream},System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})
+  name.vb: New(IEnumerable(Of Stream), JsonTypeInfo(Of TRecord), JsonMultiStreamExtractorOptions, ILogger(Of JsonMultiStreamExtractor(Of TRecord)))
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(System.Collections.Generic.IEnumerable<System.IO.Stream>, System.Text.Json.Serialization.Metadata.JsonTypeInfo<TRecord>, Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>>?)
+  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord).New(System.Collections.Generic.IEnumerable(Of System.IO.Stream), System.Text.Json.Serialization.Metadata.JsonTypeInfo(Of TRecord), Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord)))
+  nameWithType: JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(IEnumerable<Stream>, JsonTypeInfo<TRecord>, JsonMultiStreamExtractorOptions, ILogger<JsonMultiStreamExtractor<TRecord>>?)
+  nameWithType.vb: JsonMultiStreamExtractor(Of TRecord).New(IEnumerable(Of Stream), JsonTypeInfo(Of TRecord), JsonMultiStreamExtractorOptions, ILogger(Of JsonMultiStreamExtractor(Of TRecord)))
+- uid: Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{System.IO.Stream},Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})
+  name: JsonMultiStreamExtractor(IEnumerable<Stream>, JsonMultiStreamExtractorOptions, ILogger<JsonMultiStreamExtractor<TRecord>>?)
+  href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html#Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_System_Collections_Generic_IEnumerable_System_IO_Stream__Wolfgang_Etl_Json_JsonMultiStreamExtractorOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamExtractor__0___
+  commentId: M:Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{System.IO.Stream},Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})
+  name.vb: New(IEnumerable(Of Stream), JsonMultiStreamExtractorOptions, ILogger(Of JsonMultiStreamExtractor(Of TRecord)))
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(System.Collections.Generic.IEnumerable<System.IO.Stream>, Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>>?)
+  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord).New(System.Collections.Generic.IEnumerable(Of System.IO.Stream), Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord)))
+  nameWithType: JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(IEnumerable<Stream>, JsonMultiStreamExtractorOptions, ILogger<JsonMultiStreamExtractor<TRecord>>?)
+  nameWithType.vb: JsonMultiStreamExtractor(Of TRecord).New(IEnumerable(Of Stream), JsonMultiStreamExtractorOptions, ILogger(Of JsonMultiStreamExtractor(Of TRecord)))
 - uid: Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{Wolfgang.Etl.Json.JsonNamedStream},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})
-  name: JsonMultiStreamExtractor(IEnumerable<JsonNamedStream>, ILogger<JsonMultiStreamExtractor<TRecord>>)
+  name: JsonMultiStreamExtractor(IEnumerable<JsonNamedStream>, ILogger<JsonMultiStreamExtractor<TRecord>>?)
   href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html#Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_System_Collections_Generic_IEnumerable_Wolfgang_Etl_Json_JsonNamedStream__Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamExtractor__0___
   commentId: M:Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{Wolfgang.Etl.Json.JsonNamedStream},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})
   name.vb: New(IEnumerable(Of JsonNamedStream), ILogger(Of JsonMultiStreamExtractor(Of TRecord)))
-  fullName: Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(System.Collections.Generic.IEnumerable<Wolfgang.Etl.Json.JsonNamedStream>, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>>)
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(System.Collections.Generic.IEnumerable<Wolfgang.Etl.Json.JsonNamedStream>, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>>?)
   fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord).New(System.Collections.Generic.IEnumerable(Of Wolfgang.Etl.Json.JsonNamedStream), Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord)))
-  nameWithType: JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(IEnumerable<JsonNamedStream>, ILogger<JsonMultiStreamExtractor<TRecord>>)
+  nameWithType: JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(IEnumerable<JsonNamedStream>, ILogger<JsonMultiStreamExtractor<TRecord>>?)
   nameWithType.vb: JsonMultiStreamExtractor(Of TRecord).New(IEnumerable(Of JsonNamedStream), ILogger(Of JsonMultiStreamExtractor(Of TRecord)))
-- uid: Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{Wolfgang.Etl.Json.JsonNamedStream},System.Text.Json.JsonSerializerOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})
-  name: JsonMultiStreamExtractor(IEnumerable<JsonNamedStream>, JsonSerializerOptions?, ILogger<JsonMultiStreamExtractor<TRecord>>?)
-  href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html#Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_System_Collections_Generic_IEnumerable_Wolfgang_Etl_Json_JsonNamedStream__System_Text_Json_JsonSerializerOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamExtractor__0___
-  commentId: M:Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{Wolfgang.Etl.Json.JsonNamedStream},System.Text.Json.JsonSerializerOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})
-  name.vb: New(IEnumerable(Of JsonNamedStream), JsonSerializerOptions, ILogger(Of JsonMultiStreamExtractor(Of TRecord)))
-  fullName: Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(System.Collections.Generic.IEnumerable<Wolfgang.Etl.Json.JsonNamedStream>, System.Text.Json.JsonSerializerOptions?, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>>?)
-  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord).New(System.Collections.Generic.IEnumerable(Of Wolfgang.Etl.Json.JsonNamedStream), System.Text.Json.JsonSerializerOptions, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord)))
-  nameWithType: JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(IEnumerable<JsonNamedStream>, JsonSerializerOptions?, ILogger<JsonMultiStreamExtractor<TRecord>>?)
-  nameWithType.vb: JsonMultiStreamExtractor(Of TRecord).New(IEnumerable(Of JsonNamedStream), JsonSerializerOptions, ILogger(Of JsonMultiStreamExtractor(Of TRecord)))
 - uid: Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{Wolfgang.Etl.Json.JsonNamedStream},System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})
   name: JsonMultiStreamExtractor(IEnumerable<JsonNamedStream>, JsonTypeInfo<TRecord>, ILogger<JsonMultiStreamExtractor<TRecord>>?)
   href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html#Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_System_Collections_Generic_IEnumerable_Wolfgang_Etl_Json_JsonNamedStream__System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamExtractor__0___
@@ -544,6 +648,24 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord).New(System.Collections.Generic.IEnumerable(Of Wolfgang.Etl.Json.JsonNamedStream), System.Text.Json.Serialization.Metadata.JsonTypeInfo(Of TRecord), Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord)))
   nameWithType: JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(IEnumerable<JsonNamedStream>, JsonTypeInfo<TRecord>, ILogger<JsonMultiStreamExtractor<TRecord>>?)
   nameWithType.vb: JsonMultiStreamExtractor(Of TRecord).New(IEnumerable(Of JsonNamedStream), JsonTypeInfo(Of TRecord), ILogger(Of JsonMultiStreamExtractor(Of TRecord)))
+- uid: Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{Wolfgang.Etl.Json.JsonNamedStream},System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})
+  name: JsonMultiStreamExtractor(IEnumerable<JsonNamedStream>, JsonTypeInfo<TRecord>, JsonMultiStreamExtractorOptions, ILogger<JsonMultiStreamExtractor<TRecord>>?)
+  href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html#Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_System_Collections_Generic_IEnumerable_Wolfgang_Etl_Json_JsonNamedStream__System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__Wolfgang_Etl_Json_JsonMultiStreamExtractorOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamExtractor__0___
+  commentId: M:Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{Wolfgang.Etl.Json.JsonNamedStream},System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})
+  name.vb: New(IEnumerable(Of JsonNamedStream), JsonTypeInfo(Of TRecord), JsonMultiStreamExtractorOptions, ILogger(Of JsonMultiStreamExtractor(Of TRecord)))
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(System.Collections.Generic.IEnumerable<Wolfgang.Etl.Json.JsonNamedStream>, System.Text.Json.Serialization.Metadata.JsonTypeInfo<TRecord>, Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>>?)
+  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord).New(System.Collections.Generic.IEnumerable(Of Wolfgang.Etl.Json.JsonNamedStream), System.Text.Json.Serialization.Metadata.JsonTypeInfo(Of TRecord), Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord)))
+  nameWithType: JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(IEnumerable<JsonNamedStream>, JsonTypeInfo<TRecord>, JsonMultiStreamExtractorOptions, ILogger<JsonMultiStreamExtractor<TRecord>>?)
+  nameWithType.vb: JsonMultiStreamExtractor(Of TRecord).New(IEnumerable(Of JsonNamedStream), JsonTypeInfo(Of TRecord), JsonMultiStreamExtractorOptions, ILogger(Of JsonMultiStreamExtractor(Of TRecord)))
+- uid: Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{Wolfgang.Etl.Json.JsonNamedStream},Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})
+  name: JsonMultiStreamExtractor(IEnumerable<JsonNamedStream>, JsonMultiStreamExtractorOptions, ILogger<JsonMultiStreamExtractor<TRecord>>?)
+  href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html#Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_System_Collections_Generic_IEnumerable_Wolfgang_Etl_Json_JsonNamedStream__Wolfgang_Etl_Json_JsonMultiStreamExtractorOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamExtractor__0___
+  commentId: M:Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{Wolfgang.Etl.Json.JsonNamedStream},Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})
+  name.vb: New(IEnumerable(Of JsonNamedStream), JsonMultiStreamExtractorOptions, ILogger(Of JsonMultiStreamExtractor(Of TRecord)))
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(System.Collections.Generic.IEnumerable<Wolfgang.Etl.Json.JsonNamedStream>, Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamExtractor<TRecord>>?)
+  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord).New(System.Collections.Generic.IEnumerable(Of Wolfgang.Etl.Json.JsonNamedStream), Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord)))
+  nameWithType: JsonMultiStreamExtractor<TRecord>.JsonMultiStreamExtractor(IEnumerable<JsonNamedStream>, JsonMultiStreamExtractorOptions, ILogger<JsonMultiStreamExtractor<TRecord>>?)
+  nameWithType.vb: JsonMultiStreamExtractor(Of TRecord).New(IEnumerable(Of JsonNamedStream), JsonMultiStreamExtractorOptions, ILogger(Of JsonMultiStreamExtractor(Of TRecord)))
 - uid: Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor*
   name: JsonMultiStreamExtractor
   href: api/Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html#Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_
@@ -606,6 +728,38 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamExtractor(Of TRecord).ExtractWorkerAsync
   nameWithType: JsonMultiStreamExtractor<TRecord>.ExtractWorkerAsync
   nameWithType.vb: JsonMultiStreamExtractor(Of TRecord).ExtractWorkerAsync
+- uid: Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions
+  name: JsonMultiStreamLoaderOptions
+  href: api/Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions.html
+  commentId: T:Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions
+  nameWithType: JsonMultiStreamLoaderOptions
+- uid: Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions.IsDryRun
+  name: IsDryRun
+  href: api/Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions.html#Wolfgang_Etl_Json_JsonMultiStreamLoaderOptions_IsDryRun
+  commentId: P:Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions.IsDryRun
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions.IsDryRun
+  nameWithType: JsonMultiStreamLoaderOptions.IsDryRun
+- uid: Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions.IsDryRun*
+  name: IsDryRun
+  href: api/Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions.html#Wolfgang_Etl_Json_JsonMultiStreamLoaderOptions_IsDryRun_
+  commentId: Overload:Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions.IsDryRun
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions.IsDryRun
+  nameWithType: JsonMultiStreamLoaderOptions.IsDryRun
+- uid: Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions.SerializerOptions
+  name: SerializerOptions
+  href: api/Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions.html#Wolfgang_Etl_Json_JsonMultiStreamLoaderOptions_SerializerOptions
+  commentId: P:Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions.SerializerOptions
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions.SerializerOptions
+  nameWithType: JsonMultiStreamLoaderOptions.SerializerOptions
+- uid: Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions.SerializerOptions*
+  name: SerializerOptions
+  href: api/Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions.html#Wolfgang_Etl_Json_JsonMultiStreamLoaderOptions_SerializerOptions_
+  commentId: Overload:Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions.SerializerOptions
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions.SerializerOptions
+  nameWithType: JsonMultiStreamLoaderOptions.SerializerOptions
 - uid: Wolfgang.Etl.Json.JsonMultiStreamLoader`1
   name: JsonMultiStreamLoader<TRecord>
   href: api/Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html
@@ -615,33 +769,15 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord)
   nameWithType: JsonMultiStreamLoader<TRecord>
   nameWithType.vb: JsonMultiStreamLoader(Of TRecord)
-- uid: Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,System.IO.Stream})
-  name: JsonMultiStreamLoader(Func<TRecord, Stream>)
-  href: api/Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html#Wolfgang_Etl_Json_JsonMultiStreamLoader_1__ctor_System_Func__0_System_IO_Stream__
-  commentId: M:Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,System.IO.Stream})
-  name.vb: New(Func(Of TRecord, Stream))
-  fullName: Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(System.Func<TRecord, System.IO.Stream>)
-  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord).New(System.Func(Of TRecord, System.IO.Stream))
-  nameWithType: JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(Func<TRecord, Stream>)
-  nameWithType.vb: JsonMultiStreamLoader(Of TRecord).New(Func(Of TRecord, Stream))
 - uid: Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,System.IO.Stream},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamLoader{`0}})
-  name: JsonMultiStreamLoader(Func<TRecord, Stream>, ILogger<JsonMultiStreamLoader<TRecord>>)
+  name: JsonMultiStreamLoader(Func<TRecord, Stream>, ILogger<JsonMultiStreamLoader<TRecord>>?)
   href: api/Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html#Wolfgang_Etl_Json_JsonMultiStreamLoader_1__ctor_System_Func__0_System_IO_Stream__Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamLoader__0___
   commentId: M:Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,System.IO.Stream},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamLoader{`0}})
   name.vb: New(Func(Of TRecord, Stream), ILogger(Of JsonMultiStreamLoader(Of TRecord)))
-  fullName: Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(System.Func<TRecord, System.IO.Stream>, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>>)
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(System.Func<TRecord, System.IO.Stream>, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>>?)
   fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord).New(System.Func(Of TRecord, System.IO.Stream), Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord)))
-  nameWithType: JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(Func<TRecord, Stream>, ILogger<JsonMultiStreamLoader<TRecord>>)
+  nameWithType: JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(Func<TRecord, Stream>, ILogger<JsonMultiStreamLoader<TRecord>>?)
   nameWithType.vb: JsonMultiStreamLoader(Of TRecord).New(Func(Of TRecord, Stream), ILogger(Of JsonMultiStreamLoader(Of TRecord)))
-- uid: Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,System.IO.Stream},System.Text.Json.JsonSerializerOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamLoader{`0}})
-  name: JsonMultiStreamLoader(Func<TRecord, Stream>, JsonSerializerOptions?, ILogger<JsonMultiStreamLoader<TRecord>>?)
-  href: api/Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html#Wolfgang_Etl_Json_JsonMultiStreamLoader_1__ctor_System_Func__0_System_IO_Stream__System_Text_Json_JsonSerializerOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamLoader__0___
-  commentId: M:Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,System.IO.Stream},System.Text.Json.JsonSerializerOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamLoader{`0}})
-  name.vb: New(Func(Of TRecord, Stream), JsonSerializerOptions, ILogger(Of JsonMultiStreamLoader(Of TRecord)))
-  fullName: Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(System.Func<TRecord, System.IO.Stream>, System.Text.Json.JsonSerializerOptions?, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>>?)
-  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord).New(System.Func(Of TRecord, System.IO.Stream), System.Text.Json.JsonSerializerOptions, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord)))
-  nameWithType: JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(Func<TRecord, Stream>, JsonSerializerOptions?, ILogger<JsonMultiStreamLoader<TRecord>>?)
-  nameWithType.vb: JsonMultiStreamLoader(Of TRecord).New(Func(Of TRecord, Stream), JsonSerializerOptions, ILogger(Of JsonMultiStreamLoader(Of TRecord)))
 - uid: Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,System.IO.Stream},System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamLoader{`0}})
   name: JsonMultiStreamLoader(Func<TRecord, Stream>, JsonTypeInfo<TRecord>, ILogger<JsonMultiStreamLoader<TRecord>>?)
   href: api/Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html#Wolfgang_Etl_Json_JsonMultiStreamLoader_1__ctor_System_Func__0_System_IO_Stream__System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamLoader__0___
@@ -651,33 +787,33 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord).New(System.Func(Of TRecord, System.IO.Stream), System.Text.Json.Serialization.Metadata.JsonTypeInfo(Of TRecord), Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord)))
   nameWithType: JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(Func<TRecord, Stream>, JsonTypeInfo<TRecord>, ILogger<JsonMultiStreamLoader<TRecord>>?)
   nameWithType.vb: JsonMultiStreamLoader(Of TRecord).New(Func(Of TRecord, Stream), JsonTypeInfo(Of TRecord), ILogger(Of JsonMultiStreamLoader(Of TRecord)))
-- uid: Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,Wolfgang.Etl.Json.JsonNamedDestination})
-  name: JsonMultiStreamLoader(Func<TRecord, JsonNamedDestination>)
-  href: api/Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html#Wolfgang_Etl_Json_JsonMultiStreamLoader_1__ctor_System_Func__0_Wolfgang_Etl_Json_JsonNamedDestination__
-  commentId: M:Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,Wolfgang.Etl.Json.JsonNamedDestination})
-  name.vb: New(Func(Of TRecord, JsonNamedDestination))
-  fullName: Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(System.Func<TRecord, Wolfgang.Etl.Json.JsonNamedDestination>)
-  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord).New(System.Func(Of TRecord, Wolfgang.Etl.Json.JsonNamedDestination))
-  nameWithType: JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(Func<TRecord, JsonNamedDestination>)
-  nameWithType.vb: JsonMultiStreamLoader(Of TRecord).New(Func(Of TRecord, JsonNamedDestination))
+- uid: Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,System.IO.Stream},System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamLoader{`0}})
+  name: JsonMultiStreamLoader(Func<TRecord, Stream>, JsonTypeInfo<TRecord>, JsonMultiStreamLoaderOptions, ILogger<JsonMultiStreamLoader<TRecord>>?)
+  href: api/Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html#Wolfgang_Etl_Json_JsonMultiStreamLoader_1__ctor_System_Func__0_System_IO_Stream__System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__Wolfgang_Etl_Json_JsonMultiStreamLoaderOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamLoader__0___
+  commentId: M:Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,System.IO.Stream},System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamLoader{`0}})
+  name.vb: New(Func(Of TRecord, Stream), JsonTypeInfo(Of TRecord), JsonMultiStreamLoaderOptions, ILogger(Of JsonMultiStreamLoader(Of TRecord)))
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(System.Func<TRecord, System.IO.Stream>, System.Text.Json.Serialization.Metadata.JsonTypeInfo<TRecord>, Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>>?)
+  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord).New(System.Func(Of TRecord, System.IO.Stream), System.Text.Json.Serialization.Metadata.JsonTypeInfo(Of TRecord), Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord)))
+  nameWithType: JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(Func<TRecord, Stream>, JsonTypeInfo<TRecord>, JsonMultiStreamLoaderOptions, ILogger<JsonMultiStreamLoader<TRecord>>?)
+  nameWithType.vb: JsonMultiStreamLoader(Of TRecord).New(Func(Of TRecord, Stream), JsonTypeInfo(Of TRecord), JsonMultiStreamLoaderOptions, ILogger(Of JsonMultiStreamLoader(Of TRecord)))
+- uid: Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,System.IO.Stream},Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamLoader{`0}})
+  name: JsonMultiStreamLoader(Func<TRecord, Stream>, JsonMultiStreamLoaderOptions, ILogger<JsonMultiStreamLoader<TRecord>>?)
+  href: api/Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html#Wolfgang_Etl_Json_JsonMultiStreamLoader_1__ctor_System_Func__0_System_IO_Stream__Wolfgang_Etl_Json_JsonMultiStreamLoaderOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamLoader__0___
+  commentId: M:Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,System.IO.Stream},Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamLoader{`0}})
+  name.vb: New(Func(Of TRecord, Stream), JsonMultiStreamLoaderOptions, ILogger(Of JsonMultiStreamLoader(Of TRecord)))
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(System.Func<TRecord, System.IO.Stream>, Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>>?)
+  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord).New(System.Func(Of TRecord, System.IO.Stream), Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord)))
+  nameWithType: JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(Func<TRecord, Stream>, JsonMultiStreamLoaderOptions, ILogger<JsonMultiStreamLoader<TRecord>>?)
+  nameWithType.vb: JsonMultiStreamLoader(Of TRecord).New(Func(Of TRecord, Stream), JsonMultiStreamLoaderOptions, ILogger(Of JsonMultiStreamLoader(Of TRecord)))
 - uid: Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,Wolfgang.Etl.Json.JsonNamedDestination},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamLoader{`0}})
-  name: JsonMultiStreamLoader(Func<TRecord, JsonNamedDestination>, ILogger<JsonMultiStreamLoader<TRecord>>)
+  name: JsonMultiStreamLoader(Func<TRecord, JsonNamedDestination>, ILogger<JsonMultiStreamLoader<TRecord>>?)
   href: api/Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html#Wolfgang_Etl_Json_JsonMultiStreamLoader_1__ctor_System_Func__0_Wolfgang_Etl_Json_JsonNamedDestination__Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamLoader__0___
   commentId: M:Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,Wolfgang.Etl.Json.JsonNamedDestination},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamLoader{`0}})
   name.vb: New(Func(Of TRecord, JsonNamedDestination), ILogger(Of JsonMultiStreamLoader(Of TRecord)))
-  fullName: Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(System.Func<TRecord, Wolfgang.Etl.Json.JsonNamedDestination>, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>>)
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(System.Func<TRecord, Wolfgang.Etl.Json.JsonNamedDestination>, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>>?)
   fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord).New(System.Func(Of TRecord, Wolfgang.Etl.Json.JsonNamedDestination), Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord)))
-  nameWithType: JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(Func<TRecord, JsonNamedDestination>, ILogger<JsonMultiStreamLoader<TRecord>>)
+  nameWithType: JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(Func<TRecord, JsonNamedDestination>, ILogger<JsonMultiStreamLoader<TRecord>>?)
   nameWithType.vb: JsonMultiStreamLoader(Of TRecord).New(Func(Of TRecord, JsonNamedDestination), ILogger(Of JsonMultiStreamLoader(Of TRecord)))
-- uid: Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,Wolfgang.Etl.Json.JsonNamedDestination},System.Text.Json.JsonSerializerOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamLoader{`0}})
-  name: JsonMultiStreamLoader(Func<TRecord, JsonNamedDestination>, JsonSerializerOptions?, ILogger<JsonMultiStreamLoader<TRecord>>?)
-  href: api/Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html#Wolfgang_Etl_Json_JsonMultiStreamLoader_1__ctor_System_Func__0_Wolfgang_Etl_Json_JsonNamedDestination__System_Text_Json_JsonSerializerOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamLoader__0___
-  commentId: M:Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,Wolfgang.Etl.Json.JsonNamedDestination},System.Text.Json.JsonSerializerOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamLoader{`0}})
-  name.vb: New(Func(Of TRecord, JsonNamedDestination), JsonSerializerOptions, ILogger(Of JsonMultiStreamLoader(Of TRecord)))
-  fullName: Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(System.Func<TRecord, Wolfgang.Etl.Json.JsonNamedDestination>, System.Text.Json.JsonSerializerOptions?, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>>?)
-  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord).New(System.Func(Of TRecord, Wolfgang.Etl.Json.JsonNamedDestination), System.Text.Json.JsonSerializerOptions, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord)))
-  nameWithType: JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(Func<TRecord, JsonNamedDestination>, JsonSerializerOptions?, ILogger<JsonMultiStreamLoader<TRecord>>?)
-  nameWithType.vb: JsonMultiStreamLoader(Of TRecord).New(Func(Of TRecord, JsonNamedDestination), JsonSerializerOptions, ILogger(Of JsonMultiStreamLoader(Of TRecord)))
 - uid: Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,Wolfgang.Etl.Json.JsonNamedDestination},System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamLoader{`0}})
   name: JsonMultiStreamLoader(Func<TRecord, JsonNamedDestination>, JsonTypeInfo<TRecord>, ILogger<JsonMultiStreamLoader<TRecord>>?)
   href: api/Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html#Wolfgang_Etl_Json_JsonMultiStreamLoader_1__ctor_System_Func__0_Wolfgang_Etl_Json_JsonNamedDestination__System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamLoader__0___
@@ -687,6 +823,24 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord).New(System.Func(Of TRecord, Wolfgang.Etl.Json.JsonNamedDestination), System.Text.Json.Serialization.Metadata.JsonTypeInfo(Of TRecord), Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord)))
   nameWithType: JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(Func<TRecord, JsonNamedDestination>, JsonTypeInfo<TRecord>, ILogger<JsonMultiStreamLoader<TRecord>>?)
   nameWithType.vb: JsonMultiStreamLoader(Of TRecord).New(Func(Of TRecord, JsonNamedDestination), JsonTypeInfo(Of TRecord), ILogger(Of JsonMultiStreamLoader(Of TRecord)))
+- uid: Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,Wolfgang.Etl.Json.JsonNamedDestination},System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamLoader{`0}})
+  name: JsonMultiStreamLoader(Func<TRecord, JsonNamedDestination>, JsonTypeInfo<TRecord>, JsonMultiStreamLoaderOptions, ILogger<JsonMultiStreamLoader<TRecord>>?)
+  href: api/Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html#Wolfgang_Etl_Json_JsonMultiStreamLoader_1__ctor_System_Func__0_Wolfgang_Etl_Json_JsonNamedDestination__System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__Wolfgang_Etl_Json_JsonMultiStreamLoaderOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamLoader__0___
+  commentId: M:Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,Wolfgang.Etl.Json.JsonNamedDestination},System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamLoader{`0}})
+  name.vb: New(Func(Of TRecord, JsonNamedDestination), JsonTypeInfo(Of TRecord), JsonMultiStreamLoaderOptions, ILogger(Of JsonMultiStreamLoader(Of TRecord)))
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(System.Func<TRecord, Wolfgang.Etl.Json.JsonNamedDestination>, System.Text.Json.Serialization.Metadata.JsonTypeInfo<TRecord>, Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>>?)
+  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord).New(System.Func(Of TRecord, Wolfgang.Etl.Json.JsonNamedDestination), System.Text.Json.Serialization.Metadata.JsonTypeInfo(Of TRecord), Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord)))
+  nameWithType: JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(Func<TRecord, JsonNamedDestination>, JsonTypeInfo<TRecord>, JsonMultiStreamLoaderOptions, ILogger<JsonMultiStreamLoader<TRecord>>?)
+  nameWithType.vb: JsonMultiStreamLoader(Of TRecord).New(Func(Of TRecord, JsonNamedDestination), JsonTypeInfo(Of TRecord), JsonMultiStreamLoaderOptions, ILogger(Of JsonMultiStreamLoader(Of TRecord)))
+- uid: Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,Wolfgang.Etl.Json.JsonNamedDestination},Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamLoader{`0}})
+  name: JsonMultiStreamLoader(Func<TRecord, JsonNamedDestination>, JsonMultiStreamLoaderOptions, ILogger<JsonMultiStreamLoader<TRecord>>?)
+  href: api/Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html#Wolfgang_Etl_Json_JsonMultiStreamLoader_1__ctor_System_Func__0_Wolfgang_Etl_Json_JsonNamedDestination__Wolfgang_Etl_Json_JsonMultiStreamLoaderOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamLoader__0___
+  commentId: M:Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor(System.Func{`0,Wolfgang.Etl.Json.JsonNamedDestination},Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamLoader{`0}})
+  name.vb: New(Func(Of TRecord, JsonNamedDestination), JsonMultiStreamLoaderOptions, ILogger(Of JsonMultiStreamLoader(Of TRecord)))
+  fullName: Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(System.Func<TRecord, Wolfgang.Etl.Json.JsonNamedDestination>, Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonMultiStreamLoader<TRecord>>?)
+  fullName.vb: Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord).New(System.Func(Of TRecord, Wolfgang.Etl.Json.JsonNamedDestination), Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonMultiStreamLoader(Of TRecord)))
+  nameWithType: JsonMultiStreamLoader<TRecord>.JsonMultiStreamLoader(Func<TRecord, JsonNamedDestination>, JsonMultiStreamLoaderOptions, ILogger<JsonMultiStreamLoader<TRecord>>?)
+  nameWithType.vb: JsonMultiStreamLoader(Of TRecord).New(Func(Of TRecord, JsonNamedDestination), JsonMultiStreamLoaderOptions, ILogger(Of JsonMultiStreamLoader(Of TRecord)))
 - uid: Wolfgang.Etl.Json.JsonMultiStreamLoader`1.#ctor*
   name: JsonMultiStreamLoader
   href: api/Wolfgang.Etl.Json.JsonMultiStreamLoader-1.html#Wolfgang_Etl_Json_JsonMultiStreamLoader_1__ctor_
@@ -929,6 +1083,25 @@ references:
   isSpec: "True"
   fullName: Wolfgang.Etl.Json.JsonReport.CurrentSourceName
   nameWithType: JsonReport.CurrentSourceName
+- uid: Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions
+  name: JsonSingleStreamExtractorOptions
+  href: api/Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions.html
+  commentId: T:Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions
+  fullName: Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions
+  nameWithType: JsonSingleStreamExtractorOptions
+- uid: Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions.SerializerOptions
+  name: SerializerOptions
+  href: api/Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions.html#Wolfgang_Etl_Json_JsonSingleStreamExtractorOptions_SerializerOptions
+  commentId: P:Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions.SerializerOptions
+  fullName: Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions.SerializerOptions
+  nameWithType: JsonSingleStreamExtractorOptions.SerializerOptions
+- uid: Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions.SerializerOptions*
+  name: SerializerOptions
+  href: api/Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions.html#Wolfgang_Etl_Json_JsonSingleStreamExtractorOptions_SerializerOptions_
+  commentId: Overload:Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions.SerializerOptions
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions.SerializerOptions
+  nameWithType: JsonSingleStreamExtractorOptions.SerializerOptions
 - uid: Wolfgang.Etl.Json.JsonSingleStreamExtractor`1
   name: JsonSingleStreamExtractor<TRecord>
   href: api/Wolfgang.Etl.Json.JsonSingleStreamExtractor-1.html
@@ -938,33 +1111,15 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonSingleStreamExtractor(Of TRecord)
   nameWithType: JsonSingleStreamExtractor<TRecord>
   nameWithType.vb: JsonSingleStreamExtractor(Of TRecord)
-- uid: Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.#ctor(System.IO.Stream)
-  name: JsonSingleStreamExtractor(Stream)
-  href: api/Wolfgang.Etl.Json.JsonSingleStreamExtractor-1.html#Wolfgang_Etl_Json_JsonSingleStreamExtractor_1__ctor_System_IO_Stream_
-  commentId: M:Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.#ctor(System.IO.Stream)
-  name.vb: New(Stream)
-  fullName: Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.JsonSingleStreamExtractor(System.IO.Stream)
-  fullName.vb: Wolfgang.Etl.Json.JsonSingleStreamExtractor(Of TRecord).New(System.IO.Stream)
-  nameWithType: JsonSingleStreamExtractor<TRecord>.JsonSingleStreamExtractor(Stream)
-  nameWithType.vb: JsonSingleStreamExtractor(Of TRecord).New(Stream)
 - uid: Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.#ctor(System.IO.Stream,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonSingleStreamExtractor{`0}})
-  name: JsonSingleStreamExtractor(Stream, ILogger<JsonSingleStreamExtractor<TRecord>>)
+  name: JsonSingleStreamExtractor(Stream, ILogger<JsonSingleStreamExtractor<TRecord>>?)
   href: api/Wolfgang.Etl.Json.JsonSingleStreamExtractor-1.html#Wolfgang_Etl_Json_JsonSingleStreamExtractor_1__ctor_System_IO_Stream_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonSingleStreamExtractor__0___
   commentId: M:Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.#ctor(System.IO.Stream,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonSingleStreamExtractor{`0}})
   name.vb: New(Stream, ILogger(Of JsonSingleStreamExtractor(Of TRecord)))
-  fullName: Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.JsonSingleStreamExtractor(System.IO.Stream, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>>)
+  fullName: Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.JsonSingleStreamExtractor(System.IO.Stream, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>>?)
   fullName.vb: Wolfgang.Etl.Json.JsonSingleStreamExtractor(Of TRecord).New(System.IO.Stream, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonSingleStreamExtractor(Of TRecord)))
-  nameWithType: JsonSingleStreamExtractor<TRecord>.JsonSingleStreamExtractor(Stream, ILogger<JsonSingleStreamExtractor<TRecord>>)
+  nameWithType: JsonSingleStreamExtractor<TRecord>.JsonSingleStreamExtractor(Stream, ILogger<JsonSingleStreamExtractor<TRecord>>?)
   nameWithType.vb: JsonSingleStreamExtractor(Of TRecord).New(Stream, ILogger(Of JsonSingleStreamExtractor(Of TRecord)))
-- uid: Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.#ctor(System.IO.Stream,System.Text.Json.JsonSerializerOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonSingleStreamExtractor{`0}})
-  name: JsonSingleStreamExtractor(Stream, JsonSerializerOptions?, ILogger<JsonSingleStreamExtractor<TRecord>>?)
-  href: api/Wolfgang.Etl.Json.JsonSingleStreamExtractor-1.html#Wolfgang_Etl_Json_JsonSingleStreamExtractor_1__ctor_System_IO_Stream_System_Text_Json_JsonSerializerOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonSingleStreamExtractor__0___
-  commentId: M:Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.#ctor(System.IO.Stream,System.Text.Json.JsonSerializerOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonSingleStreamExtractor{`0}})
-  name.vb: New(Stream, JsonSerializerOptions, ILogger(Of JsonSingleStreamExtractor(Of TRecord)))
-  fullName: Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.JsonSingleStreamExtractor(System.IO.Stream, System.Text.Json.JsonSerializerOptions?, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>>?)
-  fullName.vb: Wolfgang.Etl.Json.JsonSingleStreamExtractor(Of TRecord).New(System.IO.Stream, System.Text.Json.JsonSerializerOptions, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonSingleStreamExtractor(Of TRecord)))
-  nameWithType: JsonSingleStreamExtractor<TRecord>.JsonSingleStreamExtractor(Stream, JsonSerializerOptions?, ILogger<JsonSingleStreamExtractor<TRecord>>?)
-  nameWithType.vb: JsonSingleStreamExtractor(Of TRecord).New(Stream, JsonSerializerOptions, ILogger(Of JsonSingleStreamExtractor(Of TRecord)))
 - uid: Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.#ctor(System.IO.Stream,System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonSingleStreamExtractor{`0}})
   name: JsonSingleStreamExtractor(Stream, JsonTypeInfo<TRecord>, ILogger<JsonSingleStreamExtractor<TRecord>>?)
   href: api/Wolfgang.Etl.Json.JsonSingleStreamExtractor-1.html#Wolfgang_Etl_Json_JsonSingleStreamExtractor_1__ctor_System_IO_Stream_System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonSingleStreamExtractor__0___
@@ -974,15 +1129,33 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonSingleStreamExtractor(Of TRecord).New(System.IO.Stream, System.Text.Json.Serialization.Metadata.JsonTypeInfo(Of TRecord), Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonSingleStreamExtractor(Of TRecord)))
   nameWithType: JsonSingleStreamExtractor<TRecord>.JsonSingleStreamExtractor(Stream, JsonTypeInfo<TRecord>, ILogger<JsonSingleStreamExtractor<TRecord>>?)
   nameWithType.vb: JsonSingleStreamExtractor(Of TRecord).New(Stream, JsonTypeInfo(Of TRecord), ILogger(Of JsonSingleStreamExtractor(Of TRecord)))
-- uid: Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.#ctor(System.String,System.Text.Json.JsonSerializerOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonSingleStreamExtractor{`0}})
-  name: JsonSingleStreamExtractor(string, JsonSerializerOptions?, ILogger<JsonSingleStreamExtractor<TRecord>>?)
-  href: api/Wolfgang.Etl.Json.JsonSingleStreamExtractor-1.html#Wolfgang_Etl_Json_JsonSingleStreamExtractor_1__ctor_System_String_System_Text_Json_JsonSerializerOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonSingleStreamExtractor__0___
-  commentId: M:Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.#ctor(System.String,System.Text.Json.JsonSerializerOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonSingleStreamExtractor{`0}})
-  name.vb: New(String, JsonSerializerOptions, ILogger(Of JsonSingleStreamExtractor(Of TRecord)))
-  fullName: Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.JsonSingleStreamExtractor(string, System.Text.Json.JsonSerializerOptions?, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>>?)
-  fullName.vb: Wolfgang.Etl.Json.JsonSingleStreamExtractor(Of TRecord).New(String, System.Text.Json.JsonSerializerOptions, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonSingleStreamExtractor(Of TRecord)))
-  nameWithType: JsonSingleStreamExtractor<TRecord>.JsonSingleStreamExtractor(string, JsonSerializerOptions?, ILogger<JsonSingleStreamExtractor<TRecord>>?)
-  nameWithType.vb: JsonSingleStreamExtractor(Of TRecord).New(String, JsonSerializerOptions, ILogger(Of JsonSingleStreamExtractor(Of TRecord)))
+- uid: Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.#ctor(System.IO.Stream,System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonSingleStreamExtractor{`0}})
+  name: JsonSingleStreamExtractor(Stream, JsonTypeInfo<TRecord>, JsonSingleStreamExtractorOptions, ILogger<JsonSingleStreamExtractor<TRecord>>?)
+  href: api/Wolfgang.Etl.Json.JsonSingleStreamExtractor-1.html#Wolfgang_Etl_Json_JsonSingleStreamExtractor_1__ctor_System_IO_Stream_System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__Wolfgang_Etl_Json_JsonSingleStreamExtractorOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonSingleStreamExtractor__0___
+  commentId: M:Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.#ctor(System.IO.Stream,System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonSingleStreamExtractor{`0}})
+  name.vb: New(Stream, JsonTypeInfo(Of TRecord), JsonSingleStreamExtractorOptions, ILogger(Of JsonSingleStreamExtractor(Of TRecord)))
+  fullName: Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.JsonSingleStreamExtractor(System.IO.Stream, System.Text.Json.Serialization.Metadata.JsonTypeInfo<TRecord>, Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>>?)
+  fullName.vb: Wolfgang.Etl.Json.JsonSingleStreamExtractor(Of TRecord).New(System.IO.Stream, System.Text.Json.Serialization.Metadata.JsonTypeInfo(Of TRecord), Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonSingleStreamExtractor(Of TRecord)))
+  nameWithType: JsonSingleStreamExtractor<TRecord>.JsonSingleStreamExtractor(Stream, JsonTypeInfo<TRecord>, JsonSingleStreamExtractorOptions, ILogger<JsonSingleStreamExtractor<TRecord>>?)
+  nameWithType.vb: JsonSingleStreamExtractor(Of TRecord).New(Stream, JsonTypeInfo(Of TRecord), JsonSingleStreamExtractorOptions, ILogger(Of JsonSingleStreamExtractor(Of TRecord)))
+- uid: Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.#ctor(System.IO.Stream,Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonSingleStreamExtractor{`0}})
+  name: JsonSingleStreamExtractor(Stream, JsonSingleStreamExtractorOptions, ILogger<JsonSingleStreamExtractor<TRecord>>?)
+  href: api/Wolfgang.Etl.Json.JsonSingleStreamExtractor-1.html#Wolfgang_Etl_Json_JsonSingleStreamExtractor_1__ctor_System_IO_Stream_Wolfgang_Etl_Json_JsonSingleStreamExtractorOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonSingleStreamExtractor__0___
+  commentId: M:Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.#ctor(System.IO.Stream,Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonSingleStreamExtractor{`0}})
+  name.vb: New(Stream, JsonSingleStreamExtractorOptions, ILogger(Of JsonSingleStreamExtractor(Of TRecord)))
+  fullName: Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.JsonSingleStreamExtractor(System.IO.Stream, Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>>?)
+  fullName.vb: Wolfgang.Etl.Json.JsonSingleStreamExtractor(Of TRecord).New(System.IO.Stream, Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonSingleStreamExtractor(Of TRecord)))
+  nameWithType: JsonSingleStreamExtractor<TRecord>.JsonSingleStreamExtractor(Stream, JsonSingleStreamExtractorOptions, ILogger<JsonSingleStreamExtractor<TRecord>>?)
+  nameWithType.vb: JsonSingleStreamExtractor(Of TRecord).New(Stream, JsonSingleStreamExtractorOptions, ILogger(Of JsonSingleStreamExtractor(Of TRecord)))
+- uid: Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.#ctor(System.String,Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonSingleStreamExtractor{`0}})
+  name: JsonSingleStreamExtractor(string, JsonSingleStreamExtractorOptions, ILogger<JsonSingleStreamExtractor<TRecord>>?)
+  href: api/Wolfgang.Etl.Json.JsonSingleStreamExtractor-1.html#Wolfgang_Etl_Json_JsonSingleStreamExtractor_1__ctor_System_String_Wolfgang_Etl_Json_JsonSingleStreamExtractorOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonSingleStreamExtractor__0___
+  commentId: M:Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.#ctor(System.String,Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonSingleStreamExtractor{`0}})
+  name.vb: New(String, JsonSingleStreamExtractorOptions, ILogger(Of JsonSingleStreamExtractor(Of TRecord)))
+  fullName: Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.JsonSingleStreamExtractor(string, Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>>?)
+  fullName.vb: Wolfgang.Etl.Json.JsonSingleStreamExtractor(Of TRecord).New(String, Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonSingleStreamExtractor(Of TRecord)))
+  nameWithType: JsonSingleStreamExtractor<TRecord>.JsonSingleStreamExtractor(string, JsonSingleStreamExtractorOptions, ILogger<JsonSingleStreamExtractor<TRecord>>?)
+  nameWithType.vb: JsonSingleStreamExtractor(Of TRecord).New(String, JsonSingleStreamExtractorOptions, ILogger(Of JsonSingleStreamExtractor(Of TRecord)))
 - uid: Wolfgang.Etl.Json.JsonSingleStreamExtractor`1.#ctor*
   name: JsonSingleStreamExtractor
   href: api/Wolfgang.Etl.Json.JsonSingleStreamExtractor-1.html#Wolfgang_Etl_Json_JsonSingleStreamExtractor_1__ctor_
@@ -1063,6 +1236,38 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonSingleStreamExtractor(Of TRecord).ExtractWorkerAsync
   nameWithType: JsonSingleStreamExtractor<TRecord>.ExtractWorkerAsync
   nameWithType.vb: JsonSingleStreamExtractor(Of TRecord).ExtractWorkerAsync
+- uid: Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions
+  name: JsonSingleStreamLoaderOptions
+  href: api/Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions.html
+  commentId: T:Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions
+  fullName: Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions
+  nameWithType: JsonSingleStreamLoaderOptions
+- uid: Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions.IsDryRun
+  name: IsDryRun
+  href: api/Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions.html#Wolfgang_Etl_Json_JsonSingleStreamLoaderOptions_IsDryRun
+  commentId: P:Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions.IsDryRun
+  fullName: Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions.IsDryRun
+  nameWithType: JsonSingleStreamLoaderOptions.IsDryRun
+- uid: Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions.IsDryRun*
+  name: IsDryRun
+  href: api/Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions.html#Wolfgang_Etl_Json_JsonSingleStreamLoaderOptions_IsDryRun_
+  commentId: Overload:Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions.IsDryRun
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions.IsDryRun
+  nameWithType: JsonSingleStreamLoaderOptions.IsDryRun
+- uid: Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions.SerializerOptions
+  name: SerializerOptions
+  href: api/Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions.html#Wolfgang_Etl_Json_JsonSingleStreamLoaderOptions_SerializerOptions
+  commentId: P:Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions.SerializerOptions
+  fullName: Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions.SerializerOptions
+  nameWithType: JsonSingleStreamLoaderOptions.SerializerOptions
+- uid: Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions.SerializerOptions*
+  name: SerializerOptions
+  href: api/Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions.html#Wolfgang_Etl_Json_JsonSingleStreamLoaderOptions_SerializerOptions_
+  commentId: Overload:Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions.SerializerOptions
+  isSpec: "True"
+  fullName: Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions.SerializerOptions
+  nameWithType: JsonSingleStreamLoaderOptions.SerializerOptions
 - uid: Wolfgang.Etl.Json.JsonSingleStreamLoader`1
   name: JsonSingleStreamLoader<TRecord>
   href: api/Wolfgang.Etl.Json.JsonSingleStreamLoader-1.html
@@ -1072,33 +1277,15 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonSingleStreamLoader(Of TRecord)
   nameWithType: JsonSingleStreamLoader<TRecord>
   nameWithType.vb: JsonSingleStreamLoader(Of TRecord)
-- uid: Wolfgang.Etl.Json.JsonSingleStreamLoader`1.#ctor(System.IO.Stream)
-  name: JsonSingleStreamLoader(Stream)
-  href: api/Wolfgang.Etl.Json.JsonSingleStreamLoader-1.html#Wolfgang_Etl_Json_JsonSingleStreamLoader_1__ctor_System_IO_Stream_
-  commentId: M:Wolfgang.Etl.Json.JsonSingleStreamLoader`1.#ctor(System.IO.Stream)
-  name.vb: New(Stream)
-  fullName: Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>.JsonSingleStreamLoader(System.IO.Stream)
-  fullName.vb: Wolfgang.Etl.Json.JsonSingleStreamLoader(Of TRecord).New(System.IO.Stream)
-  nameWithType: JsonSingleStreamLoader<TRecord>.JsonSingleStreamLoader(Stream)
-  nameWithType.vb: JsonSingleStreamLoader(Of TRecord).New(Stream)
 - uid: Wolfgang.Etl.Json.JsonSingleStreamLoader`1.#ctor(System.IO.Stream,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonSingleStreamLoader{`0}})
-  name: JsonSingleStreamLoader(Stream, ILogger<JsonSingleStreamLoader<TRecord>>)
+  name: JsonSingleStreamLoader(Stream, ILogger<JsonSingleStreamLoader<TRecord>>?)
   href: api/Wolfgang.Etl.Json.JsonSingleStreamLoader-1.html#Wolfgang_Etl_Json_JsonSingleStreamLoader_1__ctor_System_IO_Stream_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonSingleStreamLoader__0___
   commentId: M:Wolfgang.Etl.Json.JsonSingleStreamLoader`1.#ctor(System.IO.Stream,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonSingleStreamLoader{`0}})
   name.vb: New(Stream, ILogger(Of JsonSingleStreamLoader(Of TRecord)))
-  fullName: Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>.JsonSingleStreamLoader(System.IO.Stream, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>>)
+  fullName: Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>.JsonSingleStreamLoader(System.IO.Stream, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>>?)
   fullName.vb: Wolfgang.Etl.Json.JsonSingleStreamLoader(Of TRecord).New(System.IO.Stream, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonSingleStreamLoader(Of TRecord)))
-  nameWithType: JsonSingleStreamLoader<TRecord>.JsonSingleStreamLoader(Stream, ILogger<JsonSingleStreamLoader<TRecord>>)
+  nameWithType: JsonSingleStreamLoader<TRecord>.JsonSingleStreamLoader(Stream, ILogger<JsonSingleStreamLoader<TRecord>>?)
   nameWithType.vb: JsonSingleStreamLoader(Of TRecord).New(Stream, ILogger(Of JsonSingleStreamLoader(Of TRecord)))
-- uid: Wolfgang.Etl.Json.JsonSingleStreamLoader`1.#ctor(System.IO.Stream,System.Text.Json.JsonSerializerOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonSingleStreamLoader{`0}})
-  name: JsonSingleStreamLoader(Stream, JsonSerializerOptions?, ILogger<JsonSingleStreamLoader<TRecord>>?)
-  href: api/Wolfgang.Etl.Json.JsonSingleStreamLoader-1.html#Wolfgang_Etl_Json_JsonSingleStreamLoader_1__ctor_System_IO_Stream_System_Text_Json_JsonSerializerOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonSingleStreamLoader__0___
-  commentId: M:Wolfgang.Etl.Json.JsonSingleStreamLoader`1.#ctor(System.IO.Stream,System.Text.Json.JsonSerializerOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonSingleStreamLoader{`0}})
-  name.vb: New(Stream, JsonSerializerOptions, ILogger(Of JsonSingleStreamLoader(Of TRecord)))
-  fullName: Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>.JsonSingleStreamLoader(System.IO.Stream, System.Text.Json.JsonSerializerOptions?, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>>?)
-  fullName.vb: Wolfgang.Etl.Json.JsonSingleStreamLoader(Of TRecord).New(System.IO.Stream, System.Text.Json.JsonSerializerOptions, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonSingleStreamLoader(Of TRecord)))
-  nameWithType: JsonSingleStreamLoader<TRecord>.JsonSingleStreamLoader(Stream, JsonSerializerOptions?, ILogger<JsonSingleStreamLoader<TRecord>>?)
-  nameWithType.vb: JsonSingleStreamLoader(Of TRecord).New(Stream, JsonSerializerOptions, ILogger(Of JsonSingleStreamLoader(Of TRecord)))
 - uid: Wolfgang.Etl.Json.JsonSingleStreamLoader`1.#ctor(System.IO.Stream,System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonSingleStreamLoader{`0}})
   name: JsonSingleStreamLoader(Stream, JsonTypeInfo<TRecord>, ILogger<JsonSingleStreamLoader<TRecord>>?)
   href: api/Wolfgang.Etl.Json.JsonSingleStreamLoader-1.html#Wolfgang_Etl_Json_JsonSingleStreamLoader_1__ctor_System_IO_Stream_System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonSingleStreamLoader__0___
@@ -1108,6 +1295,24 @@ references:
   fullName.vb: Wolfgang.Etl.Json.JsonSingleStreamLoader(Of TRecord).New(System.IO.Stream, System.Text.Json.Serialization.Metadata.JsonTypeInfo(Of TRecord), Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonSingleStreamLoader(Of TRecord)))
   nameWithType: JsonSingleStreamLoader<TRecord>.JsonSingleStreamLoader(Stream, JsonTypeInfo<TRecord>, ILogger<JsonSingleStreamLoader<TRecord>>?)
   nameWithType.vb: JsonSingleStreamLoader(Of TRecord).New(Stream, JsonTypeInfo(Of TRecord), ILogger(Of JsonSingleStreamLoader(Of TRecord)))
+- uid: Wolfgang.Etl.Json.JsonSingleStreamLoader`1.#ctor(System.IO.Stream,System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonSingleStreamLoader{`0}})
+  name: JsonSingleStreamLoader(Stream, JsonTypeInfo<TRecord>, JsonSingleStreamLoaderOptions, ILogger<JsonSingleStreamLoader<TRecord>>?)
+  href: api/Wolfgang.Etl.Json.JsonSingleStreamLoader-1.html#Wolfgang_Etl_Json_JsonSingleStreamLoader_1__ctor_System_IO_Stream_System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__Wolfgang_Etl_Json_JsonSingleStreamLoaderOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonSingleStreamLoader__0___
+  commentId: M:Wolfgang.Etl.Json.JsonSingleStreamLoader`1.#ctor(System.IO.Stream,System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonSingleStreamLoader{`0}})
+  name.vb: New(Stream, JsonTypeInfo(Of TRecord), JsonSingleStreamLoaderOptions, ILogger(Of JsonSingleStreamLoader(Of TRecord)))
+  fullName: Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>.JsonSingleStreamLoader(System.IO.Stream, System.Text.Json.Serialization.Metadata.JsonTypeInfo<TRecord>, Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>>?)
+  fullName.vb: Wolfgang.Etl.Json.JsonSingleStreamLoader(Of TRecord).New(System.IO.Stream, System.Text.Json.Serialization.Metadata.JsonTypeInfo(Of TRecord), Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonSingleStreamLoader(Of TRecord)))
+  nameWithType: JsonSingleStreamLoader<TRecord>.JsonSingleStreamLoader(Stream, JsonTypeInfo<TRecord>, JsonSingleStreamLoaderOptions, ILogger<JsonSingleStreamLoader<TRecord>>?)
+  nameWithType.vb: JsonSingleStreamLoader(Of TRecord).New(Stream, JsonTypeInfo(Of TRecord), JsonSingleStreamLoaderOptions, ILogger(Of JsonSingleStreamLoader(Of TRecord)))
+- uid: Wolfgang.Etl.Json.JsonSingleStreamLoader`1.#ctor(System.IO.Stream,Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonSingleStreamLoader{`0}})
+  name: JsonSingleStreamLoader(Stream, JsonSingleStreamLoaderOptions, ILogger<JsonSingleStreamLoader<TRecord>>?)
+  href: api/Wolfgang.Etl.Json.JsonSingleStreamLoader-1.html#Wolfgang_Etl_Json_JsonSingleStreamLoader_1__ctor_System_IO_Stream_Wolfgang_Etl_Json_JsonSingleStreamLoaderOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonSingleStreamLoader__0___
+  commentId: M:Wolfgang.Etl.Json.JsonSingleStreamLoader`1.#ctor(System.IO.Stream,Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonSingleStreamLoader{`0}})
+  name.vb: New(Stream, JsonSingleStreamLoaderOptions, ILogger(Of JsonSingleStreamLoader(Of TRecord)))
+  fullName: Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>.JsonSingleStreamLoader(System.IO.Stream, Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonSingleStreamLoader<TRecord>>?)
+  fullName.vb: Wolfgang.Etl.Json.JsonSingleStreamLoader(Of TRecord).New(System.IO.Stream, Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions, Microsoft.Extensions.Logging.ILogger(Of Wolfgang.Etl.Json.JsonSingleStreamLoader(Of TRecord)))
+  nameWithType: JsonSingleStreamLoader<TRecord>.JsonSingleStreamLoader(Stream, JsonSingleStreamLoaderOptions, ILogger<JsonSingleStreamLoader<TRecord>>?)
+  nameWithType.vb: JsonSingleStreamLoader(Of TRecord).New(Stream, JsonSingleStreamLoaderOptions, ILogger(Of JsonSingleStreamLoader(Of TRecord)))
 - uid: Wolfgang.Etl.Json.JsonSingleStreamLoader`1.#ctor*
   name: JsonSingleStreamLoader
   href: api/Wolfgang.Etl.Json.JsonSingleStreamLoader-1.html#Wolfgang_Etl_Json_JsonSingleStreamLoader_1__ctor_

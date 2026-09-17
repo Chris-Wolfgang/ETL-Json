@@ -16,7 +16,7 @@
       <meta name="docfx:rel" content="../">
       
       
-      <meta name="docfx:docurl" content="https://github.com/Chris-Wolfgang/ETL-Json/new/v0.8.1/apiSpec/new?filename=Wolfgang_Etl_Json_JsonMultiStreamExtractor_1.md&amp;value=---%0Auid%3A%20Wolfgang.Etl.Json.JsonMultiStreamExtractor%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
+      <meta name="docfx:docurl" content="https://github.com/Chris-Wolfgang/ETL-Json/new/v0.9.0/apiSpec/new?filename=Wolfgang_Etl_Json_JsonMultiStreamExtractor_1.md&amp;value=---%0Auid%3A%20Wolfgang.Etl.Json.JsonMultiStreamExtractor%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
       <meta name="loc:inThisArticle" content="In this article">
       <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
       <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
@@ -75,7 +75,7 @@
 
 
   <h1 id="Wolfgang_Etl_Json_JsonMultiStreamExtractor_1" data-uid="Wolfgang.Etl.Json.JsonMultiStreamExtractor`1" class="text-break">
-Class JsonMultiStreamExtractor&lt;TRecord&gt;  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.8.1/src/Wolfgang.Etl.Json/JsonMultiStreamExtractor.cs/#L42"><i class="bi bi-code-slash"></i></a>
+Class JsonMultiStreamExtractor&lt;TRecord&gt;  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.9.0/src/Wolfgang.Etl.Json/JsonMultiStreamExtractor.cs/#L43"><i class="bi bi-code-slash"></i></a>
   </h1>
 
   <div class="facts text-secondary">
@@ -216,50 +216,9 @@ via <a class="xref" href="Wolfgang.Etl.Json.JsonReport.html#Wolfgang_Etl_Json_Js
 
   <a id="Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_" data-uid="Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor*"></a>
 
-  <h3 id="Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_System_Collections_Generic_IEnumerable_System_IO_Stream__" data-uid="Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{System.IO.Stream})">
-  JsonMultiStreamExtractor(IEnumerable&lt;Stream&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.8.1/src/Wolfgang.Etl.Json/JsonMultiStreamExtractor.cs/#L65"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html">JsonMultiStreamExtractor&lt;TRecord&gt;</a> class.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[RequiresUnreferencedCode(&quot;JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.&quot;)]
-[RequiresDynamicCode(&quot;JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.&quot;)]
-public JsonMultiStreamExtractor(IEnumerable&lt;Stream&gt; streams)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>streams</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a>&gt;</dt>
-    <dd><p>An enumerable of streams, each containing a single JSON object.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></dt>
-    <dd><p>Thrown when <code class="paramref">streams</code> is <code>null</code>.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_" data-uid="Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor*"></a>
-
   <h3 id="Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_System_Collections_Generic_IEnumerable_System_IO_Stream__Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamExtractor__0___" data-uid="Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{System.IO.Stream},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})">
-  JsonMultiStreamExtractor(IEnumerable&lt;Stream&gt;, ILogger&lt;JsonMultiStreamExtractor&lt;TRecord&gt;&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.8.1/src/Wolfgang.Etl.Json/JsonMultiStreamExtractor.cs/#L117"><i class="bi bi-code-slash"></i></a>
+  JsonMultiStreamExtractor(IEnumerable&lt;Stream&gt;, ILogger&lt;JsonMultiStreamExtractor&lt;TRecord&gt;&gt;?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.9.0/src/Wolfgang.Etl.Json/JsonMultiStreamExtractor.cs/#L137"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html">JsonMultiStreamExtractor&lt;TRecord&gt;</a> class
@@ -270,7 +229,7 @@ with diagnostic logging.</p>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[RequiresUnreferencedCode(&quot;JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.&quot;)]
 [RequiresDynamicCode(&quot;JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.&quot;)]
-public JsonMultiStreamExtractor(IEnumerable&lt;Stream&gt; streams, ILogger&lt;JsonMultiStreamExtractor&lt;TRecord&gt;&gt; logger)</code></pre>
+public JsonMultiStreamExtractor(IEnumerable&lt;Stream&gt; streams, ILogger&lt;JsonMultiStreamExtractor&lt;TRecord&gt;&gt;? logger = null)</code></pre>
   </div>
 
   <h4 class="section">Parameters</h4>
@@ -279,55 +238,8 @@ public JsonMultiStreamExtractor(IEnumerable&lt;Stream&gt; streams, ILogger&lt;Js
     <dd><p>An enumerable of streams, each containing a single JSON object.</p>
 </dd>
     <dt><code>logger</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger-1">ILogger</a>&lt;<a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html">JsonMultiStreamExtractor</a>&lt;TRecord&gt;&gt;</dt>
-    <dd><p>The logger instance for diagnostic output.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></dt>
-    <dd><p>Thrown when <code class="paramref">streams</code> or <code class="paramref">logger</code> is <code>null</code>.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_" data-uid="Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor*"></a>
-
-  <h3 id="Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_System_Collections_Generic_IEnumerable_System_IO_Stream__System_Text_Json_JsonSerializerOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamExtractor__0___" data-uid="Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{System.IO.Stream},System.Text.Json.JsonSerializerOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})">
-  JsonMultiStreamExtractor(IEnumerable&lt;Stream&gt;, JsonSerializerOptions?, ILogger&lt;JsonMultiStreamExtractor&lt;TRecord&gt;&gt;?)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.8.1/src/Wolfgang.Etl.Json/JsonMultiStreamExtractor.cs/#L173"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html">JsonMultiStreamExtractor&lt;TRecord&gt;</a> class
-with custom serialization options.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[RequiresUnreferencedCode(&quot;JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.&quot;)]
-[RequiresDynamicCode(&quot;JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.&quot;)]
-public JsonMultiStreamExtractor(IEnumerable&lt;Stream&gt; streams, JsonSerializerOptions? options = null, ILogger&lt;JsonMultiStreamExtractor&lt;TRecord&gt;&gt;? logger = null)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>streams</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a>&gt;</dt>
-    <dd><p>An enumerable of streams, each containing a single JSON object.</p>
-</dd>
-    <dt><code>options</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.jsonserializeroptions">JsonSerializerOptions</a></dt>
-    <dd><p>The JSON serializer options to use for deserialization, or <code>null</code> for the serializer default.</p>
-</dd>
-    <dt><code>logger</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger-1">ILogger</a>&lt;<a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html">JsonMultiStreamExtractor</a>&lt;TRecord&gt;&gt;</dt>
-    <dd><p>An optional logger instance for diagnostic output.</p>
+    <dd><p>An optional logger instance for diagnostic output. When <code>null</code> — or omitted —
+<a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.abstractions.nulllogger.instance">Instance</a> is used and logging is disabled.</p>
 </dd>
   </dl>
 
@@ -352,7 +264,7 @@ public JsonMultiStreamExtractor(IEnumerable&lt;Stream&gt; streams, JsonSerialize
 
   <h3 id="Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_System_Collections_Generic_IEnumerable_System_IO_Stream__System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamExtractor__0___" data-uid="Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{System.IO.Stream},System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})">
   JsonMultiStreamExtractor(IEnumerable&lt;Stream&gt;, JsonTypeInfo&lt;TRecord&gt;, ILogger&lt;JsonMultiStreamExtractor&lt;TRecord&gt;&gt;?)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.8.1/src/Wolfgang.Etl.Json/JsonMultiStreamExtractor.cs/#L288"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.9.0/src/Wolfgang.Etl.Json/JsonMultiStreamExtractor.cs/#L475"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html">JsonMultiStreamExtractor&lt;TRecord&gt;</a> class
@@ -396,24 +308,32 @@ with source-generated type metadata for AOT-friendly, reflection-free deserializ
 
   <a id="Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_" data-uid="Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor*"></a>
 
-  <h3 id="Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_System_Collections_Generic_IEnumerable_Wolfgang_Etl_Json_JsonNamedStream__" data-uid="Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{Wolfgang.Etl.Json.JsonNamedStream})">
-  JsonMultiStreamExtractor(IEnumerable&lt;JsonNamedStream&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.8.1/src/Wolfgang.Etl.Json/JsonMultiStreamExtractor.cs/#L95"><i class="bi bi-code-slash"></i></a>
+  <h3 id="Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_System_Collections_Generic_IEnumerable_System_IO_Stream__System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__Wolfgang_Etl_Json_JsonMultiStreamExtractorOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamExtractor__0___" data-uid="Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{System.IO.Stream},System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})">
+  JsonMultiStreamExtractor(IEnumerable&lt;Stream&gt;, JsonTypeInfo&lt;TRecord&gt;, JsonMultiStreamExtractorOptions, ILogger&lt;JsonMultiStreamExtractor&lt;TRecord&gt;&gt;?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.9.0/src/Wolfgang.Etl.Json/JsonMultiStreamExtractor.cs/#L299"><i class="bi bi-code-slash"></i></a>
   </h3>
 
-  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html">JsonMultiStreamExtractor&lt;TRecord&gt;</a> class
-with named sources for progress reporting.</p>
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html">JsonMultiStreamExtractor&lt;TRecord&gt;</a> class configured through an options record and a source-generated <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1">JsonTypeInfo&lt;T&gt;</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public JsonMultiStreamExtractor(IEnumerable&lt;JsonNamedStream&gt; sources)</code></pre>
+    <pre><code class="lang-csharp hljs">public JsonMultiStreamExtractor(IEnumerable&lt;Stream&gt; streams, JsonTypeInfo&lt;TRecord&gt; typeInfo, JsonMultiStreamExtractorOptions options, ILogger&lt;JsonMultiStreamExtractor&lt;TRecord&gt;&gt;? logger = null)</code></pre>
   </div>
 
   <h4 class="section">Parameters</h4>
   <dl class="parameters">
-    <dt><code>sources</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="Wolfgang.Etl.Json.JsonNamedStream.html">JsonNamedStream</a>&gt;</dt>
-    <dd><p>An enumerable of <a class="xref" href="Wolfgang.Etl.Json.JsonNamedStream.html">JsonNamedStream</a> instances, each containing a stream and an optional name.</p>
+    <dt><code>streams</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a>&gt;</dt>
+    <dd><p>The streams to read from, in order.</p>
+</dd>
+    <dt><code>typeInfo</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1">JsonTypeInfo</a>&lt;TRecord&gt;</dt>
+    <dd><p>The source-generated type information used to deserialize <code class="typeparamref">TRecord</code>; it carries its own serializer options.</p>
+</dd>
+    <dt><code>options</code> <a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions.html">JsonMultiStreamExtractorOptions</a></dt>
+    <dd><p>The construction-time configuration for this stage, including the settings inherited from <span class="xref">Wolfgang.Etl.Abstractions.ExtractorOptions</span>.</p>
+</dd>
+    <dt><code>logger</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger-1">ILogger</a>&lt;<a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html">JsonMultiStreamExtractor</a>&lt;TRecord&gt;&gt;</dt>
+    <dd><p>An optional logger; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> disables logging.</p>
 </dd>
   </dl>
 
@@ -428,7 +348,57 @@ with named sources for progress reporting.</p>
   <h4 class="section">Exceptions</h4>
   <dl class="parameters">
     <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></dt>
-    <dd><p>Thrown when <code class="paramref">sources</code> is <code>null</code>.</p>
+    <dd><p>A required argument is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</dd>
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></dt>
+    <dd><p><code class="paramref">options</code> sets <a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions.html#Wolfgang_Etl_Json_JsonMultiStreamExtractorOptions_SerializerOptions">SerializerOptions</a>, which cannot be combined with a <code class="paramref">typeInfo</code>; the type info carries its own serializer options.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_" data-uid="Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor*"></a>
+
+  <h3 id="Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_System_Collections_Generic_IEnumerable_System_IO_Stream__Wolfgang_Etl_Json_JsonMultiStreamExtractorOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamExtractor__0___" data-uid="Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{System.IO.Stream},Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})">
+  JsonMultiStreamExtractor(IEnumerable&lt;Stream&gt;, JsonMultiStreamExtractorOptions, ILogger&lt;JsonMultiStreamExtractor&lt;TRecord&gt;&gt;?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.9.0/src/Wolfgang.Etl.Json/JsonMultiStreamExtractor.cs/#L268"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html">JsonMultiStreamExtractor&lt;TRecord&gt;</a> class configured through an options record.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[RequiresUnreferencedCode(&quot;JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.&quot;)]
+[RequiresDynamicCode(&quot;JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.&quot;)]
+public JsonMultiStreamExtractor(IEnumerable&lt;Stream&gt; streams, JsonMultiStreamExtractorOptions options, ILogger&lt;JsonMultiStreamExtractor&lt;TRecord&gt;&gt;? logger = null)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>streams</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a>&gt;</dt>
+    <dd><p>The streams to read from, in order.</p>
+</dd>
+    <dt><code>options</code> <a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions.html">JsonMultiStreamExtractorOptions</a></dt>
+    <dd><p>The construction-time configuration for this stage, including the settings inherited from <span class="xref">Wolfgang.Etl.Abstractions.ExtractorOptions</span>.</p>
+</dd>
+    <dt><code>logger</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger-1">ILogger</a>&lt;<a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html">JsonMultiStreamExtractor</a>&lt;TRecord&gt;&gt;</dt>
+    <dd><p>An optional logger; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> disables logging.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></dt>
+    <dd><p>A required argument is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
 </dd>
   </dl>
 
@@ -437,8 +407,8 @@ with named sources for progress reporting.</p>
   <a id="Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_" data-uid="Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor*"></a>
 
   <h3 id="Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_System_Collections_Generic_IEnumerable_Wolfgang_Etl_Json_JsonNamedStream__Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamExtractor__0___" data-uid="Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{Wolfgang.Etl.Json.JsonNamedStream},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})">
-  JsonMultiStreamExtractor(IEnumerable&lt;JsonNamedStream&gt;, ILogger&lt;JsonMultiStreamExtractor&lt;TRecord&gt;&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.8.1/src/Wolfgang.Etl.Json/JsonMultiStreamExtractor.cs/#L149"><i class="bi bi-code-slash"></i></a>
+  JsonMultiStreamExtractor(IEnumerable&lt;JsonNamedStream&gt;, ILogger&lt;JsonMultiStreamExtractor&lt;TRecord&gt;&gt;?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.9.0/src/Wolfgang.Etl.Json/JsonMultiStreamExtractor.cs/#L172"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html">JsonMultiStreamExtractor&lt;TRecord&gt;</a> class
@@ -447,7 +417,7 @@ with named sources and diagnostic logging.</p>
   <div class="markdown level1 conceptual"></div>
 
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public JsonMultiStreamExtractor(IEnumerable&lt;JsonNamedStream&gt; sources, ILogger&lt;JsonMultiStreamExtractor&lt;TRecord&gt;&gt; logger)</code></pre>
+    <pre><code class="lang-csharp hljs">public JsonMultiStreamExtractor(IEnumerable&lt;JsonNamedStream&gt; sources, ILogger&lt;JsonMultiStreamExtractor&lt;TRecord&gt;&gt;? logger = null)</code></pre>
   </div>
 
   <h4 class="section">Parameters</h4>
@@ -456,53 +426,8 @@ with named sources and diagnostic logging.</p>
     <dd><p>An enumerable of <a class="xref" href="Wolfgang.Etl.Json.JsonNamedStream.html">JsonNamedStream</a> instances, each containing a stream and an optional name.</p>
 </dd>
     <dt><code>logger</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger-1">ILogger</a>&lt;<a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html">JsonMultiStreamExtractor</a>&lt;TRecord&gt;&gt;</dt>
-    <dd><p>The logger instance for diagnostic output.</p>
-</dd>
-  </dl>
-
-
-
-
-
-
-
-
-
-  <h4 class="section">Exceptions</h4>
-  <dl class="parameters">
-    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></dt>
-    <dd><p>Thrown when <code class="paramref">sources</code> or <code class="paramref">logger</code> is <code>null</code>.</p>
-</dd>
-  </dl>
-
-
-
-  <a id="Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_" data-uid="Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor*"></a>
-
-  <h3 id="Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_System_Collections_Generic_IEnumerable_Wolfgang_Etl_Json_JsonNamedStream__System_Text_Json_JsonSerializerOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamExtractor__0___" data-uid="Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{Wolfgang.Etl.Json.JsonNamedStream},System.Text.Json.JsonSerializerOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})">
-  JsonMultiStreamExtractor(IEnumerable&lt;JsonNamedStream&gt;, JsonSerializerOptions?, ILogger&lt;JsonMultiStreamExtractor&lt;TRecord&gt;&gt;?)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.8.1/src/Wolfgang.Etl.Json/JsonMultiStreamExtractor.cs/#L207"><i class="bi bi-code-slash"></i></a>
-  </h3>
-
-  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html">JsonMultiStreamExtractor&lt;TRecord&gt;</a> class
-with named sources and custom serialization options.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public JsonMultiStreamExtractor(IEnumerable&lt;JsonNamedStream&gt; sources, JsonSerializerOptions? options = null, ILogger&lt;JsonMultiStreamExtractor&lt;TRecord&gt;&gt;? logger = null)</code></pre>
-  </div>
-
-  <h4 class="section">Parameters</h4>
-  <dl class="parameters">
-    <dt><code>sources</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="Wolfgang.Etl.Json.JsonNamedStream.html">JsonNamedStream</a>&gt;</dt>
-    <dd><p>An enumerable of <a class="xref" href="Wolfgang.Etl.Json.JsonNamedStream.html">JsonNamedStream</a> instances, each containing a stream and an optional name.</p>
-</dd>
-    <dt><code>options</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.jsonserializeroptions">JsonSerializerOptions</a></dt>
-    <dd><p>The JSON serializer options to use for deserialization, or <code>null</code> for the serializer default.</p>
-</dd>
-    <dt><code>logger</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger-1">ILogger</a>&lt;<a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html">JsonMultiStreamExtractor</a>&lt;TRecord&gt;&gt;</dt>
-    <dd><p>An optional logger instance for diagnostic output.</p>
+    <dd><p>An optional logger instance for diagnostic output. When <code>null</code> — or omitted —
+<a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.abstractions.nulllogger.instance">Instance</a> is used and logging is disabled.</p>
 </dd>
   </dl>
 
@@ -527,7 +452,7 @@ with named sources and custom serialization options.</p>
 
   <h3 id="Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_System_Collections_Generic_IEnumerable_Wolfgang_Etl_Json_JsonNamedStream__System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamExtractor__0___" data-uid="Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{Wolfgang.Etl.Json.JsonNamedStream},System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})">
   JsonMultiStreamExtractor(IEnumerable&lt;JsonNamedStream&gt;, JsonTypeInfo&lt;TRecord&gt;, ILogger&lt;JsonMultiStreamExtractor&lt;TRecord&gt;&gt;?)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.8.1/src/Wolfgang.Etl.Json/JsonMultiStreamExtractor.cs/#L319"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.9.0/src/Wolfgang.Etl.Json/JsonMultiStreamExtractor.cs/#L506"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html">JsonMultiStreamExtractor&lt;TRecord&gt;</a> class
@@ -569,6 +494,102 @@ with named sources and source-generated type metadata for AOT-friendly deseriali
 
 
 
+  <a id="Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_" data-uid="Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor*"></a>
+
+  <h3 id="Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_System_Collections_Generic_IEnumerable_Wolfgang_Etl_Json_JsonNamedStream__System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__Wolfgang_Etl_Json_JsonMultiStreamExtractorOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamExtractor__0___" data-uid="Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{Wolfgang.Etl.Json.JsonNamedStream},System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})">
+  JsonMultiStreamExtractor(IEnumerable&lt;JsonNamedStream&gt;, JsonTypeInfo&lt;TRecord&gt;, JsonMultiStreamExtractorOptions, ILogger&lt;JsonMultiStreamExtractor&lt;TRecord&gt;&gt;?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.9.0/src/Wolfgang.Etl.Json/JsonMultiStreamExtractor.cs/#L350"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html">JsonMultiStreamExtractor&lt;TRecord&gt;</a> class configured through an options record and a source-generated <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1">JsonTypeInfo&lt;T&gt;</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public JsonMultiStreamExtractor(IEnumerable&lt;JsonNamedStream&gt; sources, JsonTypeInfo&lt;TRecord&gt; typeInfo, JsonMultiStreamExtractorOptions options, ILogger&lt;JsonMultiStreamExtractor&lt;TRecord&gt;&gt;? logger = null)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>sources</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="Wolfgang.Etl.Json.JsonNamedStream.html">JsonNamedStream</a>&gt;</dt>
+    <dd><p>The named sources to read from, in order.</p>
+</dd>
+    <dt><code>typeInfo</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1">JsonTypeInfo</a>&lt;TRecord&gt;</dt>
+    <dd><p>The source-generated type information used to deserialize <code class="typeparamref">TRecord</code>; it carries its own serializer options.</p>
+</dd>
+    <dt><code>options</code> <a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions.html">JsonMultiStreamExtractorOptions</a></dt>
+    <dd><p>The construction-time configuration for this stage, including the settings inherited from <span class="xref">Wolfgang.Etl.Abstractions.ExtractorOptions</span>.</p>
+</dd>
+    <dt><code>logger</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger-1">ILogger</a>&lt;<a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html">JsonMultiStreamExtractor</a>&lt;TRecord&gt;&gt;</dt>
+    <dd><p>An optional logger; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> disables logging.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></dt>
+    <dd><p>A required argument is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</dd>
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></dt>
+    <dd><p><code class="paramref">options</code> sets <a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions.html#Wolfgang_Etl_Json_JsonMultiStreamExtractorOptions_SerializerOptions">SerializerOptions</a>, which cannot be combined with a <code class="paramref">typeInfo</code>; the type info carries its own serializer options.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_" data-uid="Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor*"></a>
+
+  <h3 id="Wolfgang_Etl_Json_JsonMultiStreamExtractor_1__ctor_System_Collections_Generic_IEnumerable_Wolfgang_Etl_Json_JsonNamedStream__Wolfgang_Etl_Json_JsonMultiStreamExtractorOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonMultiStreamExtractor__0___" data-uid="Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.#ctor(System.Collections.Generic.IEnumerable{Wolfgang.Etl.Json.JsonNamedStream},Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonMultiStreamExtractor{`0}})">
+  JsonMultiStreamExtractor(IEnumerable&lt;JsonNamedStream&gt;, JsonMultiStreamExtractorOptions, ILogger&lt;JsonMultiStreamExtractor&lt;TRecord&gt;&gt;?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.9.0/src/Wolfgang.Etl.Json/JsonMultiStreamExtractor.cs/#L327"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html">JsonMultiStreamExtractor&lt;TRecord&gt;</a> class configured through an options record.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public JsonMultiStreamExtractor(IEnumerable&lt;JsonNamedStream&gt; sources, JsonMultiStreamExtractorOptions options, ILogger&lt;JsonMultiStreamExtractor&lt;TRecord&gt;&gt;? logger = null)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>sources</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="Wolfgang.Etl.Json.JsonNamedStream.html">JsonNamedStream</a>&gt;</dt>
+    <dd><p>The named sources to read from, in order.</p>
+</dd>
+    <dt><code>options</code> <a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions.html">JsonMultiStreamExtractorOptions</a></dt>
+    <dd><p>The construction-time configuration for this stage, including the settings inherited from <span class="xref">Wolfgang.Etl.Abstractions.ExtractorOptions</span>.</p>
+</dd>
+    <dt><code>logger</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger-1">ILogger</a>&lt;<a class="xref" href="Wolfgang.Etl.Json.JsonMultiStreamExtractor-1.html">JsonMultiStreamExtractor</a>&lt;TRecord&gt;&gt;</dt>
+    <dd><p>An optional logger; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> disables logging.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></dt>
+    <dd><p>A required argument is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</dd>
+  </dl>
+
+
+
   <h2 class="section" id="methods">Methods
 </h2>
 
@@ -577,7 +598,7 @@ with named sources and source-generated type metadata for AOT-friendly deseriali
 
   <h3 id="Wolfgang_Etl_Json_JsonMultiStreamExtractor_1_CreateProgressReport" data-uid="Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.CreateProgressReport">
   CreateProgressReport()
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.8.1/src/Wolfgang.Etl.Json/JsonMultiStreamExtractor.cs/#L473"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.9.0/src/Wolfgang.Etl.Json/JsonMultiStreamExtractor.cs/#L660"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Creates a progress report of type TProgress. This gives the derived class the opportunity to
@@ -611,7 +632,7 @@ implement a custom progress report that is specific to the extraction process.</
 
   <h3 id="Wolfgang_Etl_Json_JsonMultiStreamExtractor_1_CreateProgressTimer_System_IProgress_Wolfgang_Etl_Json_JsonReport__" data-uid="Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.CreateProgressTimer(System.IProgress{Wolfgang.Etl.Json.JsonReport})">
   CreateProgressTimer(IProgress&lt;JsonReport&gt;)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.8.1/src/Wolfgang.Etl.Json/JsonMultiStreamExtractor.cs/#L483"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.9.0/src/Wolfgang.Etl.Json/JsonMultiStreamExtractor.cs/#L670"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>Creates the <span class="xref">Wolfgang.Etl.Abstractions.IProgressTimer</span> used to drive progress callbacks.
@@ -652,7 +673,7 @@ Override this method in a derived class to inject a custom timer
 
   <h3 id="Wolfgang_Etl_Json_JsonMultiStreamExtractor_1_ExtractWorkerAsync_System_Threading_CancellationToken_" data-uid="Wolfgang.Etl.Json.JsonMultiStreamExtractor`1.ExtractWorkerAsync(System.Threading.CancellationToken)">
   ExtractWorkerAsync(CancellationToken)
-  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.8.1/src/Wolfgang.Etl.Json/JsonMultiStreamExtractor.cs/#L365"><i class="bi bi-code-slash"></i></a>
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.9.0/src/Wolfgang.Etl.Json/JsonMultiStreamExtractor.cs/#L552"><i class="bi bi-code-slash"></i></a>
   </h3>
 
   <div class="markdown level1 summary"><p>This method is the core implementation of the extraction logic and should be
@@ -693,7 +714,7 @@ The result may be an empty sequence if no data is available or if the extraction
 </article>
 
         <div class="contribution d-print-none">
-          <a href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.8.1/src/Wolfgang.Etl.Json/JsonMultiStreamExtractor.cs/#L42" class="edit-link">Edit this page</a>
+          <a href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.9.0/src/Wolfgang.Etl.Json/JsonMultiStreamExtractor.cs/#L43" class="edit-link">Edit this page</a>
         </div>
 
 

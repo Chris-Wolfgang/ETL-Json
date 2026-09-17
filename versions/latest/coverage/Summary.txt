@@ -1,35 +1,41 @@
 Summary
-  Generated on: 8/22/2026 - 11:47:32 PM
-  Coverage date: 8/22/2026 - 11:47:23 PM - 8/22/2026 - 11:47:27 PM
+  Generated on: 9/17/2026 - 4:54:14 PM
+  Coverage date: 9/17/2026 - 4:53:57 PM - 9/17/2026 - 4:54:00 PM
   Parser: MultiReport (3x Cobertura)
   Assemblies: 1
-  Classes: 13
-  Files: 13
-  Line coverage: 96.7%
-  Covered lines: 1026
-  Uncovered lines: 35
-  Coverable lines: 1061
-  Total lines: 3218
-  Branch coverage: 86% (406 of 472)
-  Covered branches: 406
-  Total branches: 472
-  Method coverage: 98.2% (112 of 114)
-  Full method coverage: 85% (97 of 114)
-  Covered methods: 112
-  Fully covered methods: 97
-  Total methods: 114
+  Classes: 19
+  Files: 19
+  Line coverage: 95.1%
+  Covered lines: 1175
+  Uncovered lines: 60
+  Coverable lines: 1235
+  Total lines: 4333
+  Branch coverage: 77% (479 of 622)
+  Covered branches: 479
+  Total branches: 622
+  Method coverage: 98.1% (155 of 158)
+  Full method coverage: 82.2% (130 of 158)
+  Covered methods: 155
+  Fully covered methods: 130
+  Total methods: 158
 
-Wolfgang.Etl.Json                                     96.7%
-  Wolfgang.Etl.Json.EtlPipelineJsonSinkExtensions     94.1%
-  Wolfgang.Etl.Json.EtlPipelineJsonSourceExtensions   96.1%
-  Wolfgang.Etl.Json.JsonLineExtractor<T>              95.6%
-  Wolfgang.Etl.Json.JsonLineLoader<T>                 95.3%
-  Wolfgang.Etl.Json.JsonLogMessages                    100%
-  Wolfgang.Etl.Json.JsonMetrics                        100%
-  Wolfgang.Etl.Json.JsonMultiStreamExtractor<T>        100%
-  Wolfgang.Etl.Json.JsonMultiStreamLoader<T>          97.8%
-  Wolfgang.Etl.Json.JsonNamedDestination               100%
-  Wolfgang.Etl.Json.JsonNamedStream                    100%
-  Wolfgang.Etl.Json.JsonReport                         100%
-  Wolfgang.Etl.Json.JsonSingleStreamExtractor<T>      92.9%
-  Wolfgang.Etl.Json.JsonSingleStreamLoader<T>           95%
+Wolfgang.Etl.Json                                      95.1%
+  Wolfgang.Etl.Json.EtlPipelineJsonSinkExtensions      94.1%
+  Wolfgang.Etl.Json.EtlPipelineJsonSourceExtensions    96.1%
+  Wolfgang.Etl.Json.JsonLineExtractor<T>               93.8%
+  Wolfgang.Etl.Json.JsonLineExtractorOptions            100%
+  Wolfgang.Etl.Json.JsonLineLoader<T>                  92.1%
+  Wolfgang.Etl.Json.JsonLineLoaderOptions               100%
+  Wolfgang.Etl.Json.JsonLogMessages                     100%
+  Wolfgang.Etl.Json.JsonMetrics                         100%
+  Wolfgang.Etl.Json.JsonMultiStreamExtractor<T>        95.3%
+  Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions     100%
+  Wolfgang.Etl.Json.JsonMultiStreamLoader<T>           96.7%
+  Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions        100%
+  Wolfgang.Etl.Json.JsonNamedDestination                100%
+  Wolfgang.Etl.Json.JsonNamedStream                     100%
+  Wolfgang.Etl.Json.JsonReport                          100%
+  Wolfgang.Etl.Json.JsonSingleStreamExtractor<T>       92.3%
+  Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions    100%
+  Wolfgang.Etl.Json.JsonSingleStreamLoader<T>          96.6%
+  Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions       100%
