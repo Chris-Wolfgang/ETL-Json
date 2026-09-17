@@ -19,6 +19,75 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Security
 
+
+## [0.9.0] - 2026-09-16
+
+### Changed
+
+- **`new X(source, options: null)` — a `null` passed by name — no longer compiles (`CS0121`)** on any stage: the new
+  record overloads name their parameter `options` too, deliberately. Every other existing spelling still binds the
+  serializer-options overload (`new X(source)`, `new X(source, null)`, a typed null); drop the name or type the null.
+  See the migration guide.
+- `Wolfgang.Etl.Abstractions` / `.ErrorPolicies` 0.23.4 → 0.24.0 (`.TestKit` / `.TestKit.Xunit` for the test project).
+  The three dry-run contract tests use the now non-generic TestKit base.
+- The ten `(source, JsonSerializerOptions?, ILogger?)` constructors are hidden from IntelliSense and retained permanently,
+  superseded by the record constructors (`(source, options, logger)`, with `SerializerOptions` on the record); same rule and reasoning as
+  the single-argument constructors below. Nothing changes for callers.
+- The eight single-argument constructors — `(Stream)` on the four single-stream stages, `(IEnumerable<Stream>)` /
+  `(IEnumerable<JsonNamedStream>)` on `JsonMultiStreamExtractor<T>` and the two factory forms on
+  `JsonMultiStreamLoader<T>` — are hidden from IntelliSense (`[EditorBrowsable(Never)]`) and retained permanently
+  for binary compatibility, the rule the fleet applies to constructors superseded by an optional-parameter
+  overload (Chris-Wolfgang/ETL-Abstractions#461, Chris-Wolfgang/ETL-Csv#284). Not `[Obsolete]`: `new X(source)`
+  binds to them by exact match, so a warning could only be silenced with a redundant `logger: null`. Nothing
+  changes for callers.
+- **`logger` is now an optional trailing constructor parameter across all six extractor / loader
+  types.** The eight `(source, ILogger<T> logger)` constructors on `JsonLineExtractor<T>`,
+  `JsonLineLoader<T>`, `JsonSingleStreamExtractor<T>`, `JsonSingleStreamLoader<T>`,
+  `JsonMultiStreamExtractor<T>` (stream and named-source forms) and `JsonMultiStreamLoader<T>`
+  (stream-factory and named-destination forms) now declare `ILogger<T>? logger = null`. Passing
+  `null` — or omitting it — resolves to `NullLogger.Instance` instead of throwing
+  `ArgumentNullException`.
+
+  Not a breaking change: each parameter list is unchanged, so the emitted signatures are identical
+  and PackageValidation against the published baseline passes. Only the nullability annotation and
+  the default were added.
+
+  This aligns ETL-Json with the fleet-wide convention — logger always last, always optional —
+  already followed by `Etl-DbClient`. The `JsonTypeInfo<TRecord>` overloads are unchanged; they
+  remain a separate AOT-safe family.
+
+### Added
+
+- README section *Configuring a stage* and `docs/migrations/v0.8-to-v0.9.md` covering the records, the
+  `serializerOptions` rename, the deprecated setters and the hidden constructors.
+- **Options records for all six stages** (ADR-0009, first half of #303; Chris-Wolfgang/ETL-Abstractions#455):
+  `JsonLineExtractorOptions`, `JsonSingleStreamExtractorOptions`, `JsonMultiStreamExtractorOptions` (inheriting
+  `ExtractorOptions`) and `JsonLineLoaderOptions`, `JsonSingleStreamLoaderOptions`, `JsonMultiStreamLoaderOptions`
+  (inheriting `LoaderOptions`) from Wolfgang.Etl.Abstractions 0.24. Each carries the stage's own settings
+  (`Encoding`, `EnableCheckpointing`, `StartByteOffset` on the line extractor; `Encoding` and `IsDryRun` on the
+  line loader; `IsDryRun` on the other loaders) plus the inherited `ReportingInterval`, `MaximumItemCount`,
+  `SkipItemCount` and `ErrorPolicy`, all `{ get; init; }`, plus `SerializerOptions` for the reflection-based serializer.
+  The source-generated path keeps `JsonTypeInfo<TRecord>` as a constructor parameter (the type info carries its own
+  serializer options); a record that sets `SerializerOptions` is rejected by those constructors.
+- **Constructors taking the record**, one per input shape and serializer family, with the record as a required
+  parameter directly after the source (`(source, options, logger = null)` and `(source, typeInfo, options, logger = null)`;
+  the file-path forms likewise). Required rather than defaulted so
+  every existing call keeps binding to the constructor it binds to today. The existing constructors are unchanged;
+  the `{ get; set; }` properties are unchanged in this release and deprecated in the next.
+
+### Deprecated
+
+- The seven configuration setters — `Encoding`, `EnableCheckpointing`, `StartByteOffset` on `JsonLineExtractor<T>`;
+  `Encoding` and `IsDryRun` on `JsonLineLoader<T>`; `IsDryRun` on `JsonSingleStreamLoader<T>` and
+  `JsonMultiStreamLoader<T>` — are `[Obsolete]` on the **setter accessor** (reads stay warning-free), pointing at the
+  options record to use instead (second half of #303). Nothing is removed; removal follows in a later release.
+
+### Removed
+
+- `JsonLineLoader<TRecord>`, `JsonSingleStreamLoader<TRecord>` and `JsonMultiStreamLoader<TRecord>` no longer implement
+  `ISupportDryRun`; Wolfgang.Etl.Abstractions 0.24 removes the interface (Chris-Wolfgang/ETL-Abstractions#457).
+  `IsDryRun` itself is unchanged on the loaders and now also configurable through their options records.
+
 ## [0.8.1] - 2026-08-22
 
 Patch release. **Zero source or public-API changes** — consumers of `Wolfgang.Etl.Json`
@@ -294,7 +363,8 @@ baseline with the intentional removals waived in `CompatibilitySuppressions.xml`
 - Cached the default `JsonSerializerOptions` and log operation-name strings as
   static fields; sealed the extractor and loader classes.
 
-[Unreleased]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.8.1...HEAD
+[Unreleased]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.8.1...v0.9.0
 [0.8.1]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.8.0...v0.8.1
 [0.5.0]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/Chris-Wolfgang/ETL-Json/compare/v0.3.0...v0.4.0

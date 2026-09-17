@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 #if NET5_0_OR_GREATER
 using System.Diagnostics.CodeAnalysis;
@@ -30,7 +31,7 @@ namespace Wolfgang.Etl.Json;
 /// await loader.LoadAsync(items, cancellationToken);
 /// </code>
 /// </example>
-public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonReport>, ISupportDryRun
+public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSON single-stream loading of {typeof(TRecord).Name}";
@@ -49,7 +50,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     /// When <see langword="true"/>, the loader enumerates the source and increments
     /// progress counters as usual but does not write any JSON to the output stream.
     /// </remarks>
-    public bool IsDryRun { get; set; }
+    public bool IsDryRun { get; [Obsolete("Configure IsDryRun through JsonSingleStreamLoaderOptions passed to the constructor instead. The setter will be removed in a later release.")] set; }
 
 
 
@@ -60,10 +61,18 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="stream"/> is <c>null</c>.
     /// </exception>
+    /// <remarks>
+    /// Retained for binary compatibility with assemblies compiled before the optional-logger overload
+    /// existed: <c>new JsonSingleStreamLoader&lt;T&gt;(stream)</c> in such an assembly is bound to this exact signature,
+    /// and removing it would fail at runtime with <see cref="MissingMethodException"/> with no compile-time
+    /// signal. Hidden from IntelliSense; source code binds here too, so nothing changes for callers. New
+    /// code has no reason to name this overload.
+    /// </remarks>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
     [RequiresDynamicCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
 #endif
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public JsonSingleStreamLoader
     (
         Stream stream
@@ -81,9 +90,12 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     /// with diagnostic logging.
     /// </summary>
     /// <param name="stream">The stream to write the JSON array to.</param>
-    /// <param name="logger">The logger instance for diagnostic output.</param>
+    /// <param name="logger">
+    /// An optional logger instance for diagnostic output. When <c>null</c> — or omitted —
+    /// <see cref="NullLogger.Instance"/> is used and logging is disabled.
+    /// </param>
     /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="stream"/> or <paramref name="logger"/> is <c>null</c>.
+    /// Thrown when <paramref name="stream"/> is <c>null</c>.
     /// </exception>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
@@ -92,11 +104,11 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     public JsonSingleStreamLoader
     (
         Stream stream,
-        ILogger<JsonSingleStreamLoader<TRecord>> logger
+        ILogger<JsonSingleStreamLoader<TRecord>>? logger = null
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _logger = logger ?? (ILogger)NullLogger.Instance;
         _options = null;
     }
 
@@ -112,10 +124,18 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="stream"/> is <c>null</c>.
     /// </exception>
+    /// <remarks>
+    /// Superseded by the overload that takes a <see cref="JsonSingleStreamLoaderOptions"/> record before the serializer options.
+    /// Retained for binary compatibility with assemblies compiled against 0.8.x, which are bound to this exact
+    /// signature; removing it would fail them at runtime with <see cref="MissingMethodException"/> with no
+    /// compile-time signal. Hidden from IntelliSense; source code binds here too, so nothing changes for callers.
+    /// New code passes the record.
+    /// </remarks>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
     [RequiresDynamicCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
 #endif
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public JsonSingleStreamLoader
     (
         Stream stream,
@@ -131,13 +151,105 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
 
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="JsonSingleStreamLoader{TRecord}"/> class configured through an options record.
+    /// </summary>
+    /// <param name="stream">The stream to write a single JSON array to.</param>
+    /// <param name="options">The construction-time configuration for this stage, including the settings inherited from <see cref="LoaderOptions"/>.</param>
+    /// <param name="logger">An optional logger; <see langword="null"/> disables logging.</param>
+    /// <exception cref="ArgumentNullException">A required argument is <see langword="null"/>.</exception>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+    [RequiresDynamicCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
+    public JsonSingleStreamLoader
+    (
+        Stream stream,
+        JsonSingleStreamLoaderOptions options,
+        ILogger<JsonSingleStreamLoader<TRecord>>? logger = null
+    )
+        : base(options)
+    {
+        _stream = stream ?? throw new ArgumentNullException(nameof(stream));
+        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
+        _logger = logger ?? (ILogger)NullLogger.Instance;
+        ApplyOptions(options);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonSingleStreamLoader{TRecord}"/> class configured through an options record and a source-generated <see cref="JsonTypeInfo{TRecord}"/>.
+    /// </summary>
+    /// <param name="stream">The stream to write a single JSON array to.</param>
+    /// <param name="typeInfo">The source-generated type information used to serialize <typeparamref name="TRecord"/>; it carries its own serializer options.</param>
+    /// <param name="options">The construction-time configuration for this stage, including the settings inherited from <see cref="LoaderOptions"/>.</param>
+    /// <param name="logger">An optional logger; <see langword="null"/> disables logging.</param>
+    /// <exception cref="ArgumentNullException">A required argument is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentException"><paramref name="options"/> sets <see cref="JsonSingleStreamLoaderOptions.SerializerOptions"/>, which cannot be combined with a <paramref name="typeInfo"/>; the type info carries its own serializer options.</exception>
+    public JsonSingleStreamLoader
+    (
+        Stream stream,
+        JsonTypeInfo<TRecord> typeInfo,
+        JsonSingleStreamLoaderOptions options,
+        ILogger<JsonSingleStreamLoader<TRecord>>? logger = null
+    )
+        : base(options)
+    {
+        RejectSerializerOptions(options);
+        _stream = stream ?? throw new ArgumentNullException(nameof(stream));
+        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _logger = logger ?? (ILogger)NullLogger.Instance;
+        ApplyOptions(options);
+    }
+
+
+
+    /// <summary>
+    /// Rejects a record that sets <see cref="JsonSingleStreamLoaderOptions.SerializerOptions"/> when a source-generated type info is
+    /// supplied: the type info carries its own serializer options, so the record's would be ignored, and an ignored
+    /// setting is worse than an error.
+    /// </summary>
+    /// <param name="options">The record to check.</param>
+    /// <exception cref="ArgumentException">The record sets <see cref="JsonSingleStreamLoaderOptions.SerializerOptions"/>.</exception>
+    private static void RejectSerializerOptions(JsonSingleStreamLoaderOptions options)
+    {
+        if (options?.SerializerOptions is not null)
+        {
+            throw new ArgumentException
+            (
+                "SerializerOptions cannot be combined with a JsonTypeInfo; the type info carries its own serializer options.",
+                nameof(options)
+            );
+        }
+    }
+
+
+
+    /// <summary>
+    /// Copies the stage-specific settings from <paramref name="options"/> onto this instance; the inherited
+    /// settings were applied by the <see cref="LoaderBase{TDestination, TProgress}"/> constructor.
+    /// </summary>
+    /// <exception cref="ArgumentNullException"><paramref name="options"/> is <see langword="null"/>.</exception>
+#pragma warning disable CS0618 // ApplyOptions is the supported replacement for these setters; it necessarily writes them.
+    private void ApplyOptions(JsonSingleStreamLoaderOptions options)
+    {
+        if (options is null)
+        {
+            throw new ArgumentNullException(nameof(options));
+        }
+
+        IsDryRun = options.IsDryRun;
+    }
+#pragma warning restore CS0618
+
+
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="JsonSingleStreamLoader{TRecord}"/> class
     /// with an injected progress timer for testing.
     /// </summary>
     /// <param name="stream">The stream to write the JSON array to.</param>
-    /// <param name="options">The JSON serializer options to use for serialization, or <c>null</c> for the serializer default.</param>
-    /// <param name="logger">An optional logger instance for diagnostic output.</param>
+    /// <param name="options">The construction-time configuration, including <see cref="JsonSingleStreamLoaderOptions.SerializerOptions"/>.</param>
     /// <param name="timer">The progress timer to inject.</param>
+    /// <param name="logger">An optional logger instance for diagnostic output.</param>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
     [RequiresDynamicCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
@@ -145,15 +257,17 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     internal JsonSingleStreamLoader
     (
         Stream stream,
-        JsonSerializerOptions options,
-        ILogger? logger,
-        IProgressTimer timer
+        JsonSingleStreamLoaderOptions options,
+        IProgressTimer timer,
+        ILogger? logger = null
     )
+        : base(options)
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
         _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
+        ApplyOptions(options);
     }
 
 
@@ -188,14 +302,14 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     /// </summary>
     /// <param name="stream">The stream to write the JSON array to.</param>
     /// <param name="typeInfo">The source-generated type metadata for <typeparamref name="TRecord"/>.</param>
-    /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <param name="timer">The progress timer to inject.</param>
+    /// <param name="logger">An optional logger instance for diagnostic output.</param>
     internal JsonSingleStreamLoader
     (
         Stream stream,
         JsonTypeInfo<TRecord> typeInfo,
-        ILogger? logger,
-        IProgressTimer timer
+        IProgressTimer timer,
+        ILogger? logger = null
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));

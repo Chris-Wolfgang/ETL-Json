@@ -56,9 +56,9 @@ public class JsonSingleStreamLoaderTests
         return new JsonSingleStreamLoader<PersonRecord>
         (
             stream,
-            new JsonSerializerOptions(),
-            NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance,
-            timer
+            new JsonSingleStreamLoaderOptions(),
+            timer,
+            NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance
         );
     }
 
@@ -141,16 +141,18 @@ public class JsonSingleStreamLoaderTests
 
 
     [Fact]
-    public void Constructor_with_logger_when_logger_is_null_throws_ArgumentNullException()
+    public void Constructor_with_logger_when_logger_is_null_does_not_throw()
     {
-        Assert.Throws<ArgumentNullException>
+        // logger is an optional trailing parameter: null means "no logging" rather than an
+        // argument error. The fallback to NullLogger.Instance is private state, so what this
+        // fact can assert is that construction succeeds.
+        var sut = new JsonSingleStreamLoader<PersonRecord>
         (
-            () => new JsonSingleStreamLoader<PersonRecord>
-            (
-                new MemoryStream(),
-                logger: null!
-            )
+            new MemoryStream(),
+            logger: null
         );
+
+        Assert.NotNull(sut);
     }
 
 
@@ -176,7 +178,7 @@ public class JsonSingleStreamLoaderTests
         var sut = new JsonSingleStreamLoader<PersonRecord>
         (
                 new MemoryStream(),
-                options: null,
+                (JsonSerializerOptions?)null,
                 NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance
         );
 
@@ -193,9 +195,9 @@ public class JsonSingleStreamLoaderTests
             () => new JsonSingleStreamLoader<PersonRecord>
             (
                 stream: null!,
-                new JsonSerializerOptions(),
-                NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance,
-                new ManualProgressTimer()
+                new JsonSingleStreamLoaderOptions(),
+                new ManualProgressTimer(),
+                NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance
             )
         );
     }
@@ -208,9 +210,9 @@ public class JsonSingleStreamLoaderTests
         var sut = new JsonSingleStreamLoader<PersonRecord>
         (
             new MemoryStream(),
-            new JsonSerializerOptions(),
-            logger: null,
-            new ManualProgressTimer()
+            new JsonSingleStreamLoaderOptions(),
+            new ManualProgressTimer(),
+            logger: null
         );
 
         Assert.NotNull(sut);
@@ -226,9 +228,9 @@ public class JsonSingleStreamLoaderTests
             () => new JsonSingleStreamLoader<PersonRecord>
             (
                 new MemoryStream(),
-                new JsonSerializerOptions(),
-                NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance,
-                timer: null!
+                new JsonSingleStreamLoaderOptions(),
+                timer: null!,
+                NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance
             )
         );
     }
@@ -406,8 +408,8 @@ public class JsonSingleStreamLoaderTests
             (
                 stream: null!,
                 TestJsonContext.Default.PersonRecord,
-                NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance,
-                new ManualProgressTimer()
+                new ManualProgressTimer(),
+                NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance
             )
         );
     }
@@ -423,8 +425,8 @@ public class JsonSingleStreamLoaderTests
             (
                 new MemoryStream(),
                 typeInfo: null!,
-                NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance,
-                new ManualProgressTimer()
+                new ManualProgressTimer(),
+                NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance
             )
         );
     }
@@ -438,8 +440,8 @@ public class JsonSingleStreamLoaderTests
         (
             new MemoryStream(),
             TestJsonContext.Default.PersonRecord,
-            logger: null,
-            new ManualProgressTimer()
+            new ManualProgressTimer(),
+            logger: null
         );
 
         Assert.NotNull(sut);
@@ -456,8 +458,8 @@ public class JsonSingleStreamLoaderTests
             (
                 new MemoryStream(),
                 TestJsonContext.Default.PersonRecord,
-                NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance,
-                timer: null!
+                timer: null!,
+                NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance
             )
         );
     }

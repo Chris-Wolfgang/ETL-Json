@@ -8,18 +8,13 @@ using Wolfgang.Etl.TestKit.Xunit;
 namespace Wolfgang.Etl.Json.Tests.Unit;
 
 public class JsonMultiStreamLoaderDryRunContractTests
-    : SupportsDryRunContractTests<JsonMultiStreamLoader<PersonRecord>>
+    : SupportsDryRunContractTests
 {
     private static readonly IReadOnlyList<PersonRecord> SourceItems = new List<PersonRecord>
     {
         new() { FirstName = "Alice", LastName = "Smith", Age = 30 },
         new() { FirstName = "Bob", LastName = "Jones", Age = 25 },
     };
-
-
-
-    protected override JsonMultiStreamLoader<PersonRecord> CreateSut() =>
-        new(_ => new MemoryStream());
 
 
 
@@ -30,10 +25,7 @@ public class JsonMultiStreamLoaderDryRunContractTests
         {
             factoryCalled = true;
             return new MemoryStream();
-        })
-        {
-            IsDryRun = isDryRun,
-        };
+        }, new JsonMultiStreamLoaderOptions { IsDryRun = isDryRun });
 
         await sut.LoadAsync(SourceItems.ToAsyncEnumerable());
         return factoryCalled;

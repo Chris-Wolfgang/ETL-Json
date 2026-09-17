@@ -110,18 +110,55 @@ var loader = new JsonLineLoader<Person>(stream, logger);
 await loader.LoadAsync(items, cancellationToken);
 ```
 
-### Custom serialization options
+### Configuring a stage
 
-All extractors and loaders accept an optional `JsonSerializerOptions`:
+Every stage takes an options record: right after the source on the reflection-based constructors
+(`(source, options, logger)`), and right after the type info on the source-generated ones
+(`(source, typeInfo, options, logger)`). The record carries the stage's own settings, the serializer options,
+and the ones every extractor or loader shares (`ReportingInterval`, `MaximumItemCount`,
+`SkipItemCount`, `ErrorPolicy`), so one object configures the whole stage:
 
 ```csharp
-var options = new JsonSerializerOptions
+var extractor = new JsonLineExtractor<Person>
+(
+    stream,
+    new JsonLineExtractorOptions
+    {
+        EnableCheckpointing = true,
+        MaximumItemCount = 1_000,
+    }
+);
+
+var loader = new JsonLineLoader<Person>(stream, new JsonLineLoaderOptions { IsDryRun = true });
+```
+
+| Stage | Record | Own members |
+|-------|--------|-------------|
+| `JsonLineExtractor<T>` | `JsonLineExtractorOptions` | `SerializerOptions`, `Encoding`, `EnableCheckpointing`, `StartByteOffset` |
+| `JsonSingleStreamExtractor<T>` / `JsonMultiStreamExtractor<T>` | `JsonSingleStreamExtractorOptions` / `JsonMultiStreamExtractorOptions` | `SerializerOptions` |
+| `JsonLineLoader<T>` | `JsonLineLoaderOptions` | `SerializerOptions`, `Encoding`, `IsDryRun` |
+| `JsonSingleStreamLoader<T>` / `JsonMultiStreamLoader<T>` | `JsonSingleStreamLoaderOptions` / `JsonMultiStreamLoaderOptions` | `SerializerOptions`, `IsDryRun` |
+
+A stage constructed without a record keeps every default.
+
+### Custom serialization options
+
+The record's `SerializerOptions` configures the reflection-based serializer. The source-generated constructors
+take a `JsonTypeInfo<T>` instead and reject a record that also sets `SerializerOptions`.
+
+```csharp
+var serializerOptions = new JsonSerializerOptions
 {
     PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
     PropertyNameCaseInsensitive = true,
 };
 
-var extractor = new JsonSingleStreamExtractor<Person>(stream, options, logger);
+var extractor = new JsonSingleStreamExtractor<Person>
+(
+    stream,
+    new JsonSingleStreamExtractorOptions { SerializerOptions = serializerOptions },
+    logger
+);
 ```
 
 ### Source generation (AOT-friendly)

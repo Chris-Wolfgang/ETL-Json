@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 #if NET5_0_OR_GREATER
 using System.Diagnostics.CodeAnalysis;
@@ -59,10 +60,18 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="stream"/> is <c>null</c>.
     /// </exception>
+    /// <remarks>
+    /// Retained for binary compatibility with assemblies compiled before the optional-logger overload
+    /// existed: <c>new JsonSingleStreamExtractor&lt;T&gt;(stream)</c> in such an assembly is bound to this exact signature,
+    /// and removing it would fail at runtime with <see cref="MissingMethodException"/> with no compile-time
+    /// signal. Hidden from IntelliSense; source code binds here too, so nothing changes for callers. New
+    /// code has no reason to name this overload.
+    /// </remarks>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
     [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
 #endif
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public JsonSingleStreamExtractor
     (
         Stream stream
@@ -84,10 +93,18 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     /// <param name="options">The JSON serializer options to use, or <c>null</c> for the default.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="path"/> is <c>null</c>.</exception>
+    /// <remarks>
+    /// Superseded by the overload that takes a <see cref="JsonSingleStreamExtractorOptions"/> record before the serializer options.
+    /// Retained for binary compatibility with assemblies compiled against 0.8.x, which are bound to this exact
+    /// signature; removing it would fail them at runtime with <see cref="MissingMethodException"/> with no
+    /// compile-time signal. Hidden from IntelliSense; source code binds here too, so nothing changes for callers.
+    /// New code passes the record.
+    /// </remarks>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
     [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
 #endif
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public JsonSingleStreamExtractor
     (
         string path,
@@ -113,9 +130,12 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     /// with diagnostic logging.
     /// </summary>
     /// <param name="stream">The stream containing a JSON array to read from.</param>
-    /// <param name="logger">The logger instance for diagnostic output.</param>
+    /// <param name="logger">
+    /// An optional logger instance for diagnostic output. When <c>null</c> — or omitted —
+    /// <see cref="NullLogger.Instance"/> is used and logging is disabled.
+    /// </param>
     /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="stream"/> or <paramref name="logger"/> is <c>null</c>.
+    /// Thrown when <paramref name="stream"/> is <c>null</c>.
     /// </exception>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
@@ -124,11 +144,11 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     public JsonSingleStreamExtractor
     (
         Stream stream,
-        ILogger<JsonSingleStreamExtractor<TRecord>> logger
+        ILogger<JsonSingleStreamExtractor<TRecord>>? logger = null
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _logger = logger ?? (ILogger)NullLogger.Instance;
         _options = null;
     }
 
@@ -144,10 +164,18 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="stream"/> is <c>null</c>.
     /// </exception>
+    /// <remarks>
+    /// Superseded by the overload that takes a <see cref="JsonSingleStreamExtractorOptions"/> record before the serializer options.
+    /// Retained for binary compatibility with assemblies compiled against 0.8.x, which are bound to this exact
+    /// signature; removing it would fail them at runtime with <see cref="MissingMethodException"/> with no
+    /// compile-time signal. Hidden from IntelliSense; source code binds here too, so nothing changes for callers.
+    /// New code passes the record.
+    /// </remarks>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
     [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
 #endif
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public JsonSingleStreamExtractor
     (
         Stream stream,
@@ -163,13 +191,132 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
 
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="JsonSingleStreamExtractor{TRecord}"/> class configured through an options record.
+    /// </summary>
+    /// <param name="stream">The stream containing a single JSON array to read from.</param>
+    /// <param name="options">The construction-time configuration for this stage, including the settings inherited from <see cref="ExtractorOptions"/>.</param>
+    /// <param name="logger">An optional logger; <see langword="null"/> disables logging.</param>
+    /// <exception cref="ArgumentNullException">A required argument is <see langword="null"/>.</exception>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+    [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
+    public JsonSingleStreamExtractor
+    (
+        Stream stream,
+        JsonSingleStreamExtractorOptions options,
+        ILogger<JsonSingleStreamExtractor<TRecord>>? logger = null
+    )
+        : base(options)
+    {
+        _stream = stream ?? throw new ArgumentNullException(nameof(stream));
+        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
+        _logger = logger ?? (ILogger)NullLogger.Instance;
+        ApplyOptions(options);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonSingleStreamExtractor{TRecord}"/> class configured through an options record and a source-generated <see cref="JsonTypeInfo{TRecord}"/>.
+    /// </summary>
+    /// <param name="stream">The stream containing a single JSON array to read from.</param>
+    /// <param name="typeInfo">The source-generated type information used to deserialize <typeparamref name="TRecord"/>; it carries its own serializer options.</param>
+    /// <param name="options">The construction-time configuration for this stage, including the settings inherited from <see cref="ExtractorOptions"/>.</param>
+    /// <param name="logger">An optional logger; <see langword="null"/> disables logging.</param>
+    /// <exception cref="ArgumentNullException">A required argument is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentException"><paramref name="options"/> sets <see cref="JsonSingleStreamExtractorOptions.SerializerOptions"/>, which cannot be combined with a <paramref name="typeInfo"/>; the type info carries its own serializer options.</exception>
+    public JsonSingleStreamExtractor
+    (
+        Stream stream,
+        JsonTypeInfo<TRecord> typeInfo,
+        JsonSingleStreamExtractorOptions options,
+        ILogger<JsonSingleStreamExtractor<TRecord>>? logger = null
+    )
+        : base(options)
+    {
+        RejectSerializerOptions(options);
+        _stream = stream ?? throw new ArgumentNullException(nameof(stream));
+        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _logger = logger ?? (ILogger)NullLogger.Instance;
+        ApplyOptions(options);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonSingleStreamExtractor{TRecord}"/> class configured through an options record.
+    /// </summary>
+    /// <param name="path">The path of the file to read; it is opened for reading and closed with the extractor.</param>
+    /// <param name="options">The construction-time configuration for this stage, including the settings inherited from <see cref="ExtractorOptions"/>.</param>
+    /// <param name="logger">An optional logger; <see langword="null"/> disables logging.</param>
+    /// <exception cref="ArgumentNullException">A required argument is <see langword="null"/>.</exception>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+    [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
+    public JsonSingleStreamExtractor
+    (
+        string path,
+        JsonSingleStreamExtractorOptions options,
+        ILogger<JsonSingleStreamExtractor<TRecord>>? logger = null
+    )
+        : base(options)
+    {
+        if (path is null)
+        {
+            throw new ArgumentNullException(nameof(path));
+        }
+
+        _stream = File.OpenRead(path);
+        _ownsStream = true;
+        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
+        _logger = logger ?? (ILogger)NullLogger.Instance;
+        ApplyOptions(options);
+    }
+
+
+
+    /// <summary>
+    /// Rejects a record that sets <see cref="JsonSingleStreamExtractorOptions.SerializerOptions"/> when a source-generated type info is
+    /// supplied: the type info carries its own serializer options, so the record's would be ignored, and an ignored
+    /// setting is worse than an error.
+    /// </summary>
+    /// <param name="options">The record to check.</param>
+    /// <exception cref="ArgumentException">The record sets <see cref="JsonSingleStreamExtractorOptions.SerializerOptions"/>.</exception>
+    private static void RejectSerializerOptions(JsonSingleStreamExtractorOptions options)
+    {
+        if (options?.SerializerOptions is not null)
+        {
+            throw new ArgumentException
+            (
+                "SerializerOptions cannot be combined with a JsonTypeInfo; the type info carries its own serializer options.",
+                nameof(options)
+            );
+        }
+    }
+
+
+
+    /// <summary>
+    /// Copies the stage-specific settings from <paramref name="options"/> onto this instance; the inherited
+    /// settings were applied by the <see cref="ExtractorBase{TSource, TProgress}"/> constructor.
+    /// </summary>
+    /// <exception cref="ArgumentNullException"><paramref name="options"/> is <see langword="null"/>.</exception>
+    private void ApplyOptions(JsonSingleStreamExtractorOptions options)
+    {
+        if (options is null)
+        {
+            throw new ArgumentNullException(nameof(options));
+        }
+    }
+
+
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="JsonSingleStreamExtractor{TRecord}"/> class
     /// with an injected progress timer for testing.
     /// </summary>
     /// <param name="stream">The stream containing a JSON array to read from.</param>
-    /// <param name="options">The JSON serializer options to use for deserialization, or <c>null</c> for the serializer default.</param>
-    /// <param name="logger">An optional logger instance for diagnostic output.</param>
+    /// <param name="options">The construction-time configuration, including <see cref="JsonSingleStreamExtractorOptions.SerializerOptions"/>.</param>
     /// <param name="timer">The progress timer to inject.</param>
+    /// <param name="logger">An optional logger instance for diagnostic output.</param>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
     [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
@@ -177,15 +324,17 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     internal JsonSingleStreamExtractor
     (
         Stream stream,
-        JsonSerializerOptions options,
-        ILogger? logger,
-        IProgressTimer timer
+        JsonSingleStreamExtractorOptions options,
+        IProgressTimer timer,
+        ILogger? logger = null
     )
+        : base(options)
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
         _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
+        ApplyOptions(options);
     }
 
 
@@ -220,14 +369,14 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     /// </summary>
     /// <param name="stream">The stream containing a JSON array to read from.</param>
     /// <param name="typeInfo">The source-generated type metadata for <typeparamref name="TRecord"/>.</param>
-    /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <param name="timer">The progress timer to inject.</param>
+    /// <param name="logger">An optional logger instance for diagnostic output.</param>
     internal JsonSingleStreamExtractor
     (
         Stream stream,
         JsonTypeInfo<TRecord> typeInfo,
-        ILogger? logger,
-        IProgressTimer timer
+        IProgressTimer timer,
+        ILogger? logger = null
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));

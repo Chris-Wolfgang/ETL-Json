@@ -54,9 +54,9 @@ public class JsonMultiStreamLoaderTests
         return new JsonMultiStreamLoader<PersonRecord>
         (
             _ => new MemoryStream(),
-            new JsonSerializerOptions(),
-            NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance,
-            timer
+            new JsonMultiStreamLoaderOptions(),
+            timer,
+            NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
         );
     }
 
@@ -221,16 +221,18 @@ public class JsonMultiStreamLoaderTests
 
 
     [Fact]
-    public void Constructor_with_logger_when_logger_is_null_throws_ArgumentNullException()
+    public void Constructor_with_logger_when_logger_is_null_does_not_throw()
     {
-        Assert.Throws<ArgumentNullException>
+        // logger is an optional trailing parameter: null means "no logging" rather than an
+        // argument error. The fallback to NullLogger.Instance is private state, so what this
+        // fact can assert is that construction succeeds.
+        var sut = new JsonMultiStreamLoader<PersonRecord>
         (
-            () => new JsonMultiStreamLoader<PersonRecord>
-            (
-                _ => new MemoryStream(),
-                logger: null!
-            )
+            _ => new MemoryStream(),
+            logger: null
         );
+
+        Assert.NotNull(sut);
     }
 
 
@@ -256,7 +258,7 @@ public class JsonMultiStreamLoaderTests
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
                 _ => new MemoryStream(),
-                options: null,
+                (JsonSerializerOptions?)null,
                 NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
         );
 
@@ -273,9 +275,9 @@ public class JsonMultiStreamLoaderTests
             () => new JsonMultiStreamLoader<PersonRecord>
             (
                 (Func<PersonRecord, Stream>)null!,
-                new JsonSerializerOptions(),
-                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance,
-                new ManualProgressTimer()
+                new JsonMultiStreamLoaderOptions(),
+                new ManualProgressTimer(),
+                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
             )
         );
     }
@@ -288,9 +290,9 @@ public class JsonMultiStreamLoaderTests
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
             _ => new MemoryStream(),
-            new JsonSerializerOptions(),
-            logger: null,
-            new ManualProgressTimer()
+            new JsonMultiStreamLoaderOptions(),
+            new ManualProgressTimer(),
+            logger: null
         );
 
         Assert.NotNull(sut);
@@ -306,9 +308,9 @@ public class JsonMultiStreamLoaderTests
             () => new JsonMultiStreamLoader<PersonRecord>
             (
                 _ => new MemoryStream(),
-                new JsonSerializerOptions(),
-                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance,
-                null!
+                new JsonMultiStreamLoaderOptions(),
+                null!,
+                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
             )
         );
     }
@@ -497,8 +499,8 @@ public class JsonMultiStreamLoaderTests
             (
                 streamFactory: null!,
                 TestJsonContext.Default.PersonRecord,
-                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance,
-                new ManualProgressTimer()
+                new ManualProgressTimer(),
+                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
             )
         );
     }
@@ -514,8 +516,8 @@ public class JsonMultiStreamLoaderTests
             (
                 _ => new MemoryStream(),
                 typeInfo: null!,
-                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance,
-                new ManualProgressTimer()
+                new ManualProgressTimer(),
+                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
             )
         );
     }
@@ -529,8 +531,8 @@ public class JsonMultiStreamLoaderTests
         (
             _ => new MemoryStream(),
             TestJsonContext.Default.PersonRecord,
-            logger: null,
-            new ManualProgressTimer()
+            new ManualProgressTimer(),
+            logger: null
         );
 
         Assert.NotNull(sut);
@@ -547,8 +549,8 @@ public class JsonMultiStreamLoaderTests
             (
                 _ => new MemoryStream(),
                 TestJsonContext.Default.PersonRecord,
-                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance,
-                timer: null!
+                timer: null!,
+                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
             )
         );
     }
@@ -728,16 +730,18 @@ public class JsonMultiStreamLoaderTests
 
 
     [Fact]
-    public void Constructor_with_destinationFactory_and_logger_when_logger_is_null_throws_ArgumentNullException()
+    public void Constructor_with_destinationFactory_and_logger_when_logger_is_null_does_not_throw()
     {
-        Assert.Throws<ArgumentNullException>
+        // logger is an optional trailing parameter: null means "no logging" rather than an
+        // argument error. The fallback to NullLogger.Instance is private state, so what this
+        // fact can assert is that construction succeeds.
+        var sut = new JsonMultiStreamLoader<PersonRecord>
         (
-            () => new JsonMultiStreamLoader<PersonRecord>
-            (
-                _ => new JsonNamedDestination(new MemoryStream()),
-                logger: null!
-            )
+            _ => new JsonNamedDestination(new MemoryStream()),
+            logger: null
         );
+
+        Assert.NotNull(sut);
     }
 
 
@@ -777,7 +781,7 @@ public class JsonMultiStreamLoaderTests
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
                 _ => new JsonNamedDestination(new MemoryStream()),
-                options: null
+                (JsonSerializerOptions?)null
         );
 
         Assert.NotNull(sut);
@@ -807,9 +811,9 @@ public class JsonMultiStreamLoaderTests
             () => new JsonMultiStreamLoader<PersonRecord>
             (
                 (Func<PersonRecord, JsonNamedDestination>)null!,
-                new JsonSerializerOptions(),
-                logger: null,
-                new ManualProgressTimer()
+                new JsonMultiStreamLoaderOptions(),
+                new ManualProgressTimer(),
+                logger: null
             )
         );
     }
@@ -824,9 +828,9 @@ public class JsonMultiStreamLoaderTests
             () => new JsonMultiStreamLoader<PersonRecord>
             (
                 _ => new JsonNamedDestination(new MemoryStream()),
-                new JsonSerializerOptions(),
-                logger: null,
-                null!
+                new JsonMultiStreamLoaderOptions(),
+                null!,
+                logger: null
             )
         );
     }
@@ -839,9 +843,9 @@ public class JsonMultiStreamLoaderTests
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
             _ => new JsonNamedDestination(new MemoryStream()),
-            new JsonSerializerOptions(),
-            logger: null,
-            new ManualProgressTimer()
+            new JsonMultiStreamLoaderOptions(),
+            new ManualProgressTimer(),
+            logger: null
         );
 
         Assert.NotNull(sut);

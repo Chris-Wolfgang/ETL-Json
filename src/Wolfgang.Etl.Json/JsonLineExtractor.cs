@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 #if NET5_0_OR_GREATER
 using System.Diagnostics.CodeAnalysis;
@@ -58,7 +59,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// When <see langword="null"/> (the default), the encoding is inferred from the
     /// stream's byte-order mark (BOM), falling back to UTF-8.
     /// </summary>
-    public Encoding? Encoding { get; set; }
+    public Encoding? Encoding { get; [Obsolete("Configure Encoding through JsonLineExtractorOptions passed to the constructor instead. The setter will be removed in a later release.")] set; }
 
 
 
@@ -74,7 +75,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// prior run via <see cref="StartByteOffset"/> does not by itself require this flag — set it only
     /// when you also need to capture new checkpoints during the resumed run.
     /// </remarks>
-    public bool EnableCheckpointing { get; set; }
+    public bool EnableCheckpointing { get; [Obsolete("Configure EnableCheckpointing through JsonLineExtractorOptions passed to the constructor instead. The setter will be removed in a later release.")] set; }
 
 
 
@@ -84,7 +85,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// The stream must be seekable when this value is greater than zero.
     /// Default is <c>0</c> (start of stream).
     /// </summary>
-    public long StartByteOffset { get; set; }
+    public long StartByteOffset { get; [Obsolete("Configure StartByteOffset through JsonLineExtractorOptions passed to the constructor instead. The setter will be removed in a later release.")] set; }
 
 
 
@@ -110,10 +111,18 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="stream"/> is <c>null</c>.
     /// </exception>
+    /// <remarks>
+    /// Retained for binary compatibility with assemblies compiled before the optional-logger overload
+    /// existed: <c>new JsonLineExtractor&lt;T&gt;(stream)</c> in such an assembly is bound to this exact signature,
+    /// and removing it would fail at runtime with <see cref="MissingMethodException"/> with no compile-time
+    /// signal. Hidden from IntelliSense; source code binds here too, so nothing changes for callers. New
+    /// code has no reason to name this overload.
+    /// </remarks>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
     [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
 #endif
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public JsonLineExtractor
     (
         Stream stream
@@ -135,10 +144,18 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// <param name="options">The JSON serializer options to use, or <c>null</c> for the default.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="path"/> is <c>null</c>.</exception>
+    /// <remarks>
+    /// Superseded by the overload that takes a <see cref="JsonLineExtractorOptions"/> record before the serializer options.
+    /// Retained for binary compatibility with assemblies compiled against 0.8.x, which are bound to this exact
+    /// signature; removing it would fail them at runtime with <see cref="MissingMethodException"/> with no
+    /// compile-time signal. Hidden from IntelliSense; source code binds here too, so nothing changes for callers.
+    /// New code passes the record.
+    /// </remarks>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
     [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
 #endif
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public JsonLineExtractor
     (
         string path,
@@ -164,9 +181,12 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// with diagnostic logging.
     /// </summary>
     /// <param name="stream">The stream containing JSONL data to read from.</param>
-    /// <param name="logger">The logger instance for diagnostic output.</param>
+    /// <param name="logger">
+    /// An optional logger instance for diagnostic output. When <c>null</c> — or omitted —
+    /// <see cref="NullLogger.Instance"/> is used and logging is disabled.
+    /// </param>
     /// <exception cref="ArgumentNullException">
-    /// Thrown when <paramref name="stream"/> or <paramref name="logger"/> is <c>null</c>.
+    /// Thrown when <paramref name="stream"/> is <c>null</c>.
     /// </exception>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
@@ -175,11 +195,11 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     public JsonLineExtractor
     (
         Stream stream,
-        ILogger<JsonLineExtractor<TRecord>> logger
+        ILogger<JsonLineExtractor<TRecord>>? logger = null
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _logger = logger ?? (ILogger)NullLogger.Instance;
         _options = null;
     }
 
@@ -195,10 +215,18 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="stream"/> is <c>null</c>.
     /// </exception>
+    /// <remarks>
+    /// Superseded by the overload that takes a <see cref="JsonLineExtractorOptions"/> record before the serializer options.
+    /// Retained for binary compatibility with assemblies compiled against 0.8.x, which are bound to this exact
+    /// signature; removing it would fail them at runtime with <see cref="MissingMethodException"/> with no
+    /// compile-time signal. Hidden from IntelliSense; source code binds here too, so nothing changes for callers.
+    /// New code passes the record.
+    /// </remarks>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
     [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
 #endif
+    [EditorBrowsable(EditorBrowsableState.Never)]
     public JsonLineExtractor
     (
         Stream stream,
@@ -214,13 +242,138 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="JsonLineExtractor{TRecord}"/> class configured through an options record.
+    /// </summary>
+    /// <param name="stream">The stream to read JSON Lines from.</param>
+    /// <param name="options">The construction-time configuration for this stage, including the settings inherited from <see cref="ExtractorOptions"/>.</param>
+    /// <param name="logger">An optional logger; <see langword="null"/> disables logging.</param>
+    /// <exception cref="ArgumentNullException">A required argument is <see langword="null"/>.</exception>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+    [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
+    public JsonLineExtractor
+    (
+        Stream stream,
+        JsonLineExtractorOptions options,
+        ILogger<JsonLineExtractor<TRecord>>? logger = null
+    )
+        : base(options)
+    {
+        _stream = stream ?? throw new ArgumentNullException(nameof(stream));
+        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
+        _logger = logger ?? (ILogger)NullLogger.Instance;
+        ApplyOptions(options);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonLineExtractor{TRecord}"/> class configured through an options record and a source-generated <see cref="JsonTypeInfo{TRecord}"/>.
+    /// </summary>
+    /// <param name="stream">The stream to read JSON Lines from.</param>
+    /// <param name="typeInfo">The source-generated type information used to deserialize <typeparamref name="TRecord"/>; it carries its own serializer options.</param>
+    /// <param name="options">The construction-time configuration for this stage, including the settings inherited from <see cref="ExtractorOptions"/>.</param>
+    /// <param name="logger">An optional logger; <see langword="null"/> disables logging.</param>
+    /// <exception cref="ArgumentNullException">A required argument is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentException"><paramref name="options"/> sets <see cref="JsonLineExtractorOptions.SerializerOptions"/>, which cannot be combined with a <paramref name="typeInfo"/>; the type info carries its own serializer options.</exception>
+    public JsonLineExtractor
+    (
+        Stream stream,
+        JsonTypeInfo<TRecord> typeInfo,
+        JsonLineExtractorOptions options,
+        ILogger<JsonLineExtractor<TRecord>>? logger = null
+    )
+        : base(options)
+    {
+        RejectSerializerOptions(options);
+        _stream = stream ?? throw new ArgumentNullException(nameof(stream));
+        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _logger = logger ?? (ILogger)NullLogger.Instance;
+        ApplyOptions(options);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonLineExtractor{TRecord}"/> class configured through an options record.
+    /// </summary>
+    /// <param name="path">The path of the file to read; it is opened for reading and closed with the extractor.</param>
+    /// <param name="options">The construction-time configuration for this stage, including the settings inherited from <see cref="ExtractorOptions"/>.</param>
+    /// <param name="logger">An optional logger; <see langword="null"/> disables logging.</param>
+    /// <exception cref="ArgumentNullException">A required argument is <see langword="null"/>.</exception>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+    [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
+    public JsonLineExtractor
+    (
+        string path,
+        JsonLineExtractorOptions options,
+        ILogger<JsonLineExtractor<TRecord>>? logger = null
+    )
+        : base(options)
+    {
+        if (path is null)
+        {
+            throw new ArgumentNullException(nameof(path));
+        }
+
+        _stream = File.OpenRead(path);
+        _ownsStream = true;
+        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
+        _logger = logger ?? (ILogger)NullLogger.Instance;
+        ApplyOptions(options);
+    }
+
+
+
+    /// <summary>
+    /// Rejects a record that sets <see cref="JsonLineExtractorOptions.SerializerOptions"/> when a source-generated type info is
+    /// supplied: the type info carries its own serializer options, so the record's would be ignored, and an ignored
+    /// setting is worse than an error.
+    /// </summary>
+    /// <param name="options">The record to check.</param>
+    /// <exception cref="ArgumentException">The record sets <see cref="JsonLineExtractorOptions.SerializerOptions"/>.</exception>
+    private static void RejectSerializerOptions(JsonLineExtractorOptions options)
+    {
+        if (options?.SerializerOptions is not null)
+        {
+            throw new ArgumentException
+            (
+                "SerializerOptions cannot be combined with a JsonTypeInfo; the type info carries its own serializer options.",
+                nameof(options)
+            );
+        }
+    }
+
+
+
+    /// <summary>
+    /// Copies the stage-specific settings from <paramref name="options"/> onto this instance; the inherited
+    /// settings were applied by the <see cref="ExtractorBase{TSource, TProgress}"/> constructor.
+    /// </summary>
+    /// <exception cref="ArgumentNullException"><paramref name="options"/> is <see langword="null"/>.</exception>
+#pragma warning disable CS0618 // ApplyOptions is the supported replacement for these setters; it necessarily writes them.
+    private void ApplyOptions(JsonLineExtractorOptions options)
+    {
+        if (options is null)
+        {
+            throw new ArgumentNullException(nameof(options));
+        }
+
+        Encoding = options.Encoding;
+        EnableCheckpointing = options.EnableCheckpointing;
+        StartByteOffset = options.StartByteOffset;
+    }
+#pragma warning restore CS0618
+
+
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="JsonLineExtractor{TRecord}"/> class
     /// with an injected progress timer for testing.
     /// </summary>
     /// <param name="stream">The stream containing JSONL data to read from.</param>
-    /// <param name="options">The JSON serializer options to use for deserialization, or <c>null</c> for the serializer default.</param>
-    /// <param name="logger">An optional logger instance for diagnostic output.</param>
+    /// <param name="options">The construction-time configuration, including <see cref="JsonLineExtractorOptions.SerializerOptions"/>.</param>
     /// <param name="timer">The progress timer to inject.</param>
+    /// <param name="logger">An optional logger instance for diagnostic output.</param>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
     [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
@@ -228,15 +381,17 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     internal JsonLineExtractor
     (
         Stream stream,
-        JsonSerializerOptions options,
-        ILogger? logger,
-        IProgressTimer timer
+        JsonLineExtractorOptions options,
+        IProgressTimer timer,
+        ILogger? logger = null
     )
+        : base(options)
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _options = options ?? throw new ArgumentNullException(nameof(options));
+        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
         _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
+        ApplyOptions(options);
     }
 
 
@@ -271,14 +426,14 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// </summary>
     /// <param name="stream">The stream containing JSONL data to read from.</param>
     /// <param name="typeInfo">The source-generated type metadata for <typeparamref name="TRecord"/>.</param>
-    /// <param name="logger">An optional logger instance for diagnostic output.</param>
     /// <param name="timer">The progress timer to inject.</param>
+    /// <param name="logger">An optional logger instance for diagnostic output.</param>
     internal JsonLineExtractor
     (
         Stream stream,
         JsonTypeInfo<TRecord> typeInfo,
-        ILogger? logger,
-        IProgressTimer timer
+        IProgressTimer timer,
+        ILogger? logger = null
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
