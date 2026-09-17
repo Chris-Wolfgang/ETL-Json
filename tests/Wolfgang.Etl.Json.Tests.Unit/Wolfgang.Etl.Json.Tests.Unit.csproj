@@ -18,10 +18,10 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.11" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.12" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
     <PackageReference Include="System.Linq.Async" Version="7.0.1" />
-    <PackageReference Include="System.Text.Json" Version="10.0.11" />
+    <PackageReference Include="System.Text.Json" Version="10.0.12" />
     <PackageReference Include="Wolfgang.Etl.TestKit" Version="0.24.0" />
     <PackageReference Include="Wolfgang.Etl.TestKit.Xunit" Version="0.24.0" />
     <PackageReference Include="Wolfgang.Etl.ErrorPolicies" Version="0.24.0" />
