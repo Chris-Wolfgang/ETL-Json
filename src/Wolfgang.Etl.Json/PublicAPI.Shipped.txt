@@ -182,3 +182,26 @@ static Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions.operator !=(Wolfgang.E
 static Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions.operator ==(Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions? left, Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions? right) -> bool
 static Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions.operator !=(Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions? left, Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions? right) -> bool
 static Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions.operator ==(Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions? left, Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions? right) -> bool
+Wolfgang.Etl.Json.JsonNamedDestination.<Clone>$() -> Wolfgang.Etl.Json.JsonNamedDestination!
+Wolfgang.Etl.Json.JsonNamedDestination.Deconstruct(out System.IO.Stream! Stream, out string? Name) -> void
+Wolfgang.Etl.Json.JsonNamedDestination.Equals(Wolfgang.Etl.Json.JsonNamedDestination? other) -> bool
+Wolfgang.Etl.Json.JsonNamedStream.<Clone>$() -> Wolfgang.Etl.Json.JsonNamedStream!
+Wolfgang.Etl.Json.JsonNamedStream.Deconstruct(out System.IO.Stream! Stream, out string? Name) -> void
+Wolfgang.Etl.Json.JsonNamedStream.Equals(Wolfgang.Etl.Json.JsonNamedStream? other) -> bool
+Wolfgang.Etl.Json.JsonReport.JsonReport(Wolfgang.Etl.Json.JsonReport! original) -> void
+override Wolfgang.Etl.Json.JsonNamedDestination.Equals(object? obj) -> bool
+override Wolfgang.Etl.Json.JsonNamedDestination.GetHashCode() -> int
+override Wolfgang.Etl.Json.JsonNamedStream.Equals(object? obj) -> bool
+override Wolfgang.Etl.Json.JsonNamedStream.GetHashCode() -> int
+override Wolfgang.Etl.Json.JsonReport.Equals(object? obj) -> bool
+override Wolfgang.Etl.Json.JsonReport.GetHashCode() -> int
+override Wolfgang.Etl.Json.JsonReport.PrintMembers(System.Text.StringBuilder! builder) -> bool
+override Wolfgang.Etl.Json.JsonReport.ToString() -> string!
+override sealed Wolfgang.Etl.Json.JsonReport.Equals(Wolfgang.Etl.Abstractions.Report? other) -> bool
+static Wolfgang.Etl.Json.JsonNamedDestination.operator !=(Wolfgang.Etl.Json.JsonNamedDestination? left, Wolfgang.Etl.Json.JsonNamedDestination? right) -> bool
+static Wolfgang.Etl.Json.JsonNamedDestination.operator ==(Wolfgang.Etl.Json.JsonNamedDestination? left, Wolfgang.Etl.Json.JsonNamedDestination? right) -> bool
+static Wolfgang.Etl.Json.JsonNamedStream.operator !=(Wolfgang.Etl.Json.JsonNamedStream? left, Wolfgang.Etl.Json.JsonNamedStream? right) -> bool
+static Wolfgang.Etl.Json.JsonNamedStream.operator ==(Wolfgang.Etl.Json.JsonNamedStream? left, Wolfgang.Etl.Json.JsonNamedStream? right) -> bool
+static Wolfgang.Etl.Json.JsonReport.operator !=(Wolfgang.Etl.Json.JsonReport? left, Wolfgang.Etl.Json.JsonReport? right) -> bool
+static Wolfgang.Etl.Json.JsonReport.operator ==(Wolfgang.Etl.Json.JsonReport? left, Wolfgang.Etl.Json.JsonReport? right) -> bool
+virtual Wolfgang.Etl.Json.JsonReport.Equals(Wolfgang.Etl.Json.JsonReport? other) -> bool

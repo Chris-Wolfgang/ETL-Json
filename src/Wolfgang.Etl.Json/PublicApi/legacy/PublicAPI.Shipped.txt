@@ -1,0 +1,8 @@
+#nullable enable
+override Wolfgang.Etl.Json.JsonLineExtractorOptions.<Clone>$() -> Wolfgang.Etl.Abstractions.ExtractorOptions!
+override Wolfgang.Etl.Json.JsonLineLoaderOptions.<Clone>$() -> Wolfgang.Etl.Abstractions.LoaderOptions!
+override Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions.<Clone>$() -> Wolfgang.Etl.Abstractions.ExtractorOptions!
+override Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions.<Clone>$() -> Wolfgang.Etl.Abstractions.LoaderOptions!
+override Wolfgang.Etl.Json.JsonReport.<Clone>$() -> Wolfgang.Etl.Abstractions.Report!
+override Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions.<Clone>$() -> Wolfgang.Etl.Abstractions.ExtractorOptions!
+override Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions.<Clone>$() -> Wolfgang.Etl.Abstractions.LoaderOptions!
