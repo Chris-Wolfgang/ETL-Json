@@ -136,7 +136,16 @@ static async Task MultiStreamExample()
 
     // Create streams from the simulated files
     var streams = jsonFiles.Values.Select(data => (Stream)new MemoryStream(data));
-    var extractor = new JsonMultiStreamExtractor<Person>(streams);
+    // The record carries the serializer options and the shared settings (ReportingInterval here).
+    var extractor = new JsonMultiStreamExtractor<Person>
+    (
+        streams,
+        new JsonMultiStreamExtractorOptions
+        {
+            SerializerOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true },
+            ReportingInterval = 1,
+        }
+    );
 
     Console.WriteLine("Extracted items:");
     await foreach (var person in extractor.ExtractAsync())
@@ -171,6 +180,10 @@ static async Task MultiStreamLoaderExample()
             var ms = new MemoryStream();
             files[fileName] = ms;
             return ms;
+        },
+        new JsonMultiStreamLoaderOptions
+        {
+            SerializerOptions = new JsonSerializerOptions { WriteIndented = true },
         }
     );
 

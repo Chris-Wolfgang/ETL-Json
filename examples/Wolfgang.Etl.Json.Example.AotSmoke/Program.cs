@@ -92,7 +92,8 @@ static async Task RunMultiStreamRoundtrip()
         .Select((s, i) => new JsonNamedStream(s, $"person-{i}.json"))
         .ToList();
 
-    var extractor = new JsonMultiStreamExtractor<AotPerson>(streams, typeInfo);
+    // With a JsonTypeInfo the record carries only the shared settings; SerializerOptions stays null.
+    var extractor = new JsonMultiStreamExtractor<AotPerson>(streams, typeInfo, new JsonMultiStreamExtractorOptions { ReportingInterval = 1 });
     var extracted = await extractor.ExtractAsync().ToListAsync();
 
     if (extracted.Count != people.Count)
