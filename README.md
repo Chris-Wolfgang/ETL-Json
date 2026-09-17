@@ -68,8 +68,18 @@ await loader.LoadAsync(items, cancellationToken);
 ### Extract from multiple files (one object per file)
 
 ```csharp
-var streams = Directory.GetFiles("data/", "*.json").Select(File.OpenRead);
-var extractor = new JsonMultiStreamExtractor<Person>(streams, logger);
+// Lazy: each file is opened when the extractor reaches it and disposed after it is read.
+var streams = Directory.EnumerateFiles("data/", "*.json").Select(File.OpenRead);
+var extractor = new JsonMultiStreamExtractor<Person>
+(
+    streams,
+    new JsonMultiStreamExtractorOptions
+    {
+        SerializerOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true },
+        MaximumItemCount = 1_000,
+    },
+    logger
+);
 
 await foreach (var person in extractor.ExtractAsync(cancellationToken))
 {
@@ -83,6 +93,11 @@ await foreach (var person in extractor.ExtractAsync(cancellationToken))
 var loader = new JsonMultiStreamLoader<Person>
 (
     person => File.Create($"output/{person.Id}.json"),
+    new JsonMultiStreamLoaderOptions
+    {
+        SerializerOptions = new JsonSerializerOptions { WriteIndented = true },
+        IsDryRun = false,       // true runs the pipeline but creates no files
+    },
     logger
 );
 
