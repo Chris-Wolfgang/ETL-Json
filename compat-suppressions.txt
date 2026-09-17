@@ -15,6 +15,8 @@
 # release that introduced them is no longer the comparison baseline, so this file
 # never accumulates rules that quietly match something they were not written for.
 #
-# Currently empty: the 0.6.0 (#252) error-surface removals were pruned once the
-# baseline advanced to 0.8.0. Verified by running the script with an empty
-# suppressions file — 0 breaks across all five TFMs.
+# 0.9.0 (ADR-0009, Abstractions 0.24): the three loaders no longer implement ISupportDryRun,
+# which 0.24 removed; IsDryRun is configured through each loader's options record. One substring
+# covers JsonLineLoader, JsonSingleStreamLoader and JsonMultiStreamLoader on every TFM (CP0008).
+# Shelf life: until 0.9.0 is the comparison baseline.
+does not implement interface 'Wolfgang.Etl.Abstractions.ISupportDryRun'
