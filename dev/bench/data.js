@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1789499332182,
+  "lastUpdate": 1789605420512,
   "repoUrl": "https://github.com/Chris-Wolfgang/ETL-Json",
   "entries": {
     "BenchmarkDotNet": [
@@ -4050,6 +4050,156 @@ window.BENCHMARK_DATA = {
             "value": 409122.30061848956,
             "unit": "ns",
             "range": "± 1222.4954130637948"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "210299580+Chris-Wolfgang@users.noreply.github.com",
+            "name": "Chris Wolfgang",
+            "username": "Chris-Wolfgang"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "51ef1f3b1b2409a91aeb9359f87c59a68807c23d",
+          "message": "Release v0.9.0 — options records with nested SerializerOptions inherit the Abstractions 0.24 base records; 7 setters deprecated; superseded constructors hidden (#318)\n\n* feat: make logger an optional trailing ctor parameter, defaulting to NullLogger\n\nAligns all six extractor/loader types with the fleet-wide constructor\nconvention (logger always last, always optional) already followed by\nEtl-DbClient.\n\nEight (source, ILogger<T> logger) constructors become\n(source, ILogger<T>? logger = null), across JsonLineExtractor,\nJsonLineLoader, JsonSingleStreamExtractor, JsonSingleStreamLoader,\nJsonMultiStreamExtractor (stream + named-source forms) and\nJsonMultiStreamLoader (stream-factory + named-destination forms).\n\nnull (or omitted) now resolves to NullLogger.Instance instead of throwing\nArgumentNullException.\n\nNot a breaking change: each parameter list is unchanged, so the emitted\nsignatures are identical. Release build with TreatWarningsAsErrors is clean and\nPackageValidation passes, so the 8 PublicAPI.Shipped.txt entries were corrected\nin place rather than recorded as an add/remove pair.\n\nNo overload became ambiguous: the one-argument (source) constructors still win\nresolution outright because all of their parameters have a corresponding\nargument, while the two-argument form now requires default substitution.\n\nThe JsonTypeInfo<TRecord> overloads are untouched - they are a separate\nAOT-safe family with a different trim posture, not redundant.\n\nTests: the eight tests asserting a null logger throws now assert the NullLogger\ncontract. 489 unit + 12 integration + 7 docs tests pass in Release with\nTreatWarningsAsErrors.\n\nRefs Chris-Wolfgang/ETL-Json#266\n\nCo-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>\n\n* chore: put the logger last on the internal test-injection ctors\n\nApplies Rule 6 of the fleet constructor standard: the logger is the final\nparameter on EVERY constructor, internal ones included.\n\n  internal Json*(…, options, ILogger? logger, IProgressTimer timer)\n    -> internal Json*(…, options, IProgressTimer timer, ILogger? logger = null)\n\nCovers all six types - JsonLineExtractor, JsonLineLoader,\nJsonSingleStreamExtractor, JsonSingleStreamLoader, JsonMultiStreamExtractor and\nJsonMultiStreamLoader - across both their JsonSerializerOptions and\nJsonTypeInfo internal overloads.\n\nInternal-only: no public API change, no PublicAPI entry, no consumer impact and\nnothing to deprecate. Test call sites updated, including the\n\"when_timer_is_null_throws\" tests where the timer is passed as a bare null! and\ntherefore had to be identified by position rather than name.\n\n489 unit + 12 integration + 7 docs tests pass in Release with\nTreatWarningsAsErrors.\n\nCo-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>\n\n* fix(review): #302 — honest names for the null-logger tests; hide the eight superseded single-argument ctors\n\nCopilot (x6): the nine Constructor_*_when_logger_is_null_uses_NullLogger\nfacts asserted only that construction succeeded — the NullLogger fallback\nis private state they cannot observe. Renamed to *_does_not_throw and the\ncomment says what the fact can assert.\n\nChris's threads on JsonLineExtractor: with logger optional, the (Stream) /\n(IEnumerable<Stream>) / (IEnumerable<JsonNamedStream>) / factory ctors are\nsuperseded by their optional-logger overloads. They cannot usefully be\n[Obsolete] (exact-match binding leaves callers only a redundant\n`logger: null`) and removing them is a binary break no marker can warn an\nun-rebuilt caller about, so they are hidden with [EditorBrowsable(Never)]\nand retained permanently — the rule set for ETL-Abstractions#461 and\napplied to ETL-Csv in #284. No public API text change; CHANGELOG Changed.\n\nThe record-shaped ctors (ADR-0009, #303) are a separate PR against the\nunreleased Abstractions 0.24 and are answered in the threads.\n\nCo-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>\n\n* feat(options): options records and record constructors for all six stages; Abstractions 0.24 (#303, part 1)\n\nSix sealed records — JsonLineExtractorOptions, JsonSingleStreamExtractorOptions,\nJsonMultiStreamExtractorOptions (: ExtractorOptions) and JsonLineLoaderOptions,\nJsonSingleStreamLoaderOptions, JsonMultiStreamLoaderOptions (: LoaderOptions) —\ncarrying each stage's own settings (Encoding / EnableCheckpointing /\nStartByteOffset; Encoding / IsDryRun; IsDryRun) plus the four inherited ones.\nSerializer configuration stays a constructor parameter: a JsonTypeInfo<T>\nalready carries its options, so a record-borne copy would be inert on the\nsource-generated path.\n\nNew constructors, one per input shape and serializer family, chain base(options):\n  (source, TOptions options, JsonSerializerOptions? serializerOptions = null, ILogger? logger = null)\n  (source, JsonTypeInfo<T> typeInfo, TOptions options, ILogger? logger = null)\n  (string path, TOptions options, ...) on the two extractors that open files\nThe record is REQUIRED (not defaulted) so every existing call keeps binding\nwhere it binds today; 18 new public ctors.\n\nThe shipped constructors' JsonSerializerOptions parameter is renamed\noptions -> serializerOptions on all 18 of them: with the record parameter\nalso named options, a named argument options: null was ambiguous, and\nfleet-wide options means the record. Binary-compatible; a source break only\nfor callers passing that argument by name (7 in-repo sites updated).\n\nISupportDryRun dropped from the three loaders (Abstractions 0.24 removes\nit); the three dry-run contract tests use the now non-generic TestKit base\nand configure IsDryRun through the records. Abstractions / ErrorPolicies /\nTestKit / TestKit.Xunit 0.23.4 -> 0.24.0 — not published yet; built against\nthe local feed, PR stays draft.\n\nPublicAPI: 10 *REMOVED* (renamed parameter) + 96 added; derived-record\n<Clone>$ lines left out (unmatchable); 21 pre-existing unrecorded members\nre-surfaced and tracked in #314. ApiCompat: CP0008 x15 for ISupportDryRun.\nTests: JsonOptionsRecordTests (15 cases). CHANGELOG Added / Changed / Removed.\n\nCo-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>\n\n* feat(options): deprecate the seven configuration setters; migrate every write site to the records (#303, part 2)\n\nSecond half of #303, stacked on part 1. Encoding, EnableCheckpointing and\nStartByteOffset on JsonLineExtractor<T>, Encoding and IsDryRun on\nJsonLineLoader<T>, and IsDryRun on JsonSingleStreamLoader<T> and\nJsonMultiStreamLoader<T> are [Obsolete] on the setter accessor only, so\nreads stay warning-free and the message names the record to use. Nothing\nis removed.\n\nRelease builds with TreatWarningsAsErrors, so every internal write became\na build error: the four ApplyOptions methods that write them by design sit\nunder a CS0618 pragma (same as Csv and FixedWidth), and the nine test\ninitializers that configured through the setters now pass the record\n(two of them with MaximumItemCount folded in as well). No writes existed\nin src outside ApplyOptions, nor in examples or benchmarks.\n\nAccessor-level [Obsolete] changes no PublicAPI text; CHANGELOG Deprecated.\n\nCo-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>\n\n* docs(options): hide the ten superseded (source, JsonSerializerOptions?, ILogger?) ctors; README and migration guide for the records (#303, part 3)\n\nThe (source, JsonSerializerOptions? serializerOptions = null, ILogger?\nlogger = null) constructors — ten across the six stages, including the two\nfile-path forms — are superseded by the record constructors\n(source, options, serializerOptions, logger). They cannot usefully be\n[Obsolete] (a positional serializer-options argument binds here by exact\nmatch, so the warning could only be silenced by inserting a record the\ncaller may not want) and removal is a binary break no marker reaches, so\nthey are hidden with [EditorBrowsable(Never)] and retained permanently —\nthe same rule as the single-argument constructors in #313. No PublicAPI\ntext change.\n\nREADME gains a \"Configuring a stage\" section (the records, their members,\nthe inherited settings) and the serialization example now passes the\nrecord; docs/migrations/v0.8-to-v0.9.md covers the serializerOptions\nrename, ISupportDryRun, the deprecated setters, the hidden constructors and\nthe before/after of the record spelling. CHANGELOG Added / Changed.\n\nCo-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>\n\n* test(options): compile-time overload-resolution guards; CHANGELOG wording (Copilot review on #315)\n\nCopilot claimed the record constructors make positional-null calls such as\nnew X(stream, null) and new X(stream, typeInfo, null) ambiguous. They do\nnot: the (source, ILogger?) and (source, JsonTypeInfo<T>, ILogger?)\noverloads have every parameter supplied by those calls and are therefore\npreferred over any overload needing default substitution.\nConstructorOverloadResolutionTests pins that for every stage and both\nfamilies, so a future overload that breaks it fails to compile here.\n(source, null, null) is not included: it has been ambiguous since 0.8.x\nbetween the serializer-options and type-info overloads, unrelated to this PR.\n\nCHANGELOG: the Added note no longer says the existing constructors are\nunchanged (their JsonSerializerOptions parameter is renamed; a Changed\nbullet now documents that named-argument source break), and the Removed\nnote says loaders, not readers.\n\nCo-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>\n\n* docs(options): constructor order per family in the README; qualify the hidden-constructor compatibility note (Copilot review on #317)\n\nThe README sentence implied the record always follows the source; on the\nsource-generated constructors it follows the type info. Both orders are now\nspelled out. The migration guide said existing calls to the hidden\nconstructors keep compiling; that is true of positional calls only - a\nnamed serializer argument is subject to the rename documented above.\n\nCo-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>\n\n* feat(options): the record carries SerializerOptions; one options parameter per constructor (review on #315)\n\nChris's review: the record constructors took two \"options\" - the stage\nrecord and a separate JsonSerializerOptions. The serializer options are\nconfiguration too, so they now live on the record (SerializerOptions,\nnested as-is, not flattened: the JSO surface is ~30 settings and growing,\nseveral are object graphs, and a consumer's shared instance keeps its\nmetadata cache). The reflection record constructors become\n(source, options, logger = null); the file-path forms likewise.\n\nThe source-generated constructors keep JsonTypeInfo<TRecord> as their own\nparameter (the type info carries its own serializer options) and reject a\nrecord that also sets SerializerOptions with ArgumentException, so the\ncombination is a visible error rather than an ignored setting.\n\nPublicAPI: 10 constructor entries shortened, SerializerOptions get/init on\nall six records. Tests: SerializerOptions applied through the record;\ntype-info + SerializerOptions rejected on the line extractor and loader;\noverload guards cover (source, record) and (source, record, null).\nCHANGELOG updated.\n\nCo-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>\n\n* docs(options): SerializerOptions lives on the record; constructor shape (source, options, logger)\n\nREADME, migration guide and the hidden-constructor CHANGELOG bullet follow\nthe #315 change: the record carries SerializerOptions, the reflection\nconstructors take (source, options, logger), and the source-generated ones\nreject a record that also sets SerializerOptions.\n\nCo-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>\n\n* test(options): the serializer options travel on the record in the folded JsonLineLoader test\n\nCo-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>\n\n* refactor(options): the internal timer-injection constructors take the record too (review on #315)\n\nThe seven internal (source, JsonSerializerOptions, IProgressTimer, ILogger?)\nconstructors now take the stage record instead - (source, options, timer,\nlogger) - chain base(options) and apply it, so the serializer options travel\non the record everywhere and 'options' means one thing on every constructor,\npublic or internal. The seven type-info internal constructors are unchanged.\nThirty test call sites updated (internal API; no PublicAPI change).\n\nCo-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>\n\n* revert(options): keep the shipped constructors' JsonSerializerOptions parameter named options (review on #315)\n\nRenaming it to serializerOptions traded a source break for every caller\nwho wrote 'options: myJso' against rescuing one call shape - a NAMED null,\n'options: null' - which is ambiguous between the serializer and record\nconstructors and which nobody should write. Wrong side of the bargain.\nOverloads may share a parameter name: 'options: jso' and 'options: record'\neach bind by type, positional calls are unaffected. The seven test sites\nthat passed a named null now pass a typed positional null. The ten\nPublicAPI entries return to their shipped text; the Changed bullet and the\nmigration-guide rows for the rename go away. No source break remains in\nthis stack.\n\nCo-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>\n\n* docs: resolve the CHANGELOG merge properly and drop the rename from the migration guide\n\nThe merge commit before this one carried conflict markers in CHANGELOG.md;\nthis removes them, keeps the hidden-constructor bullet without its\nnamed-argument clause, and removes the migration-guide row and checklist\nitem for the rename that no longer exists.\n\nCo-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>\n\n* release: v0.9.0\n\noptions records with nested SerializerOptions inherit the Abstractions 0.24 base records; 7 setters deprecated; superseded constructors hidden MINOR bump from v0.8.1: new public surface (options records inheriting the Abstractions 0.24.0 base records, new constructors) and new [Obsolete] markers; no removals.\n\nCo-Authored-By: Claude Opus 5 <noreply@anthropic.com>\n\n* test: cover the JsonTypeInfo<T> record constructors and their SerializerOptions guard (coverage gate)\n\nRelease PR #318's Stage 1 gate failed at 88.1% line coverage: the\ntype-info constructor overloads that #315 added on all four stream\nstages, their RejectSerializerOptions guards, and the path / named-\ndestination / named-sources record overloads had no direct tests.\nJsonTypeInfoConstructorTests adds 11 facts: each stage round-trips\nthrough the type info with the record's inherited settings applied,\nevery type-info overload rejects a record carrying SerializerOptions\n(ArgumentException, paramName \"options\"), and the path and named\noverloads are exercised. Wolfgang.Etl.Json unit line coverage on\nnet10.0: 88.2% -> 95.1%.\n\nCo-Authored-By: Claude Opus 5 <noreply@anthropic.com>\n\n* docs: record the named-null (`options: null`) CS0121 break; test proves the record's SerializerOptions are applied (review on #318)\n\nBoth overloads name their parameter `options` by design (#315), which\nmakes the one spelling `new X(source, options: null)` ambiguous. That\nwas decided but not written down; the migration guide's Breaking\nChanges table and the CHANGELOG now say so, with the spellings that\nstill bind.\n\nJsonLineExtractor_when_the_record_carries_SerializerOptions_uses_them\nnow feeds camelCase JSON and asserts the extracted record, so it fails\nif the constructor ignored the record's SerializerOptions.\n\nCo-Authored-By: Claude Opus 5 <noreply@anthropic.com>\n\n---------\n\nCo-authored-by: Claude Opus 4.8 <noreply@anthropic.com>",
+          "timestamp": "2026-09-16T20:33:31-04:00",
+          "tree_id": "429194305f279608fddba6dd918c745c297cd8ea",
+          "url": "https://github.com/Chris-Wolfgang/ETL-Json/commit/51ef1f3b1b2409a91aeb9359f87c59a68807c23d"
+        },
+        "date": 1789605417197,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineExtractorBenchmarks.ExtractAsync(ItemCount: 10)",
+            "value": 6749.105692545573,
+            "unit": "ns",
+            "range": "± 18.08002340794076"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineExtractorBenchmarks.ExtractAsync(ItemCount: 100)",
+            "value": 63153.9276936849,
+            "unit": "ns",
+            "range": "± 1894.855134128296"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineExtractorBenchmarks.ExtractAsync(ItemCount: 1000)",
+            "value": 606772.6848958334,
+            "unit": "ns",
+            "range": "± 4948.2238336969285"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineLoaderBenchmarks.LoadAsync(ItemCount: 10)",
+            "value": 4532.804036458333,
+            "unit": "ns",
+            "range": "± 46.29786144041413"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineLoaderBenchmarks.LoadAsync(ItemCount: 100)",
+            "value": 41859.85561116537,
+            "unit": "ns",
+            "range": "± 511.92477892386546"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineLoaderBenchmarks.LoadAsync(ItemCount: 1000)",
+            "value": 482546.00764973956,
+            "unit": "ns",
+            "range": "± 2893.459804073712"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamExtractorBenchmarks.ExtractAsync(ItemCount: 10)",
+            "value": 8363.470499674479,
+            "unit": "ns",
+            "range": "± 85.90040917935882"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamExtractorBenchmarks.ExtractAsync(ItemCount: 100)",
+            "value": 77839.13448079427,
+            "unit": "ns",
+            "range": "± 65.72584324962405"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamExtractorBenchmarks.ExtractAsync(ItemCount: 1000)",
+            "value": 779758.6956380209,
+            "unit": "ns",
+            "range": "± 777.9309990209425"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamLoaderBenchmarks.LoadAsync(ItemCount: 10)",
+            "value": 5984.693270365397,
+            "unit": "ns",
+            "range": "± 29.53705328021696"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamLoaderBenchmarks.LoadAsync(ItemCount: 100)",
+            "value": 58671.509521484375,
+            "unit": "ns",
+            "range": "± 590.3677494497426"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamLoaderBenchmarks.LoadAsync(ItemCount: 1000)",
+            "value": 579318.6220703125,
+            "unit": "ns",
+            "range": "± 1091.720221664771"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamExtractorBenchmarks.ExtractAsync(ItemCount: 10)",
+            "value": 6981.904502868652,
+            "unit": "ns",
+            "range": "± 13.81688890677115"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamExtractorBenchmarks.ExtractAsync(ItemCount: 100)",
+            "value": 58563.63104248047,
+            "unit": "ns",
+            "range": "± 139.31148171353544"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamExtractorBenchmarks.ExtractAsync(ItemCount: 1000)",
+            "value": 529412.8238932291,
+            "unit": "ns",
+            "range": "± 2528.770659287622"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync(ItemCount: 10)",
+            "value": 3833.3690223693848,
+            "unit": "ns",
+            "range": "± 100.46379341850934"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync_CamelCase(ItemCount: 10)",
+            "value": 4600.006640116374,
+            "unit": "ns",
+            "range": "± 16.16029624930466"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync(ItemCount: 100)",
+            "value": 35047.885192871094,
+            "unit": "ns",
+            "range": "± 318.6219058180672"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync_CamelCase(ItemCount: 100)",
+            "value": 36965.35791015625,
+            "unit": "ns",
+            "range": "± 69.46678039531173"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync(ItemCount: 1000)",
+            "value": 395676.96077473956,
+            "unit": "ns",
+            "range": "± 652.3151108069782"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync_CamelCase(ItemCount: 1000)",
+            "value": 397386.66813151044,
+            "unit": "ns",
+            "range": "± 1224.1242112029258"
           }
         ]
       }
