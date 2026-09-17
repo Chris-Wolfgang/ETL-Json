@@ -30,7 +30,9 @@ public static class EtlPipelineJsonSinkExtensions
     /// <exception cref="ArgumentNullException"><paramref name="pipeline"/> or <paramref name="path"/> is <see langword="null"/>.</exception>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON serialization of unknown types may require types that cannot be statically analyzed.")]
+#if NET7_0_OR_GREATER
     [RequiresDynamicCode("JSON serialization of unknown types may require types that cannot be statically analyzed.")]
+#endif
 #endif
     public static IEtlPipelineSink JsonLineLoader<T>
     (
@@ -69,7 +71,9 @@ public static class EtlPipelineJsonSinkExtensions
     /// <exception cref="ArgumentNullException"><paramref name="pipeline"/> or <paramref name="stream"/> is <see langword="null"/>.</exception>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON serialization of unknown types may require types that cannot be statically analyzed.")]
+#if NET7_0_OR_GREATER
     [RequiresDynamicCode("JSON serialization of unknown types may require types that cannot be statically analyzed.")]
+#endif
 #endif
     public static IEtlPipelineSink JsonLineLoader<T>
     (
@@ -107,7 +111,9 @@ public static class EtlPipelineJsonSinkExtensions
     /// <exception cref="ArgumentNullException"><paramref name="pipeline"/> or <paramref name="path"/> is <see langword="null"/>.</exception>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON serialization of unknown types may require types that cannot be statically analyzed.")]
+#if NET7_0_OR_GREATER
     [RequiresDynamicCode("JSON serialization of unknown types may require types that cannot be statically analyzed.")]
+#endif
 #endif
     public static IEtlPipelineSink JsonSingleStreamLoader<T>
     (
@@ -146,7 +152,9 @@ public static class EtlPipelineJsonSinkExtensions
     /// <exception cref="ArgumentNullException"><paramref name="pipeline"/> or <paramref name="stream"/> is <see langword="null"/>.</exception>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON serialization of unknown types may require types that cannot be statically analyzed.")]
+#if NET7_0_OR_GREATER
     [RequiresDynamicCode("JSON serialization of unknown types may require types that cannot be statically analyzed.")]
+#endif
 #endif
     public static IEtlPipelineSink JsonSingleStreamLoader<T>
     (
