@@ -30,7 +30,9 @@ public static class EtlPipelineJsonSourceExtensions
     /// <exception cref="ArgumentNullException"><paramref name="pipeline"/> or <paramref name="path"/> is <see langword="null"/>.</exception>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed.")]
+#if NET7_0_OR_GREATER
     [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed.")]
+#endif
 #endif
     public static IEtlPipeline<T> JsonLineExtractor<T>
     (
@@ -65,7 +67,9 @@ public static class EtlPipelineJsonSourceExtensions
     /// <exception cref="ArgumentNullException"><paramref name="pipeline"/> or <paramref name="stream"/> is <see langword="null"/>.</exception>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed.")]
+#if NET7_0_OR_GREATER
     [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed.")]
+#endif
 #endif
     public static IEtlPipeline<T> JsonLineExtractor<T>
     (
@@ -103,7 +107,9 @@ public static class EtlPipelineJsonSourceExtensions
     /// <exception cref="ArgumentNullException"><paramref name="pipeline"/> or <paramref name="path"/> is <see langword="null"/>.</exception>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed.")]
+#if NET7_0_OR_GREATER
     [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed.")]
+#endif
 #endif
     public static IEtlPipeline<T> JsonSingleStreamExtractor<T>
     (
@@ -138,7 +144,9 @@ public static class EtlPipelineJsonSourceExtensions
     /// <exception cref="ArgumentNullException"><paramref name="pipeline"/> or <paramref name="stream"/> is <see langword="null"/>.</exception>
 #if NET5_0_OR_GREATER
     [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed.")]
+#if NET7_0_OR_GREATER
     [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed.")]
+#endif
 #endif
     public static IEtlPipeline<T> JsonSingleStreamExtractor<T>
     (
