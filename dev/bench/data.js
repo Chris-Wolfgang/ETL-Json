@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1789690185147,
+  "lastUpdate": 1789691127123,
   "repoUrl": "https://github.com/Chris-Wolfgang/ETL-Json",
   "entries": {
     "BenchmarkDotNet": [
@@ -4650,6 +4650,156 @@ window.BENCHMARK_DATA = {
             "value": 255508.7080078125,
             "unit": "ns",
             "range": "± 1049.7826064364517"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "210299580+Chris-Wolfgang@users.noreply.github.com",
+            "name": "Chris Wolfgang",
+            "username": "Chris-Wolfgang"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "8550a90fabb26c0a35302874feab1e424fa083b6",
+          "message": "chore(publicapi): record the synthesized record members; per-TFM split for the covariant <Clone>$ lines (#329)\n\n* fix(tfm): ship net5.0/net6.0/net7.0 assemblies — inherited init setters would fail on .NET 5-7\n\nWolfgang.Etl.Abstractions ships per-runtime assemblies, and an init-only setter's IsExternalInit modreq has a different identity in its netstandard2.0 build (internal polyfill) and its net5.0+ builds (System.Runtime). This package's netstandard2.0 assembly is compiled against the former but, on .NET 5/6/7, runs beside the latter, so any write to an inherited options-record property from this assembly throws MissingMethodException — the defect Etl-Csv 0.9.0 hit in its release gate (Chris-Wolfgang/Etl-Csv#287). Same remedy as Abstractions, Etl-DbClient and Etl-Csv.\n\nCompiling for net5.0/net6.0 for the first time exposed two guards that assumed \"NET5_0_OR_GREATER\" meant \"net8.0+\": [RequiresDynamicCode] (42 sites) and StreamReader.ReadLineAsync(CancellationToken) both first shipped in .NET 7 and are now guarded with NET7_0_OR_GREATER; the net5/6 builds take the same path netstandard2.0 does.\n\nCo-Authored-By: Claude Opus 5 <noreply@anthropic.com>\n\n* docs: changelog fragment instead of a CHANGELOG.md edit; framework lists brought in line\n\nCo-Authored-By: Claude Opus 5 <noreply@anthropic.com>\n\n* chore(publicapi): record the synthesized record members that shipped unrecorded; per-TFM split for the covariant <Clone>$ lines\n\nRS0016 is muzzled by the blanket analyzer severity, so the compiler-synthesized members of every shipped record (<Clone>$, copy ctor, Deconstruct, Equals, GetHashCode, ToString, PrintMembers, EqualityContract, ==/!=) have been shipping without an entry in PublicAPI.Shipped.txt. Harvested by raising RS0016 to warning on the project across every target framework and appended to Shipped — they are already public.\n\nThe <Clone>$ of every record that derives from an Abstractions record has a covariant return (the derived type) on net5.0+ but returns the base type on net462 / netstandard2.0, so those lines cannot live in the shared file. Adopts Try-Pattern's layout: PublicApi/modern and PublicApi/legacy PublicAPI.{Shipped,Unshipped}.txt, wired by IsTargetFrameworkCompatible(net5.0) in the csproj; the shared file keeps the TFM-invariant surface. On PublicApiAnalyzers 5.6.0 RS0017 accepts the <Clone>$ lines in the form RS0016 emits, so the blocker recorded in Chris-Wolfgang/Etl-Csv#263 no longer reproduces once the split is in place. Verified: RS0016 raised again reports nothing on any target; plain Release build has no RS0017.\n\nCo-Authored-By: Claude Opus 5 <noreply@anthropic.com>\n\n* chore: changelog fragment (internal) for the PublicAPI backfill\n\nCo-Authored-By: Claude Opus 5 <noreply@anthropic.com>\n\n---------\n\nCo-authored-by: Claude Opus 5 <noreply@anthropic.com>",
+          "timestamp": "2026-09-17T20:22:02-04:00",
+          "tree_id": "374f97807884c294978e68123f760eea8c77d81f",
+          "url": "https://github.com/Chris-Wolfgang/ETL-Json/commit/8550a90fabb26c0a35302874feab1e424fa083b6"
+        },
+        "date": 1789691124026,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineExtractorBenchmarks.ExtractAsync(ItemCount: 10)",
+            "value": 7028.461832682292,
+            "unit": "ns",
+            "range": "± 74.98666265531769"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineExtractorBenchmarks.ExtractAsync(ItemCount: 100)",
+            "value": 62389.43013509115,
+            "unit": "ns",
+            "range": "± 644.3611644029629"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineExtractorBenchmarks.ExtractAsync(ItemCount: 1000)",
+            "value": 601235.3523763021,
+            "unit": "ns",
+            "range": "± 5827.911075146016"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineLoaderBenchmarks.LoadAsync(ItemCount: 10)",
+            "value": 4359.687405904134,
+            "unit": "ns",
+            "range": "± 41.778378883041874"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineLoaderBenchmarks.LoadAsync(ItemCount: 100)",
+            "value": 40702.472147623695,
+            "unit": "ns",
+            "range": "± 75.75809710162713"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineLoaderBenchmarks.LoadAsync(ItemCount: 1000)",
+            "value": 491991.0745442708,
+            "unit": "ns",
+            "range": "± 3706.7217734406117"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamExtractorBenchmarks.ExtractAsync(ItemCount: 10)",
+            "value": 8225.896825154623,
+            "unit": "ns",
+            "range": "± 111.87013386253885"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamExtractorBenchmarks.ExtractAsync(ItemCount: 100)",
+            "value": 82796.59442138672,
+            "unit": "ns",
+            "range": "± 77.44783885634865"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamExtractorBenchmarks.ExtractAsync(ItemCount: 1000)",
+            "value": 767933.7913411459,
+            "unit": "ns",
+            "range": "± 1059.3564439798458"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamLoaderBenchmarks.LoadAsync(ItemCount: 10)",
+            "value": 5908.459264119466,
+            "unit": "ns",
+            "range": "± 15.209164491011048"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamLoaderBenchmarks.LoadAsync(ItemCount: 100)",
+            "value": 54773.84981282552,
+            "unit": "ns",
+            "range": "± 76.60241277482335"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamLoaderBenchmarks.LoadAsync(ItemCount: 1000)",
+            "value": 574160.35546875,
+            "unit": "ns",
+            "range": "± 4692.24799849007"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamExtractorBenchmarks.ExtractAsync(ItemCount: 10)",
+            "value": 6973.558877309163,
+            "unit": "ns",
+            "range": "± 25.200038890234815"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamExtractorBenchmarks.ExtractAsync(ItemCount: 100)",
+            "value": 57828.335388183594,
+            "unit": "ns",
+            "range": "± 324.2535536292037"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamExtractorBenchmarks.ExtractAsync(ItemCount: 1000)",
+            "value": 550446.0719401041,
+            "unit": "ns",
+            "range": "± 1908.431995840356"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync(ItemCount: 10)",
+            "value": 3785.430753072103,
+            "unit": "ns",
+            "range": "± 5.520382045963273"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync_CamelCase(ItemCount: 10)",
+            "value": 4418.077481587728,
+            "unit": "ns",
+            "range": "± 17.56660974915568"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync(ItemCount: 100)",
+            "value": 34679.83435058594,
+            "unit": "ns",
+            "range": "± 128.0856655034635"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync_CamelCase(ItemCount: 100)",
+            "value": 35979.56321207682,
+            "unit": "ns",
+            "range": "± 77.60428313882086"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync(ItemCount: 1000)",
+            "value": 391188.1826171875,
+            "unit": "ns",
+            "range": "± 2193.937449827488"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync_CamelCase(ItemCount: 1000)",
+            "value": 391208.18050130206,
+            "unit": "ns",
+            "range": "± 2663.8903146375933"
           }
         ]
       }
