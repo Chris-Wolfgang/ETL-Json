@@ -46,28 +46,21 @@ public class JsonMultiStreamExtractorTests
 
 
 
-    protected override JsonMultiStreamExtractor<PersonRecord> CreateSut(int itemCount) =>
+    protected override JsonMultiStreamExtractor<PersonRecord> CreateSut(int itemCount, int maximumItemCount, int skipItemCount, int reportingInterval) =>
         new
         (
-            CreateStreams(itemCount)
+            CreateStreams(itemCount),
+            new JsonMultiStreamExtractorOptions
+            {
+                MaximumItemCount = maximumItemCount,
+                SkipItemCount = skipItemCount,
+                ReportingInterval = reportingInterval,
+            }
         );
 
 
     protected override IReadOnlyList<PersonRecord> CreateExpectedItems() => ExpectedItems;
 
-
-
-    protected override JsonMultiStreamExtractor<PersonRecord> CreateSutWithTimer
-    (
-        IProgressTimer timer
-    ) =>
-        new
-        (
-            CreateStreams(ExpectedItems.Count),
-            new JsonMultiStreamExtractorOptions(),
-            timer,
-            NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
-        );
 
 
     [Fact]

@@ -44,29 +44,21 @@ public class JsonLineExtractorTests
 
 
 
-    protected override JsonLineExtractor<PersonRecord> CreateSut(int itemCount) =>
+    protected override JsonLineExtractor<PersonRecord> CreateSut(int itemCount, int maximumItemCount, int skipItemCount, int reportingInterval) =>
         new
         (
-            CreateJsonlStream(itemCount)
+            CreateJsonlStream(itemCount),
+            new JsonLineExtractorOptions
+            {
+                MaximumItemCount = maximumItemCount,
+                SkipItemCount = skipItemCount,
+                ReportingInterval = reportingInterval,
+            }
         );
 
 
 
     protected override IReadOnlyList<PersonRecord> CreateExpectedItems() => ExpectedItems;
-
-
-
-    protected override JsonLineExtractor<PersonRecord> CreateSutWithTimer
-    (
-        IProgressTimer timer
-    ) =>
-        new
-        (
-            CreateJsonlStream(ExpectedItems.Count),
-            new JsonLineExtractorOptions(),
-            timer,
-            NullLogger<JsonLineExtractor<PersonRecord>>.Instance
-        );
 
 
 

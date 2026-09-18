@@ -32,33 +32,23 @@ public class JsonMultiStreamLoaderTests
 
 
 
-    protected override JsonMultiStreamLoader<PersonRecord> CreateSut(int itemCount)
+    protected override JsonMultiStreamLoader<PersonRecord> CreateSut(int itemCount, int maximumItemCount, int skipItemCount, int reportingInterval)
     {
         return new JsonMultiStreamLoader<PersonRecord>
         (
-            _ => new MemoryStream()
+            _ => new MemoryStream(),
+            new JsonMultiStreamLoaderOptions
+            {
+                MaximumItemCount = maximumItemCount,
+                SkipItemCount = skipItemCount,
+                ReportingInterval = reportingInterval,
+            }
         );
     }
 
 
 
     protected override IReadOnlyList<PersonRecord> CreateSourceItems() => SourceItems;
-
-
-
-    protected override JsonMultiStreamLoader<PersonRecord> CreateSutWithTimer
-    (
-        IProgressTimer timer
-    )
-    {
-        return new JsonMultiStreamLoader<PersonRecord>
-        (
-            _ => new MemoryStream(),
-            new JsonMultiStreamLoaderOptions(),
-            timer,
-            NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
-        );
-    }
 
 
 

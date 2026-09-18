@@ -32,35 +32,24 @@ public class JsonSingleStreamLoaderTests
 
 
 
-    protected override JsonSingleStreamLoader<PersonRecord> CreateSut(int itemCount)
+    protected override JsonSingleStreamLoader<PersonRecord> CreateSut(int itemCount, int maximumItemCount, int skipItemCount, int reportingInterval)
     {
         var stream = new MemoryStream();
         return new JsonSingleStreamLoader<PersonRecord>
         (
-            stream
+            stream,
+            new JsonSingleStreamLoaderOptions
+            {
+                MaximumItemCount = maximumItemCount,
+                SkipItemCount = skipItemCount,
+                ReportingInterval = reportingInterval,
+            }
         );
     }
 
 
 
     protected override IReadOnlyList<PersonRecord> CreateSourceItems() => SourceItems;
-
-
-
-    protected override JsonSingleStreamLoader<PersonRecord> CreateSutWithTimer
-    (
-        IProgressTimer timer
-    )
-    {
-        var stream = new MemoryStream();
-        return new JsonSingleStreamLoader<PersonRecord>
-        (
-            stream,
-            new JsonSingleStreamLoaderOptions(),
-            timer,
-            NullLogger<JsonSingleStreamLoader<PersonRecord>>.Instance
-        );
-    }
 
 
 

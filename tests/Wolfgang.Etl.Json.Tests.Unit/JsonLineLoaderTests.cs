@@ -33,35 +33,24 @@ public class JsonLineLoaderTests
 
 
 
-    protected override JsonLineLoader<PersonRecord> CreateSut(int itemCount)
+    protected override JsonLineLoader<PersonRecord> CreateSut(int itemCount, int maximumItemCount, int skipItemCount, int reportingInterval)
     {
         var stream = new MemoryStream();
         return new JsonLineLoader<PersonRecord>
         (
-            stream
+            stream,
+            new JsonLineLoaderOptions
+            {
+                MaximumItemCount = maximumItemCount,
+                SkipItemCount = skipItemCount,
+                ReportingInterval = reportingInterval,
+            }
         );
     }
 
 
 
     protected override IReadOnlyList<PersonRecord> CreateSourceItems() => SourceItems;
-
-
-
-    protected override JsonLineLoader<PersonRecord> CreateSutWithTimer
-    (
-        IProgressTimer timer
-    )
-    {
-        var stream = new MemoryStream();
-        return new JsonLineLoader<PersonRecord>
-        (
-            stream,
-            new JsonLineLoaderOptions(),
-            timer,
-            NullLogger<JsonLineLoader<PersonRecord>>.Instance
-        );
-    }
 
 
 
