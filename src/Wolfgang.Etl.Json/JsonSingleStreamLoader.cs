@@ -45,12 +45,14 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
 
 
 
+    private bool _isDryRun;
+
     /// <inheritdoc />
     /// <remarks>
     /// When <see langword="true"/>, the loader enumerates the source and increments
     /// progress counters as usual but does not write any JSON to the output stream.
     /// </remarks>
-    public bool IsDryRun { get; [Obsolete("Configure IsDryRun through JsonSingleStreamLoaderOptions passed to the constructor instead. The setter will be removed in a later release.")] set; }
+    public bool IsDryRun { get => _isDryRun; [Obsolete("Configure IsDryRun through JsonSingleStreamLoaderOptions passed to the constructor instead. The setter will be removed in a later release.")] set => _isDryRun = value; }
 
 
 
@@ -236,7 +238,6 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     /// settings were applied by the <see cref="LoaderBase{TDestination, TProgress}"/> constructor.
     /// </summary>
     /// <exception cref="ArgumentNullException"><paramref name="options"/> is <see langword="null"/>.</exception>
-#pragma warning disable CS0618 // ApplyOptions is the supported replacement for these setters; it necessarily writes them.
     private void ApplyOptions(JsonSingleStreamLoaderOptions options)
     {
         if (options is null)
@@ -244,9 +245,8 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
             throw new ArgumentNullException(nameof(options));
         }
 
-        IsDryRun = options.IsDryRun;
+        _isDryRun = options.IsDryRun;
     }
-#pragma warning restore CS0618
 
 
 
