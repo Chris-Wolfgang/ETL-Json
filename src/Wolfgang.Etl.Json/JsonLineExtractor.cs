@@ -54,14 +54,18 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 
 
 
+    private Encoding? _encoding;
+
     /// <summary>
     /// Gets or sets the character encoding to use when reading the JSONL stream.
     /// When <see langword="null"/> (the default), the encoding is inferred from the
     /// stream's byte-order mark (BOM), falling back to UTF-8.
     /// </summary>
-    public Encoding? Encoding { get; [Obsolete("Configure Encoding through JsonLineExtractorOptions passed to the constructor instead. The setter will be removed in a later release.")] set; }
+    public Encoding? Encoding { get => _encoding; [Obsolete("Configure Encoding through JsonLineExtractorOptions passed to the constructor instead. The setter will be removed in a later release.")] set => _encoding = value; }
 
 
+
+    private bool _enableCheckpointing;
 
     /// <summary>
     /// Gets or sets a value indicating whether the extractor tracks the byte offset of each line
@@ -75,9 +79,11 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// prior run via <see cref="StartByteOffset"/> does not by itself require this flag — set it only
     /// when you also need to capture new checkpoints during the resumed run.
     /// </remarks>
-    public bool EnableCheckpointing { get; [Obsolete("Configure EnableCheckpointing through JsonLineExtractorOptions passed to the constructor instead. The setter will be removed in a later release.")] set; }
+    public bool EnableCheckpointing { get => _enableCheckpointing; [Obsolete("Configure EnableCheckpointing through JsonLineExtractorOptions passed to the constructor instead. The setter will be removed in a later release.")] set => _enableCheckpointing = value; }
 
 
+
+    private long _startByteOffset;
 
     /// <summary>
     /// Gets or sets the byte offset within the stream at which extraction begins.
@@ -85,7 +91,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// The stream must be seekable when this value is greater than zero.
     /// Default is <c>0</c> (start of stream).
     /// </summary>
-    public long StartByteOffset { get; [Obsolete("Configure StartByteOffset through JsonLineExtractorOptions passed to the constructor instead. The setter will be removed in a later release.")] set; }
+    public long StartByteOffset { get => _startByteOffset; [Obsolete("Configure StartByteOffset through JsonLineExtractorOptions passed to the constructor instead. The setter will be removed in a later release.")] set => _startByteOffset = value; }
 
 
 
@@ -362,7 +368,6 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// settings were applied by the <see cref="ExtractorBase{TSource, TProgress}"/> constructor.
     /// </summary>
     /// <exception cref="ArgumentNullException"><paramref name="options"/> is <see langword="null"/>.</exception>
-#pragma warning disable CS0618 // ApplyOptions is the supported replacement for these setters; it necessarily writes them.
     private void ApplyOptions(JsonLineExtractorOptions options)
     {
         if (options is null)
@@ -370,11 +375,10 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
             throw new ArgumentNullException(nameof(options));
         }
 
-        Encoding = options.Encoding;
-        EnableCheckpointing = options.EnableCheckpointing;
-        StartByteOffset = options.StartByteOffset;
+        _encoding = options.Encoding;
+        _enableCheckpointing = options.EnableCheckpointing;
+        _startByteOffset = options.StartByteOffset;
     }
-#pragma warning restore CS0618
 
 
 

@@ -47,20 +47,24 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
 
 
 
+    private bool _isDryRun;
+
     /// <inheritdoc />
     /// <remarks>
     /// When <see langword="true"/>, the loader enumerates the source and increments
     /// progress counters as usual but does not write any JSON to the output stream.
     /// </remarks>
-    public bool IsDryRun { get; [Obsolete("Configure IsDryRun through JsonLineLoaderOptions passed to the constructor instead. The setter will be removed in a later release.")] set; }
+    public bool IsDryRun { get => _isDryRun; [Obsolete("Configure IsDryRun through JsonLineLoaderOptions passed to the constructor instead. The setter will be removed in a later release.")] set => _isDryRun = value; }
 
 
+
+    private System.Text.Encoding? _encoding;
 
     /// <summary>
     /// Gets or sets the character encoding to use when writing the JSONL stream.
     /// When <see langword="null"/> (the default), UTF-8 is used.
     /// </summary>
-    public System.Text.Encoding? Encoding { get; [Obsolete("Configure Encoding through JsonLineLoaderOptions passed to the constructor instead. The setter will be removed in a later release.")] set; }
+    public System.Text.Encoding? Encoding { get => _encoding; [Obsolete("Configure Encoding through JsonLineLoaderOptions passed to the constructor instead. The setter will be removed in a later release.")] set => _encoding = value; }
 
 
 
@@ -246,7 +250,6 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     /// settings were applied by the <see cref="LoaderBase{TDestination, TProgress}"/> constructor.
     /// </summary>
     /// <exception cref="ArgumentNullException"><paramref name="options"/> is <see langword="null"/>.</exception>
-#pragma warning disable CS0618 // ApplyOptions is the supported replacement for these setters; it necessarily writes them.
     private void ApplyOptions(JsonLineLoaderOptions options)
     {
         if (options is null)
@@ -254,10 +257,9 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
             throw new ArgumentNullException(nameof(options));
         }
 
-        Encoding = options.Encoding;
-        IsDryRun = options.IsDryRun;
+        _encoding = options.Encoding;
+        _isDryRun = options.IsDryRun;
     }
-#pragma warning restore CS0618
 
 
 
