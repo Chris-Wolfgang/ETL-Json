@@ -349,7 +349,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// </summary>
     /// <param name="options">The record to check.</param>
     /// <exception cref="ArgumentException">The record sets <see cref="JsonLineExtractorOptions.SerializerOptions"/>.</exception>
-    private static void RejectSerializerOptions(JsonLineExtractorOptions options)
+    private static void RejectSerializerOptions(JsonLineExtractorOptions? options)
     {
         if (options?.SerializerOptions is not null)
         {
