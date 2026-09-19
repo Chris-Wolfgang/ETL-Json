@@ -47,7 +47,10 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
 
     private bool _isDryRun;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets or sets a value indicating whether the run is a dry run that exercises the pipeline without
+    /// writing any output.
+    /// </summary>
     /// <remarks>
     /// When <see langword="true"/>, the loader enumerates the source and increments
     /// progress counters as usual but does not write any JSON to the output stream.
@@ -219,7 +222,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     /// </summary>
     /// <param name="options">The record to check.</param>
     /// <exception cref="ArgumentException">The record sets <see cref="JsonSingleStreamLoaderOptions.SerializerOptions"/>.</exception>
-    private static void RejectSerializerOptions(JsonSingleStreamLoaderOptions options)
+    private static void RejectSerializerOptions(JsonSingleStreamLoaderOptions? options)
     {
         if (options?.SerializerOptions is not null)
         {

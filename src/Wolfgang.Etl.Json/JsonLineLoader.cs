@@ -49,7 +49,10 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
 
     private bool _isDryRun;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets or sets a value indicating whether the run is a dry run that exercises the pipeline without
+    /// writing any output.
+    /// </summary>
     /// <remarks>
     /// When <see langword="true"/>, the loader enumerates the source and increments
     /// progress counters as usual but does not write any JSON to the output stream.
@@ -231,7 +234,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     /// </summary>
     /// <param name="options">The record to check.</param>
     /// <exception cref="ArgumentException">The record sets <see cref="JsonLineLoaderOptions.SerializerOptions"/>.</exception>
-    private static void RejectSerializerOptions(JsonLineLoaderOptions options)
+    private static void RejectSerializerOptions(JsonLineLoaderOptions? options)
     {
         if (options?.SerializerOptions is not null)
         {

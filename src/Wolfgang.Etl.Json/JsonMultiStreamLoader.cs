@@ -53,7 +53,10 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
 
     private bool _isDryRun;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets or sets a value indicating whether the run is a dry run that exercises the pipeline without
+    /// writing any output.
+    /// </summary>
     /// <remarks>
     /// When <see langword="true"/>, the loader enumerates the source and increments
     /// progress counters as usual but skips calling the stream factory and writing
@@ -400,7 +403,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     /// </summary>
     /// <param name="options">The record to check.</param>
     /// <exception cref="ArgumentException">The record sets <see cref="JsonMultiStreamLoaderOptions.SerializerOptions"/>.</exception>
-    private static void RejectSerializerOptions(JsonMultiStreamLoaderOptions options)
+    private static void RejectSerializerOptions(JsonMultiStreamLoaderOptions? options)
     {
         if (options?.SerializerOptions is not null)
         {
