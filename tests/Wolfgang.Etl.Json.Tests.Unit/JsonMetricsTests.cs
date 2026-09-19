@@ -90,7 +90,7 @@ public sealed class JsonMetricsTests
     public async Task Extractor_emits_extracted_skipped_and_duration_metrics_when_a_listener_is_subscribed()
     {
         using var collector = new MetricsCollector();
-        var sut = new JsonLineExtractor<PersonRecord>(JsonlStream()) { SkipItemCount = 1 };
+        var sut = new JsonLineExtractor<PersonRecord>(JsonlStream(), new JsonLineExtractorOptions { SkipItemCount = 1 });
 
         await foreach (var _ in sut.ExtractAsync())
         {

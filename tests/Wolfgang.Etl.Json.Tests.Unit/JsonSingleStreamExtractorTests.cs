@@ -34,38 +34,26 @@ public class JsonSingleStreamExtractorTests
 
 
 
-    protected override JsonSingleStreamExtractor<PersonRecord> CreateSut(int itemCount)
+    protected override JsonSingleStreamExtractor<PersonRecord> CreateSut(int itemCount, int maximumItemCount, int skipItemCount, int reportingInterval)
     {
         var items = ExpectedItems.Take(itemCount).ToList();
         var json = JsonSerializer.Serialize(items);
         var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
         return new JsonSingleStreamExtractor<PersonRecord>
         (
-            stream
+            stream,
+            new JsonSingleStreamExtractorOptions
+            {
+                MaximumItemCount = maximumItemCount,
+                SkipItemCount = skipItemCount,
+                ReportingInterval = reportingInterval,
+            }
         );
     }
 
 
 
     protected override IReadOnlyList<PersonRecord> CreateExpectedItems() => ExpectedItems;
-
-
-
-    protected override JsonSingleStreamExtractor<PersonRecord> CreateSutWithTimer
-    (
-        IProgressTimer timer
-    )
-    {
-        var json = JsonSerializer.Serialize(ExpectedItems);
-        var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
-        return new JsonSingleStreamExtractor<PersonRecord>
-        (
-            stream,
-            new JsonSingleStreamExtractorOptions(),
-            timer,
-            NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance
-        );
-    }
 
 
 

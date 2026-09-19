@@ -255,9 +255,15 @@ static async Task SkipAndMaxExample()
 
     // Extract with skip and max
     stream.Position = 0;
-    var extractor = new JsonLineExtractor<Person>(stream);
-    extractor.SkipItemCount = 5;      // Skip first 5
-    extractor.MaximumItemCount = 3;   // Then take 3
+    var extractor = new JsonLineExtractor<Person>
+    (
+        stream,
+        new JsonLineExtractorOptions
+        {
+            SkipItemCount = 5,      // Skip first 5
+            MaximumItemCount = 3,   // Then take 3
+        }
+    );
 
     Console.WriteLine("Extracting with SkipItemCount=5, MaximumItemCount=3:");
     await foreach (var person in extractor.ExtractAsync(CancellationToken.None))
