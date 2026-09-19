@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1789843125363,
+  "lastUpdate": 1789845296715,
   "repoUrl": "https://github.com/Chris-Wolfgang/ETL-Json",
   "entries": {
     "BenchmarkDotNet": [
@@ -5250,6 +5250,156 @@ window.BENCHMARK_DATA = {
             "value": 396622.49039713544,
             "unit": "ns",
             "range": "± 2764.0011306879046"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "210299580+Chris-Wolfgang@users.noreply.github.com",
+            "name": "Chris Wolfgang",
+            "username": "Chris-Wolfgang"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "0fb6ba69d5a7a3a8303c2e2bfab2dcb5b8a3e942",
+          "message": "chore(src): RejectSerializerOptions annotated null-tolerant, IsDryRun summaries, ApplyOptions static (#405)\n\nResolves 14 InspectCode alerts in the six stage classes.\n\nVerified locally: Release build 0 errors; unit suites green on net462 / net10.0.\n\nCo-authored-by: Claude Opus 5 <noreply@anthropic.com>",
+          "timestamp": "2026-09-19T15:11:35-04:00",
+          "tree_id": "431c66bf198c9267e0d107e746ddaf6a7326112d",
+          "url": "https://github.com/Chris-Wolfgang/ETL-Json/commit/0fb6ba69d5a7a3a8303c2e2bfab2dcb5b8a3e942"
+        },
+        "date": 1789845294238,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineExtractorBenchmarks.ExtractAsync(ItemCount: 10)",
+            "value": 5119.38444519043,
+            "unit": "ns",
+            "range": "± 149.75390501655858"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineExtractorBenchmarks.ExtractAsync(ItemCount: 100)",
+            "value": 45737.1877746582,
+            "unit": "ns",
+            "range": "± 126.77587221342395"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineExtractorBenchmarks.ExtractAsync(ItemCount: 1000)",
+            "value": 441505.2822265625,
+            "unit": "ns",
+            "range": "± 5168.682290923042"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineLoaderBenchmarks.LoadAsync(ItemCount: 10)",
+            "value": 2682.90789159139,
+            "unit": "ns",
+            "range": "± 31.578243087391478"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineLoaderBenchmarks.LoadAsync(ItemCount: 100)",
+            "value": 25562.12806193034,
+            "unit": "ns",
+            "range": "± 186.87923137641138"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineLoaderBenchmarks.LoadAsync(ItemCount: 1000)",
+            "value": 305235.6119791667,
+            "unit": "ns",
+            "range": "± 6274.2586114629985"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamExtractorBenchmarks.ExtractAsync(ItemCount: 10)",
+            "value": 6045.012641906738,
+            "unit": "ns",
+            "range": "± 19.431914540077173"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamExtractorBenchmarks.ExtractAsync(ItemCount: 100)",
+            "value": 55801.529958089195,
+            "unit": "ns",
+            "range": "± 332.68604102982664"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamExtractorBenchmarks.ExtractAsync(ItemCount: 1000)",
+            "value": 577187.2392578125,
+            "unit": "ns",
+            "range": "± 4928.733798306079"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamLoaderBenchmarks.LoadAsync(ItemCount: 10)",
+            "value": 3452.422294616699,
+            "unit": "ns",
+            "range": "± 37.89404315212854"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamLoaderBenchmarks.LoadAsync(ItemCount: 100)",
+            "value": 33992.088999430336,
+            "unit": "ns",
+            "range": "± 87.60237571208924"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamLoaderBenchmarks.LoadAsync(ItemCount: 1000)",
+            "value": 341835.26481119794,
+            "unit": "ns",
+            "range": "± 7494.650264419789"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamExtractorBenchmarks.ExtractAsync(ItemCount: 10)",
+            "value": 4573.5956624348955,
+            "unit": "ns",
+            "range": "± 20.062359592940645"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamExtractorBenchmarks.ExtractAsync(ItemCount: 100)",
+            "value": 37870.730143229164,
+            "unit": "ns",
+            "range": "± 560.9737321088953"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamExtractorBenchmarks.ExtractAsync(ItemCount: 1000)",
+            "value": 386214.95914713544,
+            "unit": "ns",
+            "range": "± 527.2498974753283"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync(ItemCount: 10)",
+            "value": 2297.8338661193848,
+            "unit": "ns",
+            "range": "± 20.91647714861147"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync_CamelCase(ItemCount: 10)",
+            "value": 2918.583875020345,
+            "unit": "ns",
+            "range": "± 37.18054809031269"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync(ItemCount: 100)",
+            "value": 21239.50182088216,
+            "unit": "ns",
+            "range": "± 185.82065918079533"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync_CamelCase(ItemCount: 100)",
+            "value": 21477.521759033203,
+            "unit": "ns",
+            "range": "± 289.13322664893064"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync(ItemCount: 1000)",
+            "value": 247256.8230794271,
+            "unit": "ns",
+            "range": "± 769.4076081888049"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync_CamelCase(ItemCount: 1000)",
+            "value": 248150.3048502604,
+            "unit": "ns",
+            "range": "± 145.10780487930793"
           }
         ]
       }
