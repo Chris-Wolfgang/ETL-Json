@@ -292,7 +292,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     /// </summary>
     /// <param name="options">The record to check.</param>
     /// <exception cref="ArgumentException">The record sets <see cref="JsonSingleStreamExtractorOptions.SerializerOptions"/>.</exception>
-    private static void RejectSerializerOptions(JsonSingleStreamExtractorOptions options)
+    private static void RejectSerializerOptions(JsonSingleStreamExtractorOptions? options)
     {
         if (options?.SerializerOptions is not null)
         {
@@ -311,7 +311,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     /// settings were applied by the <see cref="ExtractorBase{TSource, TProgress}"/> constructor.
     /// </summary>
     /// <exception cref="ArgumentNullException"><paramref name="options"/> is <see langword="null"/>.</exception>
-    private void ApplyOptions(JsonSingleStreamExtractorOptions options)
+    private static void ApplyOptions(JsonSingleStreamExtractorOptions options)
     {
         if (options is null)
         {
