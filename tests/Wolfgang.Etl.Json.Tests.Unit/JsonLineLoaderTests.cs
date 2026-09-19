@@ -7,7 +7,6 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging.Abstractions;
-using Wolfgang.Etl.Abstractions;
 using Wolfgang.Etl.Json.Tests.Unit.TestModels;
 using Wolfgang.Etl.TestKit.Xunit;
 using Xunit;
