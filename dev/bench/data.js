@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1789691127123,
+  "lastUpdate": 1789779847853,
   "repoUrl": "https://github.com/Chris-Wolfgang/ETL-Json",
   "entries": {
     "BenchmarkDotNet": [
@@ -4800,6 +4800,156 @@ window.BENCHMARK_DATA = {
             "value": 391208.18050130206,
             "unit": "ns",
             "range": "± 2663.8903146375933"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "210299580+Chris-Wolfgang@users.noreply.github.com",
+            "name": "Chris Wolfgang",
+            "username": "Chris-Wolfgang"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "b7cadd54e4152dbcee5aee9daf6456cfa5dd63e3",
+          "message": "build: adopt Wolfgang.Etl.Abstractions 0.25.0 (contract tests take the base config through CreateSut) (#387)\n\n* build: adopt Wolfgang.Etl.Abstractions / TestKit / TestKit.Xunit 0.25.0\n\nThe base contract classes now take the base configuration through CreateSut(int itemCount, int maximumItemCount, int skipItemCount, int reportingInterval); every implementer forwards the three values into its options record. Tests that configured a stage through the now-deprecated base setters configure through the record instead; the vestigial CreateSutWithTimer overrides go (Chris-Wolfgang/ETL-Abstractions#372 removes the member next).\n\nThe JSONL example configured skip/max through the base setters; it passes JsonLineExtractorOptions now.\n\nVerified locally: Release build 0 errors; unit suites green on net462 / netcoreapp3.1 / net10.0; coverage gate reproduced with no class below 90 %.\n\nCo-Authored-By: Claude Opus 5 <noreply@anthropic.com>\n\n* build: commit the contract-test, example and changelog changes for the 0.25 adoption\n\nThe adoption commit only captured the csproj bumps; the CreateSut(int, int, int, int) implementations, the dropped CreateSutWithTimer overrides, the JsonMetricsTests record, the JSONL example's move to JsonLineExtractorOptions and the changelog fragment were left in the working tree.\n\nCo-Authored-By: Claude Opus 5 <noreply@anthropic.com>\n\n---------\n\nCo-authored-by: Claude Opus 5 <noreply@anthropic.com>",
+          "timestamp": "2026-09-18T21:00:42-04:00",
+          "tree_id": "3bfa441fb522042e7e1b84b45b3f4b709665b4db",
+          "url": "https://github.com/Chris-Wolfgang/ETL-Json/commit/b7cadd54e4152dbcee5aee9daf6456cfa5dd63e3"
+        },
+        "date": 1789779844691,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineExtractorBenchmarks.ExtractAsync(ItemCount: 10)",
+            "value": 6311.487130482991,
+            "unit": "ns",
+            "range": "± 39.890629060937826"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineExtractorBenchmarks.ExtractAsync(ItemCount: 100)",
+            "value": 56160.53837076823,
+            "unit": "ns",
+            "range": "± 653.485946483357"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineExtractorBenchmarks.ExtractAsync(ItemCount: 1000)",
+            "value": 557839.8818359375,
+            "unit": "ns",
+            "range": "± 2001.5911040580954"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineLoaderBenchmarks.LoadAsync(ItemCount: 10)",
+            "value": 3337.3417727152505,
+            "unit": "ns",
+            "range": "± 8.676664687895535"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineLoaderBenchmarks.LoadAsync(ItemCount: 100)",
+            "value": 31611.087768554688,
+            "unit": "ns",
+            "range": "± 53.57190784135438"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineLoaderBenchmarks.LoadAsync(ItemCount: 1000)",
+            "value": 382080.84163411456,
+            "unit": "ns",
+            "range": "± 1278.6539942843963"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamExtractorBenchmarks.ExtractAsync(ItemCount: 10)",
+            "value": 7689.61127726237,
+            "unit": "ns",
+            "range": "± 21.52804716907895"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamExtractorBenchmarks.ExtractAsync(ItemCount: 100)",
+            "value": 72405.92956542969,
+            "unit": "ns",
+            "range": "± 1034.568164075126"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamExtractorBenchmarks.ExtractAsync(ItemCount: 1000)",
+            "value": 722523.9228515625,
+            "unit": "ns",
+            "range": "± 6993.616229040784"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamLoaderBenchmarks.LoadAsync(ItemCount: 10)",
+            "value": 4603.533671061198,
+            "unit": "ns",
+            "range": "± 18.69549916379152"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamLoaderBenchmarks.LoadAsync(ItemCount: 100)",
+            "value": 42769.79923502604,
+            "unit": "ns",
+            "range": "± 82.38364022515002"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamLoaderBenchmarks.LoadAsync(ItemCount: 1000)",
+            "value": 424609.6015625,
+            "unit": "ns",
+            "range": "± 520.7948310537035"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamExtractorBenchmarks.ExtractAsync(ItemCount: 10)",
+            "value": 6229.673403422038,
+            "unit": "ns",
+            "range": "± 12.253340521014305"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamExtractorBenchmarks.ExtractAsync(ItemCount: 100)",
+            "value": 51253.27968343099,
+            "unit": "ns",
+            "range": "± 92.80475618496392"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamExtractorBenchmarks.ExtractAsync(ItemCount: 1000)",
+            "value": 496435.3098958333,
+            "unit": "ns",
+            "range": "± 2352.6330993146344"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync(ItemCount: 10)",
+            "value": 2938.2642250061035,
+            "unit": "ns",
+            "range": "± 0.4875317453942048"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync_CamelCase(ItemCount: 10)",
+            "value": 3560.7446263631186,
+            "unit": "ns",
+            "range": "± 11.776583934245545"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync(ItemCount: 100)",
+            "value": 25758.632954915363,
+            "unit": "ns",
+            "range": "± 90.79741916195528"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync_CamelCase(ItemCount: 100)",
+            "value": 26845.09726969401,
+            "unit": "ns",
+            "range": "± 196.9966541850584"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync(ItemCount: 1000)",
+            "value": 322241.1292317708,
+            "unit": "ns",
+            "range": "± 817.0132304860647"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync_CamelCase(ItemCount: 1000)",
+            "value": 334045.5436197917,
+            "unit": "ns",
+            "range": "± 253.02434920303384"
           }
         ]
       }
