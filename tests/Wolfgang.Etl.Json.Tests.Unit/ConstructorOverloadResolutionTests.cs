@@ -3,6 +3,7 @@ using System.Text.Json;
 using Wolfgang.Etl.Json.Tests.Unit.TestModels;
 using Xunit;
 
+// ReSharper disable RedundantArgumentDefaultValue -- the explicit trailing nulls are the call shapes under test
 namespace Wolfgang.Etl.Json.Tests.Unit;
 
 /// <summary>

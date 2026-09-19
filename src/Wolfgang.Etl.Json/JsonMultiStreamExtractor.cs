@@ -380,7 +380,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// </summary>
     /// <param name="options">The record to check.</param>
     /// <exception cref="ArgumentException">The record sets <see cref="JsonMultiStreamExtractorOptions.SerializerOptions"/>.</exception>
-    private static void RejectSerializerOptions(JsonMultiStreamExtractorOptions options)
+    private static void RejectSerializerOptions(JsonMultiStreamExtractorOptions? options)
     {
         if (options?.SerializerOptions is not null)
         {
@@ -399,7 +399,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// settings were applied by the <see cref="ExtractorBase{TSource, TProgress}"/> constructor.
     /// </summary>
     /// <exception cref="ArgumentNullException"><paramref name="options"/> is <see langword="null"/>.</exception>
-    private void ApplyOptions(JsonMultiStreamExtractorOptions options)
+    private static void ApplyOptions(JsonMultiStreamExtractorOptions options)
     {
         if (options is null)
         {
