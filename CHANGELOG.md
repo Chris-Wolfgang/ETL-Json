@@ -20,6 +20,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 
+## [0.10.0] - 2026-09-22
+
+### Added
+
+- Built against `Wolfgang.Etl.Abstractions` 0.25.0 (and TestKit / TestKit.Xunit 0.25.0): the base-stage `ReportingInterval` / `MaximumItemCount` / `SkipItemCount` setters are deprecated fleet-wide in favour of the options record, and `IncrementCurrentItemCount(int)` / `IncrementCurrentSkippedItemCount(int)` are available to derived stages. (#387)
+
+### Fixed
+
+- Packages ship one `THIRD-PARTY-NOTICES.md` - the per-package file generated from each project's own NuGet closure - instead of failing to pack (`NU5118`) because the repository-wide file was still added alongside it. (#416)
+- Ship `net5.0`, `net6.0` and `net7.0` assemblies: the `netstandard2.0` build, loaded beside the `net5.0`+ `Wolfgang.Etl.Abstractions` asset, would throw `MissingMethodException` on any write to an inherited options-record property (`IsExternalInit` modreq mismatch). Each runtime now gets an assembly compiled against its matching Abstractions asset. (#327)
+
+### Documentation
+
+- `THIRD-PARTY-NOTICES.md` added at the repo root (shipped runtime dependencies with version and licence) and packed into the NuGet package. (#298) (#389)
+
+### Internal
+
+- Built against Wolfgang.Etl.Abstractions / ErrorPolicies / TestKit / TestKit.Xunit 0.26.0 (trim- and native-AOT-compatible on net8.0+; no API change from 0.25.0), so the package now requires Abstractions 0.26.0 or later. (#417)
+- New `src/.editorconfig`: S1133 (scheduled `[Obsolete]` setters, #325) and S3427 (optional-parameter overlaps with the single-argument constructors that #295 retires) are off for the src project until the 2026-12-15 removal wave, with dated notes. (#404)
+- Src clean-up: `RejectSerializerOptions` declares the null it already tolerates (`Options?`), the three loaders' `IsDryRun` get a real summary (not inherited), and the two extractors' guard-only `ApplyOptions` become static. (#405)
+- Redundant `using`s removed from five options records and three loader test files; `ConstructorOverloadResolutionTests` marks its explicit trailing `null` arguments as deliberate. (#406)
+- The options constructor assigns the stage's backing fields directly instead of going through the deprecated setters, so the `CS0618` suppressions that covered those writes are gone. None of the four stages' deprecated setters validate, so no record-side guard was needed. (#384) (#389)
+- Record the compiler-synthesized members of the shipped records in `PublicAPI.Shipped.txt` (per-TFM files for the covariant `<Clone>$` lines); they were public all along, no surface change. (#329)
+
 ## [0.9.0] - 2026-09-16
 
 ### Changed
