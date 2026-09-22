@@ -22,9 +22,9 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
     <PackageReference Include="System.Linq.Async" Version="7.0.1" />
     <PackageReference Include="System.Text.Json" Version="10.0.12" />
-    <PackageReference Include="Wolfgang.Etl.TestKit" Version="0.25.0" />
-    <PackageReference Include="Wolfgang.Etl.TestKit.Xunit" Version="0.25.0" />
-    <PackageReference Include="Wolfgang.Etl.ErrorPolicies" Version="0.25.0" />
+    <PackageReference Include="Wolfgang.Etl.TestKit" Version="0.26.0" />
+    <PackageReference Include="Wolfgang.Etl.TestKit.Xunit" Version="0.26.0" />
+    <PackageReference Include="Wolfgang.Etl.ErrorPolicies" Version="0.26.0" />
     <PackageReference Include="xunit" Version="2.9.3" />
     <!--
       xunit.runner.visualstudio 2.8.2 ships build/lib assets for net462 and net6.0 ONLY, so the
