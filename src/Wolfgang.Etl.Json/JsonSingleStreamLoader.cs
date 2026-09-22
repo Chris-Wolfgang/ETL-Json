@@ -345,56 +345,73 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
 
         var sw = Stopwatch.StartNew();
 
-        // CA2007/MA0004: await using declarations do not support ConfigureAwait in C#
-#pragma warning disable CA2007, MA0004
-        await using var writer = IsDryRun ? null : new Utf8JsonWriter(_stream);
-#pragma warning restore CA2007, MA0004
-
-        writer?.WriteStartArray();
-
-        await foreach (var item in items.WithCancellation(token).ConfigureAwait(false))
+        // Disposed by hand rather than `await using var`: the declaration form can't take
+        // ConfigureAwait(false), and this loader ships on net462/netstandard2.0 where a
+        // context-captured DisposeAsync (which flushes to the stream) can deadlock a
+        // sync-over-async host.
+        var writer = IsDryRun ? null : new Utf8JsonWriter(_stream);
+        try
         {
-            token.ThrowIfCancellationRequested();
+            writer?.WriteStartArray();
 
-            if (CurrentSkippedItemCount < SkipItemCount)
+            await foreach (var item in items.WithCancellation(token).ConfigureAwait(false))
             {
-                IncrementCurrentSkippedItemCount();
-                JsonMetrics.AddSkipped(JsonMetrics.LoadOperationTag, JsonMetrics.JsonSingleStreamComponentTag, _recordTypeTag);
-                JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
-                continue;
+                token.ThrowIfCancellationRequested();
+
+                if (CurrentSkippedItemCount < SkipItemCount)
+                {
+                    IncrementCurrentSkippedItemCount();
+                    JsonMetrics.AddSkipped(JsonMetrics.LoadOperationTag, JsonMetrics.JsonSingleStreamComponentTag, _recordTypeTag);
+                    JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
+                    continue;
+                }
+
+                if (CurrentItemCount >= MaximumItemCount)
+                {
+                    JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
+                    break;
+                }
+
+                if (writer is not null)
+                {
+                    WriteItem(writer, item);
+                }
+
+                IncrementCurrentItemCount();
+                JsonMetrics.AddLoaded(JsonMetrics.LoadOperationTag, JsonMetrics.JsonSingleStreamComponentTag, _recordTypeTag);
+                JsonLogMessages.LoadedItem(_logger, CurrentItemCount, null);
             }
 
-            if (CurrentItemCount >= MaximumItemCount)
-            {
-                JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
-                break;
-            }
-
+            writer?.WriteEndArray();
             if (writer is not null)
             {
-                if (_typeInfo is not null)
-                {
-                    JsonSerializer.Serialize(writer, item, _typeInfo);
-                }
-                else
-                {
-                    JsonSerializer.Serialize(writer, item, _options);
-                }
+                await writer.FlushAsync(token).ConfigureAwait(false);
             }
 
-            IncrementCurrentItemCount();
-            JsonMetrics.AddLoaded(JsonMetrics.LoadOperationTag, JsonMetrics.JsonSingleStreamComponentTag, _recordTypeTag);
-            JsonLogMessages.LoadedItem(_logger, CurrentItemCount, null);
+            JsonLogMessages.SingleStreamLoadingCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, null);
+            JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, JsonMetrics.LoadOperationTag, JsonMetrics.JsonSingleStreamComponentTag, _recordTypeTag);
         }
-
-        writer?.WriteEndArray();
-        if (writer is not null)
+        finally
         {
-            await writer.FlushAsync(token).ConfigureAwait(false);
+            if (writer is not null)
+            {
+                await writer.DisposeAsync().ConfigureAwait(false);
+            }
         }
+    }
 
-        JsonLogMessages.SingleStreamLoadingCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, null);
-        JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, JsonMetrics.LoadOperationTag, JsonMetrics.JsonSingleStreamComponentTag, _recordTypeTag);
+
+
+    private void WriteItem(Utf8JsonWriter writer, TRecord item)
+    {
+        if (_typeInfo is not null)
+        {
+            JsonSerializer.Serialize(writer, item, _typeInfo);
+        }
+        else
+        {
+            JsonSerializer.Serialize(writer, item, _options);
+        }
     }
 
 

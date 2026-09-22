@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `JsonSingleStreamLoader` disposes its `Utf8JsonWriter` with `ConfigureAwait(false)`: the `await using` form captured the caller's synchronization context, a deadlock path for sync-over-async hosts on `net462` / `netstandard2.0`.
 - Packages ship one `THIRD-PARTY-NOTICES.md` - the per-package file generated from each project's own NuGet closure - instead of failing to pack (`NU5118`) because the repository-wide file was still added alongside it. (#416)
 - Ship `net5.0`, `net6.0` and `net7.0` assemblies: the `netstandard2.0` build, loaded beside the `net5.0`+ `Wolfgang.Etl.Abstractions` asset, would throw `MissingMethodException` on any write to an inherited options-record property (`IsExternalInit` modreq mismatch). Each runtime now gets an assembly compiled against its matching Abstractions asset. (#327)
 
