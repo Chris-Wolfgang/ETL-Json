@@ -18,6 +18,10 @@ on:
   schedule:
     - cron: '15 6 * * 1'   # Mondays 06:15 UTC
 
+concurrency:
+  group: license-audit-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 

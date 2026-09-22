@@ -35,6 +35,10 @@ on:
   workflow_dispatch:
 
 # Top-level minimum permissions. Individual jobs opt in to more where needed.
+concurrency:
+  group: aot-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
