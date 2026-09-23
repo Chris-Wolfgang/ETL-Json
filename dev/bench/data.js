@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1790118279126,
+  "lastUpdate": 1790165961863,
   "repoUrl": "https://github.com/Chris-Wolfgang/ETL-Json",
   "entries": {
     "BenchmarkDotNet": [
@@ -6300,6 +6300,156 @@ window.BENCHMARK_DATA = {
             "value": 267019.20703125,
             "unit": "ns",
             "range": "± 1921.8903622161836"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "210299580+Chris-Wolfgang@users.noreply.github.com",
+            "name": "Chris Wolfgang",
+            "username": "Chris-Wolfgang"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "90d111e328dc415b6a6aa91d4a02a4f17bfc2d8d",
+          "message": "chore(pack): advance PackageValidation baseline to 0.10.0 (#437)\n\nv0.10.0 published — all seven release jobs green, 5 assets attached, docs deployed, and the\nflatcontainer index has it. Doing this before the CDN catches up fails the pack with NU1102.\n\nCarries an `internal` changelog fragment rather than the `no-changelog` label — the change is\nreal, just not consumer-visible.\n\nCo-authored-by: Claude Opus 5 <noreply@anthropic.com>",
+          "timestamp": "2026-09-23T08:14:48-04:00",
+          "tree_id": "264aa8caee68018fdb686e6aacccc2ec1836bcac",
+          "url": "https://github.com/Chris-Wolfgang/ETL-Json/commit/90d111e328dc415b6a6aa91d4a02a4f17bfc2d8d"
+        },
+        "date": 1790165958685,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineExtractorBenchmarks.ExtractAsync(ItemCount: 10)",
+            "value": 7021.5162836710615,
+            "unit": "ns",
+            "range": "± 87.05765360766415"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineExtractorBenchmarks.ExtractAsync(ItemCount: 100)",
+            "value": 62621.97998046875,
+            "unit": "ns",
+            "range": "± 264.9431999212756"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineExtractorBenchmarks.ExtractAsync(ItemCount: 1000)",
+            "value": 636653.2392578125,
+            "unit": "ns",
+            "range": "± 8277.780479803328"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineLoaderBenchmarks.LoadAsync(ItemCount: 10)",
+            "value": 4554.997756958008,
+            "unit": "ns",
+            "range": "± 7.1013824654415565"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineLoaderBenchmarks.LoadAsync(ItemCount: 100)",
+            "value": 41927.15584309896,
+            "unit": "ns",
+            "range": "± 631.9731922931537"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineLoaderBenchmarks.LoadAsync(ItemCount: 1000)",
+            "value": 491506.5895182292,
+            "unit": "ns",
+            "range": "± 5340.413019808367"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamExtractorBenchmarks.ExtractAsync(ItemCount: 10)",
+            "value": 8350.371002197266,
+            "unit": "ns",
+            "range": "± 49.04144130478163"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamExtractorBenchmarks.ExtractAsync(ItemCount: 100)",
+            "value": 80867.71260579427,
+            "unit": "ns",
+            "range": "± 154.23328028781742"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamExtractorBenchmarks.ExtractAsync(ItemCount: 1000)",
+            "value": 775553.3180338541,
+            "unit": "ns",
+            "range": "± 1244.361093793974"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamLoaderBenchmarks.LoadAsync(ItemCount: 10)",
+            "value": 5790.695457458496,
+            "unit": "ns",
+            "range": "± 15.733499731632842"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamLoaderBenchmarks.LoadAsync(ItemCount: 100)",
+            "value": 55772.5507405599,
+            "unit": "ns",
+            "range": "± 73.0354765097394"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamLoaderBenchmarks.LoadAsync(ItemCount: 1000)",
+            "value": 567395.267578125,
+            "unit": "ns",
+            "range": "± 905.313288245946"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamExtractorBenchmarks.ExtractAsync(ItemCount: 10)",
+            "value": 6921.997421264648,
+            "unit": "ns",
+            "range": "± 33.02305856710019"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamExtractorBenchmarks.ExtractAsync(ItemCount: 100)",
+            "value": 58199.93966674805,
+            "unit": "ns",
+            "range": "± 66.52328075394949"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamExtractorBenchmarks.ExtractAsync(ItemCount: 1000)",
+            "value": 559364.6337890625,
+            "unit": "ns",
+            "range": "± 3745.7962332150137"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync(ItemCount: 10)",
+            "value": 3986.7755228678384,
+            "unit": "ns",
+            "range": "± 23.242271507501464"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync_CamelCase(ItemCount: 10)",
+            "value": 4617.642641703288,
+            "unit": "ns",
+            "range": "± 6.624131298561067"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync(ItemCount: 100)",
+            "value": 34355.05916341146,
+            "unit": "ns",
+            "range": "± 81.58418515264475"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync_CamelCase(ItemCount: 100)",
+            "value": 34460.9560546875,
+            "unit": "ns",
+            "range": "± 132.31497270173938"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync(ItemCount: 1000)",
+            "value": 397408.21826171875,
+            "unit": "ns",
+            "range": "± 2701.079080593887"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync_CamelCase(ItemCount: 1000)",
+            "value": 393820.82080078125,
+            "unit": "ns",
+            "range": "± 1749.5654424582588"
           }
         ]
       }
