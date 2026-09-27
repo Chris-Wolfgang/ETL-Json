@@ -1804,7 +1804,11 @@ jobs:
           dotnet build --no-restore --configuration Release
 
       - name: Run tests (.NET 6.0-10.0)
+        # Explicit bash gives `-eo pipefail` (the implicit shell is `bash -e` only), so a
+        # failed command inside a pipeline cannot go green.
+        shell: bash
         run: |
+          set -euo pipefail
           test_projects=()
           while IFS= read -r proj; do
             test_projects+=("$proj")
@@ -1819,23 +1823,39 @@ jobs:
             echo "=========================================="
             echo "Testing: $proj"
             echo "=========================================="
-            for fw in net6.0 net7.0 net8.0 net9.0 net10.0; do
+            # Run only the TFMs this project actually targets, intersected with net6.0-net10.0.
+            # A project that targets a subset (e.g. Tests.SourceLink, net10.0 only) has no build
+            # output for the others, and `dotnet test --framework` on an untargeted TFM fails
+            # rather than skipping. Evaluate through MSBuild (handles multi-line XML and
+            # Directory.Build.props inheritance): TargetFrameworks first, then the single-TFM
+            # TargetFramework. A failed evaluation fails the step; the `|| true` covers only the
+            # text filters, whose grep legitimately selects nothing for an empty property.
+            if ! tfm_out=$(dotnet msbuild "$proj" -noLogo -getProperty:TargetFrameworks 2>"$RUNNER_TEMP/msbuild-eval.err"); then
+              echo "::error file=$proj::MSBuild evaluation of TargetFrameworks failed for $proj"; cat "$RUNNER_TEMP/msbuild-eval.err"; exit 1
+            fi
+            tfm_raw=$(printf '%s\n' "$tfm_out" | grep -v '^[[:space:]]*$' | tail -n1 | tr -d '[:space:]' || true)
+            if [ -z "$tfm_raw" ]; then
+              if ! tfm_out=$(dotnet msbuild "$proj" -noLogo -getProperty:TargetFramework 2>"$RUNNER_TEMP/msbuild-eval.err"); then
+                echo "::error file=$proj::MSBuild evaluation of TargetFramework failed for $proj"; cat "$RUNNER_TEMP/msbuild-eval.err"; exit 1
+              fi
+              tfm_raw=$(printf '%s\n' "$tfm_out" | grep -v '^[[:space:]]*$' | tail -n1 | tr -d '[:space:]' || true)
+            fi
+            frameworks=$(printf '%s' "$tfm_raw" | tr ';' '\n' | grep -E '^net(6\.0|7\.0|8\.0|9\.0|10\.0)$' || true)
+            if [ -z "$frameworks" ]; then
+              echo "  ⏭️  no net6.0-net10.0 target (targets: ${tfm_raw:-none}), skipping"
+              continue
+            fi
+            while IFS= read -r fw; do
               if dotnet test "$proj" --configuration Release --framework "$fw" \
                   --no-build --no-restore \
-                  --logger "console;verbosity=minimal" 2>/dev/null; then
+                  --logger "console;verbosity=minimal"; then
                 echo "  ✅ $fw passed"
               else
                 rc=$?
-                # Skip if framework isn't targeted by this project
-                if dotnet test "$proj" --configuration Release --framework "$fw" \
-                    --list-tests --no-build 2>&1 | grep -q "No test"; then
-                  echo "  ⏭️  $fw not targeted"
-                else
-                  echo "  ❌ $fw failed"
-                  exit $rc
-                fi
+                echo "  ❌ $fw failed"
+                exit $rc
               fi
-            done
+            done <<< "$frameworks"
           done
           echo ""
           echo "✅ All ARM64 tests passed"
