@@ -43,7 +43,7 @@ public class DocExampleCompilationTests
 
     public static IEnumerable<object[]> Examples()
     {
-        var srcDir = FindSourceDirectory();
+        var srcDir = FindSourceDirectory(AppContext.BaseDirectory);
         foreach (var file in Directory.EnumerateFiles(srcDir, "*.cs", SearchOption.AllDirectories))
         {
             if (IsUnderBuildOutput(file))
@@ -81,9 +81,10 @@ public class DocExampleCompilationTests
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, nullableContextOptions: NullableContextOptions.Enable)
         );
 
+        // Diagnostic.ToString() is what string.Join renders below; no projection to
+        // string here, so no lambda that only runs when an example fails to compile.
         var errors = compilation.GetDiagnostics()
             .Where(d => d.Severity == DiagnosticSeverity.Error)
-            .Select(d => d.ToString())
             .ToList();
 
         Assert.True
@@ -175,9 +176,28 @@ public class DocExampleCompilationTests
                            || string.Equals(p, "obj", StringComparison.OrdinalIgnoreCase));
     }
 
-    private static string FindSourceDirectory()
+    [Fact]
+    public void FindSourceDirectory_when_no_ancestor_holds_the_src_project_throws_DirectoryNotFoundException()
     {
-        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+        // A fresh directory under the temp root has no src/Wolfgang.Etl.Json anywhere
+        // above it, so the walk reaches the filesystem root.
+        var orphan = Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()));
+
+        try
+        {
+            var ex = Assert.Throws<DirectoryNotFoundException>(() => FindSourceDirectory(orphan.FullName));
+
+            Assert.Contains(orphan.FullName, ex.Message, StringComparison.Ordinal);
+        }
+        finally
+        {
+            orphan.Delete();
+        }
+    }
+
+    private static string FindSourceDirectory(string startDirectory)
+    {
+        var dir = new DirectoryInfo(startDirectory);
         while (dir is not null)
         {
             var candidate = Path.Combine(dir.FullName, "src", "Wolfgang.Etl.Json");
@@ -190,6 +210,6 @@ public class DocExampleCompilationTests
         }
 
         throw new DirectoryNotFoundException(
-            $"Could not locate src/Wolfgang.Etl.Json walking up from {AppContext.BaseDirectory}");
+            $"Could not locate src/Wolfgang.Etl.Json walking up from {startDirectory}");
     }
 }
