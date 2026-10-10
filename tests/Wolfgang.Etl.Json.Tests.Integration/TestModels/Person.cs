@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace Wolfgang.Etl.Json.Tests.Integration.TestModels;
 
 /// <summary>
@@ -7,7 +5,6 @@ namespace Wolfgang.Etl.Json.Tests.Integration.TestModels;
 /// structural — extracted instances compare equal to the originals they were
 /// serialized from.
 /// </summary>
-[ExcludeFromCodeCoverage]
 public record Person
 {
     public int Id { get; set; }

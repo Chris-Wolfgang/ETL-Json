@@ -806,6 +806,30 @@ public class JsonLineExtractorTests
 
 
 
+    [Fact]
+    public void NonSeekableStream_is_a_read_only_forward_only_wrapper()
+    {
+        // Pins the test double the checkpoint test above relies on: it reads
+        // through to the inner stream and refuses every seek, length, position
+        // and write operation.
+        using var inner = new MemoryStream(new byte[] { 1, 2, 3 });
+        using var sut = new NonSeekableStream(inner);
+        var buffer = new byte[3];
+
+        sut.Flush();
+
+        Assert.Equal((true, false, false), (sut.CanRead, sut.CanSeek, sut.CanWrite));
+        Assert.Equal(3, sut.Read(buffer, 0, 3));
+        Assert.Throws<NotSupportedException>(() => sut.Length);
+        Assert.Throws<NotSupportedException>(() => sut.Position);
+        Assert.Throws<NotSupportedException>(() => sut.Position = 0);
+        Assert.Throws<NotSupportedException>(() => sut.Seek(0, SeekOrigin.Begin));
+        Assert.Throws<NotSupportedException>(() => sut.SetLength(0));
+        Assert.Throws<NotSupportedException>(() => sut.Write(buffer, 0, 1));
+    }
+
+
+
     private sealed class NonSeekableStream : Stream
     {
         private readonly Stream _inner;
