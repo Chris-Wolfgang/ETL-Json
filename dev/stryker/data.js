@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1791101380980,
+  "lastUpdate": 1791699719722,
   "repoUrl": "https://github.com/Chris-Wolfgang/ETL-Json",
   "entries": {
     "Mutation score": [
@@ -48,6 +48,33 @@ window.BENCHMARK_DATA = {
           "url": "https://github.com/Chris-Wolfgang/ETL-Json/commit/a5845d1f42527fe7a95acf91780736ec556d1d0a"
         },
         "date": 1791101373679,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Mutation score",
+            "value": 50.08,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]",
+            "email": "49699333+dependabot[bot]@users.noreply.github.com"
+          },
+          "committer": {
+            "name": "GitHub",
+            "username": "web-flow",
+            "email": "noreply@github.com"
+          },
+          "id": "d08ecc2b1f04989987c9758d83ece1ea185443e9",
+          "message": "Bump the dotnet-dependencies group with 7 updates (#464)\n\nBumps coverlet.collector from 10.0.1 to 10.1.0\nBumps docfx from 2.80.1 to 2.81.0\nBumps jetbrains.resharper.globaltools from 2026.2.2 to 2026.2.3.1\nBumps Meziantou.Analyzer from 3.0.270 to 3.0.294\nBumps microsoft.cst.devskim.cli from 1.0.90 to 1.0.100\nBumps Roslynator.Analyzers from 5.0.0 to 5.0.1\nBumps SonarAnalyzer.CSharp from 10.34.0.3385 to 10.35.0.4138\n\n---\nupdated-dependencies:\n- dependency-name: coverlet.collector\n  dependency-version: 10.1.0\n  dependency-type: direct:production\n  update-type: version-update:semver-minor\n  dependency-group: dotnet-dependencies\n- dependency-name: coverlet.collector\n  dependency-version: 10.1.0\n  dependency-type: direct:production\n  update-type: version-update:semver-minor\n  dependency-group: dotnet-dependencies\n- dependency-name: coverlet.collector\n  dependency-version: 10.1.0\n  dependency-type: direct:production\n  update-type: version-update:semver-minor\n  dependency-group: dotnet-dependencies\n- dependency-name: docfx\n  dependency-version: 2.81.0\n  dependency-type: direct:production\n  update-type: version-update:semver-minor\n  dependency-group: dotnet-dependencies\n- dependency-name: jetbrains.resharper.globaltools\n  dependency-version: 2026.2.3.1\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n  dependency-group: dotnet-dependencies\n- dependency-name: Meziantou.Analyzer\n  dependency-version: 3.0.294\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n  dependency-group: dotnet-dependencies\n- dependency-name: microsoft.cst.devskim.cli\n  dependency-version: 1.0.100\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n  dependency-group: dotnet-dependencies\n- dependency-name: Roslynator.Analyzers\n  dependency-version: 5.0.1\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n  dependency-group: dotnet-dependencies\n- dependency-name: SonarAnalyzer.CSharp\n  dependency-version: 10.35.0.4138\n  dependency-type: direct:production\n  update-type: version-update:semver-minor\n  dependency-group: dotnet-dependencies\n...\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>\nCo-authored-by: Chris Wolfgang <210299580+Chris-Wolfgang@users.noreply.github.com>",
+          "timestamp": "2026-10-10T22:58:51Z",
+          "url": "https://github.com/Chris-Wolfgang/ETL-Json/commit/d08ecc2b1f04989987c9758d83ece1ea185443e9"
+        },
+        "date": 1791699712571,
         "tool": "customBiggerIsBetter",
         "benches": [
           {
