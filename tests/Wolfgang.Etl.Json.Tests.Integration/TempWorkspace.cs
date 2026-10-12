@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 namespace Wolfgang.Etl.Json.Tests.Integration;
@@ -9,7 +8,6 @@ namespace Wolfgang.Etl.Json.Tests.Integration;
 /// on dispose. Integration tests use this to exercise the extractors and loaders
 /// against real files on disk rather than in-memory streams.
 /// </summary>
-[ExcludeFromCodeCoverage]
 public sealed class TempWorkspace : IDisposable
 {
     public TempWorkspace()
@@ -75,23 +73,39 @@ public sealed class TempWorkspace : IDisposable
 
 
 
-    public void Dispose()
+    public void Dispose() =>
+        DeleteQuietly
+        (
+            () =>
+            {
+                if (Directory.Exists(Root))
+                {
+                    Directory.Delete(Root, recursive: true);
+                }
+            }
+        );
+
+
+
+    /// <summary>
+    /// Runs <paramref name="delete"/>, swallowing the I/O failures a best-effort
+    /// cleanup can hit: a virus scanner or lingering handle can briefly lock a
+    /// temp file on Windows. The OS reclaims %TEMP% regardless, so a failed delete
+    /// must not fail an otherwise-passing test.
+    /// </summary>
+    internal static void DeleteQuietly(Action delete)
     {
         try
         {
-            if (Directory.Exists(Root))
-            {
-                Directory.Delete(Root, recursive: true);
-            }
+            delete();
         }
         catch (IOException)
         {
-            // Best-effort cleanup: a virus scanner or lingering handle can briefly
-            // lock a temp file on Windows. The OS reclaims %TEMP% regardless, so a
-            // failed delete must not fail an otherwise-passing test.
+            // Best-effort cleanup; see the summary.
         }
         catch (UnauthorizedAccessException)
         {
+            // Best-effort cleanup; see the summary.
         }
     }
 }
