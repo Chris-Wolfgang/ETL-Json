@@ -464,11 +464,7 @@ public class JsonSingleStreamExtractorTests
             ErrorPolicy = ItemErrorPolicy.SkipAndDeadLetter(deadLetters),
         };
 
-        var results = new List<PersonRecord>();
-        await foreach (var item in sut.ExtractAsync())
-        {
-            results.Add(item);
-        }
+        var results = await sut.ExtractAsync().ToListAsync();
 
         Assert.Empty(results);
         Assert.Single(deadLetters);
@@ -493,11 +489,7 @@ public class JsonSingleStreamExtractorTests
             ErrorPolicy = ItemErrorPolicy.Skip,
         };
 
-        var results = new List<PersonRecord>();
-        await foreach (var item in sut.ExtractAsync())
-        {
-            results.Add(item);
-        }
+        var results = await sut.ExtractAsync().ToListAsync();
 
         Assert.Empty(results);
         Assert.Equal(1, sut.CurrentErrorItemCount);

@@ -1,9 +1,7 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
 
 namespace Wolfgang.Etl.Json.Tests.Unit.TestModels;
 
-[ExcludeFromCodeCoverage]
 public record SnakeCasePersonRecord
 {
     [JsonPropertyName("first_name")]
