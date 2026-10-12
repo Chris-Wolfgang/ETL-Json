@@ -35,7 +35,7 @@ public class JsonMultiStreamLoaderTests
     {
         return new JsonMultiStreamLoader<PersonRecord>
         (
-            _ => new MemoryStream(),
+            NewMemoryStream,
             new JsonMultiStreamLoaderOptions
             {
                 MaximumItemCount = maximumItemCount,
@@ -217,7 +217,7 @@ public class JsonMultiStreamLoaderTests
         // fact can assert is that construction succeeds.
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
-            _ => new MemoryStream(),
+            NewMemoryStream,
             logger: null
         );
 
@@ -231,7 +231,7 @@ public class JsonMultiStreamLoaderTests
     {
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
-            _ => new MemoryStream(),
+            NewMemoryStream,
             new JsonSerializerOptions(),
             logger: null
         );
@@ -246,7 +246,7 @@ public class JsonMultiStreamLoaderTests
     {
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
-                _ => new MemoryStream(),
+                NewMemoryStream,
                 (JsonSerializerOptions?)null,
                 NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
         );
@@ -278,7 +278,7 @@ public class JsonMultiStreamLoaderTests
     {
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
-            _ => new MemoryStream(),
+            NewMemoryStream,
             new JsonMultiStreamLoaderOptions(),
             new ManualProgressTimer(),
             logger: null
@@ -296,7 +296,7 @@ public class JsonMultiStreamLoaderTests
         (
             () => new JsonMultiStreamLoader<PersonRecord>
             (
-                _ => new MemoryStream(),
+                NewMemoryStream,
                 new JsonMultiStreamLoaderOptions(),
                 null!,
                 NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
@@ -309,20 +309,50 @@ public class JsonMultiStreamLoaderTests
     [Fact]
     public async Task LoadAsync_when_empty_sequence_creates_no_streams()
     {
-        var streamCount = 0;
+        var factory = new CountingStreamFactory();
 
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
-            _ =>
-            {
-                streamCount++;
-                return new MemoryStream();
-            }
+            factory.Create
         );
 
         await sut.LoadAsync(AsyncEnumerable.Empty<PersonRecord>());
 
-        Assert.Equal(0, streamCount);
+        Assert.Equal(0, factory.Count);
+    }
+
+
+
+    [Fact]
+    public async Task LoadAsync_when_two_items_creates_one_stream_per_item()
+    {
+        // Counterpart to the empty-sequence test: the same counting factory
+        // is called once per loaded record.
+        var factory = new CountingStreamFactory();
+
+        var sut = new JsonMultiStreamLoader<PersonRecord>
+        (
+            factory.Create
+        );
+
+        await sut.LoadAsync(SourceItems.Take(2).ToAsyncEnumerable());
+
+        Assert.Equal(2, factory.Count);
+    }
+
+
+
+    [Fact]
+    public async Task LoadAsync_with_named_destination_factory_loads_every_item()
+    {
+        var sut = new JsonMultiStreamLoader<PersonRecord>
+        (
+            NewNamedDestination
+        );
+
+        await sut.LoadAsync(SourceItems.Take(2).ToAsyncEnumerable());
+
+        Assert.Equal(2, sut.CurrentItemCount);
     }
 
 
@@ -455,7 +485,7 @@ public class JsonMultiStreamLoaderTests
         (
             () => new JsonMultiStreamLoader<PersonRecord>
             (
-                _ => new MemoryStream(),
+                NewMemoryStream,
                 typeInfo: null!,
                 NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
             )
@@ -469,7 +499,7 @@ public class JsonMultiStreamLoaderTests
     {
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
-            _ => new MemoryStream(),
+            NewMemoryStream,
             TestJsonContext.Default.PersonRecord,
             logger: null
         );
@@ -503,7 +533,7 @@ public class JsonMultiStreamLoaderTests
         (
             () => new JsonMultiStreamLoader<PersonRecord>
             (
-                _ => new MemoryStream(),
+                NewMemoryStream,
                 typeInfo: null!,
                 new ManualProgressTimer(),
                 NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
@@ -518,7 +548,7 @@ public class JsonMultiStreamLoaderTests
     {
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
-            _ => new MemoryStream(),
+            NewMemoryStream,
             TestJsonContext.Default.PersonRecord,
             new ManualProgressTimer(),
             logger: null
@@ -536,7 +566,7 @@ public class JsonMultiStreamLoaderTests
         (
             () => new JsonMultiStreamLoader<PersonRecord>
             (
-                _ => new MemoryStream(),
+                NewMemoryStream,
                 TestJsonContext.Default.PersonRecord,
                 timer: null!,
                 NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
@@ -694,7 +724,7 @@ public class JsonMultiStreamLoaderTests
     {
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
-            _ => new MemoryStream(),
+            NewMemoryStream,
             NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
         );
 
@@ -726,7 +756,7 @@ public class JsonMultiStreamLoaderTests
         // fact can assert is that construction succeeds.
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
-            _ => new JsonNamedDestination(new MemoryStream()),
+            NewNamedDestination,
             logger: null
         );
 
@@ -740,7 +770,7 @@ public class JsonMultiStreamLoaderTests
     {
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
-            _ => new JsonNamedDestination(new MemoryStream()),
+            NewNamedDestination,
             NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
         );
 
@@ -769,7 +799,7 @@ public class JsonMultiStreamLoaderTests
     {
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
-                _ => new JsonNamedDestination(new MemoryStream()),
+                NewNamedDestination,
                 (JsonSerializerOptions?)null
         );
 
@@ -783,7 +813,7 @@ public class JsonMultiStreamLoaderTests
     {
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
-            _ => new JsonNamedDestination(new MemoryStream()),
+            NewNamedDestination,
             new JsonSerializerOptions()
         );
 
@@ -816,7 +846,7 @@ public class JsonMultiStreamLoaderTests
         (
             () => new JsonMultiStreamLoader<PersonRecord>
             (
-                _ => new JsonNamedDestination(new MemoryStream()),
+                NewNamedDestination,
                 new JsonMultiStreamLoaderOptions(),
                 null!,
                 logger: null
@@ -831,7 +861,7 @@ public class JsonMultiStreamLoaderTests
     {
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
-            _ => new JsonNamedDestination(new MemoryStream()),
+            NewNamedDestination,
             new JsonMultiStreamLoaderOptions(),
             new ManualProgressTimer(),
             logger: null
@@ -862,7 +892,7 @@ public class JsonMultiStreamLoaderTests
     {
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
-            _ => new MemoryStream(),
+            NewMemoryStream,
             TestJsonContext.Default.PersonRecord
         );
 
@@ -893,7 +923,7 @@ public class JsonMultiStreamLoaderTests
         (
             () => new JsonMultiStreamLoader<PersonRecord>
             (
-                _ => new JsonNamedDestination(new MemoryStream()),
+                NewNamedDestination,
                 typeInfo: null!
             )
         );
@@ -906,10 +936,37 @@ public class JsonMultiStreamLoaderTests
     {
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
-            _ => new JsonNamedDestination(new MemoryStream()),
+            NewNamedDestination,
             TestJsonContext.Default.PersonRecord
         );
 
         Assert.NotNull(sut);
+    }
+
+
+
+    // Shared factories for the tests that only need SOME destination: the
+    // constructor-validation tests never invoke them; the contract tests and the
+    // load tests above do.
+    private static Stream NewMemoryStream(PersonRecord _) => new MemoryStream();
+
+
+
+    private static JsonNamedDestination NewNamedDestination(PersonRecord _) =>
+        new JsonNamedDestination(new MemoryStream());
+
+
+
+    private sealed class CountingStreamFactory
+    {
+        public int Count { get; private set; }
+
+
+
+        public Stream Create(PersonRecord _)
+        {
+            Count++;
+            return new MemoryStream();
+        }
     }
 }
