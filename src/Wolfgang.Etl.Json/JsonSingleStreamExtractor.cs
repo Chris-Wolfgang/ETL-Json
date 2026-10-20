@@ -404,6 +404,10 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
 
 
     /// <inheritdoc />
+#if NET5_0_OR_GREATER
+    [UnconditionalSuppressMessage("Trimming", "IL2026:RequiresUnreferencedCode", Justification = "Reflection-based serialization runs only when _typeInfo is null, and every constructor that leaves it null carries [RequiresUnreferencedCode].")]
+    [UnconditionalSuppressMessage("AOT", "IL3050:RequiresDynamicCode", Justification = "Reflection-based serialization runs only when _typeInfo is null, and every constructor that leaves it null carries [RequiresDynamicCode].")]
+#endif
     protected override async IAsyncEnumerable<TRecord> ExtractWorkerAsync
     (
         [EnumeratorCancellation] CancellationToken token
