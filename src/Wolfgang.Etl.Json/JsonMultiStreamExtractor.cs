@@ -110,6 +110,12 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// signal. Hidden from IntelliSense; source code binds here too, so nothing changes for callers. New
     /// code has no reason to name this overload.
     /// </remarks>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#if NET7_0_OR_GREATER
+    [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
+#endif
     [EditorBrowsable(EditorBrowsableState.Never)]
     public JsonMultiStreamExtractor
     (
@@ -173,6 +179,12 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="sources"/> is <c>null</c>.
     /// </exception>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#if NET7_0_OR_GREATER
+    [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
+#endif
     public JsonMultiStreamExtractor
     (
         IEnumerable<JsonNamedStream> sources,
@@ -248,6 +260,12 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// compile-time signal. Hidden from IntelliSense; source code binds here too, so nothing changes for callers.
     /// New code passes the record.
     /// </remarks>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#if NET7_0_OR_GREATER
+    [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
+#endif
     [EditorBrowsable(EditorBrowsableState.Never)]
     public JsonMultiStreamExtractor
     (
@@ -332,6 +350,12 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// <param name="options">The construction-time configuration for this stage, including the settings inherited from <see cref="ExtractorOptions"/>.</param>
     /// <param name="logger">An optional logger; <see langword="null"/> disables logging.</param>
     /// <exception cref="ArgumentNullException">A required argument is <see langword="null"/>.</exception>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#if NET7_0_OR_GREATER
+    [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
+#endif
     public JsonMultiStreamExtractor
     (
         IEnumerable<JsonNamedStream> sources,
@@ -454,6 +478,12 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     /// <param name="options">The construction-time configuration, including <see cref="JsonMultiStreamExtractorOptions.SerializerOptions"/>.</param>
     /// <param name="timer">The progress timer to inject.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#if NET7_0_OR_GREATER
+    [RequiresDynamicCode("JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
+#endif
     internal JsonMultiStreamExtractor
     (
         IEnumerable<JsonNamedStream> sources,
@@ -620,6 +650,10 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
 
 
 
+#if NET5_0_OR_GREATER
+    [UnconditionalSuppressMessage("Trimming", "IL2026:RequiresUnreferencedCode", Justification = "Reflection-based serialization runs only when _typeInfo is null, and every constructor that leaves it null carries [RequiresUnreferencedCode].")]
+    [UnconditionalSuppressMessage("AOT", "IL3050:RequiresDynamicCode", Justification = "Reflection-based serialization runs only when _typeInfo is null, and every constructor that leaves it null carries [RequiresDynamicCode].")]
+#endif
     private async System.Threading.Tasks.Task<(TRecord? Item, bool Failed)> TryDeserializeStreamAsync
     (
         Stream stream,
