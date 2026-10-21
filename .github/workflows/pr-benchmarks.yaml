@@ -2,8 +2,8 @@ name: PR Benchmarks
 
 # Runs BenchmarkDotNet on both the PR HEAD and the base branch tip, then posts
 # a delta table as a PR comment (replacing it on each push).  Fails the PR if
-# any benchmark regresses beyond the configured thresholds unless the PR carries
-# the perf-impact-acknowledged label.
+# any benchmark regresses beyond BOTH the percentage threshold AND the absolute
+# floor for that metric, unless the PR carries the perf-impact-acknowledged label.
 
 on:
   pull_request:
@@ -99,6 +99,24 @@ jobs:
           PR_LABELS: ${{ toJson(github.event.pull_request.labels.*.name) }}
           MEAN_THRESHOLD: '20'
           ALLOC_THRESHOLD: '50'
+          # Absolute floors. A benchmark regresses only when it crosses the
+          # percentage threshold AND grows by more than the floor, so a large
+          # ratio on a tiny absolute move (runner noise on a microsecond
+          # benchmark, the ETL-Abstractions#367 false alarm) no longer fails.
+          #
+          # MEAN_FLOOR_NS = 25 us. The ItemCount=10 cases run in 2-9 us (gh-pages
+          # dev/bench history, 43 runs), so a 20% blip there is under 2 us and
+          # can never reach the floor. A genuine per-item regression shows up in
+          # the ItemCount=1000 cases (178-900 us): +20% there is 36-180 us, which
+          # clears 25 us. Smaller floors would let the 10-item cases fail on
+          # noise; larger ones would hide a 20% regression in the fastest
+          # 1000-item benchmark (JsonSingleStreamLoader, ~180 us at its minimum).
+          #
+          # ALLOC_FLOOR_BYTES = 1 KB. An extra allocation of a fixed size below
+          # 1 KB per operation is not a per-item regression; a per-item one at
+          # ItemCount=1000 adds at least 1000 x (object size) bytes and clears it.
+          MEAN_FLOOR_NS: '25000'
+          ALLOC_FLOOR_BYTES: '1024'
           EXEMPT_LABEL: perf-impact-acknowledged
         run: |
           node << 'NODEJS'
@@ -114,6 +132,14 @@ jobs:
 
           const MEAN_THRESHOLD = parseFloat(process.env.MEAN_THRESHOLD);
           const ALLOC_THRESHOLD = parseFloat(process.env.ALLOC_THRESHOLD);
+          const MEAN_FLOOR_NS = parseFloat(process.env.MEAN_FLOOR_NS);
+          const ALLOC_FLOOR_BYTES = parseFloat(process.env.ALLOC_FLOOR_BYTES);
+          for (const [name, value] of Object.entries({ MEAN_THRESHOLD, ALLOC_THRESHOLD, MEAN_FLOOR_NS, ALLOC_FLOOR_BYTES })) {
+            if (!Number.isFinite(value) || value < 0) {
+              console.error(`::error::${name} is not a non-negative number - the gate cannot run.`);
+              process.exit(1);
+            }
+          }
           const EXEMPT_LABEL = process.env.EXEMPT_LABEL;
           const labels = JSON.parse(process.env.PR_LABELS || '[]');
           const isExempt = labels.includes(EXEMPT_LABEL);
@@ -137,8 +163,10 @@ jobs:
             return sign + pct.toFixed(1) + '%';
           }
 
-          function trafficLight(pct, threshold) {
-            if (pct > threshold) return '🔴';
+          // 🔴 only when the move fails the gate (ratio AND floor); a ratio breach
+          // under the floor shows 🟡, so the table still flags it for a human.
+          function trafficLight(pct, threshold, absDelta, floor) {
+            if (pct > threshold && absDelta > floor) return '🔴';
             if (pct > threshold / 2) return '🟡';
             if (pct < -5) return '🟢';
             return '⚪';
@@ -159,7 +187,11 @@ jobs:
             const deltaMean = baseMean > 0 ? ((headMean - baseMean) / baseMean * 100) : 0;
             const deltaAlloc = baseAlloc > 0 ? ((headAlloc - baseAlloc) / baseAlloc * 100) : 0;
 
-            if (deltaMean > MEAN_THRESHOLD || deltaAlloc > ALLOC_THRESHOLD) {
+            const absMean = headMean - baseMean;
+            const absAlloc = headAlloc - baseAlloc;
+
+            if ((deltaMean > MEAN_THRESHOLD && absMean > MEAN_FLOOR_NS) ||
+                (deltaAlloc > ALLOC_THRESHOLD && absAlloc > ALLOC_FLOOR_BYTES)) {
               hasRegression = true;
             }
 
@@ -168,8 +200,8 @@ jobs:
 
             rows.push(
               `| ${shortName} ` +
-              `| ${fmtTime(baseMean)} | ${fmtTime(headMean)} | ${trafficLight(deltaMean, MEAN_THRESHOLD)} ${fmtDelta(deltaMean)} ` +
-              `| ${fmtBytes(baseAlloc)} | ${fmtBytes(headAlloc)} | ${trafficLight(deltaAlloc, ALLOC_THRESHOLD)} ${fmtDelta(deltaAlloc)} |`
+              `| ${fmtTime(baseMean)} | ${fmtTime(headMean)} | ${trafficLight(deltaMean, MEAN_THRESHOLD, absMean, MEAN_FLOOR_NS)} ${fmtDelta(deltaMean)} ` +
+              `| ${fmtBytes(baseAlloc)} | ${fmtBytes(headAlloc)} | ${trafficLight(deltaAlloc, ALLOC_THRESHOLD, absAlloc, ALLOC_FLOOR_BYTES)} ${fmtDelta(deltaAlloc)} |`
             );
           }
 
@@ -178,7 +210,7 @@ jobs:
 
           let verdict;
           if (hasRegression && !isExempt) {
-            verdict = `> ⚠️ **Regression detected.** At least one benchmark exceeded the threshold (>${MEAN_THRESHOLD}% mean or >${ALLOC_THRESHOLD}% alloc). Add the \`${EXEMPT_LABEL}\` label to acknowledge intentional perf impact.`;
+            verdict = `> ⚠️ **Regression detected.** At least one benchmark exceeded the threshold (mean >${MEAN_THRESHOLD}% and >${fmtTime(MEAN_FLOOR_NS)}, or alloc >${ALLOC_THRESHOLD}% and >${fmtBytes(ALLOC_FLOOR_BYTES)}). Add the \`${EXEMPT_LABEL}\` label to acknowledge intentional perf impact.`;
           } else if (hasRegression) {
             verdict = `> ℹ️ Regression present but acknowledged via \`${EXEMPT_LABEL}\` label.`;
           } else {
@@ -190,7 +222,7 @@ jobs:
             '## BenchmarkDotNet — PR delta',
             '',
             `Comparing \`${baseSha}\` (base) → \`${headSha}\` (HEAD)`,
-            `Thresholds: mean >${MEAN_THRESHOLD}% = 🔴, alloc >${ALLOC_THRESHOLD}% = 🔴`,
+            `Thresholds: mean >${MEAN_THRESHOLD}% and >${fmtTime(MEAN_FLOOR_NS)} = 🔴, alloc >${ALLOC_THRESHOLD}% and >${fmtBytes(ALLOC_FLOOR_BYTES)} = 🔴`,
             '',
             '| Benchmark | Base mean | HEAD mean | Δ mean | Base alloc | HEAD alloc | Δ alloc |',
             '|-----------|----------:|----------:|-------:|-----------:|-----------:|--------:|',
