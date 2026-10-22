@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 #endif
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading;
@@ -419,7 +420,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
         var sw = Stopwatch.StartNew();
         var enumerable = _typeInfo is not null
             ? JsonSerializer.DeserializeAsyncEnumerable(_stream, _typeInfo, token)
-            : JsonSerializer.DeserializeAsyncEnumerable<TRecord>(_stream, _options ?? JsonMetrics.DefaultSerializerOptions, token);
+            : JsonSerializer.DeserializeAsyncEnumerable<TRecord>(_stream, _options, token);
 
         var enumerator = enumerable.GetAsyncEnumerator(token);
         try
@@ -435,9 +436,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
                     hasNext = await enumerator.MoveNextAsync().ConfigureAwait(false);
                     item = hasNext ? enumerator.Current : default;
                 }
-#pragma warning disable CA1031 // catch JsonException to implement error-handling policy
                 catch (JsonException ex) { caughtEx = ex; }
-#pragma warning restore CA1031
                 if (caughtEx is not null) { HandleDeserializationError(caughtEx); break; }
                 if (!hasNext) { break; }
                 if (item is null) { JsonLogMessages.SkippingNullArrayItem(_logger, null); continue; }
@@ -481,7 +480,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
         );
         if (HandleItemError(context) == ItemErrorAction.Abort)
         {
-            System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(ex).Throw();
+            ExceptionDispatchInfo.Capture(ex).Throw();
         }
     }
 
