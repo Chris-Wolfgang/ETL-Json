@@ -15,6 +15,11 @@ on:
 permissions:
   contents: read
 
+# A newer run on the same ref supersedes an older one still running.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     name: Build + hash (${{ matrix.os }})
