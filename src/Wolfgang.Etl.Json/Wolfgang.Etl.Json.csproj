@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFrameworks>net462;net481;netstandard2.0;net5.0;net6.0;net7.0;net8.0;net10.0</TargetFrameworks>
-    <LangVersion>latest</LangVersion>
     <ImplicitUsings>disable</ImplicitUsings>
     <Version>0.10.0</Version>
     <!-- Pin AssemblyVersion to a fixed binding-stability baseline so consumers
@@ -25,7 +24,6 @@
     <Description>Extractor and Loader implementations for reading and writing JSON, JSONL, and multi-stream JSON files, built on Wolfgang.Etl.Abstractions.</Description>
     <PackageProjectUrl>https://github.com/Chris-Wolfgang/ETL-Json</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Chris-Wolfgang/ETL-Json</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>False</PackageRequireLicenseAcceptance>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
@@ -33,7 +31,6 @@
     <SuppressTfmSupportBuildWarnings>true</SuppressTfmSupportBuildWarnings>
     <PackageTags>ETL;Extract-Transform-Load;JSON;JSONL;NDJSON</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <ApplicationIcon>..\..\assets\icon.ico</ApplicationIcon>
     <PackageIcon>icon_256.png</PackageIcon>
   </PropertyGroup>
 
