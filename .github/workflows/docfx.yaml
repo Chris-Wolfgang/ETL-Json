@@ -50,6 +50,14 @@ on:
 permissions:
   contents: read  # Default to read-only; the build-and-deploy job overrides with write
 
+# Serialize deployments to gh-pages instead of cancelling: a cancelled deploy can leave the
+# site half-written. A fixed group name rather than github.workflow, because this file runs
+# as a reusable workflow, where github.workflow is the CALLER's name and would collide with
+# the caller's own concurrency group.
+concurrency:
+  group: docfx-gh-pages
+  cancel-in-progress: false
+
 jobs:
   build-and-deploy:
     name: Build & Deploy Documentation
