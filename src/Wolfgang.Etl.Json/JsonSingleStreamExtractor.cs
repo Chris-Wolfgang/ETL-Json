@@ -48,7 +48,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSON single-stream extraction of {typeof(TRecord).Name}";
-    private static readonly KeyValuePair<string, object?> _recordTypeTag = new("etl.record_type", typeof(TRecord).Name);
+    private static readonly KeyValuePair<string, object?> RecordTypeTag = new("etl.record_type", typeof(TRecord).Name);
 
     private readonly Stream _stream;
     private readonly bool _ownsStream;
@@ -232,6 +232,8 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
         ApplyOptions(options);
     }
 
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonSingleStreamExtractor{TRecord}"/> class configured through an options record and a source-generated <see cref="JsonTypeInfo{TRecord}"/>.
     /// </summary>
@@ -256,6 +258,8 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
     }
+
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonSingleStreamExtractor{TRecord}"/> class configured through an options record.
@@ -408,8 +412,6 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
 
 
 
-
-
     /// <inheritdoc />
 #if NET5_0_OR_GREATER
     [UnconditionalSuppressMessage("Trimming", "IL2026:RequiresUnreferencedCode", Justification = "Reflection-based serialization runs only when _typeInfo is null, and every constructor that leaves it null carries [RequiresUnreferencedCode].")]
@@ -435,37 +437,39 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
             while (true)
             {
                 token.ThrowIfCancellationRequested();
-                TRecord? item = default;
-                bool hasNext = false;
-                JsonException? caughtEx = null;
-                try
-                {
-                    hasNext = await enumerator.MoveNextAsync().ConfigureAwait(false);
-                    item = hasNext ? enumerator.Current : default;
-                }
-                catch (JsonException ex) { caughtEx = ex; }
+                var (hasNext, item, caughtEx) = await TryMoveNextAsync(enumerator).ConfigureAwait(false);
                 if (caughtEx is not null)
                 {
                     stoppedOnError = HandleDeserializationError(caughtEx);
                     break;
                 }
-                if (!hasNext) { break; }
-                if (item is null) { JsonLogMessages.SkippingNullArrayItem(_logger, null); continue; }
+
+                if (!hasNext)
+                {
+                    break;
+                }
+
+                if (item is null)
+                {
+                    JsonLogMessages.SkippingNullArrayItem(_logger, null);
+                    continue;
+                }
+
                 if (skipBudget > 0)
                 {
                     skipBudget--;
-                    IncrementCurrentSkippedItemCount();
-                    JsonMetrics.AddSkipped(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonSingleStreamComponentTag, _recordTypeTag);
-                    JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
+                    RecordSkippedItem();
                     continue;
                 }
+
                 if (CurrentItemCount >= MaximumItemCount)
                 {
                     JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
                     break;
                 }
+
                 IncrementCurrentItemCount();
-                JsonMetrics.AddExtracted(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonSingleStreamComponentTag, _recordTypeTag);
+                JsonMetrics.AddExtracted(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonSingleStreamComponentTag, RecordTypeTag);
                 JsonLogMessages.ExtractedItem(_logger, CurrentItemCount, null);
                 yield return item;
             }
@@ -473,10 +477,41 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
         finally
         {
             await CleanupAsync(enumerator).ConfigureAwait(false);
-            JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, JsonMetrics.ExtractOperationTag, JsonMetrics.JsonSingleStreamComponentTag, _recordTypeTag);
+            JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, JsonMetrics.ExtractOperationTag, JsonMetrics.JsonSingleStreamComponentTag, RecordTypeTag);
         }
 
         LogCompletion(stoppedOnError);
+    }
+
+
+
+    private void RecordSkippedItem()
+    {
+        IncrementCurrentSkippedItemCount();
+        JsonMetrics.AddSkipped(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonSingleStreamComponentTag, RecordTypeTag);
+        JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
+    }
+
+
+
+    /// <summary>
+    /// Advances the enumerator, capturing a <see cref="JsonException"/> from a malformed element
+    /// instead of throwing it, so the caller can apply the error policy.
+    /// </summary>
+    private static async Task<(bool HasNext, TRecord? Item, JsonException? Error)> TryMoveNextAsync
+    (
+        IAsyncEnumerator<TRecord?> enumerator
+    )
+    {
+        try
+        {
+            var hasNext = await enumerator.MoveNextAsync().ConfigureAwait(false);
+            return (hasNext, hasNext ? enumerator.Current : default, null);
+        }
+        catch (JsonException ex)
+        {
+            return (false, default, ex);
+        }
     }
 
 

@@ -16,7 +16,8 @@ namespace Wolfgang.Etl.Json;
 /// than silently ignored.
 /// </remarks>
 public sealed record JsonLineExtractorOptions : ExtractorOptions
-{    /// <summary>
+{
+    /// <summary>
     /// Gets the text encoding used to decode the stream. <see langword="null"/> (the default) detects the encoding from a byte-order mark and falls back to UTF-8.
     /// </summary>
     public Encoding? Encoding { get; init; }
