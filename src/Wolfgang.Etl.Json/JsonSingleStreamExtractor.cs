@@ -27,6 +27,12 @@ namespace Wolfgang.Etl.Json;
 /// and yields each deserialized object as an item in the async enumerable sequence.
 /// Uses <see cref="JsonSerializer.DeserializeAsyncEnumerable{TValue}(Stream, JsonSerializerOptions, CancellationToken)"/>
 /// for true streaming deserialization.
+/// <para>
+/// A malformed array element ends the extraction under every error policy: the streaming
+/// deserializer cannot resume past it. An abort policy rethrows the <see cref="JsonException"/>;
+/// a skip or dead-letter policy records the error (see <c>CurrentErrorItemCount</c>), logs a
+/// warning that the run stopped early, and completes without reading the rest of the array.
+/// </para>
 /// </remarks>
 /// <example>
 /// <code>
@@ -423,6 +429,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
             : JsonSerializer.DeserializeAsyncEnumerable<TRecord>(_stream, _options, token);
 
         var enumerator = enumerable.GetAsyncEnumerator(token);
+        var stoppedOnError = false;
         try
         {
             while (true)
@@ -437,7 +444,11 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
                     item = hasNext ? enumerator.Current : default;
                 }
                 catch (JsonException ex) { caughtEx = ex; }
-                if (caughtEx is not null) { HandleDeserializationError(caughtEx); break; }
+                if (caughtEx is not null)
+                {
+                    stoppedOnError = HandleDeserializationError(caughtEx);
+                    break;
+                }
                 if (!hasNext) { break; }
                 if (item is null) { JsonLogMessages.SkippingNullArrayItem(_logger, null); continue; }
                 if (skipBudget > 0)
@@ -465,12 +476,39 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
             JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, JsonMetrics.ExtractOperationTag, JsonMetrics.JsonSingleStreamComponentTag, _recordTypeTag);
         }
 
-        JsonLogMessages.SingleStreamExtractionCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, null);
+        LogCompletion(stoppedOnError);
     }
 
 
 
-    private void HandleDeserializationError(JsonException ex)
+    /// <summary>
+    /// Logs how the run ended. A malformed element that the error policy did not turn into an
+    /// exception still ends the run, because <c>DeserializeAsyncEnumerable</c> cannot resume past it,
+    /// so that case is a warning rather than a normal completion.
+    /// </summary>
+    private void LogCompletion(bool stoppedOnError)
+    {
+        if (stoppedOnError)
+        {
+            JsonLogMessages.SingleStreamExtractionStoppedOnError(_logger, CurrentItemCount, CurrentErrorItemCount, null);
+        }
+        else
+        {
+            JsonLogMessages.SingleStreamExtractionCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, null);
+        }
+    }
+
+
+
+    /// <summary>
+    /// Applies the error policy to a malformed element: rethrows under an abort policy, otherwise
+    /// records the error.
+    /// </summary>
+    /// <returns>
+    /// Always <see langword="true"/> when it returns: the streaming deserializer cannot resume past
+    /// a malformed element, so the run stops early.
+    /// </returns>
+    private bool HandleDeserializationError(JsonException ex)
     {
         var context = new ItemErrorContext
         (
@@ -482,6 +520,8 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
         {
             ExceptionDispatchInfo.Capture(ex).Throw();
         }
+
+        return true;
     }
 
 
