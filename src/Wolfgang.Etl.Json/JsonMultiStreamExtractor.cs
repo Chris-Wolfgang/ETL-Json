@@ -610,7 +610,8 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
                 _currentSourceName = source.Name;
                 JsonLogMessages.ReadingStream(_logger, streamIndex, null);
 
-                var (item, failed) = await TryDeserializeStreamAsync(source.Stream, streamIndex, token).ConfigureAwait(false);
+                var stream = ResolveSourceStream(source, streamIndex);
+                var (item, failed) = await TryDeserializeStreamAsync(stream, streamIndex, token).ConfigureAwait(false);
                 streamIndex++;
                 if (failed) { continue; }
 
@@ -648,6 +649,30 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
         {
             JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, JsonMetrics.ExtractOperationTag, JsonMetrics.JsonMultiStreamComponentTag, _recordTypeTag);
         }
+    }
+
+
+
+    /// <summary>
+    /// Returns the stream carried by <paramref name="source"/>, rejecting a caller-built
+    /// <see cref="JsonNamedStream"/> whose stream is <see langword="null"/>.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when <paramref name="source"/> carries no stream.
+    /// </exception>
+    private Stream ResolveSourceStream(JsonNamedStream source, int streamIndex)
+    {
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        if (source.Stream is null)
+        {
+            JsonLogMessages.SourceStreamIsNull(_logger, streamIndex, source.Name, null);
+            throw new InvalidOperationException
+            (
+                $"Source at index {streamIndex} ('{source.Name}') carries a null stream."
+            );
+        }
+
+        return source.Stream;
     }
 
 
