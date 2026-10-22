@@ -7,7 +7,7 @@
 
 ## Context
 
-ETL-Json needs a JSON serialization library for its extractors and loaders. The library targets a wide TFM range: net462, netstandard2.0, netstandard2.1, net8.0, and net10.0. A choice must be made between the two dominant .NET JSON libraries. High-throughput ETL workloads make performance and allocation overhead meaningful factors.
+ETL-Json needs a JSON serialization library for its extractors and loaders. The library targets a wide TFM range: net462, net481, netstandard2.0, net5.0, net6.0, net7.0, net8.0, and net10.0. A choice must be made between the two dominant .NET JSON libraries. High-throughput ETL workloads make performance and allocation overhead meaningful factors.
 
 ---
 

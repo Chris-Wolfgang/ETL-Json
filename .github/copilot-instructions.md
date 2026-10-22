@@ -2,178 +2,89 @@
 
 ## Repository Summary
 
-This is a **repository template** for creating new .NET repositories. It provides a standardized structure with comprehensive GitHub integration, CI/CD workflows, and development tooling. The template is designed for .NET 8.0 projects using C# and follows Microsoft's recommended project organization patterns.
+**ETL-Json** ships the `Wolfgang.Etl.Json` NuGet package: extractors and loaders that read and write
+JSON for pipelines built on `Wolfgang.Etl.Abstractions`.
 
-**Repository Type**: Template (not a working project)  
-**Target Platform**: .NET 8.0  
-**Primary Language**: C#  
-**Size**: Small template (~15 configuration files, empty project folders)  
+- **Six stages**: `JsonSingleStreamExtractor<T>` / `JsonSingleStreamLoader<T>` (one JSON array per stream),
+  `JsonLineExtractor<T>` / `JsonLineLoader<T>` (JSON Lines / NDJSON), and
+  `JsonMultiStreamExtractor<T>` / `JsonMultiStreamLoader<T>` (one object per stream or file).
+- **Supporting types**: an options record per stage (`Json*Options`), `JsonReport` (progress),
+  `JsonNamedStream` / `JsonNamedDestination`, the fluent `EtlPipelineJsonSourceExtensions` /
+  `EtlPipelineJsonSinkExtensions`, `JsonMetrics` (the `Wolfgang.Etl.Json` meter) and `JsonLogMessages`
+  (all `LoggerMessage` delegates, grouped by event-id range).
+- **Language**: C# (`LangVersion` latest), `System.Text.Json` only.
 
-## Build and Validation Instructions
+## Build and Validation
 
 ### Prerequisites
-- .NET 8.0.x SDK (always install if not present)
-- ReportGenerator tool (installed via `dotnet tool install -g dotnet-reportgenerator-globaltool`)
-- DevSkim CLI (installed via `dotnet tool install --global Microsoft.CST.DevSkim.CLI`)
+- .NET 10 SDK (the test projects also need the .NET Framework 4.6.2-4.8.1 targeting packs on Windows).
+- PowerShell 7+ for the scripts in `scripts/`.
 
-### Build Process (For Repositories Created from This Template)
-**IMPORTANT**: This template has no buildable projects. These commands apply to repositories created FROM this template.
-
-1. **Restore Dependencies** (always run first):
-   ```powershell
-   dotnet restore
-   ```
-
-2. **Build Solution**:
-   ```powershell
-   dotnet build --no-restore --configuration Release
-   ```
-
-3. **Run Tests with Coverage**:
-   ```powershell
-   # Find and test all test projects
-   Get-ChildItem -Path ./tests -Filter '*Test*.csproj' -Recurse | ForEach-Object {
-     dotnet test $_.FullName --no-build --configuration Release --collect:"XPlat Code Coverage" --results-directory "./TestResults"
-   }
-   ```
-
-4. **Generate Coverage Reports**:
-   ```powershell
-   reportgenerator -reports:"TestResults/**/coverage.cobertura.xml" -targetdir:"CoverageReport" -reporttypes:"Html;TextSummary;MarkdownSummaryGithub;CsvSummary"
-   ```
-
-5. **Security Scanning**:
-   ```powershell
-   devskim analyze --source-code . -f text --output-file devskim-results.txt -E
-   ```
-
-### Critical Build Requirements
-- **Code Coverage**: Minimum 90% line coverage required for all projects
-- **Security Scanning**: DevSkim must pass with no errors
-- **Build Configuration**: Always use Release configuration for CI
-- **Test Pattern**: Test projects must match `*Test*.csproj` pattern in `/tests` folder
-
-### Common Issues and Workarounds
-- **Timeout Issues**: Coverage and security scans can take 5-10 minutes for larger projects
-- **Coverage Threshold Failures**: If below 90%, the build will fail - this is by design
-- **Missing Test Projects**: The workflow expects at least one test project in `/tests` folder
-- **DevSkim False Positives**: Review `devskim-results.txt` for any security findings
-
-## Project Layout and Architecture
-
-### Standard Directory Structure
-```
-root/
-├── MySolution.sln              # Solution file (create in root)
-├── src/                        # Application projects
-│   ├── MyApp/
-│   │   └── MyApp.csproj
-│   └── MyLib/
-│       └── MyLib.csproj
-├── tests/                      # Test projects (required)
-│   ├── MyApp.Tests/
-│   │   └── MyApp.Tests.csproj
-│   └── MyLib.Tests/
-│       └── MyLib.Tests.csproj
-├── benchmarks/                 # Performance benchmarks (optional)
-│   └── MyApp.Benchmarks/
-│       └── MyApp.Benchmarks.csproj
-├── examples/                   # Example projects (optional)
-├── docs/                       # Documentation
-└── .github/                    # GitHub configuration
+### Commands
+```bash
+dotnet restore "ETL Json.slnx"
+dotnet build "ETL Json.slnx" -c Release
+dotnet test "ETL Json.slnx" -c Release
+pwsh ./scripts/build-pr.ps1      # what pr.yaml runs: build, all-TFM tests, coverage gate, DevSkim, gitleaks
+pwsh ./scripts/format.ps1        # dotnet format
 ```
 
-### Key Configuration Files
-- **`.editorconfig`**: Code style rules (C# file-scoped namespaces, var preferences, analyzer severity)
-- **`.gitignore`**: Comprehensive .NET gitignore (Visual Studio, build artifacts, packages)
-- **`REPO-INSTRUCTIONS.md`**: Template setup instructions (delete after setup)
-- **`CONTRIBUTING.md`**: Contribution guidelines
-- **`CODE_OF_CONDUCT.md`**: Standard Contributor Covenant v2.0
+### Target frameworks
+- `src/Wolfgang.Etl.Json`: `net462;net481;netstandard2.0;net5.0;net6.0;net7.0;net8.0;net10.0`.
+  Old-TFM code paths use `#if NETSTANDARD2_0 || NET462 || NET481`.
+- Test projects: `net462` through `net10.0` (13 TFMs). Keep `<TargetFrameworks>` on a single line; CI greps it.
 
-### GitHub Integration
-- **Workflows**: `.github/workflows/pr.yaml` - Comprehensive CI/CD pipeline
-- **Issue Templates**: Bug reports (YAML) and feature requests (Markdown)
-- **PR Template**: Structured pull request template with checklists
-- **CODEOWNERS**: Default owner `@Chris-Wolfgang`, update usernames as needed
-- **Dependabot**: Configured for NuGet packages in all project directories
+### Gates that fail the build or the PR
+- Warnings are errors; analyzers (NetAnalyzers, Roslynator, AsyncFixer, VS Threading, BannedApiAnalyzers,
+  Meziantou, SonarAnalyzer, PublicApiAnalyzers) are configured in `.editorconfig` and `Directory.Build.props`.
+- All I/O is async; synchronous stream APIs are banned through `BannedSymbols.txt`.
+- Coverage: production code and test assemblies have separate floors (`CODECOV_MINIMUM` and
+  `CODECOV_TEST_MINIMUM` in `pr.yaml`, mirrored by `build-pr.ps1`).
+- Public API: every public change must be recorded in `src/Wolfgang.Etl.Json/PublicAPI.Unshipped.txt`
+  (TFM-invariant surface) or in `src/Wolfgang.Etl.Json/PublicApi/{modern,legacy}/PublicAPI.Unshipped.txt`
+  (members that differ by TFM, such as covariant record `<Clone>$` returns).
+- Package validation compares against `PackageValidationBaselineVersion` in the src csproj.
+- Every PR that changes `src/` adds one fragment in `changelog/unreleased/` (see its README) or carries
+  the `no-changelog` label. `CHANGELOG.md` is assembled at release time, not edited by hand.
 
-### Continuous Integration Pipeline (`.github/workflows/pr.yaml`)
-The workflow runs on pull requests to `main` branch and includes:
+## Project Layout
 
-1. **Environment**: Ubuntu Latest with .NET 8.0.x
-2. **Build Steps**: Checkout → Setup .NET → Restore → Build → Test → Coverage → Security
-3. **Artifacts**: Coverage reports and DevSkim results uploaded
-4. **Branch Protection**: Configured to require this workflow to pass before merging
+| Path | Contents |
+|------|----------|
+| `src/Wolfgang.Etl.Json/` | The library |
+| `tests/Wolfgang.Etl.Json.Tests.Unit/` | Unit tests; stage tests inherit the TestKit.Xunit contract bases |
+| `tests/Wolfgang.Etl.Json.Tests.Integration/` | File-system and encoding integration tests |
+| `tests/Wolfgang.Etl.Json.Tests.Docs/` | Compiles every `<example><code>` block in the XML docs |
+| `tests/Wolfgang.Etl.Json.Tests.SourceLink/` | Checks the PDB's SourceLink against GitHub |
+| `benchmarks/Wolfgang.Etl.Json.Benchmarks/` | BenchmarkDotNet benchmarks (`pr-benchmarks.yaml` gates regressions) |
+| `examples/` | Runnable examples and the Native AOT smoke app (`aot-smoke.yaml`) |
+| `docs/` | Hand-written guides and ADRs (`docs/adr/`) |
+| `docfx_project/` | DocFX site published to GitHub Pages |
+| `changelog/unreleased/` | Changelog fragments |
 
-### Branch Protection Configuration
-Branch protection rules are configured by running the local PowerShell script `scripts/Setup-BranchRuleset.ps1`. The script prompts you to choose repository settings during setup.
+## Conventions
 
-**Single-Developer Configuration (Default):**
-- No PR approvals required (you can merge your own PRs)
-- Allows solo developers to merge their own PRs while still enforcing CI/CD checks
+- **Configuration goes through the options records** passed to the constructor
+  (`new JsonLineExtractor<T>(stream, new JsonLineExtractorOptions { ... })`). The obsolete property setters
+  and the `(source, JsonSerializerOptions?, ILogger?)` constructors remain for compatibility only.
+- **Two constructor families per stage**: reflection-based (annotated `[RequiresUnreferencedCode]` /
+  `[RequiresDynamicCode]`) and source-generated (`JsonTypeInfo<T>`, AOT-safe). Keep both in step.
+- **Test injection**: each stage has an `internal` constructor taking an `IProgressTimer`;
+  `InternalsVisibleTo` exposes it to the unit tests.
+- **Counting**: call `IncrementCurrentItemCount()` exactly once per yielded or loaded item.
+- **Style**: Allman braces, three blank lines between members, file-scoped namespaces, `var` when the type
+  is obvious, multi-line argument lists with the parentheses on their own lines.
+- **Tests**: `MethodUnderTest_when_condition_expected_result` naming, real types rather than mocks,
+  `record` test models for value equality.
 
-**Multi-Developer Configuration:**
-- Requires 1+ approval before merging
-- Requires code owner review
+## Protected Files
 
-**All Configurations Include:**
-- Require status checks to pass before merging
-- Require branches to be up to date
-- Require conversation resolution before merging
-- Restrict deletions and block force pushes
-- Require code scanning (CodeQL High+ severity)
-
-**Branch Protection Setup Instructions:**
-1. Install GitHub CLI (gh) from https://cli.github.com/
-2. Authenticate: `gh auth login`
-3. From PowerShell 7+ (for example, using `pwsh`), run the branch protection setup script:
-   ```powershell
-   pwsh -File ./scripts/Setup-BranchRuleset.ps1
-   ```
-4. When prompted by the script, choose single-developer or multi-developer settings
-
-## Key Files and Locations
-
-### Root Directory Files
-- `README.md` - Basic template description (update for your project)
-- `LICENSE` - MIT License
-- `REPO-INSTRUCTIONS.md` - Template setup instructions (delete after setup)
-- `.editorconfig` - Code style configuration
-- `.gitignore` - .NET-specific gitignore
-
-### GitHub Directory (`.github/`)
-- `workflows/pr.yaml` - Main CI/CD pipeline
-- `ISSUE_TEMPLATE/` - Bug report (YAML) and feature request templates
-- `pull_request_template.md` - PR template with checklists
-- `CODEOWNERS` - Code ownership rules
-- `dependabot.yml` - Dependency update configuration
-
-### Project Directories (Currently Empty in Template)
-- `src/` - Application source code
-- `tests/` - Unit and integration tests
-- `benchmarks/` - Performance benchmarks
-- `examples/` - Example usage projects
-- `docs/` - Documentation (contains placeholder `index.html`)
+`.editorconfig`, `Directory.Build.props`, `Directory.Build.targets`, `BannedSymbols.txt`, `*.globalconfig`,
+`*.ruleset` and `.github/workflows/*` are guarded by `protected-files.yaml`. Change them in a separate,
+single-purpose PR.
 
 ## Agent Guidelines
 
-### Trust These Instructions
-This information has been validated against the template structure and GitHub workflows. **Only search for additional information if these instructions are incomplete or found to be incorrect.**
-
-### When Working with This Template
-1. **Creating New Projects**: Follow the structure outlined in `REPO-INSTRUCTIONS.md`
-2. **Adding Dependencies**: Use `dotnet add package` commands
-3. **Code Style**: Follow `.editorconfig` rules (file-scoped namespaces, explicit typing)
-4. **Testing**: Ensure test projects follow `*Test*.csproj` naming convention
-5. **Coverage**: Aim for >90% code coverage to pass CI
-6. **Security**: Review DevSkim findings and address security concerns
-
-### Validation Steps
-Before submitting changes:
-1. Run `dotnet restore && dotnet build --configuration Release`
-2. Run tests with coverage collection
-3. Verify coverage meets 90% threshold
-4. Run DevSkim security scan
-5. Ensure all GitHub Actions checks pass
-
-This template provides a solid foundation for .NET projects with enterprise-grade CI/CD, security scanning, and development best practices built-in.
+- Trust these instructions; search the code only when something here is missing or proves wrong.
+- Run `scripts/build-pr.ps1` (or at least build + test on `net10.0` and `net462`) before proposing a change.
+- Do not edit `PublicAPI.Shipped.txt` files except during a release.
