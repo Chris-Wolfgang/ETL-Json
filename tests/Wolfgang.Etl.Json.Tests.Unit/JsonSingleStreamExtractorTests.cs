@@ -132,48 +132,54 @@ public class JsonSingleStreamExtractorTests
 
 
     [Fact]
-    public void Constructor_with_logger_when_logger_is_null_does_not_throw()
+    public async Task Constructor_with_logger_when_logger_is_null_does_not_throw()
     {
         // logger is an optional trailing parameter: null means "no logging" rather than an
-        // argument error. The fallback to NullLogger.Instance is private state, so what this
-        // fact can assert is that construction succeeds.
+        // argument error. The fallback to NullLogger.Instance is private state, so this
+        // fact runs the stage once: a broken fallback would throw on the first log call.
         var sut = new JsonSingleStreamExtractor<PersonRecord>
         (
-            new MemoryStream(),
+            new MemoryStream(Encoding.UTF8.GetBytes("[]")),
             logger: null
         );
 
-        Assert.NotNull(sut);
+        var results = await sut.ExtractAsync().ToListAsync();
+
+        Assert.Empty(results);
     }
 
 
 
     [Fact]
-    public void Constructor_when_logger_is_null_does_not_throw()
+    public async Task Constructor_when_logger_is_null_does_not_throw()
     {
         var sut = new JsonSingleStreamExtractor<PersonRecord>
         (
-            new MemoryStream(),
+            new MemoryStream(Encoding.UTF8.GetBytes("[]")),
             new JsonSerializerOptions(),
             logger: null
         );
 
-        Assert.NotNull(sut);
+        var results = await sut.ExtractAsync().ToListAsync();
+
+        Assert.Empty(results);
     }
 
 
 
     [Fact]
-    public void Constructor_with_options_when_options_is_null_uses_serializer_default()
+    public async Task Constructor_with_options_when_options_is_null_uses_serializer_default()
     {
         var sut = new JsonSingleStreamExtractor<PersonRecord>
         (
-                new MemoryStream(),
-                (JsonSerializerOptions?)null,
-                NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance
+            new MemoryStream(Encoding.UTF8.GetBytes("[]")),
+            (JsonSerializerOptions?)null,
+            NullLogger<JsonSingleStreamExtractor<PersonRecord>>.Instance
         );
 
-        Assert.NotNull(sut);
+        var results = await sut.ExtractAsync().ToListAsync();
+
+        Assert.Empty(results);
     }
 
 
@@ -196,17 +202,19 @@ public class JsonSingleStreamExtractorTests
 
 
     [Fact]
-    public void Internal_constructor_when_logger_is_null_does_not_throw()
+    public async Task Internal_constructor_when_logger_is_null_does_not_throw()
     {
         var sut = new JsonSingleStreamExtractor<PersonRecord>
         (
-            new MemoryStream(),
+            new MemoryStream(Encoding.UTF8.GetBytes("[]")),
             new JsonSingleStreamExtractorOptions(),
             new ManualProgressTimer(),
             logger: null
         );
 
-        Assert.NotNull(sut);
+        var results = await sut.ExtractAsync().ToListAsync();
+
+        Assert.Empty(results);
     }
 
 
@@ -339,16 +347,18 @@ public class JsonSingleStreamExtractorTests
 
 
     [Fact]
-    public void Constructor_with_typeInfo_when_logger_is_null_does_not_throw()
+    public async Task Constructor_with_typeInfo_when_logger_is_null_does_not_throw()
     {
         var sut = new JsonSingleStreamExtractor<PersonRecord>
         (
-            new MemoryStream(),
+            new MemoryStream(Encoding.UTF8.GetBytes("[]")),
             TestJsonContext.Default.PersonRecord,
             logger: null
         );
 
-        Assert.NotNull(sut);
+        var results = await sut.ExtractAsync().ToListAsync();
+
+        Assert.Empty(results);
     }
 
 
@@ -388,17 +398,19 @@ public class JsonSingleStreamExtractorTests
 
 
     [Fact]
-    public void Internal_constructor_with_typeInfo_when_logger_is_null_does_not_throw()
+    public async Task Internal_constructor_with_typeInfo_when_logger_is_null_does_not_throw()
     {
         var sut = new JsonSingleStreamExtractor<PersonRecord>
         (
-            new MemoryStream(),
+            new MemoryStream(Encoding.UTF8.GetBytes("[]")),
             TestJsonContext.Default.PersonRecord,
             new ManualProgressTimer(),
             logger: null
         );
 
-        Assert.NotNull(sut);
+        var results = await sut.ExtractAsync().ToListAsync();
+
+        Assert.Empty(results);
     }
 
 

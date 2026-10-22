@@ -116,7 +116,6 @@ public class JsonMultiStreamLoaderTests
 
 
 
-#pragma warning disable AsyncFixer01
     [Fact]
     public async Task LoadAsync_when_stream_factory_returns_null_throws_InvalidOperationException()
     {
@@ -134,12 +133,10 @@ public class JsonMultiStreamLoaderTests
         (
             () => sut.LoadAsync(items.ToAsyncEnumerable())
         );
-#pragma warning restore AsyncFixer01
     }
 
 
 
-#pragma warning disable AsyncFixer01
     [Fact]
     public async Task LoadAsync_when_destination_factory_returns_a_null_stream_throws_InvalidOperationException()
     {
@@ -157,7 +154,6 @@ public class JsonMultiStreamLoaderTests
         (
             () => sut.LoadAsync(items.ToAsyncEnumerable())
         );
-#pragma warning restore AsyncFixer01
     }
 
 
@@ -210,24 +206,26 @@ public class JsonMultiStreamLoaderTests
 
 
     [Fact]
-    public void Constructor_with_logger_when_logger_is_null_does_not_throw()
+    public async Task Constructor_with_logger_when_logger_is_null_does_not_throw()
     {
         // logger is an optional trailing parameter: null means "no logging" rather than an
-        // argument error. The fallback to NullLogger.Instance is private state, so what this
-        // fact can assert is that construction succeeds.
+        // argument error. The fallback to NullLogger.Instance is private state, so this
+        // fact runs the stage once: a broken fallback would throw on the first log call.
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
             NewMemoryStream,
             logger: null
         );
 
-        Assert.NotNull(sut);
+        await sut.LoadAsync(new[] { new PersonRecord { FirstName = "Alice" } }.ToAsyncEnumerable());
+
+        Assert.Equal(1, sut.CurrentItemCount);
     }
 
 
 
     [Fact]
-    public void Constructor_when_logger_is_null_does_not_throw()
+    public async Task Constructor_when_logger_is_null_does_not_throw()
     {
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
@@ -236,22 +234,26 @@ public class JsonMultiStreamLoaderTests
             logger: null
         );
 
-        Assert.NotNull(sut);
+        await sut.LoadAsync(new[] { new PersonRecord { FirstName = "Alice" } }.ToAsyncEnumerable());
+
+        Assert.Equal(1, sut.CurrentItemCount);
     }
 
 
 
     [Fact]
-    public void Constructor_with_options_when_options_is_null_uses_serializer_default()
+    public async Task Constructor_with_options_when_options_is_null_uses_serializer_default()
     {
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
-                NewMemoryStream,
-                (JsonSerializerOptions?)null,
-                NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
+            NewMemoryStream,
+            (JsonSerializerOptions?)null,
+            NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
         );
 
-        Assert.NotNull(sut);
+        await sut.LoadAsync(new[] { new PersonRecord { FirstName = "Alice" } }.ToAsyncEnumerable());
+
+        Assert.Equal(1, sut.CurrentItemCount);
     }
 
 
@@ -274,7 +276,7 @@ public class JsonMultiStreamLoaderTests
 
 
     [Fact]
-    public void Internal_constructor_when_logger_is_null_does_not_throw()
+    public async Task Internal_constructor_when_logger_is_null_does_not_throw()
     {
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
@@ -284,7 +286,9 @@ public class JsonMultiStreamLoaderTests
             logger: null
         );
 
-        Assert.NotNull(sut);
+        await sut.LoadAsync(new[] { new PersonRecord { FirstName = "Alice" } }.ToAsyncEnumerable());
+
+        Assert.Equal(1, sut.CurrentItemCount);
     }
 
 
@@ -495,7 +499,7 @@ public class JsonMultiStreamLoaderTests
 
 
     [Fact]
-    public void Constructor_with_typeInfo_when_logger_is_null_does_not_throw()
+    public async Task Constructor_with_typeInfo_when_logger_is_null_does_not_throw()
     {
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
@@ -504,7 +508,9 @@ public class JsonMultiStreamLoaderTests
             logger: null
         );
 
-        Assert.NotNull(sut);
+        await sut.LoadAsync(new[] { new PersonRecord { FirstName = "Alice" } }.ToAsyncEnumerable());
+
+        Assert.Equal(1, sut.CurrentItemCount);
     }
 
 
@@ -544,7 +550,7 @@ public class JsonMultiStreamLoaderTests
 
 
     [Fact]
-    public void Internal_constructor_with_typeInfo_when_logger_is_null_does_not_throw()
+    public async Task Internal_constructor_with_typeInfo_when_logger_is_null_does_not_throw()
     {
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
@@ -554,7 +560,9 @@ public class JsonMultiStreamLoaderTests
             logger: null
         );
 
-        Assert.NotNull(sut);
+        await sut.LoadAsync(new[] { new PersonRecord { FirstName = "Alice" } }.ToAsyncEnumerable());
+
+        Assert.Equal(1, sut.CurrentItemCount);
     }
 
 
@@ -720,7 +728,7 @@ public class JsonMultiStreamLoaderTests
 
 
     [Fact]
-    public void Constructor_with_logger_when_valid_args_does_not_throw()
+    public async Task Constructor_with_logger_when_valid_args_does_not_throw()
     {
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
@@ -728,7 +736,9 @@ public class JsonMultiStreamLoaderTests
             NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
         );
 
-        Assert.NotNull(sut);
+        await sut.LoadAsync(new[] { new PersonRecord { FirstName = "Alice" } }.ToAsyncEnumerable());
+
+        Assert.Equal(1, sut.CurrentItemCount);
     }
 
 
@@ -749,24 +759,26 @@ public class JsonMultiStreamLoaderTests
 
 
     [Fact]
-    public void Constructor_with_destinationFactory_and_logger_when_logger_is_null_does_not_throw()
+    public async Task Constructor_with_destinationFactory_and_logger_when_logger_is_null_does_not_throw()
     {
         // logger is an optional trailing parameter: null means "no logging" rather than an
-        // argument error. The fallback to NullLogger.Instance is private state, so what this
-        // fact can assert is that construction succeeds.
+        // argument error. The fallback to NullLogger.Instance is private state, so this
+        // fact runs the stage once: a broken fallback would throw on the first log call.
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
             NewNamedDestination,
             logger: null
         );
 
-        Assert.NotNull(sut);
+        await sut.LoadAsync(new[] { new PersonRecord { FirstName = "Alice" } }.ToAsyncEnumerable());
+
+        Assert.Equal(1, sut.CurrentItemCount);
     }
 
 
 
     [Fact]
-    public void Constructor_with_destinationFactory_and_logger_when_valid_args_does_not_throw()
+    public async Task Constructor_with_destinationFactory_and_logger_when_valid_args_does_not_throw()
     {
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
@@ -774,7 +786,9 @@ public class JsonMultiStreamLoaderTests
             NullLogger<JsonMultiStreamLoader<PersonRecord>>.Instance
         );
 
-        Assert.NotNull(sut);
+        await sut.LoadAsync(new[] { new PersonRecord { FirstName = "Alice" } }.ToAsyncEnumerable());
+
+        Assert.Equal(1, sut.CurrentItemCount);
     }
 
 
@@ -795,21 +809,23 @@ public class JsonMultiStreamLoaderTests
 
 
     [Fact]
-    public void Constructor_with_destinationFactory_and_options_when_options_is_null_uses_serializer_default()
+    public async Task Constructor_with_destinationFactory_and_options_when_options_is_null_uses_serializer_default()
     {
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
-                NewNamedDestination,
-                (JsonSerializerOptions?)null
+            NewNamedDestination,
+            (JsonSerializerOptions?)null
         );
 
-        Assert.NotNull(sut);
+        await sut.LoadAsync(new[] { new PersonRecord { FirstName = "Alice" } }.ToAsyncEnumerable());
+
+        Assert.Equal(1, sut.CurrentItemCount);
     }
 
 
 
     [Fact]
-    public void Constructor_with_destinationFactory_and_options_when_valid_args_does_not_throw()
+    public async Task Constructor_with_destinationFactory_and_options_when_valid_args_does_not_throw()
     {
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
@@ -817,7 +833,9 @@ public class JsonMultiStreamLoaderTests
             new JsonSerializerOptions()
         );
 
-        Assert.NotNull(sut);
+        await sut.LoadAsync(new[] { new PersonRecord { FirstName = "Alice" } }.ToAsyncEnumerable());
+
+        Assert.Equal(1, sut.CurrentItemCount);
     }
 
 
@@ -857,7 +875,7 @@ public class JsonMultiStreamLoaderTests
 
 
     [Fact]
-    public void Internal_constructor_with_destinationFactory_when_valid_args_does_not_throw()
+    public async Task Internal_constructor_with_destinationFactory_when_valid_args_does_not_throw()
     {
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
@@ -867,7 +885,9 @@ public class JsonMultiStreamLoaderTests
             logger: null
         );
 
-        Assert.NotNull(sut);
+        await sut.LoadAsync(new[] { new PersonRecord { FirstName = "Alice" } }.ToAsyncEnumerable());
+
+        Assert.Equal(1, sut.CurrentItemCount);
     }
 
 
@@ -888,7 +908,7 @@ public class JsonMultiStreamLoaderTests
 
 
     [Fact]
-    public void Constructor_with_streamFactory_and_typeInfo_when_valid_args_does_not_throw()
+    public async Task Constructor_with_streamFactory_and_typeInfo_when_valid_args_does_not_throw()
     {
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
@@ -896,7 +916,9 @@ public class JsonMultiStreamLoaderTests
             TestJsonContext.Default.PersonRecord
         );
 
-        Assert.NotNull(sut);
+        await sut.LoadAsync(new[] { new PersonRecord { FirstName = "Alice" } }.ToAsyncEnumerable());
+
+        Assert.Equal(1, sut.CurrentItemCount);
     }
 
 
@@ -932,7 +954,7 @@ public class JsonMultiStreamLoaderTests
 
 
     [Fact]
-    public void Constructor_with_destinationFactory_and_typeInfo_when_valid_args_does_not_throw()
+    public async Task Constructor_with_destinationFactory_and_typeInfo_when_valid_args_does_not_throw()
     {
         var sut = new JsonMultiStreamLoader<PersonRecord>
         (
@@ -940,7 +962,9 @@ public class JsonMultiStreamLoaderTests
             TestJsonContext.Default.PersonRecord
         );
 
-        Assert.NotNull(sut);
+        await sut.LoadAsync(new[] { new PersonRecord { FirstName = "Alice" } }.ToAsyncEnumerable());
+
+        Assert.Equal(1, sut.CurrentItemCount);
     }
 
 
