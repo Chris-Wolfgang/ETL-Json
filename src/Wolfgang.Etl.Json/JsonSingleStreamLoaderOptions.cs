@@ -14,7 +14,8 @@ namespace Wolfgang.Etl.Json;
 /// than silently ignored.
 /// </remarks>
 public sealed record JsonSingleStreamLoaderOptions : LoaderOptions
-{    /// <summary>
+{
+    /// <summary>
     /// Gets a value indicating whether the loader runs without writing: the source is enumerated and counted, but nothing reaches the destination. Defaults to <see langword="false"/>.
     /// </summary>
     public bool IsDryRun { get; init; }

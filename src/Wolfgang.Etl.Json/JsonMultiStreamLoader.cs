@@ -40,7 +40,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSON multi-stream loading of {typeof(TRecord).Name}";
-    private static readonly KeyValuePair<string, object?> _recordTypeTag = new("etl.record_type", typeof(TRecord).Name);
+    private static readonly KeyValuePair<string, object?> RecordTypeTag = new("etl.record_type", typeof(TRecord).Name);
     private readonly Func<TRecord, JsonNamedDestination> _destinationFactory;
     private readonly JsonSerializerOptions? _options;
     private readonly JsonTypeInfo<TRecord>? _typeInfo;
@@ -336,6 +336,8 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
         ApplyOptions(options);
     }
 
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonMultiStreamLoader{TRecord}"/> class configured through an options record and a source-generated <see cref="JsonTypeInfo{TRecord}"/>.
     /// </summary>
@@ -366,6 +368,8 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
         ApplyOptions(options);
     }
 
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonMultiStreamLoader{TRecord}"/> class configured through an options record.
     /// </summary>
@@ -392,6 +396,8 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
     }
+
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonMultiStreamLoader{TRecord}"/> class configured through an options record and a source-generated <see cref="JsonTypeInfo{TRecord}"/>.
@@ -644,7 +650,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
                 if (CurrentSkippedItemCount < SkipItemCount)
                 {
                     IncrementCurrentSkippedItemCount();
-                    JsonMetrics.AddSkipped(JsonMetrics.LoadOperationTag, JsonMetrics.JsonMultiStreamComponentTag, _recordTypeTag);
+                    JsonMetrics.AddSkipped(JsonMetrics.LoadOperationTag, JsonMetrics.JsonMultiStreamComponentTag, RecordTypeTag);
                     JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
                     continue;
                 }
@@ -659,7 +665,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
                 {
                     _currentDestinationName = null;
                     IncrementCurrentItemCount();
-                    JsonMetrics.AddLoaded(JsonMetrics.LoadOperationTag, JsonMetrics.JsonMultiStreamComponentTag, _recordTypeTag);
+                    JsonMetrics.AddLoaded(JsonMetrics.LoadOperationTag, JsonMetrics.JsonMultiStreamComponentTag, RecordTypeTag);
                     streamIndex++;
                     JsonLogMessages.LoadedItemToStream(_logger, CurrentItemCount, streamIndex - 1, null);
                     continue;
@@ -670,7 +676,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
                 var destinationStream = ResolveDestinationStream(destination, streamIndex);
                 await WriteItemToStreamAsync(destinationStream, item, token).ConfigureAwait(false);
                 IncrementCurrentItemCount();
-                JsonMetrics.AddLoaded(JsonMetrics.LoadOperationTag, JsonMetrics.JsonMultiStreamComponentTag, _recordTypeTag);
+                JsonMetrics.AddLoaded(JsonMetrics.LoadOperationTag, JsonMetrics.JsonMultiStreamComponentTag, RecordTypeTag);
                 streamIndex++;
                 JsonLogMessages.LoadedItemToStream(_logger, CurrentItemCount, streamIndex - 1, null);
             }
@@ -679,7 +685,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
         }
         finally
         {
-            JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, JsonMetrics.LoadOperationTag, JsonMetrics.JsonMultiStreamComponentTag, _recordTypeTag);
+            JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, JsonMetrics.LoadOperationTag, JsonMetrics.JsonMultiStreamComponentTag, RecordTypeTag);
         }
     }
 
@@ -765,6 +771,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
             CurrentSkippedItemCount,
             _currentDestinationName
         );
+
 
 
     /// <inheritdoc />
