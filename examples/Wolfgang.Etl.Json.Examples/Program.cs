@@ -349,7 +349,11 @@ static async Task SchemaCustomizationExample()
         {
             typeInfo =>
             {
-                if (typeInfo.Type != typeof(Person)) return;
+                if (typeInfo.Type != typeof(Person))
+                {
+                    return;
+                }
+
                 foreach (var prop in typeInfo.Properties.Where(p => string.Equals(p.Name, "Email", StringComparison.Ordinal)))
                 {
                     prop.ShouldSerialize = (_, _) => false;

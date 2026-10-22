@@ -36,7 +36,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSONL loading of {typeof(TRecord).Name}";
-    private static readonly KeyValuePair<string, object?> _recordTypeTag = new("etl.record_type", typeof(TRecord).Name);
+    private static readonly KeyValuePair<string, object?> RecordTypeTag = new("etl.record_type", typeof(TRecord).Name);
     private readonly Stream _stream;
     private readonly JsonSerializerOptions? _options;
     private readonly JsonTypeInfo<TRecord>? _typeInfo;
@@ -199,6 +199,8 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
     }
+
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonLineLoader{TRecord}"/> class configured through an options record and a source-generated <see cref="JsonTypeInfo{TRecord}"/>.
@@ -370,7 +372,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
             if (CurrentSkippedItemCount < SkipItemCount)
             {
                 IncrementCurrentSkippedItemCount();
-                JsonMetrics.AddSkipped(JsonMetrics.LoadOperationTag, JsonMetrics.JsonLineComponentTag, _recordTypeTag);
+                JsonMetrics.AddSkipped(JsonMetrics.LoadOperationTag, JsonMetrics.JsonLineComponentTag, RecordTypeTag);
                 JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
                 continue;
             }
@@ -406,7 +408,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
             }
 
             IncrementCurrentItemCount();
-            JsonMetrics.AddLoaded(JsonMetrics.LoadOperationTag, JsonMetrics.JsonLineComponentTag, _recordTypeTag);
+            JsonMetrics.AddLoaded(JsonMetrics.LoadOperationTag, JsonMetrics.JsonLineComponentTag, RecordTypeTag);
             JsonLogMessages.LoadedItemAtLine(_logger, CurrentItemCount, Interlocked.Read(ref _currentLineNumber), null);
         }
 
@@ -425,7 +427,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
         }
 
         JsonLogMessages.JsonlLoadingCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, Interlocked.Read(ref _currentLineNumber), null);
-        JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, JsonMetrics.LoadOperationTag, JsonMetrics.JsonLineComponentTag, _recordTypeTag);
+        JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, JsonMetrics.LoadOperationTag, JsonMetrics.JsonLineComponentTag, RecordTypeTag);
     }
 
 
@@ -437,6 +439,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
             CurrentItemCount,
             CurrentSkippedItemCount
         );
+
 
 
     /// <inheritdoc />
