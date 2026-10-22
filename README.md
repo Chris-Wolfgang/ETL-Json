@@ -276,7 +276,7 @@ cd docfx_project
 docfx metadata  # Extract API metadata from source code
 docfx build     # Build HTML documentation
 
-# Documentation is generated in the docs/ folder at the repository root
+# The site is generated in docfx_project/_site/ (docs/ holds the hand-written guides)
 ```
 
 The documentation is automatically built and deployed to GitHub Pages when changes are pushed to the `main` branch.
@@ -305,6 +305,79 @@ See [`docs/COMPRESSED-STREAMS.md`](docs/COMPRESSED-STREAMS.md) for examples and 
 Customize JSON serialization without modifying — or even owning — the POCO class: use naming policies, `DefaultJsonTypeInfoResolver` modifiers (.NET 8+), custom converters, or source-generated `JsonTypeInfo<T>` for AOT-safe serialization.
 
 See [`docs/SCHEMA-CUSTOMIZATION.md`](docs/SCHEMA-CUSTOMIZATION.md) for recipes.
+
+### Fluent pipelines
+
+`Wolfgang.Etl.Abstractions`' `EtlPipeline` gains JSON source and sink factories, so a stage can be wired
+without constructing it by hand. `JsonLineExtractor<T>` / `JsonSingleStreamExtractor<T>` start a pipeline
+from a path or a `Stream`; `JsonLineLoader` / `JsonSingleStreamLoader` end it:
+
+```csharp
+await EtlPipeline
+    .Create()
+    .JsonLineExtractor<Person>("people.jsonl")
+    .JsonSingleStreamLoader("people.json")
+    .RunAsync();
+```
+
+### Checkpointing and resume (JSONL)
+
+`JsonLineExtractor<T>` can report the byte offset of the next unread line so a long run can resume where it
+stopped. Set `EnableCheckpointing = true`, read `CurrentByteOffset` after each item (it throws when
+checkpointing is off), persist it, and pass it back as `StartByteOffset` on the next run (the stream must be
+seekable):
+
+```csharp
+var extractor = new JsonLineExtractor<Person>
+(
+    stream,
+    new JsonLineExtractorOptions { EnableCheckpointing = true }
+);
+
+await foreach (var person in extractor.ExtractAsync())
+{
+    await ProcessAsync(person);
+    await SaveCheckpointAsync(extractor.CurrentByteOffset);
+}
+
+// Later: resume from the saved offset.
+var resumed = new JsonLineExtractor<Person>
+(
+    stream,
+    new JsonLineExtractorOptions { StartByteOffset = await LoadCheckpointAsync() }
+);
+```
+
+### Metrics
+
+Every stage records [System.Diagnostics.Metrics](https://learn.microsoft.com/dotnet/core/diagnostics/metrics)
+instruments on the `Wolfgang.Etl.Json` meter, tagged with `etl.operation` (`extract` / `load`),
+`etl.component` (`JsonLine`, `JsonSingleStream`, `JsonMultiStream`) and `etl.record_type`:
+
+| Instrument | Type | Unit | Meaning |
+|---|---|---|---|
+| `wolfgang.etl.json.items.extracted` | Counter | | Items yielded by an extractor |
+| `wolfgang.etl.json.items.loaded` | Counter | | Items written by a loader |
+| `wolfgang.etl.json.items.skipped` | Counter | | Items skipped via `SkipItemCount` |
+| `wolfgang.etl.json.operation.duration` | Histogram | ms | Duration of each extract / load run |
+
+Subscribe with OpenTelemetry (`.AddMeter("Wolfgang.Etl.Json")`) or a `MeterListener`.
+
+### Error handling
+
+A record that fails to deserialize is handed to the stage's `ErrorPolicy` (from
+`Wolfgang.Etl.ErrorPolicies`, set through the options record). With no policy the `JsonException` propagates.
+With a skip or dead-letter policy the error is counted in `CurrentErrorItemCount` and:
+
+- `JsonLineExtractor<T>` skips the bad line and continues with the next one;
+- `JsonMultiStreamExtractor<T>` skips the bad stream and continues with the next one;
+- `JsonSingleStreamExtractor<T>` **stops at the first malformed element**: the streaming array
+  deserializer cannot resume past it, so the rest of the array is not read.
+
+### Dry runs
+
+`IsDryRun = true` on a loader's options record enumerates and counts the source without writing anything.
+On `JsonMultiStreamLoader<T>` it also skips the destination factory, so no files or blobs are created.
 
 ---
 
