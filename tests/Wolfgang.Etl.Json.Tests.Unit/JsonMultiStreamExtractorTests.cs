@@ -141,24 +141,26 @@ public class JsonMultiStreamExtractorTests
 
 
     [Fact]
-    public void Constructor_with_logger_when_logger_is_null_does_not_throw()
+    public async Task Constructor_with_logger_when_logger_is_null_does_not_throw()
     {
         // logger is an optional trailing parameter: null means "no logging" rather than an
-        // argument error. The fallback to NullLogger.Instance is private state, so what this
-        // fact can assert is that construction succeeds.
+        // argument error. The fallback to NullLogger.Instance is private state, so this
+        // fact runs the stage once: a broken fallback would throw on the first log call.
         var sut = new JsonMultiStreamExtractor<PersonRecord>
         (
             Array.Empty<Stream>(),
             logger: null
         );
 
-        Assert.NotNull(sut);
+        var results = await sut.ExtractAsync().ToListAsync();
+
+        Assert.Empty(results);
     }
 
 
 
     [Fact]
-    public void Constructor_when_logger_is_null_does_not_throw()
+    public async Task Constructor_when_logger_is_null_does_not_throw()
     {
         var sut = new JsonMultiStreamExtractor<PersonRecord>
         (
@@ -167,22 +169,26 @@ public class JsonMultiStreamExtractorTests
             logger: null
         );
 
-        Assert.NotNull(sut);
+        var results = await sut.ExtractAsync().ToListAsync();
+
+        Assert.Empty(results);
     }
 
 
 
     [Fact]
-    public void Constructor_with_options_when_options_is_null_uses_serializer_default()
+    public async Task Constructor_with_options_when_options_is_null_uses_serializer_default()
     {
         var sut = new JsonMultiStreamExtractor<PersonRecord>
         (
-                streams: [],
-                (JsonSerializerOptions?)null,
-                NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
+            streams: [],
+            (JsonSerializerOptions?)null,
+            NullLogger<JsonMultiStreamExtractor<PersonRecord>>.Instance
         );
 
-        Assert.NotNull(sut);
+        var results = await sut.ExtractAsync().ToListAsync();
+
+        Assert.Empty(results);
     }
 
 
@@ -205,7 +211,7 @@ public class JsonMultiStreamExtractorTests
 
 
     [Fact]
-    public void Internal_constructor_when_logger_is_null_does_not_throw()
+    public async Task Internal_constructor_when_logger_is_null_does_not_throw()
     {
         var sut = new JsonMultiStreamExtractor<PersonRecord>
         (
@@ -215,7 +221,9 @@ public class JsonMultiStreamExtractorTests
             logger: null
         );
 
-        Assert.NotNull(sut);
+        var results = await sut.ExtractAsync().ToListAsync();
+
+        Assert.Empty(results);
     }
 
 
@@ -388,7 +396,7 @@ public class JsonMultiStreamExtractorTests
 
 
     [Fact]
-    public void Constructor_with_typeInfo_when_logger_is_null_does_not_throw()
+    public async Task Constructor_with_typeInfo_when_logger_is_null_does_not_throw()
     {
         var sut = new JsonMultiStreamExtractor<PersonRecord>
         (
@@ -397,7 +405,9 @@ public class JsonMultiStreamExtractorTests
             logger: null
         );
 
-        Assert.NotNull(sut);
+        var results = await sut.ExtractAsync().ToListAsync();
+
+        Assert.Empty(results);
     }
 
 
@@ -437,7 +447,7 @@ public class JsonMultiStreamExtractorTests
 
 
     [Fact]
-    public void Internal_constructor_with_typeInfo_when_logger_is_null_does_not_throw()
+    public async Task Internal_constructor_with_typeInfo_when_logger_is_null_does_not_throw()
     {
         var sut = new JsonMultiStreamExtractor<PersonRecord>
         (
@@ -447,7 +457,9 @@ public class JsonMultiStreamExtractorTests
             logger: null
         );
 
-        Assert.NotNull(sut);
+        var results = await sut.ExtractAsync().ToListAsync();
+
+        Assert.Empty(results);
     }
 
 
@@ -687,18 +699,20 @@ public class JsonMultiStreamExtractorTests
 
 
     [Fact]
-    public void Constructor_with_streams_and_logger_when_logger_is_null_does_not_throw()
+    public async Task Constructor_with_streams_and_logger_when_logger_is_null_does_not_throw()
     {
         // logger is an optional trailing parameter: null means "no logging" rather than an
-        // argument error. The fallback to NullLogger.Instance is private state, so what this
-        // fact can assert is that construction succeeds.
+        // argument error. The fallback to NullLogger.Instance is private state, so this
+        // fact runs the stage once: a broken fallback would throw on the first log call.
         var sut = new JsonMultiStreamExtractor<PersonRecord>
         (
-            new[] { new MemoryStream() },
+            new[] { new MemoryStream(Encoding.UTF8.GetBytes("null")) },
             logger: null
         );
 
-        Assert.NotNull(sut);
+        var results = await sut.ExtractAsync().ToListAsync();
+
+        Assert.Empty(results);
     }
 
 
@@ -736,12 +750,12 @@ public class JsonMultiStreamExtractorTests
 
 
     [Fact]
-    public void Constructor_with_named_sources_and_logger_when_logger_is_null_does_not_throw()
+    public async Task Constructor_with_named_sources_and_logger_when_logger_is_null_does_not_throw()
     {
         // logger is an optional trailing parameter: null means "no logging" rather than an
-        // argument error. The fallback to NullLogger.Instance is private state, so what this
-        // fact can assert is that construction succeeds.
-        var sources = new[] { new JsonNamedStream(new MemoryStream()) };
+        // argument error. The fallback to NullLogger.Instance is private state, so this
+        // fact runs the stage once: a broken fallback would throw on the first log call.
+        var sources = new[] { new JsonNamedStream(new MemoryStream(Encoding.UTF8.GetBytes("null"))) };
 
         var sut = new JsonMultiStreamExtractor<PersonRecord>
         (
@@ -749,7 +763,9 @@ public class JsonMultiStreamExtractorTests
             logger: null
         );
 
-        Assert.NotNull(sut);
+        var results = await sut.ExtractAsync().ToListAsync();
+
+        Assert.Empty(results);
     }
 
 
@@ -804,9 +820,9 @@ public class JsonMultiStreamExtractorTests
 
 
     [Fact]
-    public void Constructor_with_named_sources_and_options_when_options_is_null_uses_serializer_default()
+    public async Task Constructor_with_named_sources_and_options_when_options_is_null_uses_serializer_default()
     {
-        var sources = new[] { new JsonNamedStream(new MemoryStream()) };
+        var sources = new[] { new JsonNamedStream(new MemoryStream(Encoding.UTF8.GetBytes("null"))) };
 
         var sut = new JsonMultiStreamExtractor<PersonRecord>
         (
@@ -814,7 +830,9 @@ public class JsonMultiStreamExtractorTests
             (JsonSerializerOptions?)null
         );
 
-        Assert.NotNull(sut);
+        var results = await sut.ExtractAsync().ToListAsync();
+
+        Assert.Empty(results);
     }
 
 
