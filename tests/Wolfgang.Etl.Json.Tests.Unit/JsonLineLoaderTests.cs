@@ -510,4 +510,19 @@ public class JsonLineLoaderTests
         var content = await reader.ReadToEndAsync();
         Assert.Contains("Ångström", content);
     }
+
+
+
+    [Fact]
+    public async Task LoadAsync_flushes_the_stream_before_completing()
+    {
+        using var inner = new MemoryStream();
+        using var buffered = new BufferedStream(inner, bufferSize: 4096);
+        var sut = new JsonLineLoader<PersonRecord>(buffered);
+
+        await sut.LoadAsync(new[] { new PersonRecord { FirstName = "Alice" } }.ToAsyncEnumerable());
+
+        // Without a flush the line would still sit in the BufferedStream's buffer.
+        Assert.True(inner.Length > 0);
+    }
 }
