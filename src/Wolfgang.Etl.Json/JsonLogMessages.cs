@@ -59,6 +59,9 @@ internal static class JsonLogMessages
     internal static readonly Action<ILogger, int, int, int, Exception?> MultiStreamExtractionCompleted =
         LoggerMessage.Define<int, int, int>(LogLevel.Information, new EventId(203, nameof(MultiStreamExtractionCompleted)), "Multi-stream extraction completed. Extracted: {ItemCount}, skipped: {SkippedCount}, streams: {StreamCount}.");
 
+    internal static readonly Action<ILogger, int, string?, Exception?> SourceStreamIsNull =
+        LoggerMessage.Define<int, string?>(LogLevel.Error, new EventId(204, nameof(SourceStreamIsNull)), "Source {StreamIndex} ('{SourceName}') carries a null stream.");
+
 
 
     // ── MultiStream Loader ───────────────────────────────────────────
@@ -100,4 +103,11 @@ internal static class JsonLogMessages
 
     internal static readonly Action<ILogger, int, int, long, Exception?> JsonlLoadingCompleted =
         LoggerMessage.Define<int, int, long>(LogLevel.Information, new EventId(311, nameof(JsonlLoadingCompleted)), "JSONL loading completed. Loaded: {ItemCount}, skipped: {SkippedCount}, lines: {LineCount}.");
+
+
+
+    // ── Error Handling ───────────────────────────────────────────────
+
+    internal static readonly Action<ILogger, int, int, Exception?> SingleStreamExtractionStoppedOnError =
+        LoggerMessage.Define<int, int>(LogLevel.Warning, new EventId(400, nameof(SingleStreamExtractionStoppedOnError)), "JSON single-stream extraction stopped early at the first malformed element; the rest of the array was not read. Extracted: {ItemCount}, errors: {ErrorCount}.");
 }

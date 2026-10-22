@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Wolfgang.Etl.Abstractions;
 using Wolfgang.Etl.ErrorPolicies;
@@ -493,5 +494,61 @@ public class JsonSingleStreamExtractorTests
 
         Assert.Empty(results);
         Assert.Equal(1, sut.CurrentErrorItemCount);
+    }
+
+
+
+    [Fact]
+    public async Task ExtractAsync_when_ErrorPolicy_skips_logs_a_warning_that_extraction_stopped_early()
+    {
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes("[{\"FirstName\":\"Alice\"},not-valid-json,{\"FirstName\":\"Bob\"}]"));
+        var logger = new RecordingLogger<JsonSingleStreamExtractor<PersonRecord>>();
+        var sut = new JsonSingleStreamExtractor<PersonRecord>
+        (
+            stream,
+            new JsonSingleStreamExtractorOptions(),
+            logger
+        )
+        {
+            ErrorPolicy = ItemErrorPolicy.Skip,
+        };
+
+        await sut.ExtractAsync().ToListAsync();
+
+        Assert.Equal(1, sut.CurrentErrorItemCount);
+        Assert.Contains(logger.Entries, entry => entry.Level == LogLevel.Warning && entry.EventId.Id == 400);
+        Assert.DoesNotContain(logger.Entries, entry => entry.EventId.Id == 102);
+    }
+
+
+
+    [Fact]
+    public async Task ExtractAsync_when_array_is_well_formed_logs_completion_and_no_early_stop_warning()
+    {
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes("[{\"FirstName\":\"Alice\"}]"));
+        var logger = new RecordingLogger<JsonSingleStreamExtractor<PersonRecord>>();
+        var sut = new JsonSingleStreamExtractor<PersonRecord>
+        (
+            stream,
+            new JsonSingleStreamExtractorOptions(),
+            logger
+        );
+
+        await sut.ExtractAsync().ToListAsync();
+
+        Assert.Contains(logger.Entries, entry => entry.Level == LogLevel.Information && entry.EventId.Id == 102);
+        Assert.DoesNotContain(logger.Entries, entry => entry.EventId.Id == 400);
+    }
+
+
+
+    [Fact]
+    public void RecordingLogger_is_always_enabled_and_has_no_scope()
+    {
+        // Pins the test double the logging tests above rely on.
+        var sut = new RecordingLogger<PersonRecord>();
+
+        Assert.True(sut.IsEnabled(LogLevel.Trace));
+        Assert.Null(sut.BeginScope("scope"));
     }
 }
