@@ -349,7 +349,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
         // ConfigureAwait(false), and this loader ships on net462/netstandard2.0 where a
         // context-captured DisposeAsync (which flushes to the stream) can deadlock a
         // sync-over-async host.
-        var writer = IsDryRun ? null : new Utf8JsonWriter(_stream);
+        var writer = IsDryRun ? null : new Utf8JsonWriter(_stream, CreateWriterOptions());
         try
         {
             writer?.WriteStartArray();
@@ -398,6 +398,34 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
                 await writer.DisposeAsync().ConfigureAwait(false);
             }
         }
+    }
+
+
+
+    /// <summary>
+    /// Builds the writer options from the serializer configuration in force.
+    /// <see cref="JsonSerializer"/> takes indentation, encoder and depth from the
+    /// <see cref="Utf8JsonWriter"/> it writes to, not from the serializer options passed alongside,
+    /// so they must be copied onto the writer or they are silently ignored.
+    /// </summary>
+    private JsonWriterOptions CreateWriterOptions()
+    {
+        var serializerOptions = _typeInfo?.Options ?? _options;
+        if (serializerOptions is null)
+        {
+            // Default serializer options map onto the default writer options.
+            return default;
+        }
+
+        return new JsonWriterOptions
+        {
+            Indented = serializerOptions.WriteIndented,
+            IndentCharacter = serializerOptions.IndentCharacter,
+            IndentSize = serializerOptions.IndentSize,
+            NewLine = serializerOptions.NewLine,
+            Encoder = serializerOptions.Encoder,
+            MaxDepth = serializerOptions.MaxDepth,
+        };
     }
 
 
