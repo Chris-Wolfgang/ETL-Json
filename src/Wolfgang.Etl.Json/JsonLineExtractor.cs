@@ -592,10 +592,10 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
         _stream.Seek(0, SeekOrigin.Begin);
         var buffer = new byte[256];
 #if NETSTANDARD2_0 || NET462 || NET481
+        token.ThrowIfCancellationRequested();
 #pragma warning disable CA2016, MA0040, S8949 // old TFM overload has no CancellationToken parameter
         var bytesRead = await _stream.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
 #pragma warning restore CA2016, MA0040, S8949
-        _ = token;
 #else
         var bytesRead = await _stream.ReadAsync(buffer.AsMemory(0, buffer.Length), token).ConfigureAwait(false);
 #endif
@@ -625,9 +625,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
                 : JsonSerializer.Deserialize<TRecord>(lineText, _options);
             return true;
         }
-#pragma warning disable CA1031 // catch JsonException to implement error-handling policy
         catch (JsonException ex)
-#pragma warning restore CA1031
         {
             var context = new ItemErrorContext
             (
