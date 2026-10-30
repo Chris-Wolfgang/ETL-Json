@@ -7,9 +7,14 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
-    <!-- PublishAot is set at publish time; this flag enables ILLink warnings
-         at build time so trim/AOT issues surface during development. -->
+    <!-- IsAotCompatible enables the trim/AOT analyzers at build time so issues surface during
+         development. The publish properties live here rather than on the dotnet publish command
+         line: a command-line -p: property is global and also reaches the library's net462 target,
+         where AOT is unsupported (NETSDK1207). -->
     <IsAotCompatible>true</IsAotCompatible>
+    <PublishAot>true</PublishAot>
+    <PublishTrimmed>true</PublishTrimmed>
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
   </PropertyGroup>
 
   <ItemGroup>
