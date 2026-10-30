@@ -38,8 +38,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     private static readonly string OperationName = $"JSONL loading of {typeof(TRecord).Name}";
     private static readonly KeyValuePair<string, object?> _recordTypeTag = new("etl.record_type", typeof(TRecord).Name);
     private readonly Stream _stream;
-    private readonly JsonSerializerOptions? _options;
-    private readonly JsonTypeInfo<TRecord>? _typeInfo;
+    private readonly RecordTypeInfo<TRecord> _typeInfo;
     private readonly ILogger _logger;
     private readonly IProgressTimer? _progressTimer;
     private int _progressTimerWired;
@@ -99,7 +98,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
         _logger = NullLogger.Instance;
-        _options = null;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions(options: null);
     }
 
 
@@ -130,7 +129,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
         _logger = logger ?? (ILogger)NullLogger.Instance;
-        _options = null;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions(options: null);
     }
 
 
@@ -167,7 +166,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _options = options;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions(options);
         _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
@@ -195,7 +194,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
         : base(options)
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions((options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions);
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
     }
@@ -220,7 +219,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     {
         RejectSerializerOptions(options);
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _typeInfo = RecordTypeInfo<TRecord>.FromTypeInfo(typeInfo ?? throw new ArgumentNullException(nameof(typeInfo)));
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
     }
@@ -290,7 +289,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
         : base(options)
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions((options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions);
         _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
         ApplyOptions(options);
@@ -316,7 +315,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _typeInfo = RecordTypeInfo<TRecord>.FromTypeInfo(typeInfo ?? throw new ArgumentNullException(nameof(typeInfo)));
         _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
@@ -339,7 +338,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _typeInfo = RecordTypeInfo<TRecord>.FromTypeInfo(typeInfo ?? throw new ArgumentNullException(nameof(typeInfo)));
         _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
@@ -385,15 +384,11 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
 
                 if (Encoding is null)
                 {
-                    bytes = _typeInfo is not null
-                        ? JsonSerializer.SerializeToUtf8Bytes(item, _typeInfo)
-                        : JsonSerializer.SerializeToUtf8Bytes(item, _options);
+                    bytes = JsonSerializer.SerializeToUtf8Bytes(item, _typeInfo.Value);
                 }
                 else
                 {
-                    var json = _typeInfo is not null
-                        ? JsonSerializer.Serialize(item, _typeInfo)
-                        : JsonSerializer.Serialize(item, _options);
+                    var json = JsonSerializer.Serialize(item, _typeInfo.Value);
                     bytes = Encoding.GetBytes(json);
                 }
 
