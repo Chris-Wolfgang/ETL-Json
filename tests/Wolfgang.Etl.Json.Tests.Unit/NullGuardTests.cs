@@ -153,4 +153,58 @@ public class NullGuardTests
 
         Assert.Equal("typeInfo", ex.ParamName);
     }
+
+
+    [Fact]
+    public void JsonLineExtractor_typeInfo_record_ctor_when_options_is_null_throws_ArgumentNullException()
+    {
+        var ex = Assert.Throws<ArgumentNullException>(() => new JsonLineExtractor<PersonRecord>(new MemoryStream(), TestJsonContext.Default.PersonRecord, (JsonLineExtractorOptions)null!));
+
+        Assert.Equal("options", ex.ParamName);
+    }
+
+
+    [Fact]
+    public void JsonLineLoader_typeInfo_record_ctor_when_options_is_null_throws_ArgumentNullException()
+    {
+        var ex = Assert.Throws<ArgumentNullException>(() => new JsonLineLoader<PersonRecord>(new MemoryStream(), TestJsonContext.Default.PersonRecord, (JsonLineLoaderOptions)null!));
+
+        Assert.Equal("options", ex.ParamName);
+    }
+
+
+    [Fact]
+    public void JsonSingleStreamExtractor_typeInfo_record_ctor_when_options_is_null_throws_ArgumentNullException()
+    {
+        var ex = Assert.Throws<ArgumentNullException>(() => new JsonSingleStreamExtractor<PersonRecord>(new MemoryStream(), TestJsonContext.Default.PersonRecord, (JsonSingleStreamExtractorOptions)null!));
+
+        Assert.Equal("options", ex.ParamName);
+    }
+
+
+    [Fact]
+    public void JsonSingleStreamLoader_typeInfo_record_ctor_when_options_is_null_throws_ArgumentNullException()
+    {
+        var ex = Assert.Throws<ArgumentNullException>(() => new JsonSingleStreamLoader<PersonRecord>(new MemoryStream(), TestJsonContext.Default.PersonRecord, (JsonSingleStreamLoaderOptions)null!));
+
+        Assert.Equal("options", ex.ParamName);
+    }
+
+
+    [Fact]
+    public void JsonMultiStreamExtractor_typeInfo_record_ctor_when_options_is_null_throws_ArgumentNullException()
+    {
+        var ex = Assert.Throws<ArgumentNullException>(() => new JsonMultiStreamExtractor<PersonRecord>(new[] { new MemoryStream() }, TestJsonContext.Default.PersonRecord, (JsonMultiStreamExtractorOptions)null!));
+
+        Assert.Equal("options", ex.ParamName);
+    }
+
+
+    [Fact]
+    public void JsonMultiStreamLoader_typeInfo_record_ctor_when_options_is_null_throws_ArgumentNullException()
+    {
+        var ex = Assert.Throws<ArgumentNullException>(() => new JsonMultiStreamLoader<PersonRecord>((Func<PersonRecord, Stream>)(_ => new MemoryStream()), TestJsonContext.Default.PersonRecord, (JsonMultiStreamLoaderOptions)null!));
+
+        Assert.Equal("options", ex.ParamName);
+    }
 }
