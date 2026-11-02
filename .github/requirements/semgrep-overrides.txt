@@ -1,1 +1,9 @@
 mcp==1.30.0
+# GHSA-xcq7-p3pf-p88h: opentelemetry-api <= 1.45.0 parses tracestate without bound.
+# semgrep 1.181.0 pins the OpenTelemetry family to ~=1.37.0 / ~=0.58b0, so override the
+# whole family to the first patched release and its matching instrumentation line.
+opentelemetry-api==1.45.1
+opentelemetry-sdk==1.45.1
+opentelemetry-exporter-otlp-proto-http==1.45.1
+opentelemetry-instrumentation-requests==0.66b1
+opentelemetry-instrumentation-threading==0.66b1
