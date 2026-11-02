@@ -785,6 +785,32 @@ public class JsonLineExtractorTests
 
 
     [Fact]
+    public async Task ExtractAsync_when_checkpointing_on_a_non_seekable_stream_counts_one_byte_per_newline()
+    {
+        // A non-seekable stream cannot be probed for CRLF, so newline detection assumes LF (one byte).
+        // On LF input with a trailing newline that makes the checkpoint land exactly on the end of the data.
+        var lines = ExpectedItems.Take(3).Select(item => JsonSerializer.Serialize(item) + "\n");
+        var bytes = Encoding.UTF8.GetBytes(string.Concat(lines));
+        using var ms = new MemoryStream(bytes);
+        using var nonSeekable = new NonSeekableStream(ms);
+        var sut = new JsonLineExtractor<PersonRecord>
+        (
+            nonSeekable,
+            new JsonLineExtractorOptions
+            {
+                EnableCheckpointing = true,
+            }
+        );
+
+        var items = await sut.ExtractAsync().ToListAsync();
+
+        Assert.Equal(ExpectedItems.Take(3).ToList(), items);
+        Assert.Equal(bytes.Length, sut.CurrentByteOffset);
+    }
+
+
+
+    [Fact]
     public async Task ExtractAsync_with_crlf_stream_CurrentByteOffset_advances_to_stream_length()
     {
         var lines = ExpectedItems.Take(3).Select(item => JsonSerializer.Serialize(item));
