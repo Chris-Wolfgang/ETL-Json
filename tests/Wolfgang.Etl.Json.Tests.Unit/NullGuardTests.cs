@@ -203,7 +203,7 @@ public class NullGuardTests
     [Fact]
     public void JsonMultiStreamLoader_typeInfo_record_ctor_when_options_is_null_throws_ArgumentNullException()
     {
-        var ex = Assert.Throws<ArgumentNullException>(() => new JsonMultiStreamLoader<PersonRecord>((Func<PersonRecord, Stream>)(_ => new MemoryStream()), TestJsonContext.Default.PersonRecord, (JsonMultiStreamLoaderOptions)null!));
+        var ex = Assert.Throws<ArgumentNullException>(() => new JsonMultiStreamLoader<PersonRecord>(_ => new MemoryStream(), TestJsonContext.Default.PersonRecord, (JsonMultiStreamLoaderOptions)null!));
 
         Assert.Equal("options", ex.ParamName);
     }
