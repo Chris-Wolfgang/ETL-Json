@@ -155,6 +155,7 @@ public class NullGuardTests
     }
 
 
+
     [Fact]
     public void JsonLineExtractor_typeInfo_record_ctor_when_options_is_null_throws_ArgumentNullException()
     {
@@ -162,6 +163,7 @@ public class NullGuardTests
 
         Assert.Equal("options", ex.ParamName);
     }
+
 
 
     [Fact]
@@ -173,6 +175,7 @@ public class NullGuardTests
     }
 
 
+
     [Fact]
     public void JsonSingleStreamExtractor_typeInfo_record_ctor_when_options_is_null_throws_ArgumentNullException()
     {
@@ -180,6 +183,7 @@ public class NullGuardTests
 
         Assert.Equal("options", ex.ParamName);
     }
+
 
 
     [Fact]
@@ -191,6 +195,7 @@ public class NullGuardTests
     }
 
 
+
     [Fact]
     public void JsonMultiStreamExtractor_typeInfo_record_ctor_when_options_is_null_throws_ArgumentNullException()
     {
@@ -198,6 +203,7 @@ public class NullGuardTests
 
         Assert.Equal("options", ex.ParamName);
     }
+
 
 
     [Fact]
