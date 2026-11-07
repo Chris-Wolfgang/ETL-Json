@@ -49,7 +49,7 @@ public class NullGuardTests
     [Fact]
     public void JsonLineExtractor_path_ctor_when_path_is_null_throws_ArgumentNullException()
     {
-        var ex = Assert.Throws<ArgumentNullException>(() => new JsonLineExtractor<PersonRecord>((string)null!, (JsonSerializerOptions?)null));
+        var ex = Assert.Throws<ArgumentNullException>(() => new JsonLineExtractor<PersonRecord>((string)null!));
 
         Assert.Equal("path", ex.ParamName);
     }
@@ -69,7 +69,7 @@ public class NullGuardTests
     [Fact]
     public void JsonSingleStreamExtractor_path_ctor_when_path_is_null_throws_ArgumentNullException()
     {
-        var ex = Assert.Throws<ArgumentNullException>(() => new JsonSingleStreamExtractor<PersonRecord>((string)null!, (JsonSerializerOptions?)null));
+        var ex = Assert.Throws<ArgumentNullException>(() => new JsonSingleStreamExtractor<PersonRecord>((string)null!));
 
         Assert.Equal("path", ex.ParamName);
     }
