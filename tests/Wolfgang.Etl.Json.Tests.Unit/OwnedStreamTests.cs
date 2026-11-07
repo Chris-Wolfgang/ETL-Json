@@ -72,7 +72,7 @@ public class OwnedStreamTests
         var path = WriteTempFile(JsonSerializer.Serialize(People.ToList(), TestJsonContext.Default.ListPersonRecord));
         try
         {
-            var sut = new JsonSingleStreamExtractor<PersonRecord>(path, (JsonSerializerOptions?)null);
+            var sut = new JsonSingleStreamExtractor<PersonRecord>(path);
 
             sut.Dispose();
 
