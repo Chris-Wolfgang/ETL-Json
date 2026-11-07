@@ -8,9 +8,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Wolfgang.Etl.Abstractions;
@@ -654,7 +656,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     [UnconditionalSuppressMessage("Trimming", "IL2026:RequiresUnreferencedCode", Justification = "Reflection-based serialization runs only when _typeInfo is null, and every constructor that leaves it null carries [RequiresUnreferencedCode].")]
     [UnconditionalSuppressMessage("AOT", "IL3050:RequiresDynamicCode", Justification = "Reflection-based serialization runs only when _typeInfo is null, and every constructor that leaves it null carries [RequiresDynamicCode].")]
 #endif
-    private async System.Threading.Tasks.Task<(TRecord? Item, bool Failed)> TryDeserializeStreamAsync
+    private async Task<(TRecord? Item, bool Failed)> TryDeserializeStreamAsync
     (
         Stream stream,
         int streamIndex,
@@ -670,9 +672,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
                 ? await JsonSerializer.DeserializeAsync(stream, _typeInfo, token).ConfigureAwait(false)
                 : await JsonSerializer.DeserializeAsync<TRecord>(stream, _options, token).ConfigureAwait(false);
         }
-#pragma warning disable CA1031 // catch JsonException to implement error-handling policy
         catch (JsonException ex)
-#pragma warning restore CA1031
         {
             failed = true;
             deserializationEx = ex;
@@ -691,7 +691,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
             var context = new ItemErrorContext(streamIndex + 1, deserializationEx!, rawContent: null);
             if (HandleItemError(context) == ItemErrorAction.Abort)
             {
-                System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(deserializationEx!).Throw();
+                ExceptionDispatchInfo.Capture(deserializationEx!).Throw();
             }
         }
 
