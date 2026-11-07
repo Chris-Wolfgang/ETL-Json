@@ -42,8 +42,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     private static readonly string OperationName = $"JSON multi-stream loading of {typeof(TRecord).Name}";
     private static readonly KeyValuePair<string, object?> _recordTypeTag = new("etl.record_type", typeof(TRecord).Name);
     private readonly Func<TRecord, JsonNamedDestination> _destinationFactory;
-    private readonly JsonSerializerOptions? _options;
-    private readonly JsonTypeInfo<TRecord>? _typeInfo;
+    private readonly RecordTypeInfo<TRecord> _typeInfo;
     private readonly ILogger _logger;
     private readonly IProgressTimer? _progressTimer;
     private int _progressTimerWired;
@@ -102,7 +101,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
 
         _destinationFactory = item => new JsonNamedDestination(streamFactory(item));
         _logger = NullLogger.Instance;
-        _options = null;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions(options: null);
     }
 
 
@@ -125,6 +124,12 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     /// signal. Hidden from IntelliSense; source code binds here too, so nothing changes for callers. New
     /// code has no reason to name this overload.
     /// </remarks>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#if NET7_0_OR_GREATER
+    [RequiresDynamicCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
+#endif
     [EditorBrowsable(EditorBrowsableState.Never)]
     public JsonMultiStreamLoader
     (
@@ -133,7 +138,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     {
         _destinationFactory = destinationFactory ?? throw new ArgumentNullException(nameof(destinationFactory));
         _logger = NullLogger.Instance;
-        _options = null;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions(options: null);
     }
 
 
@@ -172,7 +177,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
 
         _destinationFactory = item => new JsonNamedDestination(streamFactory(item));
         _logger = logger ?? (ILogger)NullLogger.Instance;
-        _options = null;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions(options: null);
     }
 
 
@@ -192,6 +197,12 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     /// <exception cref="ArgumentNullException">
     /// Thrown when <paramref name="destinationFactory"/> is <c>null</c>.
     /// </exception>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#if NET7_0_OR_GREATER
+    [RequiresDynamicCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
+#endif
     public JsonMultiStreamLoader
     (
         Func<TRecord, JsonNamedDestination> destinationFactory,
@@ -200,7 +211,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     {
         _destinationFactory = destinationFactory ?? throw new ArgumentNullException(nameof(destinationFactory));
         _logger = logger ?? (ILogger)NullLogger.Instance;
-        _options = null;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions(options: null);
     }
 
 
@@ -245,7 +256,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
         }
 
         _destinationFactory = item => new JsonNamedDestination(streamFactory(item));
-        _options = options;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions(options);
         _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
@@ -271,6 +282,12 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     /// compile-time signal. Hidden from IntelliSense; source code binds here too, so nothing changes for callers.
     /// New code passes the record.
     /// </remarks>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#if NET7_0_OR_GREATER
+    [RequiresDynamicCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
+#endif
     [EditorBrowsable(EditorBrowsableState.Never)]
     public JsonMultiStreamLoader
     (
@@ -280,7 +297,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     )
     {
         _destinationFactory = destinationFactory ?? throw new ArgumentNullException(nameof(destinationFactory));
-        _options = options;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions(options);
         _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
@@ -313,7 +330,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
         }
 
         _destinationFactory = item => new JsonNamedDestination(streamFactory(item));
-        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions((options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions);
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
     }
@@ -343,7 +360,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
         }
 
         _destinationFactory = item => new JsonNamedDestination(streamFactory(item));
-        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _typeInfo = RecordTypeInfo<TRecord>.FromTypeInfo(typeInfo ?? throw new ArgumentNullException(nameof(typeInfo)));
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
     }
@@ -355,6 +372,12 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     /// <param name="options">The construction-time configuration for this stage, including the settings inherited from <see cref="LoaderOptions"/>.</param>
     /// <param name="logger">An optional logger; <see langword="null"/> disables logging.</param>
     /// <exception cref="ArgumentNullException">A required argument is <see langword="null"/>.</exception>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#if NET7_0_OR_GREATER
+    [RequiresDynamicCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
+#endif
     public JsonMultiStreamLoader
     (
         Func<TRecord, JsonNamedDestination> destinationFactory,
@@ -364,7 +387,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
         : base(options)
     {
         _destinationFactory = destinationFactory ?? throw new ArgumentNullException(nameof(destinationFactory));
-        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions((options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions);
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
     }
@@ -389,7 +412,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     {
         RejectSerializerOptions(options);
         _destinationFactory = destinationFactory ?? throw new ArgumentNullException(nameof(destinationFactory));
-        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _typeInfo = RecordTypeInfo<TRecord>.FromTypeInfo(typeInfo ?? throw new ArgumentNullException(nameof(typeInfo)));
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
     }
@@ -465,7 +488,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
         }
 
         _destinationFactory = item => new JsonNamedDestination(streamFactory(item));
-        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions((options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions);
         _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
         ApplyOptions(options);
@@ -484,6 +507,12 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     /// <param name="options">The construction-time configuration, including <see cref="JsonMultiStreamLoaderOptions.SerializerOptions"/>.</param>
     /// <param name="timer">The progress timer to inject.</param>
     /// <param name="logger">An optional logger instance for diagnostic output.</param>
+#if NET5_0_OR_GREATER
+    [RequiresUnreferencedCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#if NET7_0_OR_GREATER
+    [RequiresDynamicCode("JSON serialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.")]
+#endif
+#endif
     internal JsonMultiStreamLoader
     (
         Func<TRecord, JsonNamedDestination> destinationFactory,
@@ -494,7 +523,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
         : base(options)
     {
         _destinationFactory = destinationFactory ?? throw new ArgumentNullException(nameof(destinationFactory));
-        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions((options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions);
         _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
         ApplyOptions(options);
@@ -528,7 +557,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
         }
 
         _destinationFactory = item => new JsonNamedDestination(streamFactory(item));
-        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _typeInfo = RecordTypeInfo<TRecord>.FromTypeInfo(typeInfo ?? throw new ArgumentNullException(nameof(typeInfo)));
         _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
@@ -555,7 +584,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
     )
     {
         _destinationFactory = destinationFactory ?? throw new ArgumentNullException(nameof(destinationFactory));
-        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _typeInfo = RecordTypeInfo<TRecord>.FromTypeInfo(typeInfo ?? throw new ArgumentNullException(nameof(typeInfo)));
         _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
@@ -585,7 +614,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
         }
 
         _destinationFactory = item => new JsonNamedDestination(streamFactory(item));
-        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _typeInfo = RecordTypeInfo<TRecord>.FromTypeInfo(typeInfo ?? throw new ArgumentNullException(nameof(typeInfo)));
         _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
@@ -717,9 +746,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
 
 
     private Task SerializeToStreamAsync(Stream stream, TRecord item, CancellationToken token) =>
-        _typeInfo is not null
-            ? JsonSerializer.SerializeAsync(stream, item, _typeInfo, token)
-            : JsonSerializer.SerializeAsync(stream, item, _options, token);
+        JsonSerializer.SerializeAsync(stream, item, _typeInfo.Value, token);
 
 
 

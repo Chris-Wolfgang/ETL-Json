@@ -45,8 +45,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
 
     private readonly Stream _stream;
     private readonly bool _ownsStream;
-    private readonly JsonSerializerOptions? _options;
-    private readonly JsonTypeInfo<TRecord>? _typeInfo;
+    private readonly RecordTypeInfo<TRecord> _typeInfo;
     private readonly ILogger _logger;
     private readonly IProgressTimer? _progressTimer;
     private int _progressTimerWired;
@@ -81,7 +80,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
         _logger = NullLogger.Instance;
-        _options = null;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions(options: null);
     }
 
 
@@ -123,7 +122,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
 
         _stream = File.OpenRead(path);
         _ownsStream = true;
-        _options = options;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions(options);
         _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
@@ -155,7 +154,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
         _logger = logger ?? (ILogger)NullLogger.Instance;
-        _options = null;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions(options: null);
     }
 
 
@@ -192,7 +191,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _options = options;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions(options);
         _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
@@ -220,7 +219,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
         : base(options)
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions((options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions);
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
     }
@@ -245,7 +244,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     {
         RejectSerializerOptions(options);
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _typeInfo = RecordTypeInfo<TRecord>.FromTypeInfo(typeInfo ?? throw new ArgumentNullException(nameof(typeInfo)));
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
     }
@@ -278,7 +277,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
 
         _stream = File.OpenRead(path);
         _ownsStream = true;
-        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions((options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions);
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
     }
@@ -345,7 +344,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
         : base(options)
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions((options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions);
         _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
         ApplyOptions(options);
@@ -371,7 +370,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _typeInfo = RecordTypeInfo<TRecord>.FromTypeInfo(typeInfo ?? throw new ArgumentNullException(nameof(typeInfo)));
         _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
@@ -394,7 +393,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _typeInfo = RecordTypeInfo<TRecord>.FromTypeInfo(typeInfo ?? throw new ArgumentNullException(nameof(typeInfo)));
         _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
@@ -413,9 +412,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
 
         var skipBudget = SkipItemCount;
         var sw = Stopwatch.StartNew();
-        var enumerable = _typeInfo is not null
-            ? JsonSerializer.DeserializeAsyncEnumerable(_stream, _typeInfo, token)
-            : JsonSerializer.DeserializeAsyncEnumerable<TRecord>(_stream, _options ?? JsonMetrics.DefaultSerializerOptions, token);
+        var enumerable = JsonSerializer.DeserializeAsyncEnumerable(_stream, _typeInfo.Value, token);
 
         var enumerator = enumerable.GetAsyncEnumerator(token);
         try

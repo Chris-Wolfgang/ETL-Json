@@ -15,7 +15,6 @@ internal static class JsonMetrics
     internal static readonly KeyValuePair<string, object?> JsonLineComponentTag = new("etl.component", "JsonLine");
     internal static readonly KeyValuePair<string, object?> JsonSingleStreamComponentTag = new("etl.component", "JsonSingleStream");
     internal static readonly KeyValuePair<string, object?> JsonMultiStreamComponentTag = new("etl.component", "JsonMultiStream");
-    internal static readonly JsonSerializerOptions DefaultSerializerOptions = new();
     internal static readonly byte[] NewLineUtf8Bytes = System.Text.Encoding.UTF8.GetBytes(Environment.NewLine);
 
 
