@@ -2,10 +2,15 @@ name: Build reproducibility
 
 # Verifies that the deterministic-build knobs in Directory.Build.props
 # (<Deterministic>, <ContinuousIntegrationBuild>, SourceLink,
-# EmbedUntrackedSources) actually produce byte-identical managed assemblies
-# when the same commit is built on different runners. Advisory — cross-OS
-# differences are reported as a warning, not a hard failure.
-# Closes #133.
+# EmbedUntrackedSources) actually produce byte-identical output when the same
+# commit is built on different runners. The compiled assemblies and symbols
+# (.dll/.pdb, every target framework) must be byte-identical across operating
+# systems, or the job fails. Directory.Build.targets normalizes the
+# SDK-generated sources to LF and Directory.Build.props pins the .NET
+# Framework reference assemblies; those were the inputs that differed between
+# Linux and Windows. Package files (.nupkg/.snupkg) are not compared: NuGet
+# stamps each zip entry with the pack time, so they differ on every run.
+# See docs/REPRODUCIBLE-BUILD.md.
 
 on:
   workflow_dispatch:
@@ -36,19 +41,27 @@ jobs:
             8.0.x
             10.0.x
 
-      - name: Build src (net8.0, Release, deterministic)
+      - name: Build src (every TFM, Release, deterministic)
         shell: bash
         run: |
           dotnet build src/Wolfgang.Etl.Json/Wolfgang.Etl.Json.csproj \
-            -c Release -f net8.0 -p:ContinuousIntegrationBuild=true
+            -c Release -p:ContinuousIntegrationBuild=true
 
-      - name: Hash assemblies
+      - name: Hash assemblies and symbols
         shell: bash
         run: |
-          sha256sum \
-            src/Wolfgang.Etl.Json/bin/Release/net8.0/Wolfgang.Etl.Json.dll \
-            | awk '{ n = split($2, parts, "/"); print $1 "  " parts[n] }' \
-            | sort > "hashes-${{ matrix.os }}.txt"
+          set -euo pipefail
+          shopt -s nullglob
+          files=(src/Wolfgang.Etl.Json/bin/Release/*/Wolfgang.Etl.Json.dll
+                 src/Wolfgang.Etl.Json/bin/Release/*/Wolfgang.Etl.Json.pdb)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "::error::No Wolfgang.Etl.Json .dll/.pdb under bin/Release - nothing to compare."
+            exit 1
+          fi
+          # One line per file, "<sha256>  <tfm>/<file>", so every TFM is compared.
+          sha256sum "${files[@]}" \
+            | awk '{ n = split($2, parts, "/"); print $1 "  " parts[n-1] "/" parts[n] }' \
+            | sort -k2 > "hashes-${{ matrix.os }}.txt"
           echo "== ${{ matrix.os }} =="
           cat "hashes-${{ matrix.os }}.txt"
 
@@ -75,8 +88,13 @@ jobs:
           windows="hashes/hashes-windows-latest/hashes-windows-latest.txt"
           echo "== ubuntu-latest =="; cat "$ubuntu"
           echo "== windows-latest =="; cat "$windows"
+          # Hard failure. If this fails, diff the per-TFM .pdb documents and the
+          # referenced-assembly records first: a generated source written with a
+          # different newline, or a different reference assembly, was the cause that
+          # Directory.Build.targets and Directory.Build.props now remove.
           if diff -u "$ubuntu" "$windows"; then
-            echo "✅ Reproducible: managed assembly hashes match across ubuntu + windows."
+            echo "✅ Reproducible: assemblies and symbols match across ubuntu + windows."
           else
-            echo "::warning::Assembly hashes differ across runners — the build is not byte-identical cross-OS. Investigate embedded paths / SourceLink normalization."
+            echo "::error::Assemblies or symbols differ across runners — the build is not byte-identical cross-OS."
+            exit 1
           fi
