@@ -806,6 +806,168 @@ public class JsonLineExtractorTests
 
 
 
+    [Theory]
+    [InlineData("utf-8")]
+    [InlineData("utf-16LE")]
+    [InlineData("utf-16BE")]
+    [InlineData("utf-32LE")]
+    [InlineData("utf-32BE")]
+    public async Task ExtractAsync_when_stream_has_a_byte_order_mark_and_Encoding_is_null_resumes_from_checkpoint
+    (
+        string encodingName
+    )
+    {
+        await AssertResumesFromCheckpointAsync
+        (
+            ExpectedItems,
+            "\n",
+            CreateEncodingWithByteOrderMark(encodingName),
+            writeByteOrderMark: true,
+            readerEncoding: null
+        );
+    }
+
+
+
+    [Fact]
+    public async Task ExtractAsync_when_explicit_Encoding_matches_the_byte_order_mark_resumes_from_checkpoint()
+    {
+        await AssertResumesFromCheckpointAsync
+        (
+            ExpectedItems,
+            "\n",
+            Encoding.Unicode,
+            writeByteOrderMark: true,
+            readerEncoding: Encoding.Unicode
+        );
+    }
+
+
+
+    [Fact]
+    public async Task ExtractAsync_when_explicit_Encoding_has_no_preamble_resumes_from_checkpoint()
+    {
+        await AssertResumesFromCheckpointAsync
+        (
+            ExpectedItems,
+            "\n",
+            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
+            writeByteOrderMark: false,
+            readerEncoding: new UTF8Encoding(encoderShouldEmitUTF8Identifier: false)
+        );
+    }
+
+
+
+    [Fact]
+    public async Task ExtractAsync_when_crlf_first_line_is_longer_than_256_bytes_resumes_from_checkpoint()
+    {
+        var longName = new string('x', 400);
+        var records = ExpectedItems
+            .Select(item => item with { FirstName = longName })
+            .ToList();
+
+        await AssertResumesFromCheckpointAsync
+        (
+            records,
+            "\r\n",
+            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
+            writeByteOrderMark: false,
+            readerEncoding: null
+        );
+    }
+
+
+
+    [Fact]
+    public async Task CurrentByteOffset_when_stream_is_empty_stays_zero()
+    {
+        using var stream = new MemoryStream();
+        var sut = new JsonLineExtractor<PersonRecord>
+        (
+            stream,
+            new JsonLineExtractorOptions
+            {
+                EnableCheckpointing = true,
+            }
+        );
+
+        var results = await sut.ExtractAsync().ToListAsync();
+
+        Assert.Empty(results);
+        Assert.Equal(0, sut.CurrentByteOffset);
+    }
+
+
+
+    private static Encoding CreateEncodingWithByteOrderMark(string encodingName) =>
+        encodingName switch
+        {
+            "utf-8" => new UTF8Encoding(encoderShouldEmitUTF8Identifier: true),
+            "utf-16LE" => new UnicodeEncoding(bigEndian: false, byteOrderMark: true),
+            "utf-16BE" => new UnicodeEncoding(bigEndian: true, byteOrderMark: true),
+            "utf-32LE" => new UTF32Encoding(bigEndian: false, byteOrderMark: true),
+            _ => new UTF32Encoding(bigEndian: true, byteOrderMark: true),
+        };
+
+
+
+    /// <summary>
+    /// Writes <paramref name="records"/> as JSON Lines in <paramref name="fileEncoding"/>, extracts
+    /// the first two with checkpointing on, and asserts that the checkpoint is the exact byte
+    /// position of the third line and that resuming from it yields the remaining records.
+    /// </summary>
+    private static async Task AssertResumesFromCheckpointAsync
+    (
+        IReadOnlyList<PersonRecord> records,
+        string newline,
+        Encoding fileEncoding,
+        bool writeByteOrderMark,
+        Encoding? readerEncoding
+    )
+    {
+        var lines = records
+            .Select(record => JsonSerializer.Serialize(record))
+            .ToList();
+        var preamble = writeByteOrderMark ? fileEncoding.GetPreamble() : Array.Empty<byte>();
+        var body = fileEncoding.GetBytes(string.Join(newline, lines) + newline);
+        using var stream = new MemoryStream(preamble.Concat(body).ToArray());
+
+        var first = new JsonLineExtractor<PersonRecord>
+        (
+            stream,
+            new JsonLineExtractorOptions
+            {
+                MaximumItemCount = 2,
+                EnableCheckpointing = true,
+                Encoding = readerEncoding,
+            }
+        );
+        var firstBatch = await first.ExtractAsync().ToListAsync();
+        var checkpoint = first.CurrentByteOffset;
+
+        var second = new JsonLineExtractor<PersonRecord>
+        (
+            stream,
+            new JsonLineExtractorOptions
+            {
+                StartByteOffset = checkpoint,
+                Encoding = readerEncoding,
+            }
+        );
+        var secondBatch = await second.ExtractAsync().ToListAsync();
+
+        Assert.Equal
+        (
+            preamble.Length + fileEncoding.GetByteCount(lines[0] + newline + lines[1] + newline),
+            checkpoint
+        );
+        Assert.Equal(records.Take(2).ToList(), firstBatch);
+        Assert.Equal(records.Skip(2).ToList(), secondBatch);
+    }
+
+
+
     [Fact]
     public void NonSeekableStream_is_a_read_only_forward_only_wrapper()
     {

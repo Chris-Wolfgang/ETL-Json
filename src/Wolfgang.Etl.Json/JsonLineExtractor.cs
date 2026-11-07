@@ -52,6 +52,20 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     private long _currentLineNumber;
     private long _currentByteOffset;
 
+    // How far ahead the checkpoint probe looks for the first line terminator.
+    private const int ProbeByteLimit = 64 * 1024;
+
+    // Encodings the StreamReader detects from a byte-order mark, longest preamble first
+    // (the UTF-32 LE mark starts with the UTF-16 LE mark).
+    private static readonly Encoding[] BomEncodings =
+    {
+        new UTF32Encoding(bigEndian: false, byteOrderMark: true),
+        new UTF32Encoding(bigEndian: true, byteOrderMark: true),
+        Encoding.UTF8,
+        Encoding.Unicode,
+        Encoding.BigEndianUnicode,
+    };
+
 
 
     private Encoding? _encoding;
@@ -99,6 +113,12 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     /// Gets the byte offset of the start of the next unread line in the stream.
     /// Capture this value after each <see langword="yield"/> to create a resumable checkpoint.
     /// </summary>
+    /// <remarks>
+    /// On a seekable stream the offset counts the byte-order mark, uses the encoding the reader
+    /// detects from it (or <see cref="Encoding"/> when set), and sizes the line terminator from the
+    /// first line found in the first 64 KiB. On a non-seekable stream it assumes UTF-8 (or
+    /// <see cref="Encoding"/>) without a byte-order mark and a one-byte terminator.
+    /// </remarks>
     /// <exception cref="InvalidOperationException">
     /// Thrown when <see cref="EnableCheckpointing"/> is <see langword="false"/>. Byte offsets are
     /// only tracked when checkpointing is enabled.
@@ -464,8 +484,17 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 
 
 
-    private StreamReader CreateStreamReader()
+    /// <param name="resumeEncoding">
+    /// The encoding detected from the head of the stream when resuming mid-stream; there is no
+    /// byte-order mark at the resume offset, so the reader cannot detect it there itself.
+    /// </param>
+    private StreamReader CreateStreamReader(Encoding? resumeEncoding)
     {
+        if (Encoding is null && resumeEncoding is not null)
+        {
+            return new StreamReader(_stream, resumeEncoding, detectEncodingFromByteOrderMarks: false, bufferSize: 1024, leaveOpen: !_ownsStream);
+        }
+
 #if NETSTANDARD2_0 || NET462 || NET481
         return Encoding is null
             ? new StreamReader(_stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, bufferSize: 1024, leaveOpen: !_ownsStream)
@@ -487,10 +516,12 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     {
         JsonLogMessages.StartingOperation(_logger, OperationName, null);
         var track = EnableCheckpointing;
-        var (newlineSize, lineEncoding) = await PrepareForExtractionAsync(token).ConfigureAwait(false);
+        var probe = await PrepareForExtractionAsync(token).ConfigureAwait(false);
+        var lineEncoding = probe.Encoding;
+        var newlineSize = probe.NewlineSize;
         var skipBudget = SkipItemCount;
         var sw = Stopwatch.StartNew();
-        using var reader = CreateStreamReader();
+        using var reader = CreateStreamReader(StartByteOffset > 0 ? probe.Encoding : null);
         string? lineText;
 #if NET7_0_OR_GREATER
         while ((lineText = await reader.ReadLineAsync(token).ConfigureAwait(false)) is not null)
@@ -558,57 +589,136 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 
 
 
-    private async Task<(int NewlineSize, Encoding LineEncoding)> PrepareForExtractionAsync(CancellationToken token)
+    private async Task<StreamProbe> PrepareForExtractionAsync(CancellationToken token)
     {
         Interlocked.Exchange(ref _currentLineNumber, 0);
         Interlocked.Exchange(ref _currentByteOffset, StartByteOffset);
-        var lineEncoding = Encoding ?? Encoding.UTF8;
-        var newlineSize = EnableCheckpointing
-            ? await DetectNewlineSizeAsync(token).ConfigureAwait(false)
-            : 0;
+        if (StartByteOffset > 0 && !_stream.CanSeek)
+        {
+            throw new InvalidOperationException
+            (
+                "Stream must be seekable when StartByteOffset is greater than zero."
+            );
+        }
+
+        var probe = _stream.CanSeek && (EnableCheckpointing || StartByteOffset > 0)
+            ? await ProbeStreamAsync(token).ConfigureAwait(false)
+            : new StreamProbe(Encoding ?? Encoding.UTF8, PreambleLength: 0, NewlineSize: 1);
+
         if (StartByteOffset > 0)
         {
-            if (!_stream.CanSeek)
-            {
-                throw new InvalidOperationException
-                (
-                    "Stream must be seekable when StartByteOffset is greater than zero."
-                );
-            }
-
             _stream.Seek(StartByteOffset, SeekOrigin.Begin);
         }
-
-        return (newlineSize, lineEncoding);
-    }
-
-
-
-    private async Task<int> DetectNewlineSizeAsync(CancellationToken token)
-    {
-        if (!_stream.CanSeek) { return 1; }
-
-        var savedPosition = _stream.Position;
-        _stream.Seek(0, SeekOrigin.Begin);
-        var buffer = new byte[256];
-#if NETSTANDARD2_0 || NET462 || NET481
-        token.ThrowIfCancellationRequested();
-#pragma warning disable CA2016, MA0040, S8949 // old TFM overload has no CancellationToken parameter
-        var bytesRead = await _stream.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
-#pragma warning restore CA2016, MA0040, S8949
-#else
-        var bytesRead = await _stream.ReadAsync(buffer.AsMemory(0, buffer.Length), token).ConfigureAwait(false);
-#endif
-        _stream.Seek(savedPosition, SeekOrigin.Begin);
-
-        for (var i = 0; i < bytesRead - 1; i++)
+        else
         {
-            if (buffer[i] == '\r' && buffer[i + 1] == '\n') { return 2; }
-            if (buffer[i] == '\n') { return 1; }
+            // The StreamReader swallows the byte-order mark without reporting it, so count it here
+            // once; otherwise every checkpoint taken from a BOM-prefixed stream is short by its length.
+            Interlocked.Add(ref _currentByteOffset, probe.PreambleLength);
         }
 
-        return 1;
+        return probe;
     }
+
+
+
+    /// <summary>
+    /// Reads the head of the stream (and restores the position) to find the encoding the
+    /// <see cref="StreamReader"/> will use, the byte-order mark it will swallow and the byte size
+    /// of the line terminator, so that checkpoint offsets match the bytes actually consumed.
+    /// </summary>
+    private async Task<StreamProbe> ProbeStreamAsync(CancellationToken token)
+    {
+        var savedPosition = _stream.Position;
+        // Resuming: the head of the stream carries the byte-order mark that identifies the encoding.
+        // Fresh run: probe where the reader will start.
+        var probeStart = StartByteOffset > 0 ? 0 : savedPosition;
+        _stream.Seek(probeStart, SeekOrigin.Begin);
+        var buffer = new byte[ProbeByteLimit];
+        var bytesRead = await ReadProbeAsync(buffer, token).ConfigureAwait(false);
+        _stream.Seek(savedPosition, SeekOrigin.Begin);
+
+        var (encoding, preambleLength) = DetectEncoding(buffer, bytesRead);
+        var text = encoding.GetString(buffer, preambleLength, bytesRead - preambleLength);
+        var newlineIndex = text.IndexOf('\n');
+        var isCrlf = newlineIndex > 0 && text[newlineIndex - 1] == '\r';
+        var newlineSize = encoding.GetByteCount(isCrlf ? "\r\n" : "\n");
+
+        return new StreamProbe(encoding, preambleLength, newlineSize);
+    }
+
+
+
+    private (Encoding Encoding, int PreambleLength) DetectEncoding(byte[] buffer, int bytesRead)
+    {
+        if (Encoding is not null)
+        {
+            // An explicit encoding: the reader skips that encoding's own preamble when present.
+            var preamble = Encoding.GetPreamble();
+            return (Encoding, StartsWith(buffer, bytesRead, preamble) ? preamble.Length : 0);
+        }
+
+        // No explicit encoding: the reader detects the encoding from the byte-order mark.
+        foreach (var candidate in BomEncodings)
+        {
+            var preamble = candidate.GetPreamble();
+            if (StartsWith(buffer, bytesRead, preamble))
+            {
+                return (candidate, preamble.Length);
+            }
+        }
+
+        return (Encoding.UTF8, 0);
+    }
+
+
+
+    private static bool StartsWith(byte[] buffer, int bytesRead, byte[] preamble)
+    {
+        if (preamble.Length == 0 || bytesRead < preamble.Length)
+        {
+            return false;
+        }
+
+        for (var i = 0; i < preamble.Length; i++)
+        {
+            if (buffer[i] != preamble[i])
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
+
+    private async Task<int> ReadProbeAsync(byte[] buffer, CancellationToken token)
+    {
+        var total = 0;
+        while (total < buffer.Length)
+        {
+#if NETSTANDARD2_0 || NET462 || NET481
+            token.ThrowIfCancellationRequested();
+#pragma warning disable CA2016, MA0040, S8949 // old TFM overload has no CancellationToken parameter
+            var read = await _stream.ReadAsync(buffer, total, buffer.Length - total).ConfigureAwait(false);
+#pragma warning restore CA2016, MA0040, S8949
+#else
+            var read = await _stream.ReadAsync(buffer.AsMemory(total, buffer.Length - total), token).ConfigureAwait(false);
+#endif
+            if (read == 0)
+            {
+                break;
+            }
+
+            total += read;
+        }
+
+        return total;
+    }
+
+
+
+    private readonly record struct StreamProbe(Encoding Encoding, int PreambleLength, int NewlineSize);
 
 
 
