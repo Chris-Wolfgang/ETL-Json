@@ -175,7 +175,7 @@ static async Task MultiStreamLoaderExample()
     (
         person =>
         {
-            // In production: return File.Create($"output/{person.FirstName}.json");
+            // In production, open a FileStream with File.Create for an output file named after the person instead.
             var fileName = $"{person.FirstName}_{person.LastName}.json";
             var ms = new MemoryStream();
             files[fileName] = ms;
