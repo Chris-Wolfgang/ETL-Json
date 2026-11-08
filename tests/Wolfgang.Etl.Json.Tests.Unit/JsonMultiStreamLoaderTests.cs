@@ -957,16 +957,26 @@ public class JsonMultiStreamLoaderTests
 
 
 
+    // The factory is a delegate property rather than a method so the loader
+    // still receives a Func<PersonRecord, Stream> without a method whose
+    // record parameter is never read (InspectCode S1172).
     private sealed class CountingStreamFactory
     {
+        public CountingStreamFactory()
+        {
+            Create = _ =>
+            {
+                Count++;
+                return new MemoryStream();
+            };
+        }
+
+
+
         public int Count { get; private set; }
 
 
 
-        public Stream Create(PersonRecord _)
-        {
-            Count++;
-            return new MemoryStream();
-        }
+        public Func<PersonRecord, Stream> Create { get; }
     }
 }
