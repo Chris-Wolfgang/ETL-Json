@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1792304531593,
+  "lastUpdate": 1794141834964,
   "repoUrl": "https://github.com/Chris-Wolfgang/ETL-Json",
   "entries": {
     "Mutation score": [
@@ -107,6 +107,33 @@ window.BENCHMARK_DATA = {
           {
             "name": "Mutation score",
             "value": 50.08,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "Chris Wolfgang",
+            "username": "Chris-Wolfgang",
+            "email": "210299580+Chris-Wolfgang@users.noreply.github.com"
+          },
+          "committer": {
+            "name": "GitHub",
+            "username": "web-flow",
+            "email": "noreply@github.com"
+          },
+          "id": "164c149daf2c8d5d347eaa5d6184de54c38ec49e",
+          "message": "ci(pr): coverage step names carry no percentage (#564)\n\nThe coverage steps are now just 'Enforce coverage thresholds' and the\nStage 1 summary line says 'coverage gate'; the values live only in the\nenv block (CODECOV_MINIMUM / CODECOV_TEST_MINIMUM), so changing a\nthreshold never means renaming a step. Step names are not required-check\ncontexts (job names are), so the ruleset is unaffected.\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-08T03:24:06Z",
+          "url": "https://github.com/Chris-Wolfgang/ETL-Json/commit/164c149daf2c8d5d347eaa5d6184de54c38ec49e"
+        },
+        "date": 1794141828263,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Mutation score",
+            "value": 55.73,
             "unit": "%"
           }
         ]
