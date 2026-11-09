@@ -14,10 +14,10 @@ var options = new JsonSerializerOptions
 };
 
 // Loader: FirstName → first_name, LastName → last_name, …
-var loader = new JsonLineLoader<Person>(stream, options);
+var loader = new JsonLineLoader<Person>(stream, new JsonLineLoaderOptions { SerializerOptions = options });
 
 // Extractor: reads first_name → FirstName, …
-var extractor = new JsonLineExtractor<Person>(stream, options);
+var extractor = new JsonLineExtractor<Person>(stream, new JsonLineExtractorOptions { SerializerOptions = options });
 ```
 
 Built-in policies: `CamelCase`, `SnakeCaseLower`, `SnakeCaseUpper`, `KebabCaseLower`, `KebabCaseUpper`.
@@ -34,17 +34,23 @@ options.TypeInfoResolverChain.Add(new DefaultJsonTypeInfoResolver
     {
         typeInfo =>
         {
-            if (typeInfo.Type != typeof(Person)) return;
+            if (typeInfo.Type != typeof(Person))
+            {
+                return;
+            }
+
             foreach (var prop in typeInfo.Properties)
             {
                 if (string.Equals(prop.Name, "InternalId", StringComparison.Ordinal))
+                {
                     prop.ShouldSerialize = (_, _) => false;
+                }
             }
         }
     }
 });
 
-var loader = new JsonLineLoader<Person>(stream, options);
+var loader = new JsonLineLoader<Person>(stream, new JsonLineLoaderOptions { SerializerOptions = options });
 ```
 
 > **TFM note:** `DefaultJsonTypeInfoResolver` modifiers require .NET 8 or later. For earlier TFMs use `[JsonIgnore]` on the POCO or a custom `JsonConverter<T>`.
@@ -59,7 +65,7 @@ var options = new JsonSerializerOptions
     Converters = { new UnixEpochDateTimeConverter() }
 };
 
-var extractor = new JsonLineExtractor<Event>(stream, options);
+var extractor = new JsonLineExtractor<Event>(stream, new JsonLineExtractorOptions { SerializerOptions = options });
 ```
 
 ## Source-generated type metadata (AOT-safe)
