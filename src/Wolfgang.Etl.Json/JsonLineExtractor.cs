@@ -55,17 +55,6 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     // How far ahead the checkpoint probe looks for the first line terminator.
     private const int ProbeByteLimit = 64 * 1024;
 
-    // Encodings the StreamReader detects from a byte-order mark, longest preamble first
-    // (the UTF-32 LE mark starts with the UTF-16 LE mark).
-    private static readonly Encoding[] BomEncodings =
-    {
-        new UTF32Encoding(bigEndian: false, byteOrderMark: true),
-        new UTF32Encoding(bigEndian: true, byteOrderMark: true),
-        Encoding.UTF8,
-        Encoding.Unicode,
-        Encoding.BigEndianUnicode,
-    };
-
 
 
     private Encoding? _encoding;
@@ -484,6 +473,11 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 
 
 
+    /// <summary>
+    /// Creates the <see cref="StreamReader"/> for the underlying stream, decoding with the explicit
+    /// <see cref="Encoding"/> when one is set, else with the byte-order mark it detects, else with
+    /// <paramref name="resumeEncoding"/> when resuming past the mark.
+    /// </summary>
     /// <param name="resumeEncoding">
     /// The encoding detected from the head of the stream when resuming mid-stream; there is no
     /// byte-order mark at the resume offset, so the reader cannot detect it there itself.
@@ -658,7 +652,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
         }
 
         // No explicit encoding: the reader detects the encoding from the byte-order mark.
-        foreach (var candidate in BomEncodings)
+        foreach (var candidate in ByteOrderMarks.DetectedEncodings)
         {
             var preamble = candidate.GetPreamble();
             if (StartsWith(buffer, bytesRead, preamble))
