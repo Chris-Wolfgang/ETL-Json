@@ -14,6 +14,10 @@
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.15.8" />
+    <!-- Not used by the benchmark code: lifts BenchmarkDotNet's transitive Roslyn
+         (Microsoft.CodeAnalysis.CSharp 4.14.0 via BenchmarkDotNet 0.15.8) to the current
+         release, which BenchmarkDotNet uses to compile its generated benchmark code.
+         Removing it drops the resolved version back to 4.14.0. -->
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.9.0" />
   </ItemGroup>
 

@@ -59,6 +59,9 @@ internal static class JsonLogMessages
     internal static readonly Action<ILogger, int, int, int, Exception?> MultiStreamExtractionCompleted =
         LoggerMessage.Define<int, int, int>(LogLevel.Information, new EventId(203, nameof(MultiStreamExtractionCompleted)), "Multi-stream extraction completed. Extracted: {ItemCount}, skipped: {SkippedCount}, streams: {StreamCount}.");
 
+    internal static readonly Action<ILogger, int, string?, Exception?> SourceStreamIsNull =
+        LoggerMessage.Define<int, string?>(LogLevel.Error, new EventId(204, nameof(SourceStreamIsNull)), "Source {StreamIndex} ('{SourceName}') carries a null stream.");
+
 
 
     // ── MultiStream Loader ───────────────────────────────────────────
@@ -105,11 +108,6 @@ internal static class JsonLogMessages
 
     // ── Error Handling ───────────────────────────────────────────────
 
-    internal static readonly Action<ILogger, long, Exception?> DeserializationErrorAtLine =
-        LoggerMessage.Define<long>(LogLevel.Warning, new EventId(400, nameof(DeserializationErrorAtLine)),
-            "Deserialization error at line {LineNumber}; skipping record.");
-
-    internal static readonly Action<ILogger, long, Exception?> DeserializationErrorAtIndex =
-        LoggerMessage.Define<long>(LogLevel.Warning, new EventId(401, nameof(DeserializationErrorAtIndex)),
-            "Deserialization error at item index {ItemIndex}; skipping record.");
+    internal static readonly Action<ILogger, int, int, Exception?> SingleStreamExtractionStoppedOnError =
+        LoggerMessage.Define<int, int>(LogLevel.Warning, new EventId(400, nameof(SingleStreamExtractionStoppedOnError)), "JSON single-stream extraction stopped early at the first malformed element; the rest of the array was not read. Extracted: {ItemCount}, errors: {ErrorCount}.");
 }

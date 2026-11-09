@@ -60,6 +60,7 @@ public static class EtlPipelineJsonSinkExtensions
     }
 
 
+
     /// <summary>
     /// Terminates the pipeline, writing each record as a line of JSONL to a stream. The caller owns the stream.
     /// </summary>
@@ -98,6 +99,7 @@ public static class EtlPipelineJsonSinkExtensions
             : new JsonLineLoader<T>(stream, options);
         return pipeline.To(loader);
     }
+
 
 
     /// <summary>
@@ -139,6 +141,7 @@ public static class EtlPipelineJsonSinkExtensions
             : new JsonSingleStreamLoader<T>(stream, options);
         return pipeline.To(loader).DisposingOwned(stream);
     }
+
 
 
     /// <summary>
