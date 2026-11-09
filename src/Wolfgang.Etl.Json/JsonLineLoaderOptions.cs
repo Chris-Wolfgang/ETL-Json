@@ -15,7 +15,8 @@ namespace Wolfgang.Etl.Json;
 /// than silently ignored.
 /// </remarks>
 public sealed record JsonLineLoaderOptions : LoaderOptions
-{    /// <summary>
+{
+    /// <summary>
     /// Gets the text encoding used to write the stream. <see langword="null"/> (the default) writes UTF-8 without a byte-order mark.
     /// </summary>
     public Encoding? Encoding { get; init; }

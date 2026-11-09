@@ -17,13 +17,7 @@ public class JsonSingleStreamLoaderBenchmarks
 
 
     [Params(10, 100, 1000)]
-
-
-
     [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global", Justification = "Setter is invoked by BenchmarkDotNet via reflection per Params combination.")]
-
-
-
     public int ItemCount { get; set; }
 
 

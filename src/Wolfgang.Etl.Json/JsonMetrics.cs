@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Metrics;
-using System.Text.Json;
 
 namespace Wolfgang.Etl.Json;
 
@@ -18,7 +17,9 @@ internal static class JsonMetrics
     internal static readonly byte[] NewLineUtf8Bytes = System.Text.Encoding.UTF8.GetBytes(Environment.NewLine);
 
 
+
     internal static readonly Meter Meter = new("Wolfgang.Etl.Json");
+
 
 
     internal static readonly Counter<long> ItemsExtracted =
@@ -28,6 +29,7 @@ internal static class JsonMetrics
             description: "Total items successfully extracted.");
 
 
+
     internal static readonly Counter<long> ItemsLoaded =
         Meter.CreateCounter<long>(
             "wolfgang.etl.json.items.loaded",
@@ -35,11 +37,13 @@ internal static class JsonMetrics
             description: "Total items successfully loaded.");
 
 
+
     internal static readonly Counter<long> ItemsSkipped =
         Meter.CreateCounter<long>(
             "wolfgang.etl.json.items.skipped",
             unit: null,
             description: "Total items skipped via SkipItemCount.");
+
 
 
     internal static readonly Histogram<double> OperationDuration =

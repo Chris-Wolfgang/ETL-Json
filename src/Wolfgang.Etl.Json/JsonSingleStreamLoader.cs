@@ -35,7 +35,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSON single-stream loading of {typeof(TRecord).Name}";
-    private static readonly KeyValuePair<string, object?> _recordTypeTag = new("etl.record_type", typeof(TRecord).Name);
+    private static readonly KeyValuePair<string, object?> RecordTypeTag = new("etl.record_type", typeof(TRecord).Name);
     private readonly Stream _stream;
     private readonly RecordTypeInfo<TRecord> _typeInfo;
     private readonly ILogger _logger;
@@ -186,6 +186,8 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
     }
+
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonSingleStreamLoader{TRecord}"/> class configured through an options record and a source-generated <see cref="JsonTypeInfo{TRecord}"/>.
@@ -348,7 +350,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
         // ConfigureAwait(false), and this loader ships on net462/netstandard2.0 where a
         // context-captured DisposeAsync (which flushes to the stream) can deadlock a
         // sync-over-async host.
-        var writer = IsDryRun ? null : new Utf8JsonWriter(_stream);
+        var writer = IsDryRun ? null : new Utf8JsonWriter(_stream, CreateWriterOptions());
         try
         {
             writer?.WriteStartArray();
@@ -360,7 +362,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
                 if (CurrentSkippedItemCount < SkipItemCount)
                 {
                     IncrementCurrentSkippedItemCount();
-                    JsonMetrics.AddSkipped(JsonMetrics.LoadOperationTag, JsonMetrics.JsonSingleStreamComponentTag, _recordTypeTag);
+                    JsonMetrics.AddSkipped(JsonMetrics.LoadOperationTag, JsonMetrics.JsonSingleStreamComponentTag, RecordTypeTag);
                     JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
                     continue;
                 }
@@ -377,7 +379,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
                 }
 
                 IncrementCurrentItemCount();
-                JsonMetrics.AddLoaded(JsonMetrics.LoadOperationTag, JsonMetrics.JsonSingleStreamComponentTag, _recordTypeTag);
+                JsonMetrics.AddLoaded(JsonMetrics.LoadOperationTag, JsonMetrics.JsonSingleStreamComponentTag, RecordTypeTag);
                 JsonLogMessages.LoadedItem(_logger, CurrentItemCount, null);
             }
 
@@ -388,7 +390,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
             }
 
             JsonLogMessages.SingleStreamLoadingCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, null);
-            JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, JsonMetrics.LoadOperationTag, JsonMetrics.JsonSingleStreamComponentTag, _recordTypeTag);
+            JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, JsonMetrics.LoadOperationTag, JsonMetrics.JsonSingleStreamComponentTag, RecordTypeTag);
         }
         finally
         {
@@ -397,6 +399,34 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
                 await writer.DisposeAsync().ConfigureAwait(false);
             }
         }
+    }
+
+
+
+    /// <summary>
+    /// Builds the writer options from the serializer configuration in force.
+    /// <see cref="JsonSerializer"/> takes indentation, encoder and depth from the
+    /// <see cref="Utf8JsonWriter"/> it writes to, not from the serializer options passed alongside,
+    /// so they must be copied onto the writer or they are silently ignored.
+    /// </summary>
+    private JsonWriterOptions CreateWriterOptions()
+    {
+        var serializerOptions = _typeInfo?.Options ?? _options;
+        if (serializerOptions is null)
+        {
+            // Default serializer options map onto the default writer options.
+            return default;
+        }
+
+        return new JsonWriterOptions
+        {
+            Indented = serializerOptions.WriteIndented,
+            IndentCharacter = serializerOptions.IndentCharacter,
+            IndentSize = serializerOptions.IndentSize,
+            NewLine = serializerOptions.NewLine,
+            Encoder = serializerOptions.Encoder,
+            MaxDepth = serializerOptions.MaxDepth,
+        };
     }
 
 
@@ -415,6 +445,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
             CurrentItemCount,
             CurrentSkippedItemCount
         );
+
 
 
     /// <inheritdoc />

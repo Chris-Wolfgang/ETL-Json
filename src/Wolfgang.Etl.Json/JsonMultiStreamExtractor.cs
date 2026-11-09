@@ -8,9 +8,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Wolfgang.Etl.Abstractions;
@@ -44,7 +46,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSON multi-stream extraction of {typeof(TRecord).Name}";
-    private static readonly KeyValuePair<string, object?> _recordTypeTag = new("etl.record_type", typeof(TRecord).Name);
+    private static readonly KeyValuePair<string, object?> RecordTypeTag = new("etl.record_type", typeof(TRecord).Name);
     private readonly IEnumerable<JsonNamedStream> _sources;
     private readonly RecordTypeInfo<TRecord> _typeInfo;
     private readonly ILogger _logger;
@@ -312,6 +314,8 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
         ApplyOptions(options);
     }
 
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonMultiStreamExtractor{TRecord}"/> class configured through an options record and a source-generated <see cref="JsonTypeInfo{TRecord}"/>.
     /// </summary>
@@ -342,6 +346,8 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
         ApplyOptions(options);
     }
 
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonMultiStreamExtractor{TRecord}"/> class configured through an options record.
     /// </summary>
@@ -368,6 +374,8 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
     }
+
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonMultiStreamExtractor{TRecord}"/> class configured through an options record and a source-generated <see cref="JsonTypeInfo{TRecord}"/>.
@@ -585,8 +593,6 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
 
 
 
-
-
     /// <inheritdoc />
     protected override async IAsyncEnumerable<TRecord> ExtractWorkerAsync
     (
@@ -607,9 +613,13 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
                 _currentSourceName = source.Name;
                 JsonLogMessages.ReadingStream(_logger, streamIndex, null);
 
-                var (item, failed) = await TryDeserializeStreamAsync(source.Stream, streamIndex, token).ConfigureAwait(false);
+                var stream = ResolveSourceStream(source, streamIndex);
+                var (item, failed) = await TryDeserializeStreamAsync(stream, streamIndex, token).ConfigureAwait(false);
                 streamIndex++;
-                if (failed) { continue; }
+                if (failed)
+                {
+                    continue;
+                }
 
                 if (item is null)
                 {
@@ -621,7 +631,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
                 {
                     skipBudget--;
                     IncrementCurrentSkippedItemCount();
-                    JsonMetrics.AddSkipped(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonMultiStreamComponentTag, _recordTypeTag);
+                    JsonMetrics.AddSkipped(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonMultiStreamComponentTag, RecordTypeTag);
                     JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
                     continue;
                 }
@@ -633,7 +643,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
                 }
 
                 IncrementCurrentItemCount();
-                JsonMetrics.AddExtracted(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonMultiStreamComponentTag, _recordTypeTag);
+                JsonMetrics.AddExtracted(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonMultiStreamComponentTag, RecordTypeTag);
                 JsonLogMessages.ExtractedItemFromStream(_logger, CurrentItemCount, streamIndex - 1, null);
 
                 yield return item;
@@ -643,13 +653,37 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
         }
         finally
         {
-            JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, JsonMetrics.ExtractOperationTag, JsonMetrics.JsonMultiStreamComponentTag, _recordTypeTag);
+            JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, JsonMetrics.ExtractOperationTag, JsonMetrics.JsonMultiStreamComponentTag, RecordTypeTag);
         }
     }
 
 
 
-    private async System.Threading.Tasks.Task<(TRecord? Item, bool Failed)> TryDeserializeStreamAsync
+    /// <summary>
+    /// Returns the stream carried by <paramref name="source"/>, rejecting a caller-built
+    /// <see cref="JsonNamedStream"/> whose stream is <see langword="null"/>.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when <paramref name="source"/> carries no stream.
+    /// </exception>
+    private Stream ResolveSourceStream(JsonNamedStream source, int streamIndex)
+    {
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+        if (source.Stream is null)
+        {
+            JsonLogMessages.SourceStreamIsNull(_logger, streamIndex, source.Name, null);
+            throw new InvalidOperationException
+            (
+                $"Source at index {streamIndex} ('{source.Name}') carries a null stream."
+            );
+        }
+
+        return source.Stream;
+    }
+
+
+
+    private async Task<(TRecord? Item, bool Failed)> TryDeserializeStreamAsync
     (
         Stream stream,
         int streamIndex,
@@ -657,15 +691,13 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     )
     {
         TRecord? item = default;
-        bool failed = false;
+        var failed = false;
         JsonException? deserializationEx = null;
         try
         {
             item = await JsonSerializer.DeserializeAsync(stream, _typeInfo.Value, token).ConfigureAwait(false);
         }
-#pragma warning disable CA1031 // catch JsonException to implement error-handling policy
         catch (JsonException ex)
-#pragma warning restore CA1031
         {
             failed = true;
             deserializationEx = ex;
@@ -684,7 +716,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
             var context = new ItemErrorContext(streamIndex + 1, deserializationEx!, rawContent: null);
             if (HandleItemError(context) == ItemErrorAction.Abort)
             {
-                System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(deserializationEx!).Throw();
+                ExceptionDispatchInfo.Capture(deserializationEx!).Throw();
             }
         }
 
@@ -701,6 +733,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
             CurrentSkippedItemCount,
             _currentSourceName
         );
+
 
 
     /// <inheritdoc />
