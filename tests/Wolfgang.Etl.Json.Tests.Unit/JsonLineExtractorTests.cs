@@ -133,24 +133,26 @@ public class JsonLineExtractorTests
 
 
     [Fact]
-    public void Constructor_with_logger_when_logger_is_null_does_not_throw()
+    public async Task Constructor_with_logger_when_logger_is_null_does_not_throw()
     {
         // logger is an optional trailing parameter: null means "no logging" rather than an
-        // argument error. The fallback to NullLogger.Instance is private state, so what this
-        // fact can assert is that construction succeeds.
+        // argument error. The fallback to NullLogger.Instance is private state, so this
+        // fact runs the stage once: a broken fallback would throw on the first log call.
         var sut = new JsonLineExtractor<PersonRecord>
         (
             new MemoryStream(),
             logger: null
         );
 
-        Assert.NotNull(sut);
+        var results = await sut.ExtractAsync().ToListAsync();
+
+        Assert.Empty(results);
     }
 
 
 
     [Fact]
-    public void Constructor_when_logger_is_null_does_not_throw()
+    public async Task Constructor_when_logger_is_null_does_not_throw()
     {
         var sut = new JsonLineExtractor<PersonRecord>
         (
@@ -159,22 +161,26 @@ public class JsonLineExtractorTests
             logger: null
         );
 
-        Assert.NotNull(sut);
+        var results = await sut.ExtractAsync().ToListAsync();
+
+        Assert.Empty(results);
     }
 
 
 
     [Fact]
-    public void Constructor_with_options_when_options_is_null_uses_serializer_default()
+    public async Task Constructor_with_options_when_options_is_null_uses_serializer_default()
     {
         var sut = new JsonLineExtractor<PersonRecord>
         (
-                new MemoryStream(),
-                (JsonSerializerOptions?)null,
-                NullLogger<JsonLineExtractor<PersonRecord>>.Instance
+            new MemoryStream(),
+            (JsonSerializerOptions?)null,
+            NullLogger<JsonLineExtractor<PersonRecord>>.Instance
         );
 
-        Assert.NotNull(sut);
+        var results = await sut.ExtractAsync().ToListAsync();
+
+        Assert.Empty(results);
     }
 
 
@@ -197,7 +203,7 @@ public class JsonLineExtractorTests
 
 
     [Fact]
-    public void Internal_constructor_when_logger_is_null_does_not_throw()
+    public async Task Internal_constructor_when_logger_is_null_does_not_throw()
     {
         var sut = new JsonLineExtractor<PersonRecord>
         (
@@ -207,7 +213,9 @@ public class JsonLineExtractorTests
             logger: null
         );
 
-        Assert.NotNull(sut);
+        var results = await sut.ExtractAsync().ToListAsync();
+
+        Assert.Empty(results);
     }
 
 
@@ -366,7 +374,7 @@ public class JsonLineExtractorTests
 
 
     [Fact]
-    public void Constructor_with_typeInfo_when_logger_is_null_does_not_throw()
+    public async Task Constructor_with_typeInfo_when_logger_is_null_does_not_throw()
     {
         var sut = new JsonLineExtractor<PersonRecord>
         (
@@ -375,7 +383,9 @@ public class JsonLineExtractorTests
             logger: null
         );
 
-        Assert.NotNull(sut);
+        var results = await sut.ExtractAsync().ToListAsync();
+
+        Assert.Empty(results);
     }
 
 
@@ -415,7 +425,7 @@ public class JsonLineExtractorTests
 
 
     [Fact]
-    public void Internal_constructor_with_typeInfo_when_logger_is_null_does_not_throw()
+    public async Task Internal_constructor_with_typeInfo_when_logger_is_null_does_not_throw()
     {
         var sut = new JsonLineExtractor<PersonRecord>
         (
@@ -425,7 +435,9 @@ public class JsonLineExtractorTests
             logger: null
         );
 
-        Assert.NotNull(sut);
+        var results = await sut.ExtractAsync().ToListAsync();
+
+        Assert.Empty(results);
     }
 
 
@@ -559,14 +571,15 @@ public class JsonLineExtractorTests
 
         Assert.Equal(1, sut.CurrentErrorItemCount);
 
-        // Second run: seek back and re-run the same instance; the error count must reset, not accumulate
-        stream.Seek(0, SeekOrigin.Begin);
+        // Second run on the same instance, positioned past the bad line: a count that is reset per run
+        // reads 0; one carried over from the first run would still read 1.
+        stream.Seek("not-valid-json\n".Length, SeekOrigin.Begin);
 
         await foreach (var _ in sut.ExtractAsync())
         {
         }
 
-        Assert.Equal(1, sut.CurrentErrorItemCount);
+        Assert.Equal(0, sut.CurrentErrorItemCount);
     }
 
 
@@ -785,6 +798,32 @@ public class JsonLineExtractorTests
 
 
     [Fact]
+    public async Task ExtractAsync_when_checkpointing_on_a_non_seekable_stream_counts_one_byte_per_newline()
+    {
+        // A non-seekable stream cannot be probed for CRLF, so newline detection assumes LF (one byte).
+        // On LF input with a trailing newline that makes the checkpoint land exactly on the end of the data.
+        var lines = ExpectedItems.Take(3).Select(item => JsonSerializer.Serialize(item) + "\n");
+        var bytes = Encoding.UTF8.GetBytes(string.Concat(lines));
+        using var ms = new MemoryStream(bytes);
+        using var nonSeekable = new NonSeekableStream(ms);
+        var sut = new JsonLineExtractor<PersonRecord>
+        (
+            nonSeekable,
+            new JsonLineExtractorOptions
+            {
+                EnableCheckpointing = true,
+            }
+        );
+
+        var items = await sut.ExtractAsync().ToListAsync();
+
+        Assert.Equal(ExpectedItems.Take(3).ToList(), items);
+        Assert.Equal(bytes.Length, sut.CurrentByteOffset);
+    }
+
+
+
+    [Fact]
     public async Task ExtractAsync_with_crlf_stream_CurrentByteOffset_advances_to_stream_length()
     {
         var lines = ExpectedItems.Take(3).Select(item => JsonSerializer.Serialize(item));
@@ -802,6 +841,168 @@ public class JsonLineExtractorTests
         await sut.ExtractAsync().ToListAsync();
 
         Assert.Equal(stream.Length, sut.CurrentByteOffset);
+    }
+
+
+
+    [Theory]
+    [InlineData("utf-8")]
+    [InlineData("utf-16LE")]
+    [InlineData("utf-16BE")]
+    [InlineData("utf-32LE")]
+    [InlineData("utf-32BE")]
+    public async Task ExtractAsync_when_stream_has_a_byte_order_mark_and_Encoding_is_null_resumes_from_checkpoint
+    (
+        string encodingName
+    )
+    {
+        await AssertResumesFromCheckpointAsync
+        (
+            ExpectedItems,
+            "\n",
+            CreateEncodingWithByteOrderMark(encodingName),
+            writeByteOrderMark: true,
+            readerEncoding: null
+        );
+    }
+
+
+
+    [Fact]
+    public async Task ExtractAsync_when_explicit_Encoding_matches_the_byte_order_mark_resumes_from_checkpoint()
+    {
+        await AssertResumesFromCheckpointAsync
+        (
+            ExpectedItems,
+            "\n",
+            Encoding.Unicode,
+            writeByteOrderMark: true,
+            readerEncoding: Encoding.Unicode
+        );
+    }
+
+
+
+    [Fact]
+    public async Task ExtractAsync_when_explicit_Encoding_has_no_preamble_resumes_from_checkpoint()
+    {
+        await AssertResumesFromCheckpointAsync
+        (
+            ExpectedItems,
+            "\n",
+            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
+            writeByteOrderMark: false,
+            readerEncoding: new UTF8Encoding(encoderShouldEmitUTF8Identifier: false)
+        );
+    }
+
+
+
+    [Fact]
+    public async Task ExtractAsync_when_crlf_first_line_is_longer_than_256_bytes_resumes_from_checkpoint()
+    {
+        var longName = new string('x', 400);
+        var records = ExpectedItems
+            .Select(item => item with { FirstName = longName })
+            .ToList();
+
+        await AssertResumesFromCheckpointAsync
+        (
+            records,
+            "\r\n",
+            new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
+            writeByteOrderMark: false,
+            readerEncoding: null
+        );
+    }
+
+
+
+    [Fact]
+    public async Task CurrentByteOffset_when_stream_is_empty_stays_zero()
+    {
+        using var stream = new MemoryStream();
+        var sut = new JsonLineExtractor<PersonRecord>
+        (
+            stream,
+            new JsonLineExtractorOptions
+            {
+                EnableCheckpointing = true,
+            }
+        );
+
+        var results = await sut.ExtractAsync().ToListAsync();
+
+        Assert.Empty(results);
+        Assert.Equal(0, sut.CurrentByteOffset);
+    }
+
+
+
+    private static Encoding CreateEncodingWithByteOrderMark(string encodingName) =>
+        encodingName switch
+        {
+            "utf-8" => new UTF8Encoding(encoderShouldEmitUTF8Identifier: true),
+            "utf-16LE" => new UnicodeEncoding(bigEndian: false, byteOrderMark: true),
+            "utf-16BE" => new UnicodeEncoding(bigEndian: true, byteOrderMark: true),
+            "utf-32LE" => new UTF32Encoding(bigEndian: false, byteOrderMark: true),
+            _ => new UTF32Encoding(bigEndian: true, byteOrderMark: true),
+        };
+
+
+
+    /// <summary>
+    /// Writes <paramref name="records"/> as JSON Lines in <paramref name="fileEncoding"/>, extracts
+    /// the first two with checkpointing on, and asserts that the checkpoint is the exact byte
+    /// position of the third line and that resuming from it yields the remaining records.
+    /// </summary>
+    private static async Task AssertResumesFromCheckpointAsync
+    (
+        IReadOnlyList<PersonRecord> records,
+        string newline,
+        Encoding fileEncoding,
+        bool writeByteOrderMark,
+        Encoding? readerEncoding
+    )
+    {
+        var lines = records
+            .Select(record => JsonSerializer.Serialize(record))
+            .ToList();
+        var preamble = writeByteOrderMark ? fileEncoding.GetPreamble() : Array.Empty<byte>();
+        var body = fileEncoding.GetBytes(string.Join(newline, lines) + newline);
+        using var stream = new MemoryStream(preamble.Concat(body).ToArray());
+
+        var first = new JsonLineExtractor<PersonRecord>
+        (
+            stream,
+            new JsonLineExtractorOptions
+            {
+                MaximumItemCount = 2,
+                EnableCheckpointing = true,
+                Encoding = readerEncoding,
+            }
+        );
+        var firstBatch = await first.ExtractAsync().ToListAsync();
+        var checkpoint = first.CurrentByteOffset;
+
+        var second = new JsonLineExtractor<PersonRecord>
+        (
+            stream,
+            new JsonLineExtractorOptions
+            {
+                StartByteOffset = checkpoint,
+                Encoding = readerEncoding,
+            }
+        );
+        var secondBatch = await second.ExtractAsync().ToListAsync();
+
+        Assert.Equal
+        (
+            preamble.Length + fileEncoding.GetByteCount(lines[0] + newline + lines[1] + newline),
+            checkpoint
+        );
+        Assert.Equal(records.Take(2).ToList(), firstBatch);
+        Assert.Equal(records.Skip(2).ToList(), secondBatch);
     }
 
 

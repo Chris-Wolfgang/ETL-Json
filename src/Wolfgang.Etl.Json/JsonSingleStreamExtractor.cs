@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 #endif
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading;
@@ -26,6 +27,12 @@ namespace Wolfgang.Etl.Json;
 /// and yields each deserialized object as an item in the async enumerable sequence.
 /// Uses <see cref="JsonSerializer.DeserializeAsyncEnumerable{TValue}(Stream, JsonSerializerOptions, CancellationToken)"/>
 /// for true streaming deserialization.
+/// <para>
+/// A malformed array element ends the extraction under every error policy: the streaming
+/// deserializer cannot resume past it. An abort policy rethrows the <see cref="JsonException"/>;
+/// a skip or dead-letter policy records the error (see <c>CurrentErrorItemCount</c>), logs a
+/// warning that the run stopped early, and completes without reading the rest of the array.
+/// </para>
 /// </remarks>
 /// <example>
 /// <code>
@@ -41,7 +48,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSON single-stream extraction of {typeof(TRecord).Name}";
-    private static readonly KeyValuePair<string, object?> _recordTypeTag = new("etl.record_type", typeof(TRecord).Name);
+    private static readonly KeyValuePair<string, object?> RecordTypeTag = new("etl.record_type", typeof(TRecord).Name);
 
     private readonly Stream _stream;
     private readonly bool _ownsStream;
@@ -225,6 +232,8 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
         ApplyOptions(options);
     }
 
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonSingleStreamExtractor{TRecord}"/> class configured through an options record and a source-generated <see cref="JsonTypeInfo{TRecord}"/>.
     /// </summary>
@@ -249,6 +258,8 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
     }
+
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonSingleStreamExtractor{TRecord}"/> class configured through an options record.
@@ -401,8 +412,6 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
 
 
 
-
-
     /// <inheritdoc />
 #if NET5_0_OR_GREATER
     [UnconditionalSuppressMessage("Trimming", "IL2026:RequiresUnreferencedCode", Justification = "Reflection-based serialization runs only when _typeInfo is null, and every constructor that leaves it null carries [RequiresUnreferencedCode].")]
@@ -419,43 +428,48 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
         var sw = Stopwatch.StartNew();
         var enumerable = _typeInfo is not null
             ? JsonSerializer.DeserializeAsyncEnumerable(_stream, _typeInfo, token)
-            : JsonSerializer.DeserializeAsyncEnumerable<TRecord>(_stream, _options ?? JsonMetrics.DefaultSerializerOptions, token);
+            : JsonSerializer.DeserializeAsyncEnumerable<TRecord>(_stream, _options, token);
 
         var enumerator = enumerable.GetAsyncEnumerator(token);
+        var stoppedOnError = false;
         try
         {
             while (true)
             {
                 token.ThrowIfCancellationRequested();
-                TRecord? item = default;
-                bool hasNext = false;
-                JsonException? caughtEx = null;
-                try
+                var (hasNext, item, caughtEx) = await TryMoveNextAsync(enumerator).ConfigureAwait(false);
+                if (caughtEx is not null)
                 {
-                    hasNext = await enumerator.MoveNextAsync().ConfigureAwait(false);
-                    item = hasNext ? enumerator.Current : default;
+                    stoppedOnError = HandleDeserializationError(caughtEx);
+                    break;
                 }
-#pragma warning disable CA1031 // catch JsonException to implement error-handling policy
-                catch (JsonException ex) { caughtEx = ex; }
-#pragma warning restore CA1031
-                if (caughtEx is not null) { HandleDeserializationError(caughtEx); break; }
-                if (!hasNext) { break; }
-                if (item is null) { JsonLogMessages.SkippingNullArrayItem(_logger, null); continue; }
+
+                if (!hasNext)
+                {
+                    break;
+                }
+
+                if (item is null)
+                {
+                    JsonLogMessages.SkippingNullArrayItem(_logger, null);
+                    continue;
+                }
+
                 if (skipBudget > 0)
                 {
                     skipBudget--;
-                    IncrementCurrentSkippedItemCount();
-                    JsonMetrics.AddSkipped(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonSingleStreamComponentTag, _recordTypeTag);
-                    JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
+                    RecordSkippedItem();
                     continue;
                 }
+
                 if (CurrentItemCount >= MaximumItemCount)
                 {
                     JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
                     break;
                 }
+
                 IncrementCurrentItemCount();
-                JsonMetrics.AddExtracted(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonSingleStreamComponentTag, _recordTypeTag);
+                JsonMetrics.AddExtracted(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonSingleStreamComponentTag, RecordTypeTag);
                 JsonLogMessages.ExtractedItem(_logger, CurrentItemCount, null);
                 yield return item;
             }
@@ -463,15 +477,73 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
         finally
         {
             await CleanupAsync(enumerator).ConfigureAwait(false);
-            JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, JsonMetrics.ExtractOperationTag, JsonMetrics.JsonSingleStreamComponentTag, _recordTypeTag);
+            JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, JsonMetrics.ExtractOperationTag, JsonMetrics.JsonSingleStreamComponentTag, RecordTypeTag);
         }
 
-        JsonLogMessages.SingleStreamExtractionCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, null);
+        LogCompletion(stoppedOnError);
     }
 
 
 
-    private void HandleDeserializationError(JsonException ex)
+    private void RecordSkippedItem()
+    {
+        IncrementCurrentSkippedItemCount();
+        JsonMetrics.AddSkipped(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonSingleStreamComponentTag, RecordTypeTag);
+        JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
+    }
+
+
+
+    /// <summary>
+    /// Advances the enumerator, capturing a <see cref="JsonException"/> from a malformed element
+    /// instead of throwing it, so the caller can apply the error policy.
+    /// </summary>
+    private static async Task<(bool HasNext, TRecord? Item, JsonException? Error)> TryMoveNextAsync
+    (
+        IAsyncEnumerator<TRecord?> enumerator
+    )
+    {
+        try
+        {
+            var hasNext = await enumerator.MoveNextAsync().ConfigureAwait(false);
+            return (hasNext, hasNext ? enumerator.Current : default, null);
+        }
+        catch (JsonException ex)
+        {
+            return (false, default, ex);
+        }
+    }
+
+
+
+    /// <summary>
+    /// Logs how the run ended. A malformed element that the error policy did not turn into an
+    /// exception still ends the run, because <c>DeserializeAsyncEnumerable</c> cannot resume past it,
+    /// so that case is a warning rather than a normal completion.
+    /// </summary>
+    private void LogCompletion(bool stoppedOnError)
+    {
+        if (stoppedOnError)
+        {
+            JsonLogMessages.SingleStreamExtractionStoppedOnError(_logger, CurrentItemCount, CurrentErrorItemCount, null);
+        }
+        else
+        {
+            JsonLogMessages.SingleStreamExtractionCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, null);
+        }
+    }
+
+
+
+    /// <summary>
+    /// Applies the error policy to a malformed element: rethrows under an abort policy, otherwise
+    /// records the error.
+    /// </summary>
+    /// <returns>
+    /// Always <see langword="true"/> when it returns: the streaming deserializer cannot resume past
+    /// a malformed element, so the run stops early.
+    /// </returns>
+    private bool HandleDeserializationError(JsonException ex)
     {
         var context = new ItemErrorContext
         (
@@ -481,8 +553,10 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
         );
         if (HandleItemError(context) == ItemErrorAction.Abort)
         {
-            System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(ex).Throw();
+            ExceptionDispatchInfo.Capture(ex).Throw();
         }
+
+        return true;
     }
 
 
