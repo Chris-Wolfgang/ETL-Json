@@ -33,7 +33,7 @@ Complete the following one-time setup so that the workflow can publish releases:
 
 **Location:** Settings → Branches → main (or Settings → Rules → Rulesets)
 
-> **Note:** Repos created from `repo-template` ship with `scripts/Setup-BranchRuleset.ps1`, which configures branch protection interactively (option `[1]` for single-developer mode, `[2]` for multi-developer mode). The script may not be present in older repos — if it is missing, configure the equivalent settings manually using the checklist below.
+> **Note:** This repository does not ship `scripts/Setup-BranchRuleset.ps1` (the interactive ruleset setup lives in `repo-template`). Configure the settings manually using the checklist below. `scripts/Fix-BranchRuleset.ps1`, which this repository does ship, only disables existing rulesets and renames "Protect main branch" to "Protect main branch (old)" so a fresh ruleset can be created without a name clash; it does not create one.
 
 Ensure the following settings are enabled:
 
