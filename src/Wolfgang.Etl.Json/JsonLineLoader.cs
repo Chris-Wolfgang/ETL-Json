@@ -410,6 +410,20 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
             JsonLogMessages.LoadedItemAtLine(_logger, CurrentItemCount, Interlocked.Read(ref _currentLineNumber), null);
         }
 
+        await CompleteLoadingAsync(sw, token).ConfigureAwait(false);
+    }
+
+
+
+    private async Task CompleteLoadingAsync(Stopwatch sw, CancellationToken token)
+    {
+        if (!IsDryRun)
+        {
+            // Match the other two loaders: everything written is pushed to the stream before
+            // completion, so a caller inspecting the stream before disposing it sees all lines.
+            await _stream.FlushAsync(token).ConfigureAwait(false);
+        }
+
         JsonLogMessages.JsonlLoadingCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, Interlocked.Read(ref _currentLineNumber), null);
         JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, JsonMetrics.LoadOperationTag, JsonMetrics.JsonLineComponentTag, _recordTypeTag);
     }
