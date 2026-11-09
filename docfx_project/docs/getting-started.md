@@ -4,10 +4,9 @@ This guide will help you quickly get up and running with Wolfgang.Etl.Json.
 
 ## Prerequisites
 
-<!-- List any prerequisites needed. For example:
-- .NET 8.0 or later
-- Visual Studio 2022 or Visual Studio Code
--->
+- A project targeting .NET Framework 4.6.2+, .NET Standard 2.0+, or .NET 5+.
+- Familiarity with `IAsyncEnumerable<T>` (`await foreach`) helps; on .NET Framework the
+  `Microsoft.Bcl.AsyncInterfaces` dependency provides it.
 
 ## Installation
 
@@ -25,16 +24,24 @@ Install-Package Wolfgang.Etl.Json
 
 ## Quick Start
 
-<!-- Add a quick start example. For example: -->
+Read a JSON Lines file and write the same records as a JSON array:
 
 ```csharp
-// Add your quick start code example here
-// This should show the simplest way to use your library
-
 using Wolfgang.Etl.Json;
 
-// Example usage
+public record Person(string FirstName, string LastName, int Age);
+
+await using var input = File.OpenRead("people.jsonl");
+await using var output = File.Create("people.json");
+
+var extractor = new JsonLineExtractor<Person>(input);
+var loader = new JsonSingleStreamLoader<Person>(output);
+
+await loader.LoadAsync(extractor.ExtractAsync());
 ```
+
+Each stage takes an options record for its settings, for example
+`new JsonLineExtractorOptions { MaximumItemCount = 1_000 }`; see the README on GitHub for every option.
 
 ## Next Steps
 
@@ -44,7 +51,12 @@ using Wolfgang.Etl.Json;
 
 ## Common Issues
 
-<!-- Add common issues and their solutions here -->
+- **`JsonException` on the first record**: the input format does not match the stage. A JSON array
+  needs `JsonSingleStreamExtractor`, one object per line needs `JsonLineExtractor`.
+- **Trimming / Native AOT warnings**: use the constructors that take a source-generated
+  `JsonTypeInfo<T>` instead of the reflection-based ones.
+- **A malformed record stops the run**: set an `ErrorPolicy` on the options record to skip or
+  dead-letter bad records. A JSON array stops at the first malformed element under every policy.
 
 ## Additional Resources
 
