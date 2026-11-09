@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Wolfgang.Etl.Json.Tests.Unit.TestModels;
 using Xunit;
@@ -130,4 +132,109 @@ public class JsonOutputSnapshotTests
         Assert.Equal("{\"FirstName\":\"Alice\",\"LastName\":\"Smith\",\"Age\":30}", Encoding.UTF8.GetString(streams[0].ToArray()));
         Assert.Equal("{\"FirstName\":\"Bob\",\"LastName\":\"Jones\",\"Age\":25}", Encoding.UTF8.GetString(streams[1].ToArray()));
     }
+
+
+
+    [Fact]
+    public async Task JsonSingleStreamLoader_when_WriteIndented_is_true_writes_indented_output()
+    {
+        var stream = new MemoryStream();
+        var sut = new JsonSingleStreamLoader<PersonRecord>
+        (
+            stream,
+            new JsonSingleStreamLoaderOptions
+            {
+                SerializerOptions = IndentedOptions(),
+            }
+        );
+
+        await sut.LoadAsync(new[] { Alice }.ToAsyncEnumerable());
+
+        Assert.Equal(IndentedAlice, Encoding.UTF8.GetString(stream.ToArray()));
+    }
+
+
+
+    [Fact]
+    public async Task JsonSingleStreamLoader_with_JsonTypeInfo_when_WriteIndented_is_true_writes_indented_output()
+    {
+        var stream = new MemoryStream();
+        var context = new TestJsonContext(IndentedOptions());
+        var sut = new JsonSingleStreamLoader<PersonRecord>
+        (
+            stream,
+            context.PersonRecord,
+            new JsonSingleStreamLoaderOptions()
+        );
+
+        await sut.LoadAsync(new[] { Alice }.ToAsyncEnumerable());
+
+        Assert.Equal(IndentedAlice, Encoding.UTF8.GetString(stream.ToArray()));
+    }
+
+
+
+    [Fact]
+    public async Task JsonSingleStreamLoader_when_Encoder_is_UnsafeRelaxedJsonEscaping_writes_non_ascii_unescaped()
+    {
+        var stream = new MemoryStream();
+        var sut = new JsonSingleStreamLoader<PersonRecord>
+        (
+            stream,
+            new JsonSingleStreamLoaderOptions
+            {
+                SerializerOptions = RelaxedOptions(),
+            }
+        );
+
+        await sut.LoadAsync(new[] { Zoe }.ToAsyncEnumerable());
+
+        Assert.Equal(RelaxedZoe, Encoding.UTF8.GetString(stream.ToArray()));
+    }
+
+
+
+    [Fact]
+    public async Task JsonSingleStreamLoader_with_JsonTypeInfo_when_Encoder_is_UnsafeRelaxedJsonEscaping_writes_non_ascii_unescaped()
+    {
+        var stream = new MemoryStream();
+        var context = new TestJsonContext(RelaxedOptions());
+        var sut = new JsonSingleStreamLoader<PersonRecord>
+        (
+            stream,
+            context.PersonRecord,
+            new JsonSingleStreamLoaderOptions()
+        );
+
+        await sut.LoadAsync(new[] { Zoe }.ToAsyncEnumerable());
+
+        Assert.Equal(RelaxedZoe, Encoding.UTF8.GetString(stream.ToArray()));
+    }
+
+
+
+    private static readonly PersonRecord Zoe = new() { FirstName = "Zoë", LastName = "Smith & Co", Age = 30 };
+
+    private const string IndentedAlice =
+        "[\n  {\n    \"FirstName\": \"Alice\",\n    \"LastName\": \"Smith\",\n    \"Age\": 30\n  }\n]";
+
+    // Default escaping would write \u00EB and \u0026; the relaxed encoder writes them as is.
+    private const string RelaxedZoe = "[{\"FirstName\":\"Zoë\",\"LastName\":\"Smith & Co\",\"Age\":30}]";
+
+
+
+    private static JsonSerializerOptions IndentedOptions() =>
+        new()
+        {
+            WriteIndented = true,
+            NewLine = "\n",
+        };
+
+
+
+    private static JsonSerializerOptions RelaxedOptions() =>
+        new()
+        {
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+        };
 }
