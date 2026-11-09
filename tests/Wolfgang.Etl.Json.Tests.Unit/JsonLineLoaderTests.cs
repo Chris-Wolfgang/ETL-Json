@@ -136,24 +136,26 @@ public class JsonLineLoaderTests
 
 
     [Fact]
-    public void Constructor_with_logger_when_logger_is_null_does_not_throw()
+    public async Task Constructor_with_logger_when_logger_is_null_does_not_throw()
     {
         // logger is an optional trailing parameter: null means "no logging" rather than an
-        // argument error. The fallback to NullLogger.Instance is private state, so what this
-        // fact can assert is that construction succeeds.
+        // argument error. The fallback to NullLogger.Instance is private state, so this
+        // fact runs the stage once: a broken fallback would throw on the first log call.
         var sut = new JsonLineLoader<PersonRecord>
         (
             new MemoryStream(),
             logger: null
         );
 
-        Assert.NotNull(sut);
+        await sut.LoadAsync(new[] { new PersonRecord { FirstName = "Alice" } }.ToAsyncEnumerable());
+
+        Assert.Equal(1, sut.CurrentItemCount);
     }
 
 
 
     [Fact]
-    public void Constructor_when_logger_is_null_does_not_throw()
+    public async Task Constructor_when_logger_is_null_does_not_throw()
     {
         var sut = new JsonLineLoader<PersonRecord>
         (
@@ -162,22 +164,26 @@ public class JsonLineLoaderTests
             logger: null
         );
 
-        Assert.NotNull(sut);
+        await sut.LoadAsync(new[] { new PersonRecord { FirstName = "Alice" } }.ToAsyncEnumerable());
+
+        Assert.Equal(1, sut.CurrentItemCount);
     }
 
 
 
     [Fact]
-    public void Constructor_with_options_when_options_is_null_uses_serializer_default()
+    public async Task Constructor_with_options_when_options_is_null_uses_serializer_default()
     {
         var sut = new JsonLineLoader<PersonRecord>
         (
-                new MemoryStream(),
-                (JsonSerializerOptions?)null,
-                NullLogger<JsonLineLoader<PersonRecord>>.Instance
+            new MemoryStream(),
+            (JsonSerializerOptions?)null,
+            NullLogger<JsonLineLoader<PersonRecord>>.Instance
         );
 
-        Assert.NotNull(sut);
+        await sut.LoadAsync(new[] { new PersonRecord { FirstName = "Alice" } }.ToAsyncEnumerable());
+
+        Assert.Equal(1, sut.CurrentItemCount);
     }
 
 
@@ -200,7 +206,7 @@ public class JsonLineLoaderTests
 
 
     [Fact]
-    public void Internal_constructor_when_logger_is_null_does_not_throw()
+    public async Task Internal_constructor_when_logger_is_null_does_not_throw()
     {
         var sut = new JsonLineLoader<PersonRecord>
         (
@@ -210,7 +216,9 @@ public class JsonLineLoaderTests
             logger: null
         );
 
-        Assert.NotNull(sut);
+        await sut.LoadAsync(new[] { new PersonRecord { FirstName = "Alice" } }.ToAsyncEnumerable());
+
+        Assert.Equal(1, sut.CurrentItemCount);
     }
 
 
@@ -383,7 +391,7 @@ public class JsonLineLoaderTests
 
 
     [Fact]
-    public void Constructor_with_typeInfo_when_logger_is_null_does_not_throw()
+    public async Task Constructor_with_typeInfo_when_logger_is_null_does_not_throw()
     {
         var sut = new JsonLineLoader<PersonRecord>
         (
@@ -392,7 +400,9 @@ public class JsonLineLoaderTests
             logger: null
         );
 
-        Assert.NotNull(sut);
+        await sut.LoadAsync(new[] { new PersonRecord { FirstName = "Alice" } }.ToAsyncEnumerable());
+
+        Assert.Equal(1, sut.CurrentItemCount);
     }
 
 
@@ -432,7 +442,7 @@ public class JsonLineLoaderTests
 
 
     [Fact]
-    public void Internal_constructor_with_typeInfo_when_logger_is_null_does_not_throw()
+    public async Task Internal_constructor_with_typeInfo_when_logger_is_null_does_not_throw()
     {
         var sut = new JsonLineLoader<PersonRecord>
         (
@@ -442,7 +452,9 @@ public class JsonLineLoaderTests
             logger: null
         );
 
-        Assert.NotNull(sut);
+        await sut.LoadAsync(new[] { new PersonRecord { FirstName = "Alice" } }.ToAsyncEnumerable());
+
+        Assert.Equal(1, sut.CurrentItemCount);
     }
 
 
@@ -509,5 +521,20 @@ public class JsonLineLoaderTests
         using var reader = new StreamReader(stream, iso);
         var content = await reader.ReadToEndAsync();
         Assert.Contains("Ångström", content);
+    }
+
+
+
+    [Fact]
+    public async Task LoadAsync_flushes_the_stream_before_completing()
+    {
+        using var inner = new MemoryStream();
+        using var buffered = new BufferedStream(inner, bufferSize: 4096);
+        var sut = new JsonLineLoader<PersonRecord>(buffered);
+
+        await sut.LoadAsync(new[] { new PersonRecord { FirstName = "Alice" } }.ToAsyncEnumerable());
+
+        // Without a flush the line would still sit in the BufferedStream's buffer.
+        Assert.True(inner.Length > 0);
     }
 }
