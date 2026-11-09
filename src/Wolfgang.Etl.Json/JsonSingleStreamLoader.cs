@@ -411,13 +411,10 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     /// </summary>
     private JsonWriterOptions CreateWriterOptions()
     {
-        var serializerOptions = _typeInfo?.Options ?? _options;
-        if (serializerOptions is null)
-        {
-            // Default serializer options map onto the default writer options.
-            return default;
-        }
-
+        // Both construction paths end in a JsonTypeInfo whose Options are the serializer options in
+        // force (JsonSerializerOptions.Default when none were given, which maps onto the default
+        // writer options).
+        var serializerOptions = _typeInfo.Value.Options;
         return new JsonWriterOptions
         {
             Indented = serializerOptions.WriteIndented,
