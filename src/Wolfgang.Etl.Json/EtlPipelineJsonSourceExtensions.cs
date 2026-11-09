@@ -56,6 +56,7 @@ public static class EtlPipelineJsonSourceExtensions
     }
 
 
+
     /// <summary>
     /// Starts a pipeline that reads JSONL records from an existing stream. The caller owns the stream.
     /// </summary>
@@ -96,6 +97,7 @@ public static class EtlPipelineJsonSourceExtensions
     }
 
 
+
     /// <summary>
     /// Starts a pipeline that reads records from a single JSON array file.
     /// </summary>
@@ -131,6 +133,7 @@ public static class EtlPipelineJsonSourceExtensions
 
         return pipeline.From(new JsonSingleStreamExtractor<T>(path, options));
     }
+
 
 
     /// <summary>
