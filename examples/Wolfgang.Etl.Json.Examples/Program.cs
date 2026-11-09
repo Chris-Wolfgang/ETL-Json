@@ -175,7 +175,7 @@ static async Task MultiStreamLoaderExample()
     (
         person =>
         {
-            // In production: return File.Create($"output/{person.FirstName}.json");
+            // In production, open a FileStream with File.Create for an output file named after the person instead.
             var fileName = $"{person.FirstName}_{person.LastName}.json";
             var ms = new MemoryStream();
             files[fileName] = ms;
@@ -349,7 +349,11 @@ static async Task SchemaCustomizationExample()
         {
             typeInfo =>
             {
-                if (typeInfo.Type != typeof(Person)) return;
+                if (typeInfo.Type != typeof(Person))
+                {
+                    return;
+                }
+
                 foreach (var prop in typeInfo.Properties.Where(p => string.Equals(p.Name, "Email", StringComparison.Ordinal)))
                 {
                     prop.ShouldSerialize = (_, _) => false;
