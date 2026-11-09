@@ -41,7 +41,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     where TRecord : notnull
 {
     private static readonly string OperationName = $"JSONL extraction of {typeof(TRecord).Name}";
-    private static readonly KeyValuePair<string, object?> _recordTypeTag = new("etl.record_type", typeof(TRecord).Name);
+    private static readonly KeyValuePair<string, object?> RecordTypeTag = new("etl.record_type", typeof(TRecord).Name);
     private readonly Stream _stream;
     private readonly bool _ownsStream;
     private readonly JsonSerializerOptions? _options;
@@ -90,7 +90,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 
     /// <summary>
     /// Gets or sets the byte offset within the stream at which extraction begins.
-    /// Set this before calling <see cref="ExtractorBase{TSource,TProgress}.ExtractAsync(System.Threading.CancellationToken)"/> to resume from a saved checkpoint.
+    /// Set this before calling <see cref="ExtractorBase{TSource,TProgress}.ExtractAsync(CancellationToken)"/> to resume from a saved checkpoint.
     /// The stream must be seekable when this value is greater than zero.
     /// Default is <c>0</c> (start of stream).
     /// </summary>
@@ -291,6 +291,8 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
         ApplyOptions(options);
     }
 
+
+
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonLineExtractor{TRecord}"/> class configured through an options record and a source-generated <see cref="JsonTypeInfo{TRecord}"/>.
     /// </summary>
@@ -315,6 +317,8 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
     }
+
+
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonLineExtractor{TRecord}"/> class configured through an options record.
@@ -471,8 +475,6 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 
 
 
-
-
     /// <summary>
     /// Creates the <see cref="StreamReader"/> for the underlying stream, decoding with the explicit
     /// <see cref="Encoding"/> when one is set, else with the byte-order mark it detects, else with
@@ -549,7 +551,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
                 skipBudget--;
                 Interlocked.Add(ref _currentByteOffset, lineBytes);
                 IncrementCurrentSkippedItemCount();
-                JsonMetrics.AddSkipped(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonLineComponentTag, _recordTypeTag);
+                JsonMetrics.AddSkipped(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonLineComponentTag, RecordTypeTag);
                 JsonLogMessages.SkippedItemAtLine(_logger, CurrentSkippedItemCount, SkipItemCount, lineNumber, null);
                 continue;
             }
@@ -560,7 +562,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
             }
             Interlocked.Add(ref _currentByteOffset, lineBytes);
             IncrementCurrentItemCount();
-            JsonMetrics.AddExtracted(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonLineComponentTag, _recordTypeTag);
+            JsonMetrics.AddExtracted(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonLineComponentTag, RecordTypeTag);
             JsonLogMessages.ExtractedItemFromLine(_logger, CurrentItemCount, lineNumber, null);
             yield return item;
         }
@@ -578,7 +580,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
         }
 
         JsonLogMessages.JsonlExtractionCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, Interlocked.Read(ref _currentLineNumber), null);
-        JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, JsonMetrics.ExtractOperationTag, JsonMetrics.JsonLineComponentTag, _recordTypeTag);
+        JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, JsonMetrics.ExtractOperationTag, JsonMetrics.JsonLineComponentTag, RecordTypeTag);
     }
 
 
@@ -737,7 +739,11 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
                 ex,
                 () => lineText
             );
-            if (HandleItemError(context) == ItemErrorAction.Abort) { throw; }
+            if (HandleItemError(context) == ItemErrorAction.Abort)
+            {
+                throw;
+            }
+
             item = default;
             return false;
         }
