@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794247474534,
+  "lastUpdate": 1794274619286,
   "repoUrl": "https://github.com/Chris-Wolfgang/ETL-Json",
   "entries": {
     "BenchmarkDotNet": [
@@ -6750,6 +6750,156 @@ window.BENCHMARK_DATA = {
             "value": 322480.6666666667,
             "unit": "ns",
             "range": "± 1483.2771267992116"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "210299580+Chris-Wolfgang@users.noreply.github.com",
+            "name": "Chris Wolfgang",
+            "username": "Chris-Wolfgang"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "ce9ea7b158273cc948252419658f06347f57e2c4",
+          "message": "fix(aot): keep reflection-based serialization out of the stage workers (PUBLIC-SURFACE CHANGE) (#538)\n\n* ci(pr): fail gates that could not run instead of reporting success\n\nPort the remaining fail-closed fixes from repo-template's pr.yaml (same\ntext as ETL-FixedWidth#588):\n- InspectCode gate: set -euo pipefail, fail on missing/empty SARIF or\n  missing jq instead of printing 'no findings'.\n- Stage 2 (Windows): record each test assembly that ran a coverage-\n  collecting TFM, fail Check for coverage files when tests ran but no\n  coverage file appeared, and require a Summary.txt row per assembly.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n\n* fix(aot): annotate the reflection-only named-stream constructors\n\nThe JsonNamedStream / JsonNamedDestination constructors without a\nJsonTypeInfo<T> serialize by reflection but, unlike the Stream-based\noverloads, carried no [RequiresUnreferencedCode]/[RequiresDynamicCode].\nAnnotate them (5 on JsonMultiStreamExtractor, 5 on JsonMultiStreamLoader).\n\nWith every reflection path now gated by an annotated constructor, the\nsix private/worker methods that pick reflection when _typeInfo is null\nget [UnconditionalSuppressMessage] for IL2026/IL3050. Groundwork for\ndeclaring IsAotCompatible (#310): with the analyzers on, the Release\nbuild goes from 28 IL errors to 0.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n\n* ci(coverage): raise the gates to 95% production / 100% test assemblies\n\nThe repository now meets the fleet coverage policy, so drop the\ntemporary floors: CODECOV_MINIMUM 90 -> 95 and CODECOV_TEST_MINIMUM\n95 -> 100 in pr.yaml, the build-pr.ps1 default to match, and in\nrelease.yaml the same 95 floor plus --settings coverlet.runsettings so\nrelease-time coverage measures what the PR gate measures.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n\n* build: make the .dll/.pdb byte-identical across operating systems\n\n- Directory.Build.targets (new): rewrite the SDK-generated sources\n  (AssemblyInfo, TFM attributes, global usings) to LF before CoreCompile\n  for packable projects, so the PDB's embedded documents and the DLL's\n  MVID no longer differ between Windows (CRLF) and Linux (LF).\n- Directory.Build.props: reference Microsoft.NETFramework.ReferenceAssemblies\n  1.0.3 for src/ net4x builds, so every OS compiles against the same\n  reference assemblies.\n- reproducible-build.yaml: build every TFM, hash .dll and .pdb per TFM,\n  and fail on any difference instead of warning.\n\nSame fix as ETL-Transformers#418.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n\n* ci(benchmarks): require an absolute floor as well as the ratio to fail the gate\n\nThe PR benchmark gate failed on any mean >20% or alloc >50% move, so a\nmicrosecond benchmark could fail on runner noise (the\nETL-Abstractions#367 shape). A benchmark now regresses only when it\ncrosses the percentage AND grows by more than MEAN_FLOOR_NS (25 us) or\nALLOC_FLOOR_BYTES (1 KB); the floors and their reasoning sit next to\nthe thresholds. Non-numeric settings fail the step.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n\n* wip: add CsCheck fuzz round-trip tests (burndown, unreviewed)\n\nUncommitted burndown work, committed so the worktree can be removed. Not reviewed.\n\nCo-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>\n\n* docs: fix ADR statuses/TFMs, the ruleset script note, DocFX stubs and copilot-instructions\n\n- docs/adr/index.md: ADR-002 and ADR-003 are Superseded, as their files say.\n- ADR-001: list the TFMs the package actually ships (no netstandard2.1).\n- ADR-002: JsonMultiStreamLoader uses JsonSerializer.SerializeAsync, not\n  Utf8JsonWriter.\n- RELEASE-WORKFLOW-SETUP.md: this repo has no Setup-BranchRuleset.ps1; say so\n  and describe what the shipped Fix-BranchRuleset.ps1 actually does (it only\n  disables / renames rulesets).\n- .github/copilot-instructions.md: replace the repo-template boilerplate with\n  ETL-Json guidance (stages, TFM matrix, gates, PublicAPI files, changelog\n  fragments, layout, conventions, protected files).\n- DocFX introduction/getting-started: fill the template stubs and fix the\n  \"buildig\" typo.\n\nRefs #513\n\nCo-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>\n\n* chore: project-file hygiene (duplicate properties, stale Version, slnx folders)\n\n- src csproj: drop LangVersion and RepositoryType (already set in\n  Directory.Build.props) and the executable-only ApplicationIcon\n  (PackageIcon is what NuGet uses).\n- Unit / Integration test csproj: drop the stale <Version>0.2.0</Version> on\n  IsPackable=false projects.\n- Benchmarks csproj: keep the Microsoft.CodeAnalysis.CSharp reference and say\n  why: it lifts BenchmarkDotNet's transitive Roslyn from 4.14.0 to 5.9.0\n  (verified by restoring without it).\n- ETL Json.slnx: list every file in the .github/workflows, docs and scripts\n  solution folders (19 workflow files, 7 guides, 16 scripts).\n\nRefs #517\n\nCo-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>\n\n* ci: add concurrency groups to build-all-versions, docfx and reproducible-build\n\nThese three were the only workflows without a concurrency: block, so\nsuperseded runs piled up.\n\n- build-all-versions, reproducible-build: group per workflow + ref, cancel\n  the superseded run.\n- docfx: a fixed group (docfx-gh-pages) with cancel-in-progress: false, so\n  deploys to gh-pages queue instead of being cut off half-written. Not\n  github.workflow: docfx.yaml is a reusable workflow, where github.workflow is\n  the caller's name and would collide with release.yaml's own group.\n\nRefs #517\n\nCo-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>\n\n* ci(aot): make the AOT smoke actually publish and report (#444)\n\nDrop the global -p: publish properties (now in the AotSmoke csproj), drop\nthe pull_request paths filter, and count error-level trim/AOT findings in\nthe summary.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n\n* build: declare the shipped library trim- and native-AOT-compatible on net8.0+ (baseline item 18)\n\nDirectory.Build.props sets IsAotCompatible / IsTrimmable for src/\nprojects on TFMs that support it; .editorconfig raises the Trimming,\nSingleFile and AOT analyzer categories to warning so the declaration is\nenforced by the Release build instead of muzzled by the blanket\nsuggestion severity. Same text as ETL-Abstractions#632.\n\nNeeds #501 first: on main alone the Release build reports 28\nIL2026/IL3050 errors.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n\n* docs(reproducible-build): state the cross-OS .dll/.pdb guarantee accurately\n\nThe page claimed the .nupkg/.snupkg hashes reproduce (they embed the\npack time), that Linux may differ from Windows (fixed by #504), and that\na NuGet lock file is checked in (there is none). Describe the actual\nguarantee - .dll/.pdb byte-identical across OSes for a fixed SDK - how\nit is achieved, what still has to match, and verify by comparing the\nassemblies inside the published package.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n\n* wip: add fuzz.yaml workflow (burndown, unreviewed)\n\nUncommitted burndown work, committed so the worktree can be removed. Not reviewed.\n\nCo-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>\n\n* fix(aot): keep reflection-based serialization out of the stage workers (#310)\n\nEvery stage now holds one internal RecordTypeInfo<TRecord> instead of a\nJsonSerializerOptions/JsonTypeInfo pair. The JsonTypeInfo constructors wrap\nthe caller's type info; the options constructors go through the annotated\nRecordTypeInfo.FromOptions, which resolves the reflection metadata lazily on\nthe first record (same lock point and errors as the JsonSerializer options\noverloads). The workers call only the JsonTypeInfo overloads, so the AOT\nsmoke publish drops from 6 IL2026 + 6 IL3050 to 0 with no suppressions.\n\nThe ten JsonNamedStream / JsonNamedDestination constructors of the\nmulti-stream extractor and loader that serialize by reflection now carry\nRequiresUnreferencedCode / RequiresDynamicCode like the other options\nconstructors. Removes the now-unused JsonMetrics.DefaultSerializerOptions.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n\n* ci(scorecard): split publish job so results reach scorecard.dev\n\nscorecard.dev rejects publish_results from a job with any run: step, and\nthe analysis job ran the SARIF filter as one. Move the filter and\nupload-sarif into a new upload job; analysis keeps only uses: steps and\nuploads results.sarif as an artifact. Pin CODEQL_ACTION_ANALYSIS_KEY to\nthe existing analysis key so the open Scorecard alerts keep updating.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n\n* ci(fuzz): drop the duplicate CsCheck PackageReference\n\nmain already carries the conditional CsCheck ItemGroup from #519, so the copy\nthis branch added made NuGet fail restore with NU1504 (duplicate PackageReference,\nwarnings as errors) in CodeQL, InspectCode and Stage 1, and made the PR mixed for\nthe Protected Files Guard. The workflow is the whole change again.\n\nCo-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>\n\n* fix(aot): CreateWriterOptions reads the options through RecordTypeInfo\n\n#523 (on main) added CreateWriterOptions reading _typeInfo?.Options ?? _options; this\nbranch replaced those two fields with RecordTypeInfo<TRecord>, so the merge compiled\ntextually but not semantically. Value.Options is the serializer options in force on both\nconstruction paths, and JsonSerializerOptions.Default maps onto the default writer options.\n\nCo-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>\n\n---------\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-09T20:33:34-05:00",
+          "tree_id": "af0e1d20399a3870a22e20cdfb20f465403455ee",
+          "url": "https://github.com/Chris-Wolfgang/ETL-Json/commit/ce9ea7b158273cc948252419658f06347f57e2c4"
+        },
+        "date": 1794274616291,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineExtractorBenchmarks.ExtractAsync(ItemCount: 10)",
+            "value": 4798.563115437825,
+            "unit": "ns",
+            "range": "± 50.07572443750615"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineExtractorBenchmarks.ExtractAsync(ItemCount: 100)",
+            "value": 41245.303771972656,
+            "unit": "ns",
+            "range": "± 236.71288602390322"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineExtractorBenchmarks.ExtractAsync(ItemCount: 1000)",
+            "value": 442606.4970703125,
+            "unit": "ns",
+            "range": "± 25906.04311292791"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineLoaderBenchmarks.LoadAsync(ItemCount: 10)",
+            "value": 2489.969652811686,
+            "unit": "ns",
+            "range": "± 54.45140582836149"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineLoaderBenchmarks.LoadAsync(ItemCount: 100)",
+            "value": 23704.840494791668,
+            "unit": "ns",
+            "range": "± 930.9329823238431"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineLoaderBenchmarks.LoadAsync(ItemCount: 1000)",
+            "value": 244397.8641357422,
+            "unit": "ns",
+            "range": "± 8250.546141138562"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamExtractorBenchmarks.ExtractAsync(ItemCount: 10)",
+            "value": 5016.134363810222,
+            "unit": "ns",
+            "range": "± 13.59431642671674"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamExtractorBenchmarks.ExtractAsync(ItemCount: 100)",
+            "value": 50225.53602091471,
+            "unit": "ns",
+            "range": "± 971.2541205044125"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamExtractorBenchmarks.ExtractAsync(ItemCount: 1000)",
+            "value": 499662.990234375,
+            "unit": "ns",
+            "range": "± 23224.801945460087"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamLoaderBenchmarks.LoadAsync(ItemCount: 10)",
+            "value": 3035.179801940918,
+            "unit": "ns",
+            "range": "± 40.59789669171501"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamLoaderBenchmarks.LoadAsync(ItemCount: 100)",
+            "value": 29359.533986409504,
+            "unit": "ns",
+            "range": "± 1546.545948522458"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamLoaderBenchmarks.LoadAsync(ItemCount: 1000)",
+            "value": 281185.1042480469,
+            "unit": "ns",
+            "range": "± 1777.3616902048004"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamExtractorBenchmarks.ExtractAsync(ItemCount: 10)",
+            "value": 4425.285687764485,
+            "unit": "ns",
+            "range": "± 54.24870462976073"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamExtractorBenchmarks.ExtractAsync(ItemCount: 100)",
+            "value": 34847.88993326823,
+            "unit": "ns",
+            "range": "± 409.5784672596292"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamExtractorBenchmarks.ExtractAsync(ItemCount: 1000)",
+            "value": 345156.08089192706,
+            "unit": "ns",
+            "range": "± 15754.171469263945"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync(ItemCount: 10)",
+            "value": 1998.6006991068523,
+            "unit": "ns",
+            "range": "± 5.540395344082122"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync_CamelCase(ItemCount: 10)",
+            "value": 2589.859203338623,
+            "unit": "ns",
+            "range": "± 137.3313095029923"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync(ItemCount: 100)",
+            "value": 17447.659606933594,
+            "unit": "ns",
+            "range": "± 370.6048893558449"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync_CamelCase(ItemCount: 100)",
+            "value": 18099.457763671875,
+            "unit": "ns",
+            "range": "± 49.5619815951736"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync(ItemCount: 1000)",
+            "value": 188405.36971028647,
+            "unit": "ns",
+            "range": "± 920.9641206133285"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync_CamelCase(ItemCount: 1000)",
+            "value": 184863.5509440104,
+            "unit": "ns",
+            "range": "± 459.9747725215219"
           }
         ]
       }
