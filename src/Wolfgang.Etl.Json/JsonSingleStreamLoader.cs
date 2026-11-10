@@ -37,8 +37,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     private static readonly string OperationName = $"JSON single-stream loading of {typeof(TRecord).Name}";
     private static readonly KeyValuePair<string, object?> RecordTypeTag = new("etl.record_type", typeof(TRecord).Name);
     private readonly Stream _stream;
-    private readonly JsonSerializerOptions? _options;
-    private readonly JsonTypeInfo<TRecord>? _typeInfo;
+    private readonly RecordTypeInfo<TRecord> _typeInfo;
     private readonly ILogger _logger;
     private readonly IProgressTimer? _progressTimer;
     private int _progressTimerWired;
@@ -87,7 +86,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
         _logger = NullLogger.Instance;
-        _options = null;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions(options: null);
     }
 
 
@@ -118,7 +117,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
         _logger = logger ?? (ILogger)NullLogger.Instance;
-        _options = null;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions(options: null);
     }
 
 
@@ -155,7 +154,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _options = options;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions(options);
         _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
@@ -183,7 +182,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
         : base(options)
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions((options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions);
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
     }
@@ -210,7 +209,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     {
         RejectSerializerOptions(options);
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _typeInfo = RecordTypeInfo<TRecord>.FromTypeInfo(typeInfo ?? throw new ArgumentNullException(nameof(typeInfo)));
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
     }
@@ -279,7 +278,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
         : base(options)
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions((options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions);
         _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
         ApplyOptions(options);
@@ -305,7 +304,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _typeInfo = RecordTypeInfo<TRecord>.FromTypeInfo(typeInfo ?? throw new ArgumentNullException(nameof(typeInfo)));
         _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
@@ -328,7 +327,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     )
     {
         _stream = stream ?? throw new ArgumentNullException(nameof(stream));
-        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _typeInfo = RecordTypeInfo<TRecord>.FromTypeInfo(typeInfo ?? throw new ArgumentNullException(nameof(typeInfo)));
         _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
@@ -412,13 +411,10 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     /// </summary>
     private JsonWriterOptions CreateWriterOptions()
     {
-        var serializerOptions = _typeInfo?.Options ?? _options;
-        if (serializerOptions is null)
-        {
-            // Default serializer options map onto the default writer options.
-            return default;
-        }
-
+        // Both construction paths end in a JsonTypeInfo whose Options are the serializer options in
+        // force (JsonSerializerOptions.Default when none were given, which maps onto the default
+        // writer options).
+        var serializerOptions = _typeInfo.Value.Options;
         return new JsonWriterOptions
         {
             Indented = serializerOptions.WriteIndented,
@@ -432,20 +428,9 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
 
 
 
-#if NET5_0_OR_GREATER
-    [UnconditionalSuppressMessage("Trimming", "IL2026:RequiresUnreferencedCode", Justification = "Reflection-based serialization runs only when _typeInfo is null, and every constructor that leaves it null carries [RequiresUnreferencedCode].")]
-    [UnconditionalSuppressMessage("AOT", "IL3050:RequiresDynamicCode", Justification = "Reflection-based serialization runs only when _typeInfo is null, and every constructor that leaves it null carries [RequiresDynamicCode].")]
-#endif
     private void WriteItem(Utf8JsonWriter writer, TRecord item)
     {
-        if (_typeInfo is not null)
-        {
-            JsonSerializer.Serialize(writer, item, _typeInfo);
-        }
-        else
-        {
-            JsonSerializer.Serialize(writer, item, _options);
-        }
+        JsonSerializer.Serialize(writer, item, _typeInfo.Value);
     }
 
 

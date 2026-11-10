@@ -48,8 +48,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     private static readonly string OperationName = $"JSON multi-stream extraction of {typeof(TRecord).Name}";
     private static readonly KeyValuePair<string, object?> RecordTypeTag = new("etl.record_type", typeof(TRecord).Name);
     private readonly IEnumerable<JsonNamedStream> _sources;
-    private readonly JsonSerializerOptions? _options;
-    private readonly JsonTypeInfo<TRecord>? _typeInfo;
+    private readonly RecordTypeInfo<TRecord> _typeInfo;
     private readonly ILogger _logger;
     private readonly IProgressTimer? _progressTimer;
     private int _progressTimerWired;
@@ -90,7 +89,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
 
         _sources = streams.Select(s => new JsonNamedStream(s));
         _logger = NullLogger.Instance;
-        _options = null;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions(options: null);
     }
 
 
@@ -126,7 +125,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     {
         _sources = sources ?? throw new ArgumentNullException(nameof(sources));
         _logger = NullLogger.Instance;
-        _options = null;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions(options: null);
     }
 
 
@@ -162,7 +161,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
 
         _sources = streams.Select(s => new JsonNamedStream(s));
         _logger = logger ?? (ILogger)NullLogger.Instance;
-        _options = null;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions(options: null);
     }
 
 
@@ -195,7 +194,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     {
         _sources = sources ?? throw new ArgumentNullException(nameof(sources));
         _logger = logger ?? (ILogger)NullLogger.Instance;
-        _options = null;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions(options: null);
     }
 
 
@@ -237,7 +236,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
         }
 
         _sources = streams.Select(s => new JsonNamedStream(s));
-        _options = options;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions(options);
         _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
@@ -277,7 +276,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     )
     {
         _sources = sources ?? throw new ArgumentNullException(nameof(sources));
-        _options = options;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions(options);
         _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
@@ -310,7 +309,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
         }
 
         _sources = streams.Select(s => new JsonNamedStream(s));
-        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions((options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions);
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
     }
@@ -342,7 +341,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
         }
 
         _sources = streams.Select(s => new JsonNamedStream(s));
-        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _typeInfo = RecordTypeInfo<TRecord>.FromTypeInfo(typeInfo ?? throw new ArgumentNullException(nameof(typeInfo)));
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
     }
@@ -371,7 +370,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
         : base(options)
     {
         _sources = sources ?? throw new ArgumentNullException(nameof(sources));
-        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions((options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions);
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
     }
@@ -398,7 +397,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     {
         RejectSerializerOptions(options);
         _sources = sources ?? throw new ArgumentNullException(nameof(sources));
-        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _typeInfo = RecordTypeInfo<TRecord>.FromTypeInfo(typeInfo ?? throw new ArgumentNullException(nameof(typeInfo)));
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
     }
@@ -470,7 +469,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
         }
 
         _sources = streams.Select(s => new JsonNamedStream(s));
-        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions((options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions);
         _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
         ApplyOptions(options);
@@ -502,7 +501,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
         : base(options)
     {
         _sources = sources ?? throw new ArgumentNullException(nameof(sources));
-        _options = (options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions;
+        _typeInfo = RecordTypeInfo<TRecord>.FromOptions((options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions);
         _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
         ApplyOptions(options);
@@ -533,7 +532,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
         }
 
         _sources = streams.Select(s => new JsonNamedStream(s));
-        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _typeInfo = RecordTypeInfo<TRecord>.FromTypeInfo(typeInfo ?? throw new ArgumentNullException(nameof(typeInfo)));
         _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
@@ -559,7 +558,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
     )
     {
         _sources = sources ?? throw new ArgumentNullException(nameof(sources));
-        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _typeInfo = RecordTypeInfo<TRecord>.FromTypeInfo(typeInfo ?? throw new ArgumentNullException(nameof(typeInfo)));
         _logger = logger ?? (ILogger)NullLogger.Instance;
     }
 
@@ -587,7 +586,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
         }
 
         _sources = streams.Select(s => new JsonNamedStream(s));
-        _typeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        _typeInfo = RecordTypeInfo<TRecord>.FromTypeInfo(typeInfo ?? throw new ArgumentNullException(nameof(typeInfo)));
         _logger = logger ?? NullLogger.Instance;
         _progressTimer = timer ?? throw new ArgumentNullException(nameof(timer));
     }
@@ -684,10 +683,6 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
 
 
 
-#if NET5_0_OR_GREATER
-    [UnconditionalSuppressMessage("Trimming", "IL2026:RequiresUnreferencedCode", Justification = "Reflection-based serialization runs only when _typeInfo is null, and every constructor that leaves it null carries [RequiresUnreferencedCode].")]
-    [UnconditionalSuppressMessage("AOT", "IL3050:RequiresDynamicCode", Justification = "Reflection-based serialization runs only when _typeInfo is null, and every constructor that leaves it null carries [RequiresDynamicCode].")]
-#endif
     private async Task<(TRecord? Item, bool Failed)> TryDeserializeStreamAsync
     (
         Stream stream,
@@ -700,9 +695,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
         JsonException? deserializationEx = null;
         try
         {
-            item = _typeInfo is not null
-                ? await JsonSerializer.DeserializeAsync(stream, _typeInfo, token).ConfigureAwait(false)
-                : await JsonSerializer.DeserializeAsync<TRecord>(stream, _options, token).ConfigureAwait(false);
+            item = await JsonSerializer.DeserializeAsync(stream, _typeInfo.Value, token).ConfigureAwait(false);
         }
         catch (JsonException ex)
         {
