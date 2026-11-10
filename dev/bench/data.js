@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794320511010,
+  "lastUpdate": 1794330528594,
   "repoUrl": "https://github.com/Chris-Wolfgang/ETL-Json",
   "entries": {
     "BenchmarkDotNet": [
@@ -7050,6 +7050,156 @@ window.BENCHMARK_DATA = {
             "value": 330530.41520182294,
             "unit": "ns",
             "range": "± 2746.533478604247"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "5c7a86d512204fa70bf2cd30cb3cb6bce9b3c1fa",
+          "message": "Bump the dotnet-dependencies group with 16 updates (#575)\n\nBumps cyclonedx from 6.2.0 to 6.3.1\nBumps dotnet-reportgenerator-globaltool from 5.5.11 to 5.5.12\nBumps dotnet-symbol from 10.0.745401 to 10.0.750501\nBumps jetbrains.resharper.globaltools from 2026.2.3.1 to 2026.3.0\nBumps Meziantou.Analyzer from 3.0.294 to 3.0.322\nBumps Microsoft.Bcl.AsyncInterfaces from 10.0.12 to 10.0.14\nBumps Microsoft.Extensions.Logging.Abstractions from 10.0.12 to 10.0.14\nBumps Microsoft.Extensions.Logging.Console from 10.0.12 to 10.0.14\nBumps Microsoft.SourceLink.GitHub from 10.0.401 to 10.0.403\nBumps Microsoft.VisualStudio.Threading.Analyzers from 18.7.23 to 18.12.1\nBumps System.Diagnostics.DiagnosticSource from 10.0.12 to 10.0.14\nBumps System.Text.Json from 10.0.12 to 10.0.14\nBumps Wolfgang.Etl.Abstractions from 0.26.0 to 0.26.1\nBumps Wolfgang.Etl.ErrorPolicies from 0.26.0 to 0.26.1\nBumps Wolfgang.Etl.TestKit from 0.26.0 to 0.26.1\nBumps Wolfgang.Etl.TestKit.Xunit from 0.26.0 to 0.26.1\n\n---\nupdated-dependencies:\n- dependency-name: cyclonedx\n  dependency-version: 6.3.1\n  dependency-type: direct:production\n  update-type: version-update:semver-minor\n  dependency-group: dotnet-dependencies\n- dependency-name: dotnet-reportgenerator-globaltool\n  dependency-version: 5.5.12\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n  dependency-group: dotnet-dependencies\n- dependency-name: dotnet-symbol\n  dependency-version: 10.0.750501\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n  dependency-group: dotnet-dependencies\n- dependency-name: jetbrains.resharper.globaltools\n  dependency-version: 2026.3.0\n  dependency-type: direct:production\n  update-type: version-update:semver-minor\n  dependency-group: dotnet-dependencies\n- dependency-name: Meziantou.Analyzer\n  dependency-version: 3.0.322\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n  dependency-group: dotnet-dependencies\n- dependency-name: Microsoft.Bcl.AsyncInterfaces\n  dependency-version: 10.0.14\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n  dependency-group: dotnet-dependencies\n- dependency-name: Microsoft.Bcl.AsyncInterfaces\n  dependency-version: 10.0.14\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n  dependency-group: dotnet-dependencies\n- dependency-name: Microsoft.Bcl.AsyncInterfaces\n  dependency-version: 10.0.14\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n  dependency-group: dotnet-dependencies\n- dependency-name: Microsoft.Bcl.AsyncInterfaces\n  dependency-version: 10.0.14\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n  dependency-group: dotnet-dependencies\n- dependency-name: Microsoft.Extensions.Logging.Abstractions\n  dependency-version: 10.0.14\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n  dependency-group: dotnet-dependencies\n- dependency-name: Microsoft.Extensions.Logging.Abstractions\n  dependency-version: 10.0.14\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n  dependency-group: dotnet-dependencies\n- dependency-name: Microsoft.Extensions.Logging.Console\n  dependency-version: 10.0.14\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n  dependency-group: dotnet-dependencies\n- dependency-name: Microsoft.SourceLink.GitHub\n  dependency-version: 10.0.403\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n  dependency-group: dotnet-dependencies\n- dependency-name: Microsoft.VisualStudio.Threading.Analyzers\n  dependency-version: 18.12.1\n  dependency-type: direct:production\n  update-type: version-update:semver-minor\n  dependency-group: dotnet-dependencies\n- dependency-name: System.Diagnostics.DiagnosticSource\n  dependency-version: 10.0.14\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n  dependency-group: dotnet-dependencies\n- dependency-name: System.Text.Json\n  dependency-version: 10.0.14\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n  dependency-group: dotnet-dependencies\n- dependency-name: System.Text.Json\n  dependency-version: 10.0.14\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n  dependency-group: dotnet-dependencies\n- dependency-name: System.Text.Json\n  dependency-version: 10.0.14\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n  dependency-group: dotnet-dependencies\n- dependency-name: Wolfgang.Etl.Abstractions\n  dependency-version: 0.26.1\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n  dependency-group: dotnet-dependencies\n- dependency-name: Wolfgang.Etl.ErrorPolicies\n  dependency-version: 0.26.1\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n  dependency-group: dotnet-dependencies\n- dependency-name: Wolfgang.Etl.TestKit\n  dependency-version: 0.26.1\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n  dependency-group: dotnet-dependencies\n- dependency-name: Wolfgang.Etl.TestKit.Xunit\n  dependency-version: 0.26.1\n  dependency-type: direct:production\n  update-type: version-update:semver-patch\n  dependency-group: dotnet-dependencies\n...\n\nSigned-off-by: dependabot[bot] <support@github.com>\nCo-authored-by: dependabot[bot] <49699333+dependabot[bot]@users.noreply.github.com>\nCo-authored-by: Chris Wolfgang <210299580+Chris-Wolfgang@users.noreply.github.com>",
+          "timestamp": "2026-11-10T12:04:22-05:00",
+          "tree_id": "17f08e10fc2da95ddb6a07edc760543d8b8036da",
+          "url": "https://github.com/Chris-Wolfgang/ETL-Json/commit/5c7a86d512204fa70bf2cd30cb3cb6bce9b3c1fa"
+        },
+        "date": 1794330523291,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineExtractorBenchmarks.ExtractAsync(ItemCount: 10)",
+            "value": 5271.163716634114,
+            "unit": "ns",
+            "range": "± 21.864166044189844"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineExtractorBenchmarks.ExtractAsync(ItemCount: 100)",
+            "value": 44454.75564575195,
+            "unit": "ns",
+            "range": "± 251.7648984567588"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineExtractorBenchmarks.ExtractAsync(ItemCount: 1000)",
+            "value": 426621.2635904948,
+            "unit": "ns",
+            "range": "± 3704.613711542364"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineLoaderBenchmarks.LoadAsync(ItemCount: 10)",
+            "value": 2739.849796295166,
+            "unit": "ns",
+            "range": "± 22.82234385315253"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineLoaderBenchmarks.LoadAsync(ItemCount: 100)",
+            "value": 26007.016728719074,
+            "unit": "ns",
+            "range": "± 934.8764960653174"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineLoaderBenchmarks.LoadAsync(ItemCount: 1000)",
+            "value": 302849.7054036458,
+            "unit": "ns",
+            "range": "± 934.6882258656109"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamExtractorBenchmarks.ExtractAsync(ItemCount: 10)",
+            "value": 6058.075002034505,
+            "unit": "ns",
+            "range": "± 3.239325588762019"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamExtractorBenchmarks.ExtractAsync(ItemCount: 100)",
+            "value": 54011.58123779297,
+            "unit": "ns",
+            "range": "± 186.81049520281914"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamExtractorBenchmarks.ExtractAsync(ItemCount: 1000)",
+            "value": 531612.8951822916,
+            "unit": "ns",
+            "range": "± 3087.475078924558"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamLoaderBenchmarks.LoadAsync(ItemCount: 10)",
+            "value": 3582.6057764689126,
+            "unit": "ns",
+            "range": "± 39.60373966986825"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamLoaderBenchmarks.LoadAsync(ItemCount: 100)",
+            "value": 33226.17295328776,
+            "unit": "ns",
+            "range": "± 280.11907777530365"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamLoaderBenchmarks.LoadAsync(ItemCount: 1000)",
+            "value": 330461.07600911456,
+            "unit": "ns",
+            "range": "± 5991.20826734215"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamExtractorBenchmarks.ExtractAsync(ItemCount: 10)",
+            "value": 5051.330721537272,
+            "unit": "ns",
+            "range": "± 13.453087961936726"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamExtractorBenchmarks.ExtractAsync(ItemCount: 100)",
+            "value": 40844.85561116537,
+            "unit": "ns",
+            "range": "± 918.482618696092"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamExtractorBenchmarks.ExtractAsync(ItemCount: 1000)",
+            "value": 393806.93733723956,
+            "unit": "ns",
+            "range": "± 8164.467161387226"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync(ItemCount: 10)",
+            "value": 2348.6175575256348,
+            "unit": "ns",
+            "range": "± 15.9977700465134"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync_CamelCase(ItemCount: 10)",
+            "value": 2970.1499621073403,
+            "unit": "ns",
+            "range": "± 41.2858893809887"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync(ItemCount: 100)",
+            "value": 20534.440856933594,
+            "unit": "ns",
+            "range": "± 118.55049418769309"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync_CamelCase(ItemCount: 100)",
+            "value": 20835.401036580402,
+            "unit": "ns",
+            "range": "± 223.92459781166468"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync(ItemCount: 1000)",
+            "value": 240658.39501953125,
+            "unit": "ns",
+            "range": "± 1020.6093078966235"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync_CamelCase(ItemCount: 1000)",
+            "value": 249970.78548177084,
+            "unit": "ns",
+            "range": "± 6910.372260553471"
           }
         ]
       }
