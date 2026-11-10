@@ -1,8 +1,50 @@
 # Reproducing the ETL-Json Build
 
-This document explains how any third party can independently reproduce the
-`Wolfgang.Etl.Json` NuGet package from source and verify that it matches
-the artifact published to NuGet.org.
+This document explains how any third party can independently rebuild
+`Wolfgang.Etl.Json` from source and verify that the assemblies published to
+NuGet.org were built from the tagged commit.
+
+---
+
+## The guarantee
+
+For a given commit built **with the same .NET SDK**, the following outputs are
+byte-for-byte identical, **on Linux and Windows alike**:
+
+- the compiled assembly `Wolfgang.Etl.Json.dll` (every target framework),
+- its debug symbols `Wolfgang.Etl.Json.pdb` (every target framework).
+
+> **The package files are not byte-reproducible.** The `.nupkg` / `.snupkg` are
+> zip containers, and NuGet stamps every entry with the time the package was
+> packed and writes platform-specific metadata into it. Packing the same commit
+> twice, even on one machine, gives two different package files. What is inside
+> them is stable: compare the assemblies and symbols, not the package file.
+
+The `reproducible-build.yaml` workflow checks this: it builds every target
+framework on `ubuntu-latest` and `windows-latest`, hashes each `.dll` and `.pdb`,
+and **fails** if any hash differs between the two.
+
+## How it is achieved
+
+| Setting | Effect |
+| --- | --- |
+| `Deterministic` (SDK default `true`) | No timestamps or other run-specific data in the assembly. |
+| `ContinuousIntegrationBuild=true` (`Directory.Build.props`, set when `CI=true`) | Enables `DeterministicSourcePaths`: absolute source paths become stable `/_/` tokens. Pass `-p:ContinuousIntegrationBuild=true` when you build locally. |
+| `Microsoft.SourceLink.GitHub` + `EmbedUntrackedSources` | Maps source paths to the repository, so the PDB does not depend on where the code was checked out. |
+| `NormalizeGeneratedLineEndings` target (`Directory.Build.targets`) | The SDK writes its generated sources (`*.AssemblyInfo.cs`, `*.AssemblyAttributes.cs`) with the OS newline. The PDB embeds them, so the PDB, and through its checksum the DLL, differed per OS. The target rewrites them to LF before compilation. |
+| `Microsoft.NETFramework.ReferenceAssemblies` (`Directory.Build.props`, net4x TFMs) | The PDB records every referenced assembly. Windows would otherwise compile against the machine's installed targeting pack and Linux against this NuGet package, which are different builds. Referencing the package makes every OS use it. |
+
+### What still has to match
+
+- **The SDK, and the runtime it runs the compiler on.** The PDB records the
+  compiler version and the runtime version that executed it, so use the SDK
+  version recorded in the release build log. If several runtime patches of the
+  same major version are installed, the newest one runs the compiler.
+- **Targeting packs.** A machine with an old, separately installed targeting
+  pack (for example `packs/Microsoft.NETCore.App.Ref/5.0.0` from a .NET 5 SDK
+  installer) compiles that TFM against a different build of the reference
+  assemblies than the NuGet package of the same version. Its output for that
+  TFM differs from a machine that downloads the package.
 
 ---
 
@@ -10,14 +52,9 @@ the artifact published to NuGet.org.
 
 | Tool | Version |
 |------|---------|
-| .NET SDK | 10.0.x (exact patch pinned in release run) |
+| .NET SDK | The exact version recorded in the release build log |
 | OS | Linux (Ubuntu 22.04+) or Windows 10+ |
 | PowerShell | 7+ (for build scripts) |
-
-The `release.yaml` CI job runs on `windows-latest`. For a byte-identical
-reproduction, use **Windows**. Linux builds produce functionally identical
-output but may have minor differences in PE timestamp handling; CI logs this
-as an informational warning, not a failure.
 
 ---
 
@@ -27,79 +64,53 @@ as an informational warning, not a failure.
 
    ```sh
    git clone https://github.com/Chris-Wolfgang/ETL-Json.git
-   git -C ETL-Json checkout v0.3.0   # substitute the version you are verifying
+   git -C ETL-Json checkout v<version>
    ```
 
-2. **Install the .NET SDK.**
+2. **Install the .NET SDK** recorded in the release run's build log (also in
+   the `HostEnvironmentInfo` field of the `.bom.json` attached to the release).
 
-   Use the same SDK version recorded in the release run. The expected SDK
-   version is listed in each GitHub Release's build log and in the
-   `HostEnvironmentInfo` field of any `.bom.json` attached to the release.
-
-3. **Restore and build in Release configuration.**
+3. **Build in Release configuration, deterministically.**
 
    ```sh
-   dotnet restore ETL-Json/
-   dotnet build ETL-Json/ --no-restore --configuration Release
+   dotnet build ETL-Json/src/Wolfgang.Etl.Json/Wolfgang.Etl.Json.csproj \
+     --configuration Release -p:ContinuousIntegrationBuild=true
    ```
 
-4. **Pack the NuGet package.**
+4. **Extract the published package.** Download `Wolfgang.Etl.Json.<version>.nupkg`
+   from NuGet.org (or the GitHub Release) and unzip it; the assemblies are under
+   `lib/<tfm>/`. The `.pdb` files are in the `.snupkg` the same way.
 
-   ```sh
-   dotnet pack ETL-Json/src/Wolfgang.Etl.Json/Wolfgang.Etl.Json.csproj \
-     --no-build --configuration Release --output ./repro-output
-   ```
-
-5. **Compute the SHA-256 hash of the output.**
+5. **Compare the hashes per target framework.**
 
    Linux / macOS:
    ```sh
-   sha256sum ./repro-output/*.nupkg ./repro-output/*.snupkg
+   sha256sum ETL-Json/src/Wolfgang.Etl.Json/bin/Release/net8.0/Wolfgang.Etl.Json.dll \
+             published/lib/net8.0/Wolfgang.Etl.Json.dll
    ```
 
    Windows PowerShell:
    ```powershell
-   Get-ChildItem ./repro-output/*.nupkg, ./repro-output/*.snupkg |
-     ForEach-Object { Get-FileHash $_.FullName -Algorithm SHA256 } |
-     Select-Object Hash, Path
+   Get-FileHash ETL-Json/src/Wolfgang.Etl.Json/bin/Release/net8.0/Wolfgang.Etl.Json.dll,
+                published/lib/net8.0/Wolfgang.Etl.Json.dll -Algorithm SHA256
    ```
 
-6. **Compare against the manifest.**
+   If the hashes match, the published assembly was built from exactly this
+   source. Repeat for the other target frameworks and for the `.pdb` files.
 
-   Each GitHub Release includes a `reproducible-build-manifest.json` asset.
-   Download it and compare:
-
-   ```json
-   {
-     "version": "0.3.0",
-     "artifacts": [
-       { "name": "Wolfgang.Etl.Json.0.3.0.nupkg", "sha256": "..." },
-       { "name": "Wolfgang.Etl.Json.0.3.0.snupkg", "sha256": "..." }
-     ]
-   }
-   ```
-
-   If your hashes match, the build is reproducible. If they differ, see
-   [Filing a Discrepancy](#filing-a-discrepancy) below.
+The `reproducible-build-manifest.json` attached to each GitHub Release lists the
+SHA-256 of the released `.nupkg` / `.snupkg` files. Those hashes identify the
+exact files that were released; they cannot be reproduced by re-packing,
+because the package embeds its pack time (see above).
 
 ---
 
 ## Known non-determinism
 
-- **PE timestamps**: On Windows, `dotnet build` may embed a timestamp in the
-  PE header. The `<Deterministic>true</Deterministic>` property in
-  `Directory.Build.props` suppresses this for cross-run comparison on the
-  same OS. Cross-OS comparison (Windows build vs. Linux build) may still
-  show a byte difference in the PE section; this is logged as a warning by
-  the `reproducible-build.yaml` CI check.
-
-- **Restore caching**: `dotnet restore` must use the same NuGet packages as
-  the CI run. The NuGet lock file is checked in; use `--locked-mode` to
-  force exact restoration:
-
-  ```sh
-  dotnet restore ETL-Json/ --locked-mode
-  ```
+- **Package files**: `.nupkg` / `.snupkg` differ on every pack (see above).
+- **Restore**: every `PackageReference` pins an exact version and nuget.org
+  packages are immutable, so a normal `dotnet restore` resolves the same
+  packages as the release run. There is no lock file.
 
 ---
 
