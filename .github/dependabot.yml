@@ -36,6 +36,18 @@ updates:
     open-pull-requests-limit: 10
     labels:
       - "dependencies"
+    # semgrep.txt is compiled by uv WITH semgrep-overrides.txt (see the header of
+    # semgrep.txt): the overrides force the OpenTelemetry family to a release that fixes
+    # GHSA-xcq7-p3pf-p88h and cap mcp below 2, while semgrep itself declares
+    # opentelemetry ~=1.37.0 / ~=0.58b0 and mcp 1.x. Dependabot resolves with pip-compile,
+    # which cannot apply uv overrides, so every attempt to bump semgrep, mcp or an
+    # OpenTelemetry pin ends in "dependency_file_not_resolvable" and a red weekly run
+    # (runs 41641278856 and 42821355038). Those pins are refreshed by hand with the uv
+    # command in the semgrep.txt header; Dependabot keeps zizmor moving.
+    ignore:
+      - dependency-name: "semgrep"
+      - dependency-name: "mcp"
+      - dependency-name: "opentelemetry-*"
     groups:
       pip-tooling:
         patterns:
