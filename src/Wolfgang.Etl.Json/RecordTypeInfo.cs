@@ -29,7 +29,11 @@ namespace Wolfgang.Etl.Json;
 /// </remarks>
 internal sealed class RecordTypeInfo<TRecord>
 {
+#if NET5_0_OR_GREATER
+    // Used only by the RequiresUnreferencedCode / RequiresDynamicCode attributes below, which exist on
+    // net5.0+; defining it on the older TFMs leaves an unused constant there (InspectCode S1144).
     private const string ReflectionMessage = "JSON serialization and deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.";
+#endif
 
     private readonly Func<JsonTypeInfo<TRecord>>? _resolve;
     private JsonTypeInfo<TRecord>? _typeInfo;
