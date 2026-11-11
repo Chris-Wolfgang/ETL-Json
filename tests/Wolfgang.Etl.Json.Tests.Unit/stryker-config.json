@@ -1,9 +1,6 @@
 {
   "stryker-config": {
-    "project": "src/Wolfgang.Etl.Json/Wolfgang.Etl.Json.csproj",
-    "test-projects": [
-      "tests/Wolfgang.Etl.Json.Tests.Unit/Wolfgang.Etl.Json.Tests.Unit.csproj"
-    ],
+    "project": "Wolfgang.Etl.Json.csproj",
     "target-framework": "net10.0",
     "reporters": [
       "html",
