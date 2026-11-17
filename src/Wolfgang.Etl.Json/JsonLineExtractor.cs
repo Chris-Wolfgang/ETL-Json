@@ -519,9 +519,9 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
         using var reader = CreateStreamReader(StartByteOffset > 0 ? probe.Encoding : null);
         string? lineText;
 #if NET7_0_OR_GREATER
-        while ((lineText = await reader.ReadLineAsync(token).ConfigureAwait(false)) is not null)
+        while (CurrentItemCount < MaximumItemCount && (lineText = await reader.ReadLineAsync(token).ConfigureAwait(false)) is not null)
 #else
-        while ((lineText = await reader.ReadLineAsync().ConfigureAwait(false)) is not null)
+        while (CurrentItemCount < MaximumItemCount && (lineText = await reader.ReadLineAsync().ConfigureAwait(false)) is not null)
 #endif
         {
             token.ThrowIfCancellationRequested();
@@ -554,16 +554,17 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
                 JsonLogMessages.SkippedItemAtLine(_logger, CurrentSkippedItemCount, SkipItemCount, lineNumber, null);
                 continue;
             }
-            if (CurrentItemCount >= MaximumItemCount)
-            {
-                JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
-                break;
-            }
             AdvanceByteOffset(lineBytes);
             IncrementCurrentItemCount();
             JsonMetrics.AddExtracted(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonLineComponentTag, RecordTypeTag);
             JsonLogMessages.ExtractedItemFromLine(_logger, CurrentItemCount, lineNumber, null);
             yield return item;
+        }
+
+        // The limit is tested before the next line is read, so a record past the limit is never consumed.
+        if (CurrentItemCount >= MaximumItemCount)
+        {
+            JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
         }
 
         CompleteExtraction(sw);
