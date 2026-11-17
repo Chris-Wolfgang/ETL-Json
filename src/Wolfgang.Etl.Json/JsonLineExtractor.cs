@@ -320,20 +320,57 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="JsonLineExtractor{TRecord}"/> class that reads a file, using a source-generated <see cref="JsonTypeInfo{TRecord}"/> and the default configuration.
+    /// </summary>
+    /// <param name="path">The path of the file to read; it is opened for asynchronous reading and closed with the extractor.</param>
+    /// <param name="typeInfo">The source-generated type information used to deserialize <typeparamref name="TRecord"/>.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="path"/> or <paramref name="typeInfo"/> is <see langword="null"/>.</exception>
+    public JsonLineExtractor
+    (
+        string path,
+        JsonTypeInfo<TRecord> typeInfo
+    )
+        : this(path, typeInfo, options: null, logger: null)
+    {
+    }
+
+
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonLineExtractor{TRecord}"/> class that reads a file, using a source-generated <see cref="JsonTypeInfo{TRecord}"/> and the supplied configuration.
+    /// </summary>
+    /// <param name="path">The path of the file to read; it is opened for asynchronous reading and closed with the extractor.</param>
+    /// <param name="typeInfo">The source-generated type information used to deserialize <typeparamref name="TRecord"/>.</param>
+    /// <param name="options">The construction-time configuration for this stage, or <see langword="null"/> for the defaults.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="path"/> or <paramref name="typeInfo"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentException"><paramref name="options"/> sets a serializer-options override, which cannot be combined with a <paramref name="typeInfo"/>.</exception>
+    public JsonLineExtractor
+    (
+        string path,
+        JsonTypeInfo<TRecord> typeInfo,
+        JsonLineExtractorOptions? options
+    )
+        : this(path, typeInfo, options, logger: null)
+    {
+    }
+
+
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="JsonLineExtractor{TRecord}"/> class that reads a file, using a source-generated <see cref="JsonTypeInfo{TRecord}"/>.
     /// </summary>
     /// <param name="path">The path of the file to read; it is opened for asynchronous reading and closed with the extractor.</param>
     /// <param name="typeInfo">The source-generated type information used to deserialize <typeparamref name="TRecord"/>; it carries its own serializer options.</param>
     /// <param name="options">The construction-time configuration for this stage, or <see langword="null"/> for the defaults.</param>
-    /// <param name="logger">An optional logger; <see langword="null"/> disables logging.</param>
+    /// <param name="logger">The logger; <see langword="null"/> disables logging.</param>
     /// <exception cref="ArgumentNullException"><paramref name="path"/> or <paramref name="typeInfo"/> is <see langword="null"/>.</exception>
     /// <exception cref="ArgumentException"><paramref name="options"/> sets <see cref="JsonLineExtractorOptions.SerializerOptions"/>, which cannot be combined with a <paramref name="typeInfo"/>; the type info carries its own serializer options.</exception>
     public JsonLineExtractor
     (
         string path,
         JsonTypeInfo<TRecord> typeInfo,
-        JsonLineExtractorOptions? options = null,
-        ILogger<JsonLineExtractor<TRecord>>? logger = null
+        JsonLineExtractorOptions? options,
+        ILogger<JsonLineExtractor<TRecord>>? logger
     )
         : base(options)
     {
