@@ -363,7 +363,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
         var newLine = Encoding is null ? JsonMetrics.NewLineUtf8Bytes : Encoding.GetBytes(Environment.NewLine);
         var sw = Stopwatch.StartNew();
 
-        await foreach (var item in items.WithCancellation(token).ConfigureAwait(false))
+        await foreach (var item in ItemLimit.Until(items, () => CurrentItemCount >= MaximumItemCount, token).ConfigureAwait(false))
         {
             token.ThrowIfCancellationRequested();
 
@@ -373,12 +373,6 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
                 JsonMetrics.AddSkipped(JsonMetrics.LoadOperationTag, JsonMetrics.JsonLineComponentTag, RecordTypeTag);
                 JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
                 continue;
-            }
-
-            if (CurrentItemCount >= MaximumItemCount)
-            {
-                JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
-                break;
             }
 
             Interlocked.Increment(ref _currentLineNumber);
@@ -404,6 +398,12 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
             IncrementCurrentItemCount();
             JsonMetrics.AddLoaded(JsonMetrics.LoadOperationTag, JsonMetrics.JsonLineComponentTag, RecordTypeTag);
             JsonLogMessages.LoadedItemAtLine(_logger, CurrentItemCount, Interlocked.Read(ref _currentLineNumber), null);
+        }
+
+        // The limit is tested before the upstream sequence is advanced, so no item past it is pulled.
+        if (CurrentItemCount >= MaximumItemCount)
+        {
+            JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
         }
 
         await CompleteLoadingAsync(sw, token).ConfigureAwait(false);
