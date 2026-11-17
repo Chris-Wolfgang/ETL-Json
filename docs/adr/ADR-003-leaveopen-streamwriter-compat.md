@@ -32,4 +32,5 @@ This eliminates:
 - `CreateStreamWriter` method
 - The `TrimStart('﻿')` workaround in snapshot tests
 - `CA1849`/`AsyncFixer02` suppressions (writes are now genuinely async)
-- The explicit `FlushAsync` call (no intermediate buffer to flush)
+
+Note: the explicit `FlushAsync` call was later reinstated in `JsonLineLoader.CompleteLoadingAsync` so a caller inspecting the stream before disposing it sees every line.
