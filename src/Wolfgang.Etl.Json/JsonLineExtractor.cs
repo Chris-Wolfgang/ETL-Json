@@ -24,7 +24,7 @@ namespace Wolfgang.Etl.Json;
 /// <typeparam name="TRecord">The type of items to extract. Must be <c>notnull</c>.</typeparam>
 /// <remarks>
 /// Reads a stream, line by line, deserializing each non-empty line as a single JSON object.
-/// Blank lines are skipped with a warning logged.
+/// Blank lines are skipped, with a Debug-level message logged.
 /// Compatible with both JSONL and NDJSON formats.
 /// </remarks>
 /// <example>
