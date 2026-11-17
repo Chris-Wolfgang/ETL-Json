@@ -435,6 +435,9 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
 
 
 
+    /// <summary>
+    /// Writes one item into the array and flushes the buffer to the stream once it is large enough.
+    /// </summary>
     /// <returns><see langword="false"/> when the item failed to serialize and the error policy skipped it.</returns>
     private async Task<bool> WriteItemAsync(Utf8JsonWriter writer, ByteBufferWriter buffer, TRecord item, CancellationToken token)
     {
