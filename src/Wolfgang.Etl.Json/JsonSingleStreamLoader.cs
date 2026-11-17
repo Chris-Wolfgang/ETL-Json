@@ -36,6 +36,9 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
 {
     private static readonly string OperationName = $"JSON single-stream loading of {typeof(TRecord).Name}";
     private static readonly KeyValuePair<string, object?> RecordTypeTag = new("etl.record_type", typeof(TRecord).Name);
+    // Buffered bytes are written to the stream once they reach this size (an item is never split).
+    private const int FlushThreshold = 32 * 1024;
+
     private readonly Stream _stream;
     private readonly RecordTypeInfo<TRecord> _typeInfo;
     private readonly ILogger _logger;
@@ -346,11 +349,11 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
 
         var sw = Stopwatch.StartNew();
 
-        // Disposed by hand rather than `await using var`: the declaration form can't take
-        // ConfigureAwait(false), and this loader ships on net462/netstandard2.0 where a
-        // context-captured DisposeAsync (which flushes to the stream) can deadlock a
-        // sync-over-async host.
-        var writer = IsDryRun ? null : new Utf8JsonWriter(_stream, CreateWriterOptions());
+        // Disposed by hand: `await using var` can't take ConfigureAwait(false), and a context-captured
+        // DisposeAsync can deadlock a sync-over-async host on net462/netstandard2.0. The writer targets
+        // an in-memory buffer so no synchronous Stream.Write happens; it is written with WriteAsync.
+        var buffer = IsDryRun ? null : new ByteBufferWriter();
+        var writer = buffer is null ? null : new Utf8JsonWriter(buffer, CreateWriterOptions());
         try
         {
             writer?.WriteStartArray();
@@ -373,9 +376,9 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
                     break;
                 }
 
-                if (writer is not null)
+                if (writer is not null && buffer is not null)
                 {
-                    WriteItem(writer, item);
+                    await WriteItemAsync(writer, buffer, item, token).ConfigureAwait(false);
                 }
 
                 IncrementCurrentItemCount();
@@ -383,10 +386,9 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
                 JsonLogMessages.LoadedItem(_logger, CurrentItemCount, null);
             }
 
-            writer?.WriteEndArray();
-            if (writer is not null)
+            if (writer is not null && buffer is not null)
             {
-                await writer.FlushAsync(token).ConfigureAwait(false);
+                await CompleteArrayAsync(writer, buffer, token).ConfigureAwait(false);
             }
 
             JsonLogMessages.SingleStreamLoadingCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, null);
@@ -428,9 +430,36 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
 
 
 
-    private void WriteItem(Utf8JsonWriter writer, TRecord item)
+    private async Task WriteItemAsync(Utf8JsonWriter writer, ByteBufferWriter buffer, TRecord item, CancellationToken token)
     {
         JsonSerializer.Serialize(writer, item, _typeInfo.Value);
+        if (buffer.WrittenCount >= FlushThreshold)
+        {
+            await WriteBufferAsync(buffer, token).ConfigureAwait(false);
+        }
+    }
+
+
+
+    private async Task CompleteArrayAsync(Utf8JsonWriter writer, ByteBufferWriter buffer, CancellationToken token)
+    {
+        writer.WriteEndArray();
+        await writer.FlushAsync(token).ConfigureAwait(false);
+        await WriteBufferAsync(buffer, token).ConfigureAwait(false);
+        await _stream.FlushAsync(token).ConfigureAwait(false);
+    }
+
+
+
+    private async Task WriteBufferAsync(ByteBufferWriter buffer, CancellationToken token)
+    {
+        if (buffer.WrittenCount == 0)
+        {
+            return;
+        }
+
+        await _stream.WriteAsync(buffer.Buffer, offset: 0, count: buffer.WrittenCount, token).ConfigureAwait(false);
+        buffer.Clear();
     }
 
 
