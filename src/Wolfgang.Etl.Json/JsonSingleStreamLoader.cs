@@ -41,6 +41,8 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     private const int FlushThreshold = 32 * 1024;
 
     private readonly Stream _stream;
+    private ByteBufferWriter? _scratchBuffer;
+    private Utf8JsonWriter? _scratchWriter;
     private readonly RecordTypeInfo<TRecord> _typeInfo;
     private readonly ILogger _logger;
     private readonly IProgressTimer? _progressTimer;
@@ -381,7 +383,6 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
                 JsonLogMessages.LoadedItem(_logger, CurrentItemCount, null);
             }
 
-            // The limit is tested before the upstream sequence is advanced, so no item past it is pulled.
             if (CurrentItemCount >= MaximumItemCount)
             {
                 JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
@@ -403,6 +404,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
             }
 
             buffer?.Dispose();
+            await ReleaseScratchAsync().ConfigureAwait(false);
         }
     }
 
@@ -460,10 +462,15 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
     /// </summary>
     private bool TryWriteItem(Utf8JsonWriter writer, TRecord item)
     {
-        byte[] scratch;
+        // One scratch buffer and writer are reused for every item of the run, so honouring the error policy
+        // does not allocate per record.
+        var scratchBuffer = _scratchBuffer ??= new ByteBufferWriter();
+        var scratchWriter = _scratchWriter ??= new Utf8JsonWriter(scratchBuffer, CreateWriterOptions());
+        scratchBuffer.Clear();
+        scratchWriter.Reset(scratchBuffer);
         try
         {
-            scratch = JsonSerializer.SerializeToUtf8Bytes(item, _typeInfo.Value);
+            JsonSerializer.Serialize(scratchWriter, item, _typeInfo.Value);
         }
         catch (Exception ex) when (ex is JsonException or NotSupportedException)
         {
@@ -474,12 +481,12 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
         if (_typeInfo.Value.Options.WriteIndented)
         {
             // Compact scratch bytes would lose the array writer's indentation, so re-emit them through it.
-            using var document = JsonDocument.Parse(scratch);
+            using var document = JsonDocument.Parse(new ReadOnlyMemory<byte>(scratchBuffer.Buffer, 0, scratchBuffer.WrittenCount));
             document.RootElement.WriteTo(writer);
         }
         else
         {
-            writer.WriteRawValue(scratch, skipInputValidation: true);
+            writer.WriteRawValue(new ReadOnlySpan<byte>(scratchBuffer.Buffer, 0, scratchBuffer.WrittenCount), skipInputValidation: true);
         }
 
         return true;
@@ -505,6 +512,20 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
         {
             ExceptionDispatchInfo.Capture(exception).Throw();
         }
+    }
+
+
+
+    private async Task ReleaseScratchAsync()
+    {
+        if (_scratchWriter is not null)
+        {
+            await _scratchWriter.DisposeAsync().ConfigureAwait(false);
+            _scratchWriter = null;
+        }
+
+        _scratchBuffer?.Dispose();
+        _scratchBuffer = null;
     }
 
 
