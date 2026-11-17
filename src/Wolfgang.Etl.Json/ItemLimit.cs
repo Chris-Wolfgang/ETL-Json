@@ -19,14 +19,14 @@ internal static class ItemLimit
     /// </summary>
     /// <typeparam name="T">The item type.</typeparam>
     /// <param name="source">The upstream sequence.</param>
-    /// <exception cref="ArgumentNullException"><paramref name="source"/> is <see langword="null"/>; thrown when enumeration starts.</exception>
     /// <param name="limitReached">Returns <see langword="true"/> once no further item may be consumed.</param>
     /// <param name="token">The cancellation token passed to the upstream enumerator.</param>
-    internal static async IAsyncEnumerable<T> Until<T>
+    /// <exception cref="ArgumentNullException"><paramref name="source"/> is <see langword="null"/>.</exception>
+    internal static IAsyncEnumerable<T> Until<T>
     (
         IAsyncEnumerable<T>? source,
         Func<bool> limitReached,
-        [EnumeratorCancellation] CancellationToken token = default
+        CancellationToken token = default
     )
     {
         if (source is null)
@@ -34,6 +34,18 @@ internal static class ItemLimit
             throw new ArgumentNullException(nameof(source));
         }
 
+        return UntilIterator(source, limitReached, token);
+    }
+
+
+
+    private static async IAsyncEnumerable<T> UntilIterator<T>
+    (
+        IAsyncEnumerable<T> source,
+        Func<bool> limitReached,
+        [EnumeratorCancellation] CancellationToken token
+    )
+    {
         var enumerator = source.GetAsyncEnumerator(token);
         try
         {
