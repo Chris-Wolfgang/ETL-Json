@@ -529,26 +529,26 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
             var lineNumber = Interlocked.Increment(ref _currentLineNumber);
             if (string.IsNullOrWhiteSpace(lineText))
             {
-                Interlocked.Add(ref _currentByteOffset, lineBytes);
+                AdvanceByteOffset(lineBytes);
                 JsonLogMessages.SkippingBlankLine(_logger, lineNumber, null);
                 continue;
             }
             if (!TryDeserializeLine(lineText, out var item))
             {
-                Interlocked.Add(ref _currentByteOffset, lineBytes);
+                AdvanceByteOffset(lineBytes);
                 continue;
             }
 
             if (item is null)
             {
-                Interlocked.Add(ref _currentByteOffset, lineBytes);
+                AdvanceByteOffset(lineBytes);
                 JsonLogMessages.LineDeserializedToNull(_logger, lineNumber, null);
                 continue;
             }
             if (skipBudget > 0)
             {
                 skipBudget--;
-                Interlocked.Add(ref _currentByteOffset, lineBytes);
+                AdvanceByteOffset(lineBytes);
                 IncrementCurrentSkippedItemCount();
                 JsonMetrics.AddSkipped(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonLineComponentTag, RecordTypeTag);
                 JsonLogMessages.SkippedItemAtLine(_logger, CurrentSkippedItemCount, SkipItemCount, lineNumber, null);
@@ -559,7 +559,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
                 JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
                 break;
             }
-            Interlocked.Add(ref _currentByteOffset, lineBytes);
+            AdvanceByteOffset(lineBytes);
             IncrementCurrentItemCount();
             JsonMetrics.AddExtracted(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonLineComponentTag, RecordTypeTag);
             JsonLogMessages.ExtractedItemFromLine(_logger, CurrentItemCount, lineNumber, null);
@@ -571,13 +571,28 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 
 
 
+    /// <summary>
+    /// Moves <see cref="CurrentByteOffset"/> past a line. The line's size assumes a terminator, which a final
+    /// line without one does not have, so on a seekable stream the offset never passes the end of the stream
+    /// and is a valid position as soon as that line is yielded.
+    /// </summary>
+    private void AdvanceByteOffset(int lineBytes)
+    {
+        var next = Interlocked.Add(ref _currentByteOffset, lineBytes);
+        if (lineBytes > 0 && _stream.CanSeek)
+        {
+            var length = _stream.Length;
+            if (next > length)
+            {
+                Interlocked.Exchange(ref _currentByteOffset, length);
+            }
+        }
+    }
+
+
+
     private void CompleteExtraction(Stopwatch sw)
     {
-        if (_stream.CanSeek && Interlocked.Read(ref _currentByteOffset) > _stream.Length)
-        {
-            Interlocked.Exchange(ref _currentByteOffset, _stream.Length);
-        }
-
         JsonLogMessages.JsonlExtractionCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, Interlocked.Read(ref _currentLineNumber), null);
         JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, JsonMetrics.ExtractOperationTag, JsonMetrics.JsonLineComponentTag, RecordTypeTag);
     }
@@ -587,7 +602,10 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     private async Task<StreamProbe> PrepareForExtractionAsync(CancellationToken token)
     {
         Interlocked.Exchange(ref _currentLineNumber, 0);
-        Interlocked.Exchange(ref _currentByteOffset, StartByteOffset);
+        // A fresh run starts at the stream's current position, so the offsets stay absolute even when the
+        // caller has already consumed a header; a resume seeks to the absolute StartByteOffset below.
+        var startOffset = StartByteOffset > 0 || !_stream.CanSeek ? StartByteOffset : _stream.Position;
+        Interlocked.Exchange(ref _currentByteOffset, startOffset);
         if (StartByteOffset > 0 && !_stream.CanSeek)
         {
             throw new InvalidOperationException
