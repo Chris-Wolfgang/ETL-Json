@@ -103,6 +103,26 @@ public class JsonSingleStreamLoaderAsyncWriteTests
 
 
 
+    [Fact]
+    public void AsyncOnlyStream_rejects_synchronous_and_unsupported_operations()
+    {
+        using var sut = new AsyncOnlyStream();
+
+        Assert.False(sut.CanRead);
+        Assert.False(sut.CanSeek);
+        Assert.True(sut.CanWrite);
+        Assert.Throws<InvalidOperationException>(() => sut.Write(new byte[1], 0, 1));
+        Assert.Throws<InvalidOperationException>(() => sut.Flush());
+        Assert.Throws<NotSupportedException>(() => sut.Length);
+        Assert.Throws<NotSupportedException>(() => sut.Position);
+        Assert.Throws<NotSupportedException>(() => sut.Position = 0);
+        Assert.Throws<NotSupportedException>(() => sut.Read(new byte[1], 0, 1));
+        Assert.Throws<NotSupportedException>(() => sut.Seek(0, SeekOrigin.Begin));
+        Assert.Throws<NotSupportedException>(() => sut.SetLength(0));
+    }
+
+
+
     private static List<PersonRecord> People(int count) =>
         Enumerable.Range(0, count).Select(i => new PersonRecord { FirstName = "F" + i, LastName = "L", Age = i }).ToList();
 
