@@ -36,15 +36,13 @@ public class MaximumItemCountTests
     public async Task JsonMultiStreamExtractor_when_limit_is_reached_does_not_request_the_next_source()
     {
         var requested = 0;
-        IEnumerable<Stream> Sources()
+        var sources = new[] { Good, "{bad" }.Select(text =>
         {
             requested++;
-            yield return ToStream(Good);
-            requested++;
-            yield return ToStream("{bad");
-        }
+            return (Stream)ToStream(text);
+        });
 
-        var sut = new JsonMultiStreamExtractor<PersonRecord>(Sources(), new JsonMultiStreamExtractorOptions { MaximumItemCount = 1 });
+        var sut = new JsonMultiStreamExtractor<PersonRecord>(sources, new JsonMultiStreamExtractorOptions { MaximumItemCount = 1 });
 
         var items = await sut.ExtractAsync().ToListAsync();
 
