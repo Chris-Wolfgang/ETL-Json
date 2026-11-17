@@ -127,7 +127,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
             throw new ArgumentNullException(nameof(path));
         }
 
-        _stream = File.OpenRead(path);
+        _stream = FileStreams.OpenRead(path);
         _ownsStream = true;
         _typeInfo = RecordTypeInfo<TRecord>.FromOptions(options);
         _logger = logger ?? (ILogger)NullLogger.Instance;
@@ -261,6 +261,39 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
 
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="JsonSingleStreamExtractor{TRecord}"/> class that reads a file, using a source-generated <see cref="JsonTypeInfo{TRecord}"/>.
+    /// </summary>
+    /// <param name="path">The path of the file to read; it is opened for asynchronous reading and closed with the extractor.</param>
+    /// <param name="typeInfo">The source-generated type information used to deserialize <typeparamref name="TRecord"/>; it carries its own serializer options.</param>
+    /// <param name="options">The construction-time configuration for this stage, or <see langword="null"/> for the defaults.</param>
+    /// <param name="logger">An optional logger; <see langword="null"/> disables logging.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="path"/> or <paramref name="typeInfo"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentException"><paramref name="options"/> sets <see cref="JsonSingleStreamExtractorOptions.SerializerOptions"/>, which cannot be combined with a <paramref name="typeInfo"/>; the type info carries its own serializer options.</exception>
+    public JsonSingleStreamExtractor
+    (
+        string path,
+        JsonTypeInfo<TRecord> typeInfo,
+        JsonSingleStreamExtractorOptions? options = null,
+        ILogger<JsonSingleStreamExtractor<TRecord>>? logger = null
+    )
+        : base(options)
+    {
+        if (path is null)
+        {
+            throw new ArgumentNullException(nameof(path));
+        }
+
+        RejectSerializerOptions(options);
+        _typeInfo = RecordTypeInfo<TRecord>.FromTypeInfo(typeInfo ?? throw new ArgumentNullException(nameof(typeInfo)));
+        _logger = logger ?? (ILogger)NullLogger.Instance;
+        ApplyOptions(options ?? new JsonSingleStreamExtractorOptions());
+        _stream = FileStreams.OpenRead(path);
+        _ownsStream = true;
+    }
+
+
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="JsonSingleStreamExtractor{TRecord}"/> class configured through an options record.
     /// </summary>
     /// <param name="path">The path of the file to read; it is opened for reading and closed with the extractor.</param>
@@ -286,11 +319,11 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
             throw new ArgumentNullException(nameof(path));
         }
 
-        _stream = File.OpenRead(path);
-        _ownsStream = true;
         _typeInfo = RecordTypeInfo<TRecord>.FromOptions((options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions);
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
+        _stream = FileStreams.OpenRead(path);
+        _ownsStream = true;
     }
 
 
