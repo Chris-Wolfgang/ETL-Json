@@ -60,7 +60,7 @@ public class JsonSingleStreamLoaderAsyncWriteTests
     [Fact]
     public void ByteBufferWriter_when_advanced_past_capacity_throws()
     {
-        var sut = new ByteBufferWriter();
+        using var sut = new ByteBufferWriter();
 
         Assert.Throws<ArgumentOutOfRangeException>(() => sut.Advance(sut.Buffer.Length + 1));
         Assert.Throws<ArgumentOutOfRangeException>(() => sut.Advance(-1));
@@ -71,7 +71,7 @@ public class JsonSingleStreamLoaderAsyncWriteTests
     [Fact]
     public void ByteBufferWriter_grows_for_a_large_size_hint_and_keeps_written_bytes()
     {
-        var sut = new ByteBufferWriter();
+        using var sut = new ByteBufferWriter();
         sut.GetSpan(1)[0] = 7;
         sut.Advance(1);
 
@@ -84,6 +84,21 @@ public class JsonSingleStreamLoaderAsyncWriteTests
         Assert.Equal(1, sut.WrittenCount);
         sut.Clear();
         Assert.Equal(0, sut.WrittenCount);
+    }
+
+
+
+    [Fact]
+    public void ByteBufferWriter_when_disposed_releases_the_buffer()
+    {
+        var sut = new ByteBufferWriter();
+        sut.GetSpan(1)[0] = 1;
+        sut.Advance(1);
+
+        sut.Dispose();
+
+        Assert.Equal(0, sut.WrittenCount);
+        Assert.Empty(sut.Buffer);
     }
 
 

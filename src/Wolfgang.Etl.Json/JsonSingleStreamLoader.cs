@@ -401,6 +401,8 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
             {
                 await writer.DisposeAsync().ConfigureAwait(false);
             }
+
+            buffer?.Dispose();
         }
     }
 
