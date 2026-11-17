@@ -54,6 +54,24 @@ public class JsonLineLoaderTests
 
 
     [Fact]
+    public async Task LoadAsync_when_Encoding_is_UTF16_writes_no_byte_order_mark_and_round_trips_with_the_same_encoding()
+    {
+        using var stream = new MemoryStream();
+        var sut = new JsonLineLoader<PersonRecord>(stream, new JsonLineLoaderOptions { Encoding = Encoding.Unicode });
+        var person = new PersonRecord { FirstName = "Alice", LastName = "Smith", Age = 30 };
+
+        await sut.LoadAsync(new[] { person }.ToAsyncEnumerable());
+
+        // Documented behaviour: no preamble is written, so the reader must be given the encoding.
+        Assert.Equal(new byte[] { 0x7B, 0x00, 0x22, 0x00 }, stream.ToArray().Take(4));
+        stream.Position = 0;
+        var reader = new JsonLineExtractor<PersonRecord>(stream, new JsonLineExtractorOptions { Encoding = Encoding.Unicode });
+        Assert.Equal(person, Assert.Single(await reader.ExtractAsync().ToListAsync()));
+    }
+
+
+
+    [Fact]
     public async Task LoadAsync_writes_one_json_object_per_line()
     {
         var stream = new MemoryStream();
