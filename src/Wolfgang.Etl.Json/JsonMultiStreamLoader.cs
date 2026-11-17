@@ -742,7 +742,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
 
 
 
-    private async Task WriteItemToStreamAsync(Stream stream, byte[] bytes, CancellationToken token)
+    private static async Task WriteItemToStreamAsync(Stream stream, byte[] bytes, CancellationToken token)
     {
         try
         {
