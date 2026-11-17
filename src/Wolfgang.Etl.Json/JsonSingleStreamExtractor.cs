@@ -427,7 +427,8 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
         var stoppedOnError = false;
         try
         {
-            while (true)
+            // The limit is tested before the next element is read, so a record past the limit is never consumed.
+            while (CurrentItemCount < MaximumItemCount)
             {
                 token.ThrowIfCancellationRequested();
                 var (hasNext, item, caughtEx) = await TryMoveNextAsync(enumerator).ConfigureAwait(false);
@@ -455,16 +456,15 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
                     continue;
                 }
 
-                if (CurrentItemCount >= MaximumItemCount)
-                {
-                    JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
-                    break;
-                }
-
                 IncrementCurrentItemCount();
                 JsonMetrics.AddExtracted(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonSingleStreamComponentTag, RecordTypeTag);
                 JsonLogMessages.ExtractedItem(_logger, CurrentItemCount, null);
                 yield return item;
+            }
+
+            if (CurrentItemCount >= MaximumItemCount)
+            {
+                JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
             }
         }
         finally
