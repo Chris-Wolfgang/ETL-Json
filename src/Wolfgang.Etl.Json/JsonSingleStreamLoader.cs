@@ -359,7 +359,7 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
         {
             writer?.WriteStartArray();
 
-            await foreach (var item in items.WithCancellation(token).ConfigureAwait(false))
+            await foreach (var item in ItemLimit.Until(items, () => CurrentItemCount >= MaximumItemCount, token).ConfigureAwait(false))
             {
                 token.ThrowIfCancellationRequested();
 
@@ -371,12 +371,6 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
                     continue;
                 }
 
-                if (CurrentItemCount >= MaximumItemCount)
-                {
-                    JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
-                    break;
-                }
-
                 if (writer is not null && buffer is not null && !await WriteItemAsync(writer, buffer, item, token).ConfigureAwait(false))
                 {
                     continue;
@@ -385,6 +379,12 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
                 IncrementCurrentItemCount();
                 JsonMetrics.AddLoaded(JsonMetrics.LoadOperationTag, JsonMetrics.JsonSingleStreamComponentTag, RecordTypeTag);
                 JsonLogMessages.LoadedItem(_logger, CurrentItemCount, null);
+            }
+
+            // The limit is tested before the upstream sequence is advanced, so no item past it is pulled.
+            if (CurrentItemCount >= MaximumItemCount)
+            {
+                JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
             }
 
             if (writer is not null && buffer is not null)

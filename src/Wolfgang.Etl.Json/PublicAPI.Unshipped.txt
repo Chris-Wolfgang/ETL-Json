@@ -1,1 +1,3 @@
 #nullable enable
+Wolfgang.Etl.Json.JsonLineExtractor<TRecord>.JsonLineExtractor(string! path, System.Text.Json.Serialization.Metadata.JsonTypeInfo<TRecord>! typeInfo, Wolfgang.Etl.Json.JsonLineExtractorOptions? options = null, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonLineExtractor<TRecord>!>? logger = null) -> void
+Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>.JsonSingleStreamExtractor(string! path, System.Text.Json.Serialization.Metadata.JsonTypeInfo<TRecord>! typeInfo, Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions? options = null, Microsoft.Extensions.Logging.ILogger<Wolfgang.Etl.Json.JsonSingleStreamExtractor<TRecord>!>? logger = null) -> void

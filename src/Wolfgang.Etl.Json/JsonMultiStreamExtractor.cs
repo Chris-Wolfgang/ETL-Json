@@ -607,8 +607,12 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
 
         try
         {
-            foreach (var source in _sources)
+            // The limit is tested before the next source is requested, resolved or read, so a source past
+            // the limit is never touched.
+            using var sources = _sources.GetEnumerator();
+            while (CurrentItemCount < MaximumItemCount && sources.MoveNext())
             {
+                var source = sources.Current;
                 token.ThrowIfCancellationRequested();
                 _currentSourceName = source.Name;
                 JsonLogMessages.ReadingStream(_logger, streamIndex, null);
@@ -636,17 +640,16 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
                     continue;
                 }
 
-                if (CurrentItemCount >= MaximumItemCount)
-                {
-                    JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
-                    break;
-                }
-
                 IncrementCurrentItemCount();
                 JsonMetrics.AddExtracted(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonMultiStreamComponentTag, RecordTypeTag);
                 JsonLogMessages.ExtractedItemFromStream(_logger, CurrentItemCount, streamIndex - 1, null);
 
                 yield return item;
+            }
+
+            if (CurrentItemCount >= MaximumItemCount)
+            {
+                JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
             }
 
             JsonLogMessages.MultiStreamExtractionCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, streamIndex, null);
