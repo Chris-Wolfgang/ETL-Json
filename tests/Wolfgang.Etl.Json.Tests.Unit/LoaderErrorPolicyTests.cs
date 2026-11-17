@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Wolfgang.Etl.Abstractions;
 using Xunit;
@@ -104,7 +105,7 @@ public class LoaderErrorPolicyTests
         (
             n =>
             {
-                var s = new NonClosingStream();
+                var s = new MemoryStream();
                 destinations[n.Id] = s;
                 return s;
             },
@@ -141,13 +142,7 @@ public class LoaderErrorPolicyTests
 
 
 
-        public Node? Next { get; set; }
-    }
-
-
-
-    // MemoryStream.ToArray still works after Dispose, but this makes the intent explicit.
-    private sealed class NonClosingStream : MemoryStream
-    {
+        [JsonInclude]
+        public Node? Next;
     }
 }
