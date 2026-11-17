@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 #endif
 using System.IO;
+using System.Runtime.ExceptionServices;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading;
@@ -376,9 +377,9 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
                     break;
                 }
 
-                if (writer is not null && buffer is not null)
+                if (writer is not null && buffer is not null && !await WriteItemAsync(writer, buffer, item, token).ConfigureAwait(false))
                 {
-                    await WriteItemAsync(writer, buffer, item, token).ConfigureAwait(false);
+                    continue;
                 }
 
                 IncrementCurrentItemCount();
@@ -430,12 +431,77 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
 
 
 
-    private async Task WriteItemAsync(Utf8JsonWriter writer, ByteBufferWriter buffer, TRecord item, CancellationToken token)
+    /// <returns><see langword="false"/> when the item failed to serialize and the error policy skipped it.</returns>
+    private async Task<bool> WriteItemAsync(Utf8JsonWriter writer, ByteBufferWriter buffer, TRecord item, CancellationToken token)
     {
-        JsonSerializer.Serialize(writer, item, _typeInfo.Value);
+        if (!TryWriteItem(writer, item))
+        {
+            return false;
+        }
+
+        // WriteRawValue leaves its bytes in the writer until flushed; commit them to the buffer before sizing it.
+        await writer.FlushAsync(token).ConfigureAwait(false);
         if (buffer.WrittenCount >= FlushThreshold)
         {
             await WriteBufferAsync(buffer, token).ConfigureAwait(false);
+        }
+
+        return true;
+    }
+
+
+
+    /// <summary>
+    /// Writes <paramref name="item"/> as the next array element. The record is serialized to a scratch buffer first
+    /// and then replayed into the array writer, so a record that fails to serialize leaves no partial element in
+    /// the array and the failure can go through the stage's error policy.
+    /// </summary>
+    private bool TryWriteItem(Utf8JsonWriter writer, TRecord item)
+    {
+        byte[] scratch;
+        try
+        {
+            scratch = JsonSerializer.SerializeToUtf8Bytes(item, _typeInfo.Value);
+        }
+        catch (Exception ex) when (ex is JsonException or NotSupportedException)
+        {
+            HandleSerializationError(ex);
+            return false;
+        }
+
+        if (_typeInfo.Value.Options.WriteIndented)
+        {
+            // Compact scratch bytes would lose the array writer's indentation, so re-emit them through it.
+            using var document = JsonDocument.Parse(scratch);
+            document.RootElement.WriteTo(writer);
+        }
+        else
+        {
+            writer.WriteRawValue(scratch, skipInputValidation: true);
+        }
+
+        return true;
+    }
+
+
+
+    /// <summary>
+    /// Applies the stage's error policy to an item that failed to serialize: returns when the policy skips
+    /// the item and re-throws the original failure when it aborts.
+    /// </summary>
+    /// <param name="exception">The serialization failure.</param>
+    private void HandleSerializationError(Exception exception)
+    {
+        var context = new ItemErrorContext
+        (
+            CurrentItemCount + CurrentSkippedItemCount + CurrentErrorItemCount + 1,
+            exception,
+            rawContent: null
+        );
+
+        if (HandleItemError(context) == ItemErrorAction.Abort)
+        {
+            ExceptionDispatchInfo.Capture(exception).Throw();
         }
     }
 

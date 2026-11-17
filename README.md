@@ -159,6 +159,10 @@ var loader = new JsonLineLoader<Person>(stream, new JsonLineLoaderOptions { IsDr
 
 A stage constructed without a record keeps every default.
 
+On a loader, `ErrorPolicy` applies to a record that fails to serialize (`JsonException` / `NotSupportedException`): `Skip`
+drops the record, counts it in `CurrentErrorItemCount` and leaves no partial output for it; the default aborts with the
+original exception. Failures writing to the destination are not item errors and always abort.
+
 ### Custom serialization options
 
 The record's `SerializerOptions` configures the reflection-based serializer. The source-generated constructors
