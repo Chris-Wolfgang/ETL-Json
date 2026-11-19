@@ -168,6 +168,26 @@ public class JsonOptionsRecordTests
 
 
     [Fact]
+    public void JsonLineExtractorOptions_when_StartByteOffset_is_negative_names_the_rule_in_the_message()
+    {
+        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => new JsonLineExtractorOptions { StartByteOffset = -1 });
+
+        Assert.StartsWith("StartByteOffset must be zero or greater.", ex.Message, StringComparison.Ordinal);
+    }
+
+
+
+    [Fact]
+    public void JsonLineExtractorOptions_when_StartByteOffset_is_zero_accepts_it()
+    {
+        var options = new JsonLineExtractorOptions { StartByteOffset = 0 };
+
+        Assert.Equal(0, options.StartByteOffset);
+    }
+
+
+
+    [Fact]
     public void JsonLineLoader_when_constructed_with_options_applies_inherited_and_own_settings()
     {
         var options = new JsonLineLoaderOptions
