@@ -18,7 +18,7 @@
          (Microsoft.CodeAnalysis.CSharp 4.14.0 via BenchmarkDotNet 0.15.8) to the current
          release, which BenchmarkDotNet uses to compile its generated benchmark code.
          Removing it drops the resolved version back to 4.14.0. -->
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.9.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.12.0" />
   </ItemGroup>
 
   <!-- Analyzer PackageReferences are centralized in Directory.Build.props -->
