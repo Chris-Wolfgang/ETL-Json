@@ -642,7 +642,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
 
         try
         {
-            await foreach (var item in items.WithCancellation(token).ConfigureAwait(false))
+            await foreach (var item in ItemLimit.Until(items, () => CurrentItemCount >= MaximumItemCount, token).ConfigureAwait(false))
             {
                 token.ThrowIfCancellationRequested();
 
@@ -652,12 +652,6 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
                     JsonMetrics.AddSkipped(JsonMetrics.LoadOperationTag, JsonMetrics.JsonMultiStreamComponentTag, RecordTypeTag);
                     JsonLogMessages.SkippedItem(_logger, CurrentSkippedItemCount, SkipItemCount, null);
                     continue;
-                }
-
-                if (CurrentItemCount >= MaximumItemCount)
-                {
-                    JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
-                    break;
                 }
 
                 if (IsDryRun)
@@ -678,6 +672,12 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
                 JsonMetrics.AddLoaded(JsonMetrics.LoadOperationTag, JsonMetrics.JsonMultiStreamComponentTag, RecordTypeTag);
                 streamIndex++;
                 JsonLogMessages.LoadedItemToStream(_logger, CurrentItemCount, streamIndex - 1, null);
+            }
+
+            // The limit is tested before the upstream sequence is advanced, so no item past it is pulled.
+            if (CurrentItemCount >= MaximumItemCount)
+            {
+                JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
             }
 
             JsonLogMessages.MultiStreamLoadingCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, streamIndex, null);
