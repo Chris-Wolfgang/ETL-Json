@@ -612,7 +612,7 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
             using var sources = _sources.GetEnumerator();
             while (CurrentItemCount < MaximumItemCount && sources.MoveNext())
             {
-                var source = sources.Current;
+                var source = RequireSource(sources.Current, streamIndex);
                 token.ThrowIfCancellationRequested();
                 _currentSourceName = source.Name;
                 JsonLogMessages.ReadingStream(_logger, streamIndex, null);
@@ -658,6 +658,18 @@ public sealed class JsonMultiStreamExtractor<TRecord> : ExtractorBase<TRecord, J
         {
             JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, JsonMetrics.ExtractOperationTag, JsonMetrics.JsonMultiStreamComponentTag, RecordTypeTag);
         }
+    }
+
+
+
+    // A caller-supplied sequence can hold a null entry despite the non-nullable element type;
+    // fail with the index instead of a NullReferenceException.
+    private static JsonNamedStream RequireSource(JsonNamedStream? source, int streamIndex)
+    {
+        return source ?? throw new InvalidOperationException
+        (
+            $"Source at index {streamIndex} is null."
+        );
     }
 
 
