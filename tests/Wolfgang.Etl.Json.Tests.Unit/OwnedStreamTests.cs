@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
 using Wolfgang.Etl.Json.Tests.Unit.TestModels;
 using Xunit;
