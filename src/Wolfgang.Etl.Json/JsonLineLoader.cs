@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 #endif
 using System.IO;
+using System.Runtime.ExceptionServices;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading;
@@ -66,6 +67,9 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
     /// Gets or sets the character encoding to use when writing the JSONL stream.
     /// When <see langword="null"/> (the default), UTF-8 is used.
     /// </summary>
+    /// <remarks>
+    /// No byte-order mark is ever written, for any encoding; the reader must be configured with the same encoding.
+    /// </remarks>
     public System.Text.Encoding? Encoding { get => _encoding; [Obsolete("Configure Encoding through JsonLineLoaderOptions passed to the constructor instead. The setter will be removed in a later release.")] set => _encoding = value; }
 
 
@@ -360,7 +364,7 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
         var newLine = Encoding is null ? JsonMetrics.NewLineUtf8Bytes : Encoding.GetBytes(Environment.NewLine);
         var sw = Stopwatch.StartNew();
 
-        await foreach (var item in items.WithCancellation(token).ConfigureAwait(false))
+        await foreach (var item in ItemLimit.Until(items, () => CurrentItemCount >= MaximumItemCount, token).ConfigureAwait(false))
         {
             token.ThrowIfCancellationRequested();
 
@@ -372,28 +376,20 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
                 continue;
             }
 
-            if (CurrentItemCount >= MaximumItemCount)
+            byte[]? bytes = null;
+            if (!IsDryRun)
             {
-                JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
-                break;
+                bytes = TrySerialize(item);
+                if (bytes is null)
+                {
+                    continue;
+                }
             }
 
             Interlocked.Increment(ref _currentLineNumber);
 
-            if (!IsDryRun)
+            if (bytes is not null)
             {
-                byte[] bytes;
-
-                if (Encoding is null)
-                {
-                    bytes = JsonSerializer.SerializeToUtf8Bytes(item, _typeInfo.Value);
-                }
-                else
-                {
-                    var json = JsonSerializer.Serialize(item, _typeInfo.Value);
-                    bytes = Encoding.GetBytes(json);
-                }
-
                 await _stream.WriteAsync(bytes, offset: 0, count: bytes.Length, token).ConfigureAwait(false);
                 await _stream.WriteAsync(newLine, offset: 0, count: newLine.Length, token).ConfigureAwait(false);
             }
@@ -403,7 +399,60 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
             JsonLogMessages.LoadedItemAtLine(_logger, CurrentItemCount, Interlocked.Read(ref _currentLineNumber), null);
         }
 
+        // The limit is tested before the upstream sequence is advanced, so no item past it is pulled.
+        if (CurrentItemCount >= MaximumItemCount)
+        {
+            JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
+        }
+
         await CompleteLoadingAsync(sw, token).ConfigureAwait(false);
+    }
+
+
+
+    /// <summary>
+    /// Serializes <paramref name="item"/> before anything is written, so a record that fails to serialize leaves no
+    /// partial line in the output. The failure goes through the stage's error policy.
+    /// </summary>
+    /// <returns>The encoded line, or <see langword="null"/> when the policy skipped the item.</returns>
+    private byte[]? TrySerialize(TRecord item)
+    {
+        try
+        {
+            if (Encoding is null)
+            {
+                return JsonSerializer.SerializeToUtf8Bytes(item, _typeInfo.Value);
+            }
+
+            return Encoding.GetBytes(JsonSerializer.Serialize(item, _typeInfo.Value));
+        }
+        catch (Exception ex) when (ex is JsonException or NotSupportedException)
+        {
+            HandleSerializationError(ex);
+            return null;
+        }
+    }
+
+
+
+    /// <summary>
+    /// Applies the stage's error policy to an item that failed to serialize: returns when the policy skips
+    /// the item and re-throws the original failure when it aborts.
+    /// </summary>
+    /// <param name="exception">The serialization failure.</param>
+    private void HandleSerializationError(Exception exception)
+    {
+        var context = new ItemErrorContext
+        (
+            CurrentItemCount + CurrentSkippedItemCount + CurrentErrorItemCount + 1,
+            exception,
+            rawContent: null
+        );
+
+        if (HandleItemError(context) == ItemErrorAction.Abort)
+        {
+            ExceptionDispatchInfo.Capture(exception).Throw();
+        }
     }
 
 

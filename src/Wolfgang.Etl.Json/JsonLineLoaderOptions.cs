@@ -19,6 +19,12 @@ public sealed record JsonLineLoaderOptions : LoaderOptions
     /// <summary>
     /// Gets the text encoding used to write the stream. <see langword="null"/> (the default) writes UTF-8 without a byte-order mark.
     /// </summary>
+    /// <remarks>
+    /// No byte-order mark is ever written, for any encoding. A non-UTF-8 file therefore cannot be identified from its
+    /// bytes, so the reading side must be given the same encoding explicitly (for example through
+    /// <see cref="JsonLineExtractorOptions.Encoding"/>); a default <see cref="JsonLineExtractor{TRecord}"/> falls back
+    /// to UTF-8 and fails on the first record.
+    /// </remarks>
     public Encoding? Encoding { get; init; }
 
 

@@ -24,7 +24,7 @@ namespace Wolfgang.Etl.Json;
 /// <typeparam name="TRecord">The type of items to extract. Must be <c>notnull</c>.</typeparam>
 /// <remarks>
 /// Reads a stream, line by line, deserializing each non-empty line as a single JSON object.
-/// Blank lines are skipped with a warning logged.
+/// Blank lines are skipped, with a Debug-level message logged.
 /// Compatible with both JSONL and NDJSON formats.
 /// </remarks>
 /// <example>
@@ -186,7 +186,7 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
             throw new ArgumentNullException(nameof(path));
         }
 
-        _stream = File.OpenRead(path);
+        _stream = FileStreams.OpenRead(path);
         _ownsStream = true;
         _typeInfo = RecordTypeInfo<TRecord>.FromOptions(options);
         _logger = logger ?? (ILogger)NullLogger.Instance;
@@ -320,6 +320,76 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="JsonLineExtractor{TRecord}"/> class that reads a file, using a source-generated <see cref="JsonTypeInfo{TRecord}"/> and the default configuration.
+    /// </summary>
+    /// <param name="path">The path of the file to read; it is opened for asynchronous reading and closed with the extractor.</param>
+    /// <param name="typeInfo">The source-generated type information used to deserialize <typeparamref name="TRecord"/>.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="path"/> or <paramref name="typeInfo"/> is <see langword="null"/>.</exception>
+    public JsonLineExtractor
+    (
+        string path,
+        JsonTypeInfo<TRecord> typeInfo
+    )
+        : this(path, typeInfo, options: null, logger: null)
+    {
+    }
+
+
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonLineExtractor{TRecord}"/> class that reads a file, using a source-generated <see cref="JsonTypeInfo{TRecord}"/> and the supplied configuration.
+    /// </summary>
+    /// <param name="path">The path of the file to read; it is opened for asynchronous reading and closed with the extractor.</param>
+    /// <param name="typeInfo">The source-generated type information used to deserialize <typeparamref name="TRecord"/>.</param>
+    /// <param name="options">The construction-time configuration for this stage, or <see langword="null"/> for the defaults.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="path"/> or <paramref name="typeInfo"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentException"><paramref name="options"/> sets a serializer-options override, which cannot be combined with a <paramref name="typeInfo"/>.</exception>
+    public JsonLineExtractor
+    (
+        string path,
+        JsonTypeInfo<TRecord> typeInfo,
+        JsonLineExtractorOptions? options
+    )
+        : this(path, typeInfo, options, logger: null)
+    {
+    }
+
+
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonLineExtractor{TRecord}"/> class that reads a file, using a source-generated <see cref="JsonTypeInfo{TRecord}"/>.
+    /// </summary>
+    /// <param name="path">The path of the file to read; it is opened for asynchronous reading and closed with the extractor.</param>
+    /// <param name="typeInfo">The source-generated type information used to deserialize <typeparamref name="TRecord"/>; it carries its own serializer options.</param>
+    /// <param name="options">The construction-time configuration for this stage, or <see langword="null"/> for the defaults.</param>
+    /// <param name="logger">The logger; <see langword="null"/> disables logging.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="path"/> or <paramref name="typeInfo"/> is <see langword="null"/>.</exception>
+    /// <exception cref="ArgumentException"><paramref name="options"/> sets <see cref="JsonLineExtractorOptions.SerializerOptions"/>, which cannot be combined with a <paramref name="typeInfo"/>; the type info carries its own serializer options.</exception>
+    public JsonLineExtractor
+    (
+        string path,
+        JsonTypeInfo<TRecord> typeInfo,
+        JsonLineExtractorOptions? options,
+        ILogger<JsonLineExtractor<TRecord>>? logger
+    )
+        : base(options)
+    {
+        if (path is null)
+        {
+            throw new ArgumentNullException(nameof(path));
+        }
+
+        RejectSerializerOptions(options);
+        _typeInfo = RecordTypeInfo<TRecord>.FromTypeInfo(typeInfo ?? throw new ArgumentNullException(nameof(typeInfo)));
+        _logger = logger ?? (ILogger)NullLogger.Instance;
+        ApplyOptions(options ?? new JsonLineExtractorOptions());
+        _stream = FileStreams.OpenRead(path);
+        _ownsStream = true;
+    }
+
+
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="JsonLineExtractor{TRecord}"/> class configured through an options record.
     /// </summary>
     /// <param name="path">The path of the file to read; it is opened for reading and closed with the extractor.</param>
@@ -345,11 +415,11 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
             throw new ArgumentNullException(nameof(path));
         }
 
-        _stream = File.OpenRead(path);
-        _ownsStream = true;
         _typeInfo = RecordTypeInfo<TRecord>.FromOptions((options ?? throw new ArgumentNullException(nameof(options))).SerializerOptions);
         _logger = logger ?? (ILogger)NullLogger.Instance;
         ApplyOptions(options);
+        _stream = FileStreams.OpenRead(path);
+        _ownsStream = true;
     }
 
 
@@ -519,9 +589,9 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
         using var reader = CreateStreamReader(StartByteOffset > 0 ? probe.Encoding : null);
         string? lineText;
 #if NET7_0_OR_GREATER
-        while ((lineText = await reader.ReadLineAsync(token).ConfigureAwait(false)) is not null)
+        while (CurrentItemCount < MaximumItemCount && (lineText = await reader.ReadLineAsync(token).ConfigureAwait(false)) is not null)
 #else
-        while ((lineText = await reader.ReadLineAsync().ConfigureAwait(false)) is not null)
+        while (CurrentItemCount < MaximumItemCount && (lineText = await reader.ReadLineAsync().ConfigureAwait(false)) is not null)
 #endif
         {
             token.ThrowIfCancellationRequested();
@@ -529,41 +599,42 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
             var lineNumber = Interlocked.Increment(ref _currentLineNumber);
             if (string.IsNullOrWhiteSpace(lineText))
             {
-                Interlocked.Add(ref _currentByteOffset, lineBytes);
+                AdvanceByteOffset(lineBytes);
                 JsonLogMessages.SkippingBlankLine(_logger, lineNumber, null);
                 continue;
             }
             if (!TryDeserializeLine(lineText, out var item))
             {
-                Interlocked.Add(ref _currentByteOffset, lineBytes);
+                AdvanceByteOffset(lineBytes);
                 continue;
             }
 
             if (item is null)
             {
-                Interlocked.Add(ref _currentByteOffset, lineBytes);
+                AdvanceByteOffset(lineBytes);
                 JsonLogMessages.LineDeserializedToNull(_logger, lineNumber, null);
                 continue;
             }
             if (skipBudget > 0)
             {
                 skipBudget--;
-                Interlocked.Add(ref _currentByteOffset, lineBytes);
+                AdvanceByteOffset(lineBytes);
                 IncrementCurrentSkippedItemCount();
                 JsonMetrics.AddSkipped(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonLineComponentTag, RecordTypeTag);
                 JsonLogMessages.SkippedItemAtLine(_logger, CurrentSkippedItemCount, SkipItemCount, lineNumber, null);
                 continue;
             }
-            if (CurrentItemCount >= MaximumItemCount)
-            {
-                JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
-                break;
-            }
-            Interlocked.Add(ref _currentByteOffset, lineBytes);
+            AdvanceByteOffset(lineBytes);
             IncrementCurrentItemCount();
             JsonMetrics.AddExtracted(JsonMetrics.ExtractOperationTag, JsonMetrics.JsonLineComponentTag, RecordTypeTag);
             JsonLogMessages.ExtractedItemFromLine(_logger, CurrentItemCount, lineNumber, null);
             yield return item;
+        }
+
+        // The limit is tested before the next line is read, so a record past the limit is never consumed.
+        if (CurrentItemCount >= MaximumItemCount)
+        {
+            JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
         }
 
         CompleteExtraction(sw);
@@ -571,13 +642,28 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
 
 
 
+    /// <summary>
+    /// Moves <see cref="CurrentByteOffset"/> past a line. The line's size assumes a terminator, which a final
+    /// line without one does not have, so on a seekable stream the offset never passes the end of the stream
+    /// and is a valid position as soon as that line is yielded.
+    /// </summary>
+    private void AdvanceByteOffset(int lineBytes)
+    {
+        var next = Interlocked.Add(ref _currentByteOffset, lineBytes);
+        if (lineBytes > 0 && _stream.CanSeek)
+        {
+            var length = _stream.Length;
+            if (next > length)
+            {
+                Interlocked.Exchange(ref _currentByteOffset, length);
+            }
+        }
+    }
+
+
+
     private void CompleteExtraction(Stopwatch sw)
     {
-        if (_stream.CanSeek && Interlocked.Read(ref _currentByteOffset) > _stream.Length)
-        {
-            Interlocked.Exchange(ref _currentByteOffset, _stream.Length);
-        }
-
         JsonLogMessages.JsonlExtractionCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, Interlocked.Read(ref _currentLineNumber), null);
         JsonMetrics.RecordDuration(sw.Elapsed.TotalMilliseconds, JsonMetrics.ExtractOperationTag, JsonMetrics.JsonLineComponentTag, RecordTypeTag);
     }
@@ -587,7 +673,10 @@ public sealed class JsonLineExtractor<TRecord> : ExtractorBase<TRecord, JsonRepo
     private async Task<StreamProbe> PrepareForExtractionAsync(CancellationToken token)
     {
         Interlocked.Exchange(ref _currentLineNumber, 0);
-        Interlocked.Exchange(ref _currentByteOffset, StartByteOffset);
+        // A fresh run starts at the stream's current position, so the offsets stay absolute even when the
+        // caller has already consumed a header; a resume seeks to the absolute StartByteOffset below.
+        var startOffset = StartByteOffset > 0 || !_stream.CanSeek ? StartByteOffset : _stream.Position;
+        Interlocked.Exchange(ref _currentByteOffset, startOffset);
         if (StartByteOffset > 0 && !_stream.CanSeek)
         {
             throw new InvalidOperationException

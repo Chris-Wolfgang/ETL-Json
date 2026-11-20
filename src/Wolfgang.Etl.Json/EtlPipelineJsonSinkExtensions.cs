@@ -15,12 +15,14 @@ namespace Wolfgang.Etl.Json;
 /// </summary>
 /// <remarks>
 /// Path-based terminators own the file stream they create and dispose it after the run completes
-/// (success or failure). Stream-based terminators do not dispose — the caller owns the stream.
+/// (success or failure). The file is created, truncating any existing content, when the run first writes
+/// or flushes, not when the pipeline is composed; a pipeline that is built but never run leaves the path
+/// untouched. Stream-based terminators do not dispose — the caller owns the stream.
 /// </remarks>
 public static class EtlPipelineJsonSinkExtensions
 {
     /// <summary>
-    /// Terminates the pipeline, writing each record as a line of JSONL to a file.
+    /// Terminates the pipeline, writing each record as a line of JSONL to a file. The file is created (or truncated) when the run starts writing.
     /// </summary>
     /// <typeparam name="T">The record type to serialize.</typeparam>
     /// <param name="pipeline">The pipeline to terminate.</param>
@@ -52,7 +54,7 @@ public static class EtlPipelineJsonSinkExtensions
             throw new ArgumentNullException(nameof(path));
         }
 
-        var stream = File.Create(path);
+        var stream = new LazyFileStream(path);
         var loader = options is null
             ? new JsonLineLoader<T>(stream)
             : new JsonLineLoader<T>(stream, options);
@@ -103,7 +105,7 @@ public static class EtlPipelineJsonSinkExtensions
 
 
     /// <summary>
-    /// Terminates the pipeline, writing all records as a single JSON array to a file.
+    /// Terminates the pipeline, writing all records as a single JSON array to a file. The file is created (or truncated) when the run starts writing.
     /// </summary>
     /// <typeparam name="T">The record type to serialize.</typeparam>
     /// <param name="pipeline">The pipeline to terminate.</param>
@@ -135,7 +137,7 @@ public static class EtlPipelineJsonSinkExtensions
             throw new ArgumentNullException(nameof(path));
         }
 
-        var stream = File.Create(path);
+        var stream = new LazyFileStream(path);
         var loader = options is null
             ? new JsonSingleStreamLoader<T>(stream)
             : new JsonSingleStreamLoader<T>(stream, options);

@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 #endif
 using System.IO;
+using System.Runtime.ExceptionServices;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading;
@@ -36,7 +37,12 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
 {
     private static readonly string OperationName = $"JSON single-stream loading of {typeof(TRecord).Name}";
     private static readonly KeyValuePair<string, object?> RecordTypeTag = new("etl.record_type", typeof(TRecord).Name);
+    // Buffered bytes are written to the stream once they reach this size (an item is never split).
+    private const int FlushThreshold = 32 * 1024;
+
     private readonly Stream _stream;
+    private ByteBufferWriter? _scratchBuffer;
+    private Utf8JsonWriter? _scratchWriter;
     private readonly RecordTypeInfo<TRecord> _typeInfo;
     private readonly ILogger _logger;
     private readonly IProgressTimer? _progressTimer;
@@ -346,16 +352,16 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
 
         var sw = Stopwatch.StartNew();
 
-        // Disposed by hand rather than `await using var`: the declaration form can't take
-        // ConfigureAwait(false), and this loader ships on net462/netstandard2.0 where a
-        // context-captured DisposeAsync (which flushes to the stream) can deadlock a
-        // sync-over-async host.
-        var writer = IsDryRun ? null : new Utf8JsonWriter(_stream, CreateWriterOptions());
+        // Disposed by hand: `await using var` can't take ConfigureAwait(false), and a context-captured
+        // DisposeAsync can deadlock a sync-over-async host on net462/netstandard2.0. The writer targets
+        // an in-memory buffer so no synchronous Stream.Write happens; it is written with WriteAsync.
+        var buffer = IsDryRun ? null : new ByteBufferWriter();
+        var writer = buffer is null ? null : new Utf8JsonWriter(buffer, CreateWriterOptions());
         try
         {
             writer?.WriteStartArray();
 
-            await foreach (var item in items.WithCancellation(token).ConfigureAwait(false))
+            await foreach (var item in ItemLimit.Until(items, () => CurrentItemCount >= MaximumItemCount, token).ConfigureAwait(false))
             {
                 token.ThrowIfCancellationRequested();
 
@@ -367,15 +373,9 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
                     continue;
                 }
 
-                if (CurrentItemCount >= MaximumItemCount)
+                if (writer is not null && buffer is not null && !await WriteItemAsync(writer, buffer, item, token).ConfigureAwait(false))
                 {
-                    JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
-                    break;
-                }
-
-                if (writer is not null)
-                {
-                    WriteItem(writer, item);
+                    continue;
                 }
 
                 IncrementCurrentItemCount();
@@ -383,10 +383,14 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
                 JsonLogMessages.LoadedItem(_logger, CurrentItemCount, null);
             }
 
-            writer?.WriteEndArray();
-            if (writer is not null)
+            if (CurrentItemCount >= MaximumItemCount)
             {
-                await writer.FlushAsync(token).ConfigureAwait(false);
+                JsonLogMessages.ReachedMaximumItemCount(_logger, MaximumItemCount, null);
+            }
+
+            if (writer is not null && buffer is not null)
+            {
+                await CompleteArrayAsync(writer, buffer, token).ConfigureAwait(false);
             }
 
             JsonLogMessages.SingleStreamLoadingCompleted(_logger, CurrentItemCount, CurrentSkippedItemCount, null);
@@ -398,6 +402,9 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
             {
                 await writer.DisposeAsync().ConfigureAwait(false);
             }
+
+            buffer?.Dispose();
+            await ReleaseScratchAsync().ConfigureAwait(false);
         }
     }
 
@@ -428,9 +435,123 @@ public sealed class JsonSingleStreamLoader<TRecord> : LoaderBase<TRecord, JsonRe
 
 
 
-    private void WriteItem(Utf8JsonWriter writer, TRecord item)
+    /// <summary>
+    /// Writes one item into the array and flushes the buffer to the stream once it is large enough.
+    /// </summary>
+    /// <returns><see langword="false"/> when the item failed to serialize and the error policy skipped it.</returns>
+    private async Task<bool> WriteItemAsync(Utf8JsonWriter writer, ByteBufferWriter buffer, TRecord item, CancellationToken token)
     {
-        JsonSerializer.Serialize(writer, item, _typeInfo.Value);
+        if (!TryWriteItem(writer, item))
+        {
+            return false;
+        }
+
+        // WriteRawValue leaves its bytes in the writer until flushed; commit them to the buffer before sizing it.
+        await writer.FlushAsync(token).ConfigureAwait(false);
+        if (buffer.WrittenCount >= FlushThreshold)
+        {
+            await WriteBufferAsync(buffer, token).ConfigureAwait(false);
+        }
+
+        return true;
+    }
+
+
+
+    /// <summary>
+    /// Writes <paramref name="item"/> as the next array element. The record is serialized to a scratch buffer first
+    /// and then replayed into the array writer, so a record that fails to serialize leaves no partial element in
+    /// the array and the failure can go through the stage's error policy.
+    /// </summary>
+    private bool TryWriteItem(Utf8JsonWriter writer, TRecord item)
+    {
+        // One scratch buffer and writer are reused for every item of the run, so honouring the error policy
+        // does not allocate per record.
+        var scratchBuffer = _scratchBuffer ??= new ByteBufferWriter();
+        var scratchWriter = _scratchWriter ??= new Utf8JsonWriter(scratchBuffer, CreateWriterOptions());
+        scratchBuffer.Clear();
+        scratchWriter.Reset(scratchBuffer);
+        try
+        {
+            JsonSerializer.Serialize(scratchWriter, item, _typeInfo.Value);
+        }
+        catch (Exception ex) when (ex is JsonException or NotSupportedException)
+        {
+            HandleSerializationError(ex);
+            return false;
+        }
+
+        if (_typeInfo.Value.Options.WriteIndented)
+        {
+            // Compact scratch bytes would lose the array writer's indentation, so re-emit them through it.
+            using var document = JsonDocument.Parse(new ReadOnlyMemory<byte>(scratchBuffer.Buffer, 0, scratchBuffer.WrittenCount));
+            document.RootElement.WriteTo(writer);
+        }
+        else
+        {
+            writer.WriteRawValue(new ReadOnlySpan<byte>(scratchBuffer.Buffer, 0, scratchBuffer.WrittenCount), skipInputValidation: true);
+        }
+
+        return true;
+    }
+
+
+
+    /// <summary>
+    /// Applies the stage's error policy to an item that failed to serialize: returns when the policy skips
+    /// the item and re-throws the original failure when it aborts.
+    /// </summary>
+    /// <param name="exception">The serialization failure.</param>
+    private void HandleSerializationError(Exception exception)
+    {
+        var context = new ItemErrorContext
+        (
+            CurrentItemCount + CurrentSkippedItemCount + CurrentErrorItemCount + 1,
+            exception,
+            rawContent: null
+        );
+
+        if (HandleItemError(context) == ItemErrorAction.Abort)
+        {
+            ExceptionDispatchInfo.Capture(exception).Throw();
+        }
+    }
+
+
+
+    private async Task ReleaseScratchAsync()
+    {
+        if (_scratchWriter is not null)
+        {
+            await _scratchWriter.DisposeAsync().ConfigureAwait(false);
+            _scratchWriter = null;
+        }
+
+        _scratchBuffer?.Dispose();
+        _scratchBuffer = null;
+    }
+
+
+
+    private async Task CompleteArrayAsync(Utf8JsonWriter writer, ByteBufferWriter buffer, CancellationToken token)
+    {
+        writer.WriteEndArray();
+        await writer.FlushAsync(token).ConfigureAwait(false);
+        await WriteBufferAsync(buffer, token).ConfigureAwait(false);
+        await _stream.FlushAsync(token).ConfigureAwait(false);
+    }
+
+
+
+    private async Task WriteBufferAsync(ByteBufferWriter buffer, CancellationToken token)
+    {
+        if (buffer.WrittenCount == 0)
+        {
+            return;
+        }
+
+        await _stream.WriteAsync(buffer.Buffer, offset: 0, count: buffer.WrittenCount, token).ConfigureAwait(false);
+        buffer.Clear();
     }
 
 

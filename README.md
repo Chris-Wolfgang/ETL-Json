@@ -159,6 +159,13 @@ var loader = new JsonLineLoader<Person>(stream, new JsonLineLoaderOptions { IsDr
 
 A stage constructed without a record keeps every default.
 
+`JsonLineLoaderOptions.Encoding` never writes a byte-order mark. A file written in a non-UTF-8 encoding must be read
+back with the same `Encoding` set on `JsonLineExtractorOptions`; a default extractor assumes UTF-8.
+
+On a loader, `ErrorPolicy` applies to a record that fails to serialize (`JsonException` / `NotSupportedException`): `Skip`
+drops the record, counts it in `CurrentErrorItemCount` and leaves no partial output for it; the default aborts with the
+original exception. Failures writing to the destination are not item errors and always abort.
+
 ### Custom serialization options
 
 The record's `SerializerOptions` configures the reflection-based serializer. The source-generated constructors
@@ -203,6 +210,8 @@ This library targets:
 - **.NET:** 5.0, 6.0, 7.0, 8.0, 10.0
 
 See the [NuGet package page](https://www.nuget.org/packages/Wolfgang.Etl.Json/) for the authoritative per-TFM compatibility matrix.
+
+**Test matrix.** Every pull request runs the test suite on five legs and all five must pass: Linux x64, Linux ARM64, Windows x64, Windows ARM64 and macOS ARM64. Windows x64 runs every target framework (the only leg with .NET Framework); Linux x64 runs .NET Core 3.1 and .NET 5.0 and later; the three ARM64 legs run .NET 6.0 and later.
 
 ## 🔍 Code Quality & Static Analysis
 
