@@ -731,13 +731,7 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
         try
         {
             await SerializeToStreamAsync(stream, item, token).ConfigureAwait(false);
-#if NETSTANDARD2_0 || NET462 || NET481
-#pragma warning disable CA2016, MA0040, S8949 // FlushAsync(CancellationToken) not available on this TFM
-            await stream.FlushAsync().ConfigureAwait(false);
-#pragma warning restore CA2016, MA0040, S8949
-#else
-            await stream.FlushAsync(token).ConfigureAwait(false);
-#endif
+await stream.FlushAsync(token).ConfigureAwait(false);
         }
         finally
         {
