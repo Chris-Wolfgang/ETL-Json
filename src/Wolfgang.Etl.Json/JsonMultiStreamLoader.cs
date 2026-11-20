@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 #endif
 using System.IO;
+using System.Runtime.ExceptionServices;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading;
@@ -664,10 +665,15 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
                     continue;
                 }
 
-                var destination = _destinationFactory(item);
-                _currentDestinationName = destination.Name;
-                var destinationStream = ResolveDestinationStream(destination, streamIndex);
-                await WriteItemToStreamAsync(destinationStream, item, token).ConfigureAwait(false);
+                // Serialized before the destination is created, so a record that fails to serialize (and is
+                // skipped by the error policy) neither opens nor leaves an empty destination behind.
+                var bytes = TrySerialize(item);
+                if (bytes is null)
+                {
+                    continue;
+                }
+
+                await WriteToDestinationAsync(item, bytes, streamIndex, token).ConfigureAwait(false);
                 IncrementCurrentItemCount();
                 JsonMetrics.AddLoaded(JsonMetrics.LoadOperationTag, JsonMetrics.JsonMultiStreamComponentTag, RecordTypeTag);
                 streamIndex++;
@@ -726,12 +732,22 @@ public sealed class JsonMultiStreamLoader<TRecord> : LoaderBase<TRecord, JsonRep
 
 
 
-    private async Task WriteItemToStreamAsync(Stream stream, TRecord item, CancellationToken token)
+    private Task WriteToDestinationAsync(TRecord item, byte[] bytes, int streamIndex, CancellationToken token)
+    {
+        var destination = _destinationFactory(item);
+        _currentDestinationName = destination.Name;
+        var destinationStream = ResolveDestinationStream(destination, streamIndex);
+        return WriteItemToStreamAsync(destinationStream, bytes, token);
+    }
+
+
+
+    private static async Task WriteItemToStreamAsync(Stream stream, byte[] bytes, CancellationToken token)
     {
         try
         {
-            await SerializeToStreamAsync(stream, item, token).ConfigureAwait(false);
-await stream.FlushAsync(token).ConfigureAwait(false);
+            await stream.WriteAsync(bytes, offset: 0, count: bytes.Length, token).ConfigureAwait(false);
+            await stream.FlushAsync(token).ConfigureAwait(false);
         }
         finally
         {
@@ -745,8 +761,44 @@ await stream.FlushAsync(token).ConfigureAwait(false);
 
 
 
-    private Task SerializeToStreamAsync(Stream stream, TRecord item, CancellationToken token) =>
-        JsonSerializer.SerializeAsync(stream, item, _typeInfo.Value, token);
+    /// <summary>
+    /// Serializes <paramref name="item"/>; a failure goes through the stage's error policy.
+    /// </summary>
+    /// <returns>The UTF-8 JSON, or <see langword="null"/> when the policy skipped the item.</returns>
+    private byte[]? TrySerialize(TRecord item)
+    {
+        try
+        {
+            return JsonSerializer.SerializeToUtf8Bytes(item, _typeInfo.Value);
+        }
+        catch (Exception ex) when (ex is JsonException or NotSupportedException)
+        {
+            HandleSerializationError(ex);
+            return null;
+        }
+    }
+
+
+
+    /// <summary>
+    /// Applies the stage's error policy to an item that failed to serialize: returns when the policy skips
+    /// the item and re-throws the original failure when it aborts.
+    /// </summary>
+    /// <param name="exception">The serialization failure.</param>
+    private void HandleSerializationError(Exception exception)
+    {
+        var context = new ItemErrorContext
+        (
+            CurrentItemCount + CurrentSkippedItemCount + CurrentErrorItemCount + 1,
+            exception,
+            rawContent: null
+        );
+
+        if (HandleItemError(context) == ItemErrorAction.Abort)
+        {
+            ExceptionDispatchInfo.Capture(exception).Throw();
+        }
+    }
 
 
 

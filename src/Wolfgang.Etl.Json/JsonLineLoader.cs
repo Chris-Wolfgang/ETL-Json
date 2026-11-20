@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 #endif
 using System.IO;
+using System.Runtime.ExceptionServices;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading;
@@ -375,22 +376,20 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
                 continue;
             }
 
-            Interlocked.Increment(ref _currentLineNumber);
-
+            byte[]? bytes = null;
             if (!IsDryRun)
             {
-                byte[] bytes;
-
-                if (Encoding is null)
+                bytes = TrySerialize(item);
+                if (bytes is null)
                 {
-                    bytes = JsonSerializer.SerializeToUtf8Bytes(item, _typeInfo.Value);
+                    continue;
                 }
-                else
-                {
-                    var json = JsonSerializer.Serialize(item, _typeInfo.Value);
-                    bytes = Encoding.GetBytes(json);
-                }
+            }
 
+            Interlocked.Increment(ref _currentLineNumber);
+
+            if (bytes is not null)
+            {
                 await _stream.WriteAsync(bytes, offset: 0, count: bytes.Length, token).ConfigureAwait(false);
                 await _stream.WriteAsync(newLine, offset: 0, count: newLine.Length, token).ConfigureAwait(false);
             }
@@ -407,6 +406,53 @@ public sealed class JsonLineLoader<TRecord> : LoaderBase<TRecord, JsonReport>
         }
 
         await CompleteLoadingAsync(sw, token).ConfigureAwait(false);
+    }
+
+
+
+    /// <summary>
+    /// Serializes <paramref name="item"/> before anything is written, so a record that fails to serialize leaves no
+    /// partial line in the output. The failure goes through the stage's error policy.
+    /// </summary>
+    /// <returns>The encoded line, or <see langword="null"/> when the policy skipped the item.</returns>
+    private byte[]? TrySerialize(TRecord item)
+    {
+        try
+        {
+            if (Encoding is null)
+            {
+                return JsonSerializer.SerializeToUtf8Bytes(item, _typeInfo.Value);
+            }
+
+            return Encoding.GetBytes(JsonSerializer.Serialize(item, _typeInfo.Value));
+        }
+        catch (Exception ex) when (ex is JsonException or NotSupportedException)
+        {
+            HandleSerializationError(ex);
+            return null;
+        }
+    }
+
+
+
+    /// <summary>
+    /// Applies the stage's error policy to an item that failed to serialize: returns when the policy skips
+    /// the item and re-throws the original failure when it aborts.
+    /// </summary>
+    /// <param name="exception">The serialization failure.</param>
+    private void HandleSerializationError(Exception exception)
+    {
+        var context = new ItemErrorContext
+        (
+            CurrentItemCount + CurrentSkippedItemCount + CurrentErrorItemCount + 1,
+            exception,
+            rawContent: null
+        );
+
+        if (HandleItemError(context) == ItemErrorAction.Abort)
+        {
+            ExceptionDispatchInfo.Capture(exception).Throw();
+        }
     }
 
 
