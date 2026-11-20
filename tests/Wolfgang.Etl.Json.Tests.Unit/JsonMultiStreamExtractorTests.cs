@@ -920,4 +920,20 @@ public class JsonMultiStreamExtractorTests
 
         Assert.Contains("missing.json", ex.Message, StringComparison.Ordinal);
     }
+
+
+
+    [Fact]
+    public async Task ExtractAsync_when_a_named_source_is_null_throws_InvalidOperationException()
+    {
+        var sources = new JsonNamedStream[] { null! };
+        var sut = new JsonMultiStreamExtractor<PersonRecord>(sources);
+
+        var ex = await Assert.ThrowsAsync<InvalidOperationException>
+        (
+            async () => await sut.ExtractAsync().ToListAsync()
+        );
+
+        Assert.Contains("index 0", ex.Message, StringComparison.Ordinal);
+    }
 }
