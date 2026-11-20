@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization.Metadata;
 using System.Threading.Tasks;
 using Wolfgang.Etl.Json.Tests.Unit.TestModels;
 using Xunit;
@@ -210,11 +209,11 @@ public class OwnedStreamTests
             var withSerializerOptions = new JsonLineExtractorOptions { SerializerOptions = new JsonSerializerOptions() };
             var singleWithSerializerOptions = new JsonSingleStreamExtractorOptions { SerializerOptions = new JsonSerializerOptions() };
 
-            Assert.Throws<ArgumentNullException>(() => new JsonLineExtractor<PersonRecord>((string)null!, typeInfo));
-            Assert.Throws<ArgumentNullException>(() => new JsonLineExtractor<PersonRecord>(path, (JsonTypeInfo<PersonRecord>)null!));
+            Assert.Throws<ArgumentNullException>(() => new JsonLineExtractor<PersonRecord>(null!, typeInfo));
+            Assert.Throws<ArgumentNullException>(() => new JsonLineExtractor<PersonRecord>(path, null!));
             Assert.Throws<ArgumentException>(() => new JsonLineExtractor<PersonRecord>(path, typeInfo, withSerializerOptions));
-            Assert.Throws<ArgumentNullException>(() => new JsonSingleStreamExtractor<PersonRecord>((string)null!, typeInfo));
-            Assert.Throws<ArgumentNullException>(() => new JsonSingleStreamExtractor<PersonRecord>(path, (JsonTypeInfo<PersonRecord>)null!));
+            Assert.Throws<ArgumentNullException>(() => new JsonSingleStreamExtractor<PersonRecord>(null!, typeInfo));
+            Assert.Throws<ArgumentNullException>(() => new JsonSingleStreamExtractor<PersonRecord>(path, null!));
             Assert.Throws<ArgumentException>(() => new JsonSingleStreamExtractor<PersonRecord>(path, typeInfo, singleWithSerializerOptions));
 
             AssertFileIsClosed(path);
