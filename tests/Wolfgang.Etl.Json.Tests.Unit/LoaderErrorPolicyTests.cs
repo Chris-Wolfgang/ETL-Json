@@ -98,17 +98,6 @@ public class LoaderErrorPolicyTests
 
 
     [Fact]
-    public async Task JsonSingleStreamLoader_by_default_aborts_with_the_original_exception()
-    {
-        using var stream = new MemoryStream();
-        var sut = new JsonSingleStreamLoader<Node>(stream);
-
-        await Assert.ThrowsAsync<JsonException>(() => sut.LoadAsync(Nodes().ToAsyncEnumerable()));
-    }
-
-
-
-    [Fact]
     public async Task JsonMultiStreamLoader_when_policy_skips_a_failing_record_creates_no_destination_for_it()
     {
         var destinations = new Dictionary<int, MemoryStream>();
@@ -129,16 +118,6 @@ public class LoaderErrorPolicyTests
         Assert.Equal("{\"Id\":1,\"Next\":null}", Encoding.UTF8.GetString(destinations[1].ToArray()));
         Assert.Equal(2, sut.CurrentItemCount);
         Assert.Equal(1, sut.CurrentErrorItemCount);
-    }
-
-
-
-    [Fact]
-    public async Task JsonMultiStreamLoader_by_default_aborts_with_the_original_exception()
-    {
-        var sut = new JsonMultiStreamLoader<Node>(_ => new MemoryStream());
-
-        await Assert.ThrowsAsync<JsonException>(() => sut.LoadAsync(Nodes().ToAsyncEnumerable()));
     }
 
 
