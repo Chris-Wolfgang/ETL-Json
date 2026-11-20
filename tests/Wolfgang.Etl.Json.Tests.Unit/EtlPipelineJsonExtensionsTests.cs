@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Wolfgang.Etl.Abstractions;
 using Wolfgang.Etl.Json.Tests.Unit.TestModels;
@@ -218,6 +219,50 @@ public sealed class EtlPipelineJsonExtensionsTests
 
         Assert.Equal(People, readBack);
     }
+
+
+    [Fact]
+    public async Task JsonLineExtractor_stream_factory_when_options_are_passed_deserializes_with_them()
+    {
+        // "Age" is a string, which only AllowReadingFromString accepts: a factory that dropped the
+        // caller's options would fail on the first record.
+        var options = new System.Text.Json.JsonSerializerOptions { NumberHandling = JsonNumberHandling.AllowReadingFromString };
+        var source = new MemoryStream(Encoding.UTF8.GetBytes("{\"FirstName\":\"Alice\",\"LastName\":\"Smith\",\"Age\":\"30\"}"));
+        var destination = new MemoryStream();
+
+        await EtlPipeline
+            .Create()
+            .JsonLineExtractor<PersonRecord>(source, options)
+            .JsonLineLoader(destination)
+            .RunAsync();
+
+        destination.Position = 0;
+        var readBack = await Collect(new JsonLineExtractor<PersonRecord>(destination).ExtractAsync());
+
+        Assert.Equal(new[] { People[0] }, readBack);
+    }
+
+
+
+    [Fact]
+    public async Task JsonSingleStreamExtractor_stream_factory_when_options_are_passed_deserializes_with_them()
+    {
+        var options = new System.Text.Json.JsonSerializerOptions { NumberHandling = JsonNumberHandling.AllowReadingFromString };
+        var source = new MemoryStream(Encoding.UTF8.GetBytes("[{\"FirstName\":\"Alice\",\"LastName\":\"Smith\",\"Age\":\"30\"}]"));
+        var destination = new MemoryStream();
+
+        await EtlPipeline
+            .Create()
+            .JsonSingleStreamExtractor<PersonRecord>(source, options)
+            .JsonLineLoader(destination)
+            .RunAsync();
+
+        destination.Position = 0;
+        var readBack = await Collect(new JsonLineExtractor<PersonRecord>(destination).ExtractAsync());
+
+        Assert.Equal(new[] { People[0] }, readBack);
+    }
+
 
 
     [Fact]
