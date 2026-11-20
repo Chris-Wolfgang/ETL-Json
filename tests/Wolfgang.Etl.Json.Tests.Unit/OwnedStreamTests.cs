@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -96,6 +97,131 @@ public class OwnedStreamTests
 
         Assert.True(sut.IsDryRun);
         Assert.Equal(0, stream.Length);
+    }
+
+
+
+    [Fact]
+    public void JsonLineExtractor_path_ctor_when_options_is_null_throws_and_does_not_leak_the_file()
+    {
+        var path = WriteTempFile(JsonSerializer.Serialize(People[0], TestJsonContext.Default.PersonRecord));
+        try
+        {
+            Assert.Throws<ArgumentNullException>(() => new JsonLineExtractor<PersonRecord>(path, (JsonLineExtractorOptions)null!));
+
+            AssertFileIsClosed(path);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+
+
+    [Fact]
+    public void JsonSingleStreamExtractor_path_ctor_when_options_is_null_throws_and_does_not_leak_the_file()
+    {
+        var path = WriteTempFile(JsonSerializer.Serialize(People.ToList(), TestJsonContext.Default.ListPersonRecord));
+        try
+        {
+            Assert.Throws<ArgumentNullException>(() => new JsonSingleStreamExtractor<PersonRecord>(path, (JsonSingleStreamExtractorOptions)null!));
+
+            AssertFileIsClosed(path);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+
+
+    [Fact]
+    public void FileStreams_OpenRead_opens_the_file_for_asynchronous_io()
+    {
+        var path = WriteTempFile("x");
+        try
+        {
+            using var stream = FileStreams.OpenRead(path);
+
+            Assert.True(stream.IsAsync);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+
+
+    [Fact]
+    public async Task JsonLineExtractor_path_typeInfo_ctor_reads_the_file_and_closes_it_on_Dispose()
+    {
+        var path = WriteTempFile(string.Join("\n", People.Select(p => JsonSerializer.Serialize(p, TestJsonContext.Default.PersonRecord))));
+        try
+        {
+            var sut = new JsonLineExtractor<PersonRecord>(path, TestJsonContext.Default.PersonRecord, new JsonLineExtractorOptions { MaximumItemCount = 1 });
+
+            var items = await ToListAsync(sut.ExtractAsync());
+            sut.Dispose();
+
+            Assert.Equal(People.Take(1), items);
+            AssertFileIsClosed(path);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+
+
+    [Fact]
+    public async Task JsonSingleStreamExtractor_path_typeInfo_ctor_reads_the_file_and_closes_it_on_Dispose()
+    {
+        var path = WriteTempFile(JsonSerializer.Serialize(People.ToList(), TestJsonContext.Default.ListPersonRecord));
+        try
+        {
+            var sut = new JsonSingleStreamExtractor<PersonRecord>(path, TestJsonContext.Default.PersonRecord);
+
+            var items = await ToListAsync(sut.ExtractAsync());
+            sut.Dispose();
+
+            Assert.Equal(People, items);
+            AssertFileIsClosed(path);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+
+
+    [Fact]
+    public void Path_typeInfo_ctors_when_arguments_are_invalid_throw_and_do_not_open_the_file()
+    {
+        var path = WriteTempFile("[]");
+        try
+        {
+            var typeInfo = TestJsonContext.Default.PersonRecord;
+            var withSerializerOptions = new JsonLineExtractorOptions { SerializerOptions = new JsonSerializerOptions() };
+            var singleWithSerializerOptions = new JsonSingleStreamExtractorOptions { SerializerOptions = new JsonSerializerOptions() };
+
+            Assert.Throws<ArgumentNullException>(() => new JsonLineExtractor<PersonRecord>(null!, typeInfo));
+            Assert.Throws<ArgumentNullException>(() => new JsonLineExtractor<PersonRecord>(path, null!));
+            Assert.Throws<ArgumentException>(() => new JsonLineExtractor<PersonRecord>(path, typeInfo, withSerializerOptions));
+            Assert.Throws<ArgumentNullException>(() => new JsonSingleStreamExtractor<PersonRecord>(null!, typeInfo));
+            Assert.Throws<ArgumentNullException>(() => new JsonSingleStreamExtractor<PersonRecord>(path, null!));
+            Assert.Throws<ArgumentException>(() => new JsonSingleStreamExtractor<PersonRecord>(path, typeInfo, singleWithSerializerOptions));
+
+            AssertFileIsClosed(path);
+        }
+        finally
+        {
+            File.Delete(path);
+        }
     }
 
 
