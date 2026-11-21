@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Buffers;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading;
@@ -65,7 +66,7 @@ internal sealed class JsonArrayElementReader<TRecord>
                 MaxDepth = options.MaxDepth,
             }
         );
-        _buffer = new byte[Math.Max(MinimumBufferSize, options.DefaultBufferSize)];
+        _buffer = ArrayPool<byte>.Shared.Rent(Math.Max(MinimumBufferSize, options.DefaultBufferSize));
     }
 
 
@@ -101,23 +102,31 @@ internal sealed class JsonArrayElementReader<TRecord>
         [EnumeratorCancellation] CancellationToken token
     )
     {
-        while (true)
+        try
         {
-            var result = StepOrThrowJsonException(out var item);
-            switch (result)
+            while (true)
             {
-                case StepResult.Element:
-                    yield return item;
-                    break;
-                case StepResult.NeedMoreData:
-                    await FillBufferAsync(token).ConfigureAwait(false);
-                    break;
-                case StepResult.Completed:
-                    yield break;
-                default:
-                    // StepResult.Progress: a token was consumed; take the next step.
-                    break;
+                var result = StepOrThrowJsonException(out var item);
+                switch (result)
+                {
+                    case StepResult.Element:
+                        yield return item;
+                        break;
+                    case StepResult.NeedMoreData:
+                        await FillBufferAsync(token).ConfigureAwait(false);
+                        break;
+                    case StepResult.Completed:
+                        yield break;
+                    default:
+                        // StepResult.Progress: a token was consumed; take the next step.
+                        break;
+                }
             }
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(_buffer);
+            _buffer = Array.Empty<byte>();
         }
     }
 
@@ -186,27 +195,41 @@ internal sealed class JsonArrayElementReader<TRecord>
                 return StepResult.Progress;
 
             case Phase.InArray:
-                if (reader.TokenType == JsonTokenType.EndArray)
-                {
-                    _phase = Phase.AfterArray;
-                    Commit(ref reader);
-                    return StepResult.Progress;
-                }
-
-                var elementReader = reader;
-                if (!reader.TrySkip())
-                {
-                    return StepResult.NeedMoreData;
-                }
-
-                item = JsonSerializer.Deserialize(ref elementReader, _typeInfo);
-                Commit(ref reader);
-                return StepResult.Element;
+                return StepInArray(ref reader, out item);
 
             default:
                 // Utf8JsonReader rejects a second top-level value itself; reaching this means it did not.
                 throw new JsonException("The JSON array is followed by additional content.");
         }
+    }
+
+
+
+    private StepResult StepInArray(ref Utf8JsonReader reader, out TRecord? item)
+    {
+        item = default;
+
+        if (reader.TokenType == JsonTokenType.EndArray)
+        {
+            _phase = Phase.AfterArray;
+            Commit(ref reader);
+            return StepResult.Progress;
+        }
+
+        var elementStart = (int)reader.TokenStartIndex;
+        if (!reader.TrySkip())
+        {
+            return StepResult.NeedMoreData;
+        }
+
+        var elementLength = (int)reader.BytesConsumed - elementStart;
+        item = JsonSerializer.Deserialize
+        (
+            new ReadOnlySpan<byte>(_buffer, _start + elementStart, elementLength),
+            _typeInfo
+        );
+        Commit(ref reader);
+        return StepResult.Element;
     }
 
 
@@ -262,7 +285,10 @@ internal sealed class JsonArrayElementReader<TRecord>
 
         if (_end == _buffer.Length)
         {
-            Array.Resize(ref _buffer, _buffer.Length * 2);
+            var larger = ArrayPool<byte>.Shared.Rent(_buffer.Length * 2);
+            Buffer.BlockCopy(_buffer, 0, larger, 0, _end);
+            ArrayPool<byte>.Shared.Return(_buffer);
+            _buffer = larger;
         }
 
 #if NETSTANDARD2_0 || NET462 || NET481
