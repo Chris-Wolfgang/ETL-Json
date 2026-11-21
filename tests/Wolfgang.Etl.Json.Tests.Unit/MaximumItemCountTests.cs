@@ -33,6 +33,43 @@ public class MaximumItemCountTests
 
 
     [Fact]
+    public async Task JsonSingleStreamExtractor_when_limit_is_reached_does_not_parse_a_malformed_next_element()
+    {
+        using var stream = ToStream("[" + Good + ",{bad}," + Good + "]");
+        var sut = new JsonSingleStreamExtractor<PersonRecord>(stream, new JsonSingleStreamExtractorOptions { MaximumItemCount = 1 });
+
+        var items = await sut.ExtractAsync().ToListAsync();
+
+        Assert.Single(items);
+        Assert.Equal(0, sut.CurrentErrorItemCount);
+    }
+
+
+
+    [Fact]
+    public async Task JsonSingleStreamExtractor_when_a_later_element_is_malformed_delivers_the_earlier_items_first()
+    {
+        using var stream = ToStream("[" + Good + "," + Good + ",{bad}]");
+        var sut = new JsonSingleStreamExtractor<PersonRecord>(stream);
+        var delivered = new List<PersonRecord>();
+
+        await Assert.ThrowsAnyAsync<System.Text.Json.JsonException>
+        (
+            async () =>
+            {
+                await foreach (var item in sut.ExtractAsync())
+                {
+                    delivered.Add(item);
+                }
+            }
+        );
+
+        Assert.Equal(2, delivered.Count);
+    }
+
+
+
+    [Fact]
     public async Task JsonMultiStreamExtractor_when_limit_is_reached_does_not_request_the_next_source()
     {
         var requested = 0;
