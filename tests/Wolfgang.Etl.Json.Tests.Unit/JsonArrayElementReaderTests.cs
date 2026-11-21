@@ -64,7 +64,7 @@ public class JsonArrayElementReaderTests
         var big = new PersonRecord { FirstName = new string('y', 100_000), LastName = "Z", Age = 9 };
         var json = "[" + JsonSerializer.Serialize(big, TestJsonContext.Default.PersonRecord) + "]";
 
-        var items = await ReadAllAsync(new MemoryStream(Encoding.UTF8.GetBytes(json)));
+        var items = await ReadAllAsync(ToStream(json));
 
         Assert.Equal(big, Assert.Single(items));
     }
@@ -124,7 +124,7 @@ public class JsonArrayElementReaderTests
     [Fact]
     public async Task ReadAsync_when_input_is_empty_throws_JsonException()
     {
-        await Assert.ThrowsAnyAsync<JsonException>(() => ReadAllAsync(new MemoryStream()));
+        await Assert.ThrowsAnyAsync<JsonException>(() => ReadAllAsync(ToStream(string.Empty)));
     }
 
 
@@ -222,7 +222,9 @@ public class JsonArrayElementReaderTests
 
 
 
-    private static MemoryStream ToStream(string text) => new(Encoding.UTF8.GetBytes(text));
+    // A stream that cannot seek is always read element by element; JsonArrayElementReaderSeekableTests
+    // covers the seekable fast path.
+    private static MemoryStream ToStream(string text) => new TrickleStream(Encoding.UTF8.GetBytes(text), int.MaxValue);
 
 
 
@@ -240,6 +242,11 @@ public class JsonArrayElementReaderTests
         {
             _chunk = chunk;
         }
+
+
+
+
+        public override bool CanSeek => false;
 
 
 

@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.CompilerServices;
 using System.Buffers;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using System.Threading;
@@ -11,8 +11,8 @@ using System.Threading.Tasks;
 namespace Wolfgang.Etl.Json;
 
 /// <summary>
-/// Streams the elements of a top-level JSON array one at a time, deserializing an element only when
-/// the caller asks for it.
+/// Streams the elements of a top-level JSON array, delivering an element before a malformed element
+/// after it can fail the run.
 /// </summary>
 /// <typeparam name="TRecord">The element type.</typeparam>
 /// <remarks>
@@ -20,10 +20,19 @@ namespace Wolfgang.Etl.Json;
 /// deserializes every complete element in its read buffer before it yields the first one, so a
 /// malformed element that shares a buffer with an earlier one fails the run before the earlier one is
 /// delivered, even when the caller would have stopped first (for example at <c>MaximumItemCount</c>).
-/// This reader locates each element with <see cref="Utf8JsonReader.TrySkip"/> and deserializes only that
-/// element, so nothing past the element being returned is parsed. It reads the same documents (UTF-8,
-/// optional BOM, the trailing-comma, comment and depth settings of the serializer options) and, like the
-/// serializer, rejects a root that is not an array and any content after the array.
+/// <para>
+/// A stream that can seek is read with <c>DeserializeAsyncEnumerable</c>, which parses a whole buffer in
+/// one pass and is the fast path. If it throws a <see cref="JsonException"/>, the stream is rewound and
+/// read again one element at a time, skipping the elements the fast path already delivered, so the
+/// caller sees every good element before the malformed one, exactly as if the elements had been read
+/// lazily. A stream that cannot seek is always read one element at a time.
+/// </para>
+/// <para>
+/// The element-at-a-time reader locates each element with <see cref="Utf8JsonReader.TrySkip"/> and
+/// deserializes only that element, so nothing past the element being returned is parsed. It reads the
+/// same documents (UTF-8, optional BOM, the trailing-comma, comment and depth settings of the serializer
+/// options) and, like the serializer, rejects a root that is not an array and any content after the array.
+/// </para>
 /// </remarks>
 internal sealed class JsonArrayElementReader<TRecord>
 {
@@ -39,6 +48,7 @@ internal sealed class JsonArrayElementReader<TRecord>
     private int _end;
     private bool _isFinalBlock;
     private Phase _phase;
+    private int _elementsToSkip;
 
 
 
@@ -66,7 +76,7 @@ internal sealed class JsonArrayElementReader<TRecord>
                 MaxDepth = options.MaxDepth,
             }
         );
-        _buffer = ArrayPool<byte>.Shared.Rent(Math.Max(MinimumBufferSize, options.DefaultBufferSize));
+        _buffer = Array.Empty<byte>();
     }
 
 
@@ -92,16 +102,88 @@ internal sealed class JsonArrayElementReader<TRecord>
 
 
     /// <summary>
-    /// Reads the array, yielding each element as it is deserialized.
+    /// Reads the array, yielding each element in document order.
     /// </summary>
     /// <param name="token">A token to cancel the read.</param>
     /// <returns>The elements of the array, in document order; a JSON <c>null</c> element is <see langword="null"/>.</returns>
     /// <exception cref="JsonException">The document is not a well-formed JSON array of <typeparamref name="TRecord"/>.</exception>
-    internal async IAsyncEnumerable<TRecord?> ReadAsync
+    internal IAsyncEnumerable<TRecord?> ReadAsync
+    (
+        CancellationToken token
+    )
+    {
+        return _stream.CanSeek
+            ? ReadSeekableAsync(token)
+            : ReadElementwiseAsync(0, token);
+    }
+
+
+
+    /// <summary>
+    /// Reads a seekable stream with the serializer's single-pass enumerable, and on a
+    /// <see cref="JsonException"/> rewinds and re-reads one element at a time.
+    /// </summary>
+    private async IAsyncEnumerable<TRecord?> ReadSeekableAsync
     (
         [EnumeratorCancellation] CancellationToken token
     )
     {
+        var origin = _stream.Position;
+        var delivered = 0;
+
+        var enumerator = JsonSerializer
+            .DeserializeAsyncEnumerable(_stream, _typeInfo, token)
+            .GetAsyncEnumerator(token);
+        try
+        {
+            while (true)
+            {
+                bool hasNext;
+                try
+                {
+                    hasNext = await enumerator.MoveNextAsync().ConfigureAwait(false);
+                }
+                catch (JsonException)
+                {
+                    break;
+                }
+
+                if (!hasNext)
+                {
+                    yield break;
+                }
+
+                delivered++;
+                yield return enumerator.Current;
+            }
+        }
+        finally
+        {
+            await enumerator.DisposeAsync().ConfigureAwait(false);
+        }
+
+        // The serializer parses a whole buffer before it yields from it, so a malformed element
+        // may have hidden the good elements before it. Read again, lazily, to deliver them.
+        _stream.Position = origin;
+        await foreach (var item in ReadElementwiseAsync(delivered, token).ConfigureAwait(false))
+        {
+            yield return item;
+        }
+    }
+
+
+
+    /// <summary>
+    /// Reads the array one element at a time, discarding the first <paramref name="elementsToSkip"/>.
+    /// </summary>
+    private async IAsyncEnumerable<TRecord?> ReadElementwiseAsync
+    (
+        int elementsToSkip,
+        [EnumeratorCancellation] CancellationToken token
+    )
+    {
+        _elementsToSkip = elementsToSkip;
+        _buffer = ArrayPool<byte>.Shared.Rent(Math.Max(MinimumBufferSize, _typeInfo.Options.DefaultBufferSize));
         try
         {
             while (true)
@@ -220,6 +302,13 @@ internal sealed class JsonArrayElementReader<TRecord>
         if (!reader.TrySkip())
         {
             return StepResult.NeedMoreData;
+        }
+
+        if (_elementsToSkip > 0)
+        {
+            _elementsToSkip--;
+            Commit(ref reader);
+            return StepResult.Progress;
         }
 
         var elementLength = (int)reader.BytesConsumed - elementStart;
