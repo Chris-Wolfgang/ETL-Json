@@ -25,11 +25,12 @@ namespace Wolfgang.Etl.Json;
 /// <remarks>
 /// Reads a JSON array (e.g. <c>[{"name":"Alice"},{"name":"Bob"}]</c>) from a <see cref="Stream"/>
 /// and yields each deserialized object as an item in the async enumerable sequence.
-/// Uses <see cref="JsonSerializer.DeserializeAsyncEnumerable{TValue}(Stream, JsonSerializerOptions, CancellationToken)"/>
-/// for true streaming deserialization.
+/// Elements are read and deserialized one at a time, only when the next item is requested, so
+/// nothing past the item being returned is parsed: an element after <c>MaximumItemCount</c> is never
+/// read, and a malformed element cannot fail the run before the items ahead of it are delivered.
 /// <para>
 /// A malformed array element ends the extraction under every error policy: the streaming
-/// deserializer cannot resume past it. An abort policy rethrows the <see cref="JsonException"/>;
+/// reader cannot resume past it. An abort policy rethrows the <see cref="JsonException"/>;
 /// a skip or dead-letter policy records the error (see <c>CurrentErrorItemCount</c>), logs a
 /// warning that the run stopped early, and completes without reading the rest of the array.
 /// </para>
@@ -491,7 +492,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
 
         var skipBudget = SkipItemCount;
         var sw = Stopwatch.StartNew();
-        var enumerable = JsonSerializer.DeserializeAsyncEnumerable(_stream, _typeInfo.Value, token);
+        var enumerable = new JsonArrayElementReader<TRecord>(_stream, _typeInfo.Value).ReadAsync(token);
 
         var enumerator = enumerable.GetAsyncEnumerator(token);
         var stoppedOnError = false;
@@ -581,7 +582,7 @@ public sealed class JsonSingleStreamExtractor<TRecord> : ExtractorBase<TRecord, 
 
     /// <summary>
     /// Logs how the run ended. A malformed element that the error policy did not turn into an
-    /// exception still ends the run, because <c>DeserializeAsyncEnumerable</c> cannot resume past it,
+    /// exception still ends the run, because the streaming reader cannot resume past it,
     /// so that case is a warning rather than a normal completion.
     /// </summary>
     private void LogCompletion(bool stoppedOnError)
