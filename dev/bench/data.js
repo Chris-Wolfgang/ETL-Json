@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1795216781054,
+  "lastUpdate": 1795387391878,
   "repoUrl": "https://github.com/Chris-Wolfgang/ETL-Json",
   "entries": {
     "BenchmarkDotNet": [
@@ -7950,6 +7950,156 @@ window.BENCHMARK_DATA = {
             "value": 489505.9345703125,
             "unit": "ns",
             "range": "± 1306.3174047358395"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "210299580+Chris-Wolfgang@users.noreply.github.com",
+            "name": "Chris Wolfgang",
+            "username": "Chris-Wolfgang"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "8f9554fbaccf65ed9de2401b83f2998c1fa81849",
+          "message": "fix: JsonSingleStreamExtractor reads one array element at a time (#584) (#620)\n\n* fix: JsonSingleStreamExtractor reads one array element at a time (#584)\n\nJsonSerializer.DeserializeAsyncEnumerable deserializes every complete\nelement in its read buffer before yielding the first, so with\nMaximumItemCount = N a malformed element N+1 in the same buffer failed\nthe run before item N was delivered. A new internal\nJsonArrayElementReader locates each element with Utf8JsonReader.TrySkip\nand deserializes only that element via the JsonTypeInfo overload, so\nnothing past the returned element is parsed. It keeps the serializer's\ndocument rules: optional UTF-8 BOM, trailing-comma/comment/depth\noptions, root must be an array, no content after it, and syntax errors\nsurface as plain JsonException.\n\nCloses #584\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n\n* perf: pool the element reader's buffer and deserialize each element from its own span\n\nCuts the JsonSingleStreamExtractor benchmark regression flagged by the BDN delta gate.\n\nCo-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>\n\n* perf: measure each array element with a byte scan instead of Utf8JsonReader.TrySkip\n\nThe BDN delta gate flagged the single-stream extractor at +35% mean. A micro-benchmark of\nthe previous design put the TrySkip scan at ~160 ns per element and the per-element\nUtf8JsonReader at ~50 ns, against ~330 ns to deserialize. The reader now walks the array\npunctuation itself and measures each element with vectorized IndexOfAny scans, so no\nUtf8JsonReader is created per element. The serializer still validates each element's own\nsyntax and shape, and the #584 guarantee (nothing past the returned element is parsed) holds.\n\nCo-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>\n\n* Revert \"perf: measure each array element with a byte scan instead of Utf8JsonReader.TrySkip\"\n\nThis reverts commit 32a5936968f64a0fe4cd4204ded66ebedf0bdf59.\n\n* perf: read a seekable stream with the serializer's single pass and fall back to element-at-a-time on error\n\nDeserializing every element separately costs about +35% in the BDN delta gate. A stream that can\nseek is now read with DeserializeAsyncEnumerable; if it throws a JsonException, the stream is\nrewound and read again one element at a time (skipping the elements already delivered), so the\ncaller still sees every good element before the malformed one. A stream that cannot seek is read\none element at a time, as before.\n\nCo-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>\n\n---------\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-22T17:39:45-05:00",
+          "tree_id": "6826edbe36ca705bfd650b49f4a5d4597337ef65",
+          "url": "https://github.com/Chris-Wolfgang/ETL-Json/commit/8f9554fbaccf65ed9de2401b83f2998c1fa81849"
+        },
+        "date": 1795387389386,
+        "tool": "benchmarkdotnet",
+        "benches": [
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineExtractorBenchmarks.ExtractAsync(ItemCount: 10)",
+            "value": 7039.85671488444,
+            "unit": "ns",
+            "range": "± 34.413249365499304"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineExtractorBenchmarks.ExtractAsync(ItemCount: 100)",
+            "value": 60797.61865234375,
+            "unit": "ns",
+            "range": "± 388.2997983521048"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineExtractorBenchmarks.ExtractAsync(ItemCount: 1000)",
+            "value": 598012.1064453125,
+            "unit": "ns",
+            "range": "± 10177.56521737594"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineLoaderBenchmarks.LoadAsync(ItemCount: 10)",
+            "value": 4827.409833272298,
+            "unit": "ns",
+            "range": "± 24.628585571300743"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineLoaderBenchmarks.LoadAsync(ItemCount: 100)",
+            "value": 46024.95064290365,
+            "unit": "ns",
+            "range": "± 14.27176800569512"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonLineLoaderBenchmarks.LoadAsync(ItemCount: 1000)",
+            "value": 516919.1692708333,
+            "unit": "ns",
+            "range": "± 4745.237051841114"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamExtractorBenchmarks.ExtractAsync(ItemCount: 10)",
+            "value": 8477.851933797201,
+            "unit": "ns",
+            "range": "± 82.83752419283914"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamExtractorBenchmarks.ExtractAsync(ItemCount: 100)",
+            "value": 80740.88509114583,
+            "unit": "ns",
+            "range": "± 333.83940951406663"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamExtractorBenchmarks.ExtractAsync(ItemCount: 1000)",
+            "value": 806026.3688151041,
+            "unit": "ns",
+            "range": "± 22744.999478520444"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamLoaderBenchmarks.LoadAsync(ItemCount: 10)",
+            "value": 5574.059438069661,
+            "unit": "ns",
+            "range": "± 46.56790372945514"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamLoaderBenchmarks.LoadAsync(ItemCount: 100)",
+            "value": 51535.64168294271,
+            "unit": "ns",
+            "range": "± 173.4586561392599"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonMultiStreamLoaderBenchmarks.LoadAsync(ItemCount: 1000)",
+            "value": 512281.9085286458,
+            "unit": "ns",
+            "range": "± 2223.916898464987"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamExtractorBenchmarks.ExtractAsync(ItemCount: 10)",
+            "value": 8002.343973795573,
+            "unit": "ns",
+            "range": "± 23.10680741840369"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamExtractorBenchmarks.ExtractAsync(ItemCount: 100)",
+            "value": 59771.9912516276,
+            "unit": "ns",
+            "range": "± 136.97683409182625"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamExtractorBenchmarks.ExtractAsync(ItemCount: 1000)",
+            "value": 594760.2945963541,
+            "unit": "ns",
+            "range": "± 904.1672772218836"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync(ItemCount: 10)",
+            "value": 5170.753613789876,
+            "unit": "ns",
+            "range": "± 25.82022696483992"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync_CamelCase(ItemCount: 10)",
+            "value": 5929.31652323405,
+            "unit": "ns",
+            "range": "± 123.11938693516879"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync(ItemCount: 100)",
+            "value": 43114.68979899088,
+            "unit": "ns",
+            "range": "± 76.17552368063039"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync_CamelCase(ItemCount: 100)",
+            "value": 44092.98612467448,
+            "unit": "ns",
+            "range": "± 41.40228140032665"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync(ItemCount: 1000)",
+            "value": 488236.6884765625,
+            "unit": "ns",
+            "range": "± 2208.6097062242197"
+          },
+          {
+            "name": "Wolfgang.Etl.Json.Benchmarks.JsonSingleStreamLoaderBenchmarks.LoadAsync_CamelCase(ItemCount: 1000)",
+            "value": 507647.4153645833,
+            "unit": "ns",
+            "range": "± 9271.68425555683"
           }
         ]
       }
