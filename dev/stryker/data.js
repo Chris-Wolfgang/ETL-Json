@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794749101643,
+  "lastUpdate": 1795356013317,
   "repoUrl": "https://github.com/Chris-Wolfgang/ETL-Json",
   "entries": {
     "Mutation score": [
@@ -161,6 +161,33 @@ window.BENCHMARK_DATA = {
           {
             "name": "Mutation score (tests/Wolfgang.Etl.Json.Tests.Unit)",
             "value": 58.48,
+            "unit": "%"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "Chris Wolfgang",
+            "username": "Chris-Wolfgang",
+            "email": "210299580+Chris-Wolfgang@users.noreply.github.com"
+          },
+          "committer": {
+            "name": "GitHub",
+            "username": "web-flow",
+            "email": "noreply@github.com"
+          },
+          "id": "f8d93a95005cd8a98a8741a731ff6a247645f0f7",
+          "message": "fix: JsonMultiStreamExtractor names the index of a null JsonNamedStream entry (#619)\n\nA null entry in a caller-supplied IEnumerable<JsonNamedStream> threw a\nNullReferenceException at source.Name (code scanning alert 869,\nInspectCode PossibleNullReferenceException). It now throws an\nInvalidOperationException naming the index, like a null stream does.\n\nCo-authored-by: Claude Opus 5.5 <noreply@anthropic.com>",
+          "timestamp": "2026-11-20T23:16:09Z",
+          "url": "https://github.com/Chris-Wolfgang/ETL-Json/commit/f8d93a95005cd8a98a8741a731ff6a247645f0f7"
+        },
+        "date": 1795356007641,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "Mutation score (tests/Wolfgang.Etl.Json.Tests.Unit)",
+            "value": 60.76,
             "unit": "%"
           }
         ]
