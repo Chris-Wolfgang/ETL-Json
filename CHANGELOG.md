@@ -20,6 +20,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 
+## [0.11.0] - 2026-11-23
+
+### Added
+
+- Path-based `JsonLineExtractor` and `JsonSingleStreamExtractor` constructors no longer leak the file handle when the options record is null, open the file for asynchronous I/O, and gain `(string path, JsonTypeInfo<T> typeInfo, ...)` overloads for source-generated, trim-safe use. (#593)
+
+### Fixed
+
+- The named-source `JsonMultiStreamExtractor` and named-destination `JsonMultiStreamLoader` constructors that serialize by reflection (no `JsonTypeInfo<T>`) now carry `[RequiresUnreferencedCode]` / `[RequiresDynamicCode]` like the other reflection-based constructors, so a trimmed or native-AOT app gets the IL2026/IL3050 warning at the call site instead of a silent runtime failure. (#501)
+- The extractors and loaders no longer reach reflection-based `System.Text.Json` from their worker code: a stage built with a `JsonTypeInfo<T>` is now fully trim- and native-AOT-safe (the AOT smoke publish reports 0 IL2026/IL3050, down from 6 + 6), and the remaining `JsonNamedStream` / `JsonNamedDestination` constructors of `JsonMultiStreamExtractor` and `JsonMultiStreamLoader` that serialize by reflection now carry `[RequiresUnreferencedCode]` / `[RequiresDynamicCode]` like every other reflection-based constructor. Consumers that call those constructors from trimmed or AOT-analysed code with warnings-as-errors will now see IL2026/IL3050 at the call site; no public member was removed or changed in signature, so binary and source compatibility are otherwise unchanged. (#538)
+- `JsonMultiStreamExtractor` rejects a `JsonNamedStream` carrying a null stream with an `InvalidOperationException` naming the source (was a `NullReferenceException`); `JsonSingleStreamExtractor` logs a Warning when a skip or dead-letter policy ends the run early at a malformed element instead of logging normal completion; `JsonLineLoader` flushes the stream before completing. (#524)
+- The path-based fluent sink terminators now create or truncate the output file when the run starts writing, not when the pipeline is built. (#598)
+- `JsonLineExtractor` checkpoint offsets (`CurrentByteOffset`) now count the byte-order mark, use the encoding detected from it, and detect CRLF line endings past the first 256 bytes, so resuming from `StartByteOffset` no longer starts mid-line on BOM-prefixed, UTF-16/UTF-32 or long-line CRLF files. (#522)
+- `JsonLineExtractor.CurrentByteOffset` is now an absolute stream position for a stream the caller already advanced, and never passes the end of the stream for a final line without a terminator. (#595)
+- The JSON loaders now apply `ErrorPolicy` to a record that fails to serialize: Skip drops it, counts it in `CurrentErrorItemCount` and leaves no partial output; the default aborts with the original exception. (#599)
+- `MaximumItemCount` is now checked before the next record, source or upstream item is consumed, so the item after the limit can no longer fail the run or be pulled from upstream. (#594)
+- `JsonMultiStreamExtractor` now throws `InvalidOperationException` naming the index when a supplied `JsonNamedStream` entry is null, instead of a `NullReferenceException`. (#619)
+- `JsonSingleStreamExtractor` now reads and deserializes one array element at a time, so an element past `MaximumItemCount` is never parsed and a malformed element no longer fails the run before the items ahead of it are delivered. (#584)
+- `JsonSingleStreamLoader` now writes to the destination only through `WriteAsync`, batched, so it works on streams that forbid synchronous I/O and no longer issues one blocking write per record. (#597)
+- `JsonSingleStreamLoader` now honours `WriteIndented`, `IndentCharacter`, `IndentSize`, `NewLine`, `Encoder` and `MaxDepth` from the serializer options or `JsonTypeInfo`, matching the other loaders; previously its output was always compact with default escaping. (#523)
+
+### Documentation
+
+- Corrected the blank-line log level in the `JsonLineExtractor` remarks and the `FlushAsync` cancellation token on older target frameworks in `JsonMultiStreamLoader`. (#592)
+- Documented that `JsonLineLoader` never writes a byte-order mark, so a non-UTF-8 file must be read with the same `Encoding` on `JsonLineExtractorOptions`. (#596)
+
+### Internal
+
+- Updated `Wolfgang.Etl.Abstractions`, `Wolfgang.Etl.TestKit`, `Wolfgang.Etl.TestKit.Xunit` and `Wolfgang.Etl.ErrorPolicies` to 0.27.0. (#602)
+- Updated `Wolfgang.Etl.Abstractions`, `Wolfgang.Etl.TestKit`, `Wolfgang.Etl.TestKit.Xunit` and `Wolfgang.Etl.ErrorPolicies` to 0.28.0. (#608)
+- `PackageValidationBaselineVersion` advances to 0.10.0 now that the package is on the NuGet CDN, so the next release validates its API surface against what actually shipped. (#437)
+- Added TestKit `IdempotentLoaderContractTests` (typed progress, new in 0.28.0) for the three loaders: a second run on the same instance processes every item and reports only its own count. (#609)
+- Project-file cleanup: drop properties the library project duplicated from `Directory.Build.props` and the executable-only `ApplicationIcon`; no API change. (#529)
+- `RecordTypeInfo<TRecord>` now defines its trim/AOT warning text only on the target frameworks whose `[RequiresUnreferencedCode]` / `[RequiresDynamicCode]` attributes use it, which clears the two InspectCode unused-member findings on the older frameworks; no behaviour or public surface changes. (#576)
+- Remove two unused log-message delegates, an unused cached `JsonSerializerOptions`, and inert `CA1031` suppressions; no behaviour change. (#521)
+- The OpenSSF Scorecard workflow's top-level `permissions:` is `read-all` again (Scorecard's documented setting, kept in step with repo-template), which supersedes the 0.8.1 entry about replacing it with `contents: read`; each job still grants only the write scopes it needs. (#539)
+
 ## [0.10.0] - 2026-09-22
 
 ### Added
