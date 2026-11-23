@@ -1,4 +1,4 @@
-# ADR-001 System.Text.Json over Newtonsoft.Json
+# ADR-0001 System.Text.Json over Newtonsoft.Json
 
 - **Status**: Accepted
 - **Date**: 2026-07-16

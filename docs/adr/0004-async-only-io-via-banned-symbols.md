@@ -1,4 +1,4 @@
-# ADR-004 Async-only I/O enforced through BannedSymbols.txt
+# ADR-0004 Async-only I/O enforced through BannedSymbols.txt
 
 - **Status**: Accepted
 - **Date**: 2026-11-17
@@ -9,7 +9,7 @@
 
 Every extractor and loader in `Wolfgang.Etl.Json` is a stage in an `IAsyncEnumerable<T>` pipeline. A blocking call on that path (`Task.Result`, `Thread.Sleep`, a synchronous `Stream.Write`) holds a thread-pool thread for the length of the I/O and can deadlock a consumer that runs under a single-threaded synchronization context.
 
-This library has been on both sides of the question. [ADR-002](ADR-002-sync-writeline-loader-hot-path.md) chose a synchronous `StreamWriter.WriteLine` in the loader hot path to avoid a state machine per item, and was superseded when `StreamWriter` was removed. Since then nothing current has stated the rule, although the mechanism is in the repository: a `BannedSymbols.txt` at the root, read by `Microsoft.CodeAnalysis.BannedApiAnalyzers`. On the date of this ADR the list had the same 65 entries in all eight ETL repositories.
+This library has been on both sides of the question. [ADR-0002](0002-sync-writeline-loader-hot-path.md) chose a synchronous `StreamWriter.WriteLine` in the loader hot path to avoid a state machine per item, and was superseded when `StreamWriter` was removed. Since then nothing current has stated the rule, although the mechanism is in the repository: a `BannedSymbols.txt` at the root, read by `Microsoft.CodeAnalysis.BannedApiAnalyzers`. On the date of this ADR the list had the same 65 entries in all eight ETL repositories.
 
 ---
 
@@ -19,7 +19,7 @@ All stream I/O in shipped code is asynchronous, and the banned-API analyzer enfo
 
 - `BannedSymbols.txt` bans `Task.Wait`, `Task.WaitAll`, `Task.WaitAny`, `Task<T>.Result`, `GetAwaiter().GetResult()`, `Thread.Sleep`, the synchronous `File` helpers, `Stream.Read` / `Write` / `Flush` / `CopyTo`, `Parallel.For` / `ForEach` and the blocking `Console` reads. Each entry names its replacement.
 - `.editorconfig` sets `RS0030` to `error` for the shipped code and to `none` for tests, benchmarks and examples.
-- Where an awaited stream call per item would be too expensive, the record is serialized into memory first and the bytes are written to the stream with `WriteAsync`. The line and single-stream loaders work this way. The per-item cost ADR-002 was avoiding is avoided without a synchronous stream call.
+- Where an awaited stream call per item would be too expensive, the record is serialized into memory first and the bytes are written to the stream with `WriteAsync`. The line and single-stream loaders work this way. The per-item cost ADR-0002 was avoiding is avoided without a synchronous stream call.
 - The shipped code has no suppression of `RS0030` or of the async-usage analyzers (`CA1849`, `VSTHRD103`, `AsyncFixer`).
 
 ---
@@ -31,7 +31,7 @@ All stream I/O in shipped code is asynchronous, and the banned-API analyzer enfo
 - Pro: Nothing to maintain.
 - Con: AsyncFixer catches some patterns, not all of the banned APIs, and review misses them under time pressure.
 
-### Option B: Allow synchronous writes into a buffered writer (ADR-002)
+### Option B: Allow synchronous writes into a buffered writer (ADR-0002)
 
 - Pro: No state machine per item.
 - Con: Needs analyzer suppressions at every such call, and a synchronous write reaches the stream whenever the buffer fills.

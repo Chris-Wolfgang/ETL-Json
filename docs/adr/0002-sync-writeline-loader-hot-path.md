@@ -1,4 +1,4 @@
-# ADR-002 Sync StreamWriter.WriteLine in Loader Hot Paths
+# ADR-0002 Sync StreamWriter.WriteLine in Loader Hot Paths
 
 - **Status**: Superseded by removal of StreamWriter (2026-07-16)
 - **Date**: 2026-07-16
