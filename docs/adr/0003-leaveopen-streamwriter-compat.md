@@ -1,4 +1,4 @@
-# ADR-003 `#if` Guards in CreateStreamWriter for leaveOpen Compat
+# ADR-0003 `#if` Guards in CreateStreamWriter for leaveOpen Compat
 
 - **Status**: Superseded — StreamWriter removed (2026-07-16)
 - **Date**: 2026-07-16

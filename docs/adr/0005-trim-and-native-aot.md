@@ -1,4 +1,4 @@
-# ADR-005 Trim and Native AOT: annotate the reflection-based overloads, offer `JsonTypeInfo<T>` overloads
+# ADR-0005 Trim and Native AOT: annotate the reflection-based overloads, offer `JsonTypeInfo<T>` overloads
 
 - **Status**: Accepted
 - **Date**: 2026-11-17
