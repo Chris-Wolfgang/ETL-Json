@@ -1,65 +1,122 @@
 Summary
-  Generated on: 9/23/2026 - 2:16:19 AM
-  Coverage date: 9/23/2026 - 2:16:14 AM - 9/23/2026 - 2:16:16 AM
-  Parser: MultiReport (3x Cobertura)
-  Assemblies: 3
-  Classes: 39
-  Files: 39
-  Line coverage: 98.1%
-  Covered lines: 4278
-  Uncovered lines: 81
-  Coverable lines: 4359
-  Total lines: 10204
-  Branch coverage: 75% (711 of 948)
-  Covered branches: 711
-  Total branches: 948
-  Method coverage: 97.6% (460 of 471)
-  Full method coverage: 87.2% (411 of 471)
-  Covered methods: 460
-  Fully covered methods: 411
-  Total methods: 471
+  Generated on: 11/24/2026 - 12:43:38 AM
+  Coverage date: 11/24/2026 - 12:43:32 AM - 11/24/2026 - 12:43:36 AM
+  Parser: MultiReport (4x Cobertura)
+  Assemblies: 5
+  Classes: 92
+  Files: 72
+  Line coverage: 99.9%
+  Covered lines: 6498
+  Uncovered lines: 5
+  Coverable lines: 6503
+  Total lines: 16092
+  Branch coverage: 82.5% (1061 of 1285)
+  Covered branches: 1061
+  Total branches: 1285
+  Method coverage: 100% (846 of 846)
+  Full method coverage: 99.4% (841 of 846)
+  Covered methods: 846
+  Fully covered methods: 841
+  Total methods: 846
 
-Wolfgang.Etl.Json                                                                 96.2%
-  Wolfgang.Etl.Json.EtlPipelineJsonSinkExtensions                                 94.1%
-  Wolfgang.Etl.Json.EtlPipelineJsonSourceExtensions                               96.1%
-  Wolfgang.Etl.Json.JsonLineExtractor<T>                                          93.8%
-  Wolfgang.Etl.Json.JsonLineExtractorOptions                                       100%
-  Wolfgang.Etl.Json.JsonLineLoader<T>                                             92.1%
-  Wolfgang.Etl.Json.JsonLineLoaderOptions                                          100%
-  Wolfgang.Etl.Json.JsonLogMessages                                                100%
-  Wolfgang.Etl.Json.JsonMetrics                                                    100%
-  Wolfgang.Etl.Json.JsonMultiStreamExtractor<T>                                   98.5%
-  Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions                                100%
-  Wolfgang.Etl.Json.JsonMultiStreamLoader<T>                                      96.7%
-  Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions                                   100%
-  Wolfgang.Etl.Json.JsonNamedDestination                                           100%
-  Wolfgang.Etl.Json.JsonNamedStream                                                100%
-  Wolfgang.Etl.Json.JsonReport                                                     100%
-  Wolfgang.Etl.Json.JsonSingleStreamExtractor<T>                                  95.8%
-  Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions                               100%
-  Wolfgang.Etl.Json.JsonSingleStreamLoader<T>                                     96.8%
-  Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions                                  100%
+Wolfgang.Etl.Json                                                                      99.6%
+  Wolfgang.Etl.Json.ByteBufferWriter                                                    100%
+  Wolfgang.Etl.Json.ByteOrderMarks                                                      100%
+  Wolfgang.Etl.Json.EtlPipelineJsonSinkExtensions                                       100%
+  Wolfgang.Etl.Json.EtlPipelineJsonSourceExtensions                                     100%
+  Wolfgang.Etl.Json.FileStreams                                                         100%
+  Wolfgang.Etl.Json.ItemLimit                                                           100%
+  Wolfgang.Etl.Json.JsonArrayElementReader<T>                                          98.4%
+  Wolfgang.Etl.Json.JsonLineExtractor<T>                                               99.6%
+  Wolfgang.Etl.Json.JsonLineExtractorOptions                                            100%
+  Wolfgang.Etl.Json.JsonLineLoader<T>                                                   100%
+  Wolfgang.Etl.Json.JsonLineLoaderOptions                                               100%
+  Wolfgang.Etl.Json.JsonLogMessages                                                     100%
+  Wolfgang.Etl.Json.JsonMetrics                                                         100%
+  Wolfgang.Etl.Json.JsonMultiStreamExtractor<T>                                         100%
+  Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions                                     100%
+  Wolfgang.Etl.Json.JsonMultiStreamLoader<T>                                            100%
+  Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions                                        100%
+  Wolfgang.Etl.Json.JsonNamedDestination                                                100%
+  Wolfgang.Etl.Json.JsonNamedStream                                                     100%
+  Wolfgang.Etl.Json.JsonReport                                                          100%
+  Wolfgang.Etl.Json.JsonSingleStreamExtractor<T>                                       99.4%
+  Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions                                    100%
+  Wolfgang.Etl.Json.JsonSingleStreamLoader<T>                                          99.4%
+  Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions                                       100%
+  Wolfgang.Etl.Json.LazyFileStream                                                      100%
+  Wolfgang.Etl.Json.RecordTypeInfo<T>                                                   100%
 
-Wolfgang.Etl.Json.Tests.Integration                                                100%
-  Wolfgang.Etl.Json.Tests.Integration.EncodingIntegrationTests                     100%
-  Wolfgang.Etl.Json.Tests.Integration.MultiStreamRoundTripIntegrationTests         100%
-  Wolfgang.Etl.Json.Tests.Integration.RoundTripIntegrationTests                    100%
-  Wolfgang.Etl.Json.Tests.Integration.SourceGenerationRoundTripIntegrationTests    100%
+Wolfgang.Etl.Json.Tests.Docs                                                            100%
+  Wolfgang.Etl.Json.Tests.Docs                                                          100%
+  Wolfgang.Etl.Json.Tests.Docs.DocExampleCompilationTests                               100%
 
-Wolfgang.Etl.Json.Tests.Unit                                                      98.8%
-  Wolfgang.Etl.Json.Tests.Unit.ConstructorOverloadResolutionTests                  100%
-  Wolfgang.Etl.Json.Tests.Unit.EtlPipelineJsonExtensionsTests                      100%
-  Wolfgang.Etl.Json.Tests.Unit.JsonLineExtractorTests                             97.8%
-  Wolfgang.Etl.Json.Tests.Unit.JsonLineLoaderDryRunContractTests                   100%
-  Wolfgang.Etl.Json.Tests.Unit.JsonLineLoaderTests                                 100%
-  Wolfgang.Etl.Json.Tests.Unit.JsonMetricsTests                                    100%
-  Wolfgang.Etl.Json.Tests.Unit.JsonMultiStreamExtractorTests                       100%
-  Wolfgang.Etl.Json.Tests.Unit.JsonMultiStreamLoaderDryRunContractTests            100%
-  Wolfgang.Etl.Json.Tests.Unit.JsonMultiStreamLoaderTests                         95.9%
-  Wolfgang.Etl.Json.Tests.Unit.JsonOptionsRecordTests                              100%
-  Wolfgang.Etl.Json.Tests.Unit.JsonOutputSnapshotTests                             100%
-  Wolfgang.Etl.Json.Tests.Unit.JsonReportTests                                     100%
-  Wolfgang.Etl.Json.Tests.Unit.JsonSingleStreamExtractorTests                     99.3%
-  Wolfgang.Etl.Json.Tests.Unit.JsonSingleStreamLoaderDryRunContractTests           100%
-  Wolfgang.Etl.Json.Tests.Unit.JsonSingleStreamLoaderTests                         100%
-  Wolfgang.Etl.Json.Tests.Unit.JsonTypeInfoConstructorTests                        100%
+Wolfgang.Etl.Json.Tests.Integration                                                     100%
+  Wolfgang.Etl.Json.Tests.Integration.EncodingIntegrationTests                          100%
+  Wolfgang.Etl.Json.Tests.Integration.MultiStreamRoundTripIntegrationTests              100%
+  Wolfgang.Etl.Json.Tests.Integration.RoundTripIntegrationTests                         100%
+  Wolfgang.Etl.Json.Tests.Integration.SourceGenerationRoundTripIntegrationTests         100%
+  Wolfgang.Etl.Json.Tests.Integration.TempWorkspace                                     100%
+  Wolfgang.Etl.Json.Tests.Integration.TempWorkspaceTests                                100%
+  Wolfgang.Etl.Json.Tests.Integration.TestModels.Person                                 100%
+
+Wolfgang.Etl.Json.Tests.SourceLink                                                      100%
+  Wolfgang.Etl.Json.Tests.SourceLink.SourceLinkPdbTests                                 100%
+
+Wolfgang.Etl.Json.Tests.Unit                                                            100%
+  Wolfgang.Etl.Json.Tests.Unit.CancellationDrivers                                      100%
+  Wolfgang.Etl.Json.Tests.Unit.CancellationDriversTests                                 100%
+  Wolfgang.Etl.Json.Tests.Unit.ConstructorOverloadResolutionTests                       100%
+  Wolfgang.Etl.Json.Tests.Unit.EtlPipelineJsonExtensionsTests                           100%
+  Wolfgang.Etl.Json.Tests.Unit.IdempotencySource                                        100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonArrayElementReaderSeekableTests                      100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonArrayElementReaderTests                              100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonFuzzTests                                            100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonLineExtractorCancellationContractTests               100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonLineExtractorCheckpointOffsetTests                   100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonLineExtractorDisposableStageContractTests            100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonLineExtractorErrorHandlingContractTests              100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonLineExtractorTests                                   100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonLineLoaderCancellationContractTests                  100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonLineLoaderDisposableStageContractTests               100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonLineLoaderDryRunContractTests                        100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonLineLoaderErrorHandlingContractTests                 100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonLineLoaderIdempotentContractTests                    100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonLineLoaderTests                                      100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonMetricsContractTests                                 100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonMetricsTests                                         100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonMultiStreamExtractorCancellationContractTests        100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonMultiStreamExtractorDisposableStageContractTests     100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonMultiStreamExtractorErrorHandlingContractTests       100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonMultiStreamExtractorTests                            100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonMultiStreamLoaderCancellationContractTests           100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonMultiStreamLoaderDisposableStageContractTests        100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonMultiStreamLoaderDryRunContractTests                 100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonMultiStreamLoaderErrorHandlingContractTests          100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonMultiStreamLoaderIdempotentContractTests             100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonMultiStreamLoaderTests                               100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonOptionsRecordTests                                   100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonOutputSnapshotTests                                  100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonReportTests                                          100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonSingleStreamExtractorCancellationContractTests       100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonSingleStreamExtractorDisposableStageContractTests    100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonSingleStreamExtractorTests                           100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonSingleStreamLoaderAsyncWriteTests                    100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonSingleStreamLoaderCancellationContractTests          100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonSingleStreamLoaderDisposableStageContractTests       100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonSingleStreamLoaderDryRunContractTests                100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonSingleStreamLoaderErrorHandlingContractTests         100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonSingleStreamLoaderIdempotentContractTests            100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonSingleStreamLoaderTests                              100%
+  Wolfgang.Etl.Json.Tests.Unit.JsonTypeInfoConstructorTests                             100%
+  Wolfgang.Etl.Json.Tests.Unit.LazyFileSinkTests                                        100%
+  Wolfgang.Etl.Json.Tests.Unit.LoaderErrorPolicyTests                                   100%
+  Wolfgang.Etl.Json.Tests.Unit.MaximumItemCountTests                                    100%
+  Wolfgang.Etl.Json.Tests.Unit.NullGuardTests                                           100%
+  Wolfgang.Etl.Json.Tests.Unit.OwnedStreamTests                                         100%
+  Wolfgang.Etl.Json.Tests.Unit.ProgressTimerWiringTests                                 100%
+  Wolfgang.Etl.Json.Tests.Unit.RecordTypeInfoTests                                      100%
+  Wolfgang.Etl.Json.Tests.Unit.StageErrorHandlingScenarios                              100%
+  Wolfgang.Etl.Json.Tests.Unit.TestModels.PersonRecord                                  100%
+  Wolfgang.Etl.Json.Tests.Unit.TestModels.RecordingLogger<T>                            100%
+  Wolfgang.Etl.Json.Tests.Unit.TestModels.SnakeCasePersonRecord                         100%

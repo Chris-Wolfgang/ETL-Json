@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<coverage version="1.0" date="2026-09-17_16-54-14" tag="">
+  <assembly name="Wolfgang.Etl.Json">
+    <class name="Wolfgang.Etl.Json.EtlPipelineJsonSinkExtensions" coveredlines="32" coverablelines="34" totallines="174" coveredbranches="19" totalbranches="24" coveredcodeelements="4" fullcoveredcodeelements="2" totalcodeelements="4" />
+    <class name="Wolfgang.Etl.Json.EtlPipelineJsonSourceExtensions" coveredlines="25" coverablelines="26" totallines="166" coveredbranches="18" totalbranches="20" coveredcodeelements="4" fullcoveredcodeelements="3" totalcodeelements="4" />
+    <class name="Wolfgang.Etl.Json.JsonLineExtractor`1" coveredlines="200" coverablelines="213" totallines="662" coveredbranches="87" totalbranches="112" coveredcodeelements="25" fullcoveredcodeelements="21" totalcodeelements="26" />
+    <class name="Wolfgang.Etl.Json.JsonLineExtractorOptions" coveredlines="8" coverablelines="8" totallines="58" coveredbranches="2" totalbranches="2" coveredcodeelements="5" fullcoveredcodeelements="5" totalcodeelements="5" />
+    <class name="Wolfgang.Etl.Json.JsonLineLoader`1" coveredlines="117" coverablelines="127" totallines="424" coveredbranches="50" totalbranches="70" coveredcodeelements="16" fullcoveredcodeelements="12" totalcodeelements="16" />
+    <class name="Wolfgang.Etl.Json.JsonLineLoaderOptions" coveredlines="3" coverablelines="3" totallines="38" coveredbranches="0" totalbranches="0" coveredcodeelements="3" fullcoveredcodeelements="3" totalcodeelements="3" />
+    <class name="Wolfgang.Etl.Json.JsonLogMessages" coveredlines="50" coverablelines="50" totallines="115" coveredbranches="0" totalbranches="0" coveredcodeelements="1" fullcoveredcodeelements="1" totalcodeelements="1" />
+    <class name="Wolfgang.Etl.Json.JsonMetrics" coveredlines="40" coverablelines="40" totallines="126" coveredbranches="8" totalbranches="8" coveredcodeelements="5" fullcoveredcodeelements="5" totalcodeelements="5" />
+    <class name="Wolfgang.Etl.Json.JsonMultiStreamExtractor`1" coveredlines="204" coverablelines="214" totallines="684" coveredbranches="94" totalbranches="122" coveredcodeelements="21" fullcoveredcodeelements="19" totalcodeelements="22" />
+    <class name="Wolfgang.Etl.Json.JsonMultiStreamExtractorOptions" coveredlines="1" coverablelines="1" totallines="24" coveredbranches="0" totalbranches="0" coveredcodeelements="1" fullcoveredcodeelements="1" totalcodeelements="1" />
+    <class name="Wolfgang.Etl.Json.JsonMultiStreamLoader`1" coveredlines="207" coverablelines="214" totallines="738" coveredbranches="79" totalbranches="102" coveredcodeelements="25" fullcoveredcodeelements="20" totalcodeelements="25" />
+    <class name="Wolfgang.Etl.Json.JsonMultiStreamLoaderOptions" coveredlines="2" coverablelines="2" totallines="30" coveredbranches="0" totalbranches="0" coveredcodeelements="2" fullcoveredcodeelements="2" totalcodeelements="2" />
+    <class name="Wolfgang.Etl.Json.JsonNamedDestination" coveredlines="1" coverablelines="1" totallines="13" coveredbranches="0" totalbranches="0" coveredcodeelements="1" fullcoveredcodeelements="1" totalcodeelements="1" />
+    <class name="Wolfgang.Etl.Json.JsonNamedStream" coveredlines="1" coverablelines="1" totallines="13" coveredbranches="0" totalbranches="0" coveredcodeelements="1" fullcoveredcodeelements="1" totalcodeelements="1" />
+    <class name="Wolfgang.Etl.Json.JsonReport" coveredlines="8" coverablelines="8" totallines="65" coveredbranches="0" totalbranches="0" coveredcodeelements="4" fullcoveredcodeelements="4" totalcodeelements="4" />
+    <class name="Wolfgang.Etl.Json.JsonSingleStreamExtractor`1" coveredlines="156" coverablelines="169" totallines="536" coveredbranches="65" totalbranches="90" coveredcodeelements="19" fullcoveredcodeelements="14" totalcodeelements="20" />
+    <class name="Wolfgang.Etl.Json.JsonSingleStreamExtractorOptions" coveredlines="1" coverablelines="1" totallines="24" coveredbranches="0" totalbranches="0" coveredcodeelements="1" fullcoveredcodeelements="1" totalcodeelements="1" />
+    <class name="Wolfgang.Etl.Json.JsonSingleStreamLoader`1" coveredlines="117" coverablelines="121" totallines="413" coveredbranches="57" totalbranches="72" coveredcodeelements="15" fullcoveredcodeelements="13" totalcodeelements="15" />
+    <class name="Wolfgang.Etl.Json.JsonSingleStreamLoaderOptions" coveredlines="2" coverablelines="2" totallines="30" coveredbranches="0" totalbranches="0" coveredcodeelements="2" fullcoveredcodeelements="2" totalcodeelements="2" />
+  </assembly>
+</coverage>

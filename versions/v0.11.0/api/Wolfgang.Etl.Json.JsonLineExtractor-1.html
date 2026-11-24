@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+      <title>Class JsonLineExtractor&lt;TRecord&gt; | Wolfgang.Etl.Json Documentation </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="title" content="Class JsonLineExtractor&lt;TRecord&gt; | Wolfgang.Etl.Json Documentation ">
+      
+      <meta name="description" content="Extracts items of type TRecord from a JSONL (JSON Lines / NDJSON) stream.">
+      <link rel="icon" href="../favicon.svg">
+      <link rel="stylesheet" href="../public/docfx.min.css">
+      <link rel="stylesheet" href="../public/main.css">
+      <meta name="docfx:navrel" content="../toc.html">
+      <meta name="docfx:tocrel" content="../toc.html">
+      
+      <meta name="docfx:rel" content="../">
+      
+      
+      <meta name="docfx:docurl" content="https://github.com/Chris-Wolfgang/ETL-Json/new/v0.11.0/apiSpec/new?filename=Wolfgang_Etl_Json_JsonLineExtractor_1.md&amp;value=---%0Auid%3A%20Wolfgang.Etl.Json.JsonLineExtractor%601%0Asummary%3A%20&#39;*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax&#39;%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">
+      <meta name="loc:inThisArticle" content="In this article">
+      <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
+      <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
+      <meta name="loc:tocFilter" content="Filter by title">
+      <meta name="loc:nextArticle" content="Next">
+      <meta name="loc:prevArticle" content="Previous">
+      <meta name="loc:themeLight" content="Light">
+      <meta name="loc:themeDark" content="Dark">
+      <meta name="loc:themeAuto" content="Auto">
+      <meta name="loc:changeTheme" content="Change theme">
+      <meta name="loc:copy" content="Copy">
+      <meta name="loc:downloadPdf" content="Download PDF">
+
+      <script type="module" src="./../public/docfx.min.js"></script>
+
+      <script>
+        const theme = localStorage.getItem('theme') || 'auto'
+        document.documentElement.setAttribute('data-bs-theme', theme === 'auto' ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : theme)
+      </script>
+
+  </head>
+
+  <body class="tex2jax_ignore" data-layout="" data-yaml-mime="ManagedReference">
+    <header class="bg-body border-bottom">
+      <nav id="autocollapse" class="navbar navbar-expand-md" role="navigation">
+        <div class="container-xxl flex-nowrap">
+          <a class="navbar-brand" href="../index.html">
+            <img id="logo" class="svg" src="../logo.svg" alt="Wolfgang.Etl.Json">
+            Wolfgang.Etl.Json
+          </a>
+          <button class="btn btn-lg d-md-none border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navpanel" aria-controls="navpanel" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-three-dots"></i>
+          </button>
+          <div class="collapse navbar-collapse" id="navpanel">
+            <div id="navbar">
+              <form class="search" role="search" id="search">
+                <i class="bi bi-search"></i>
+                <input class="form-control" id="search-query" type="search" disabled placeholder="Search" autocomplete="off" aria-label="Search">
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container-xxl">
+
+      <div class="content">
+        <div class="actionbar">
+
+          <nav id="breadcrumb"></nav>
+        </div>
+
+        <article data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1">
+
+
+
+  <h1 id="Wolfgang_Etl_Json_JsonLineExtractor_1" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1" class="text-break">
+Class JsonLineExtractor&lt;TRecord&gt;  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.11.0/src/Wolfgang.Etl.Json/JsonLineExtractor.cs/#L40"><i class="bi bi-code-slash"></i></a>
+  </h1>
+
+  <div class="facts text-secondary">
+    <dl><dt>Namespace</dt><dd><span class="xref">Wolfgang</span>.<span class="xref">Etl</span>.<a class="xref" href="Wolfgang.Etl.Json.html">Json</a></dd></dl>
+  <dl><dt>Assembly</dt><dd>Wolfgang.Etl.Json.dll</dd></dl>
+  </div>
+
+  <div class="markdown summary"><p>Extracts items of type <code class="typeparamref">TRecord</code> from a JSONL (JSON Lines / NDJSON) stream.</p>
+</div>
+  <div class="markdown conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class JsonLineExtractor&lt;TRecord&gt; : ExtractorBase&lt;TRecord, JsonReport&gt;, IExtractWithProgressAndCancellationAsync&lt;TRecord, JsonReport&gt;, IExtractWithCancellationAsync&lt;TRecord&gt;, IExtractWithProgressAsync&lt;TRecord, JsonReport&gt;, IExtractAsync&lt;TRecord&gt;, IReportsItemErrors, IAsyncDisposable, IDisposable where TRecord : notnull</code></pre>
+  </div>
+
+
+
+  <h4 class="section">Type Parameters</h4>
+  <dl class="parameters">
+    <dt><code>TRecord</code></dt>
+    <dd><p>The type of items to extract. Must be <code>notnull</code>.</p>
+</dd>
+  </dl>
+
+  <dl class="typelist inheritance">
+    <dt>Inheritance</dt>
+    <dd>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object">object</a></div>
+      <div><span class="xref">ExtractorBase</span>&lt;TRecord, <a class="xref" href="Wolfgang.Etl.Json.JsonReport.html">JsonReport</a>&gt;</div>
+      <div><span class="xref">JsonLineExtractor&lt;TRecord&gt;</span></div>
+    </dd>
+  </dl>
+
+  <dl class="typelist implements">
+    <dt>Implements</dt>
+    <dd>
+      <div><span class="xref">IExtractWithProgressAndCancellationAsync</span>&lt;TRecord, <a class="xref" href="Wolfgang.Etl.Json.JsonReport.html">JsonReport</a>&gt;</div>
+      <div><span class="xref">IExtractWithCancellationAsync</span>&lt;TRecord&gt;</div>
+      <div><span class="xref">IExtractWithProgressAsync</span>&lt;TRecord, <a class="xref" href="Wolfgang.Etl.Json.JsonReport.html">JsonReport</a>&gt;</div>
+      <div><span class="xref">IExtractAsync</span>&lt;TRecord&gt;</div>
+      <div><span class="xref">IReportsItemErrors</span></div>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a></div>
+      <div><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
+    </dd>
+  </dl>
+
+
+  <dl class="typelist inheritedMembers">
+    <dt>Inherited Members</dt>
+    <dd>
+    <div>
+      <span class="xref">ExtractorBase&lt;TRecord, JsonReport&gt;.ExtractAsync()</span>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">ExtractorBase&lt;TRecord, JsonReport&gt;.ExtractAsync(CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iprogress-1">ExtractorBase&lt;TRecord, JsonReport&gt;.ExtractAsync(IProgress&lt;JsonReport&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iprogress-1">ExtractorBase&lt;TRecord, JsonReport&gt;.ExtractAsync(IProgress&lt;JsonReport&gt;, CancellationToken)</a>
+    </div>
+    <div>
+      <span class="xref">ExtractorBase&lt;TRecord, JsonReport&gt;.DisposeAsync()</span>
+    </div>
+    <div>
+      <span class="xref">ExtractorBase&lt;TRecord, JsonReport&gt;.Dispose()</span>
+    </div>
+    <div>
+      <span class="xref">ExtractorBase&lt;TRecord, JsonReport&gt;.ReportingInterval</span>
+    </div>
+    <div>
+      <span class="xref">ExtractorBase&lt;TRecord, JsonReport&gt;.CurrentItemCount</span>
+    </div>
+    <div>
+      <span class="xref">ExtractorBase&lt;TRecord, JsonReport&gt;.CurrentSkippedItemCount</span>
+    </div>
+    <div>
+      <span class="xref">ExtractorBase&lt;TRecord, JsonReport&gt;.CurrentErrorItemCount</span>
+    </div>
+    <div>
+      <span class="xref">ExtractorBase&lt;TRecord, JsonReport&gt;.MaximumItemCount</span>
+    </div>
+    <div>
+      <span class="xref">ExtractorBase&lt;TRecord, JsonReport&gt;.SkipItemCount</span>
+    </div>
+    <div>
+      <span class="xref">ExtractorBase&lt;TRecord, JsonReport&gt;.WorkerResilience</span>
+    </div>
+    <div>
+      <span class="xref">ExtractorBase&lt;TRecord, JsonReport&gt;.ErrorPolicy</span>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object)">object.Equals(object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.equals#system-object-equals(system-object-system-object)">object.Equals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gethashcode">object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.gettype">object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.referenceequals">object.ReferenceEquals(object, object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.object.tostring">object.ToString()</a>
+    </div>
+  </dd></dl>
+
+
+
+  <h2 id="Wolfgang_Etl_Json_JsonLineExtractor_1_examples">Examples</h2>
+  <pre><code class="lang-csharp">using var stream = File.OpenRead("data.jsonl");
+var extractor = new JsonLineExtractor&lt;Person&gt;(stream);
+await foreach (var person in extractor.ExtractAsync(cancellationToken))
+{
+    Console.WriteLine(person.Name);
+}</code></pre>
+
+
+  <h2 id="Wolfgang_Etl_Json_JsonLineExtractor_1_remarks">Remarks</h2>
+  <div class="markdown level0 remarks"><p>Reads a stream, line by line, deserializing each non-empty line as a single JSON object.
+Blank lines are skipped, with a Debug-level message logged.
+Compatible with both JSONL and NDJSON formats.</p>
+</div>
+
+
+  <h2 class="section" id="constructors">Constructors
+</h2>
+
+
+  <a id="Wolfgang_Etl_Json_JsonLineExtractor_1__ctor_" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor*"></a>
+
+  <h3 id="Wolfgang_Etl_Json_JsonLineExtractor_1__ctor_System_IO_Stream_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonLineExtractor__0___" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor(System.IO.Stream,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonLineExtractor{`0}})">
+  JsonLineExtractor(Stream, ILogger&lt;JsonLineExtractor&lt;TRecord&gt;&gt;?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.11.0/src/Wolfgang.Etl.Json/JsonLineExtractor.cs/#L210"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonLineExtractor-1.html">JsonLineExtractor&lt;TRecord&gt;</a> class
+with diagnostic logging.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[RequiresUnreferencedCode(&quot;JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.&quot;)]
+[RequiresDynamicCode(&quot;JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.&quot;)]
+public JsonLineExtractor(Stream stream, ILogger&lt;JsonLineExtractor&lt;TRecord&gt;&gt;? logger = null)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>stream</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></dt>
+    <dd><p>The stream containing JSONL data to read from.</p>
+</dd>
+    <dt><code>logger</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger-1">ILogger</a>&lt;<a class="xref" href="Wolfgang.Etl.Json.JsonLineExtractor-1.html">JsonLineExtractor</a>&lt;TRecord&gt;&gt;</dt>
+    <dd><p>An optional logger instance for diagnostic output. When <code>null</code> — or omitted —
+<a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.abstractions.nulllogger.instance">Instance</a> is used and logging is disabled.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></dt>
+    <dd><p>Thrown when <code class="paramref">stream</code> is <code>null</code>.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="Wolfgang_Etl_Json_JsonLineExtractor_1__ctor_" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor*"></a>
+
+  <h3 id="Wolfgang_Etl_Json_JsonLineExtractor_1__ctor_System_IO_Stream_System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonLineExtractor__0___" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor(System.IO.Stream,System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonLineExtractor{`0}})">
+  JsonLineExtractor(Stream, JsonTypeInfo&lt;TRecord&gt;, ILogger&lt;JsonLineExtractor&lt;TRecord&gt;&gt;?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.11.0/src/Wolfgang.Etl.Json/JsonLineExtractor.cs/#L509"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonLineExtractor-1.html">JsonLineExtractor&lt;TRecord&gt;</a> class
+with source-generated type metadata for AOT-friendly, reflection-free deserialization.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public JsonLineExtractor(Stream stream, JsonTypeInfo&lt;TRecord&gt; typeInfo, ILogger&lt;JsonLineExtractor&lt;TRecord&gt;&gt;? logger = null)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>stream</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></dt>
+    <dd><p>The stream containing JSONL data to read from.</p>
+</dd>
+    <dt><code>typeInfo</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1">JsonTypeInfo</a>&lt;TRecord&gt;</dt>
+    <dd><p>The source-generated type metadata for <code class="typeparamref">TRecord</code>.</p>
+</dd>
+    <dt><code>logger</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger-1">ILogger</a>&lt;<a class="xref" href="Wolfgang.Etl.Json.JsonLineExtractor-1.html">JsonLineExtractor</a>&lt;TRecord&gt;&gt;</dt>
+    <dd><p>An optional logger instance for diagnostic output.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></dt>
+    <dd><p>Thrown when <code class="paramref">stream</code> or <code class="paramref">typeInfo</code> is <code>null</code>.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="Wolfgang_Etl_Json_JsonLineExtractor_1__ctor_" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor*"></a>
+
+  <h3 id="Wolfgang_Etl_Json_JsonLineExtractor_1__ctor_System_IO_Stream_System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__Wolfgang_Etl_Json_JsonLineExtractorOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonLineExtractor__0___" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor(System.IO.Stream,System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Wolfgang.Etl.Json.JsonLineExtractorOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonLineExtractor{`0}})">
+  JsonLineExtractor(Stream, JsonTypeInfo&lt;TRecord&gt;, JsonLineExtractorOptions, ILogger&lt;JsonLineExtractor&lt;TRecord&gt;&gt;?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.11.0/src/Wolfgang.Etl.Json/JsonLineExtractor.cs/#L304"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonLineExtractor-1.html">JsonLineExtractor&lt;TRecord&gt;</a> class configured through an options record and a source-generated <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1">JsonTypeInfo&lt;T&gt;</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public JsonLineExtractor(Stream stream, JsonTypeInfo&lt;TRecord&gt; typeInfo, JsonLineExtractorOptions options, ILogger&lt;JsonLineExtractor&lt;TRecord&gt;&gt;? logger = null)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>stream</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></dt>
+    <dd><p>The stream to read JSON Lines from.</p>
+</dd>
+    <dt><code>typeInfo</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1">JsonTypeInfo</a>&lt;TRecord&gt;</dt>
+    <dd><p>The source-generated type information used to deserialize <code class="typeparamref">TRecord</code>; it carries its own serializer options.</p>
+</dd>
+    <dt><code>options</code> <a class="xref" href="Wolfgang.Etl.Json.JsonLineExtractorOptions.html">JsonLineExtractorOptions</a></dt>
+    <dd><p>The construction-time configuration for this stage, including the settings inherited from <span class="xref">Wolfgang.Etl.Abstractions.ExtractorOptions</span>.</p>
+</dd>
+    <dt><code>logger</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger-1">ILogger</a>&lt;<a class="xref" href="Wolfgang.Etl.Json.JsonLineExtractor-1.html">JsonLineExtractor</a>&lt;TRecord&gt;&gt;</dt>
+    <dd><p>An optional logger; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> disables logging.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></dt>
+    <dd><p>A required argument is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</dd>
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></dt>
+    <dd><p><code class="paramref">options</code> sets <a class="xref" href="Wolfgang.Etl.Json.JsonLineExtractorOptions.html#Wolfgang_Etl_Json_JsonLineExtractorOptions_SerializerOptions">SerializerOptions</a>, which cannot be combined with a <code class="paramref">typeInfo</code>; the type info carries its own serializer options.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="Wolfgang_Etl_Json_JsonLineExtractor_1__ctor_" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor*"></a>
+
+  <h3 id="Wolfgang_Etl_Json_JsonLineExtractor_1__ctor_System_IO_Stream_Wolfgang_Etl_Json_JsonLineExtractorOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonLineExtractor__0___" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor(System.IO.Stream,Wolfgang.Etl.Json.JsonLineExtractorOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonLineExtractor{`0}})">
+  JsonLineExtractor(Stream, JsonLineExtractorOptions, ILogger&lt;JsonLineExtractor&lt;TRecord&gt;&gt;?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.11.0/src/Wolfgang.Etl.Json/JsonLineExtractor.cs/#L274"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonLineExtractor-1.html">JsonLineExtractor&lt;TRecord&gt;</a> class configured through an options record.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[RequiresUnreferencedCode(&quot;JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.&quot;)]
+[RequiresDynamicCode(&quot;JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.&quot;)]
+public JsonLineExtractor(Stream stream, JsonLineExtractorOptions options, ILogger&lt;JsonLineExtractor&lt;TRecord&gt;&gt;? logger = null)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>stream</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.io.stream">Stream</a></dt>
+    <dd><p>The stream to read JSON Lines from.</p>
+</dd>
+    <dt><code>options</code> <a class="xref" href="Wolfgang.Etl.Json.JsonLineExtractorOptions.html">JsonLineExtractorOptions</a></dt>
+    <dd><p>The construction-time configuration for this stage, including the settings inherited from <span class="xref">Wolfgang.Etl.Abstractions.ExtractorOptions</span>.</p>
+</dd>
+    <dt><code>logger</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger-1">ILogger</a>&lt;<a class="xref" href="Wolfgang.Etl.Json.JsonLineExtractor-1.html">JsonLineExtractor</a>&lt;TRecord&gt;&gt;</dt>
+    <dd><p>An optional logger; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> disables logging.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></dt>
+    <dd><p>A required argument is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="Wolfgang_Etl_Json_JsonLineExtractor_1__ctor_" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor*"></a>
+
+  <h3 id="Wolfgang_Etl_Json_JsonLineExtractor_1__ctor_System_String_System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor(System.String,System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0})">
+  JsonLineExtractor(string, JsonTypeInfo&lt;TRecord&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.11.0/src/Wolfgang.Etl.Json/JsonLineExtractor.cs/#L328"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonLineExtractor-1.html">JsonLineExtractor&lt;TRecord&gt;</a> class that reads a file, using a source-generated <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1">JsonTypeInfo&lt;T&gt;</a> and the default configuration.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public JsonLineExtractor(string path, JsonTypeInfo&lt;TRecord&gt; typeInfo)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>path</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>The path of the file to read; it is opened for asynchronous reading and closed with the extractor.</p>
+</dd>
+    <dt><code>typeInfo</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1">JsonTypeInfo</a>&lt;TRecord&gt;</dt>
+    <dd><p>The source-generated type information used to deserialize <code class="typeparamref">TRecord</code>.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></dt>
+    <dd><p><code class="paramref">path</code> or <code class="paramref">typeInfo</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="Wolfgang_Etl_Json_JsonLineExtractor_1__ctor_" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor*"></a>
+
+  <h3 id="Wolfgang_Etl_Json_JsonLineExtractor_1__ctor_System_String_System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__Wolfgang_Etl_Json_JsonLineExtractorOptions_" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor(System.String,System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Wolfgang.Etl.Json.JsonLineExtractorOptions)">
+  JsonLineExtractor(string, JsonTypeInfo&lt;TRecord&gt;, JsonLineExtractorOptions?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.11.0/src/Wolfgang.Etl.Json/JsonLineExtractor.cs/#L347"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonLineExtractor-1.html">JsonLineExtractor&lt;TRecord&gt;</a> class that reads a file, using a source-generated <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1">JsonTypeInfo&lt;T&gt;</a> and the supplied configuration.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public JsonLineExtractor(string path, JsonTypeInfo&lt;TRecord&gt; typeInfo, JsonLineExtractorOptions? options)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>path</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>The path of the file to read; it is opened for asynchronous reading and closed with the extractor.</p>
+</dd>
+    <dt><code>typeInfo</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1">JsonTypeInfo</a>&lt;TRecord&gt;</dt>
+    <dd><p>The source-generated type information used to deserialize <code class="typeparamref">TRecord</code>.</p>
+</dd>
+    <dt><code>options</code> <a class="xref" href="Wolfgang.Etl.Json.JsonLineExtractorOptions.html">JsonLineExtractorOptions</a></dt>
+    <dd><p>The construction-time configuration for this stage, or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> for the defaults.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></dt>
+    <dd><p><code class="paramref">path</code> or <code class="paramref">typeInfo</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</dd>
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></dt>
+    <dd><p><code class="paramref">options</code> sets a serializer-options override, which cannot be combined with a <code class="paramref">typeInfo</code>.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="Wolfgang_Etl_Json_JsonLineExtractor_1__ctor_" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor*"></a>
+
+  <h3 id="Wolfgang_Etl_Json_JsonLineExtractor_1__ctor_System_String_System_Text_Json_Serialization_Metadata_JsonTypeInfo__0__Wolfgang_Etl_Json_JsonLineExtractorOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonLineExtractor__0___" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor(System.String,System.Text.Json.Serialization.Metadata.JsonTypeInfo{`0},Wolfgang.Etl.Json.JsonLineExtractorOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonLineExtractor{`0}})">
+  JsonLineExtractor(string, JsonTypeInfo&lt;TRecord&gt;, JsonLineExtractorOptions?, ILogger&lt;JsonLineExtractor&lt;TRecord&gt;&gt;?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.11.0/src/Wolfgang.Etl.Json/JsonLineExtractor.cs/#L368"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonLineExtractor-1.html">JsonLineExtractor&lt;TRecord&gt;</a> class that reads a file, using a source-generated <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1">JsonTypeInfo&lt;T&gt;</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public JsonLineExtractor(string path, JsonTypeInfo&lt;TRecord&gt; typeInfo, JsonLineExtractorOptions? options, ILogger&lt;JsonLineExtractor&lt;TRecord&gt;&gt;? logger)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>path</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>The path of the file to read; it is opened for asynchronous reading and closed with the extractor.</p>
+</dd>
+    <dt><code>typeInfo</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.json.serialization.metadata.jsontypeinfo-1">JsonTypeInfo</a>&lt;TRecord&gt;</dt>
+    <dd><p>The source-generated type information used to deserialize <code class="typeparamref">TRecord</code>; it carries its own serializer options.</p>
+</dd>
+    <dt><code>options</code> <a class="xref" href="Wolfgang.Etl.Json.JsonLineExtractorOptions.html">JsonLineExtractorOptions</a></dt>
+    <dd><p>The construction-time configuration for this stage, or <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> for the defaults.</p>
+</dd>
+    <dt><code>logger</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger-1">ILogger</a>&lt;<a class="xref" href="Wolfgang.Etl.Json.JsonLineExtractor-1.html">JsonLineExtractor</a>&lt;TRecord&gt;&gt;</dt>
+    <dd><p>The logger; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> disables logging.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></dt>
+    <dd><p><code class="paramref">path</code> or <code class="paramref">typeInfo</code> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</dd>
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></dt>
+    <dd><p><code class="paramref">options</code> sets <a class="xref" href="Wolfgang.Etl.Json.JsonLineExtractorOptions.html#Wolfgang_Etl_Json_JsonLineExtractorOptions_SerializerOptions">SerializerOptions</a>, which cannot be combined with a <code class="paramref">typeInfo</code>; the type info carries its own serializer options.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="Wolfgang_Etl_Json_JsonLineExtractor_1__ctor_" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor*"></a>
+
+  <h3 id="Wolfgang_Etl_Json_JsonLineExtractor_1__ctor_System_String_Wolfgang_Etl_Json_JsonLineExtractorOptions_Microsoft_Extensions_Logging_ILogger_Wolfgang_Etl_Json_JsonLineExtractor__0___" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.#ctor(System.String,Wolfgang.Etl.Json.JsonLineExtractorOptions,Microsoft.Extensions.Logging.ILogger{Wolfgang.Etl.Json.JsonLineExtractor{`0}})">
+  JsonLineExtractor(string, JsonLineExtractorOptions, ILogger&lt;JsonLineExtractor&lt;TRecord&gt;&gt;?)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.11.0/src/Wolfgang.Etl.Json/JsonLineExtractor.cs/#L400"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Initializes a new instance of the <a class="xref" href="Wolfgang.Etl.Json.JsonLineExtractor-1.html">JsonLineExtractor&lt;TRecord&gt;</a> class configured through an options record.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[RequiresUnreferencedCode(&quot;JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.&quot;)]
+[RequiresDynamicCode(&quot;JSON deserialization of unknown types may require types that cannot be statically analyzed. Use the JsonTypeInfo overload for AOT compatibility.&quot;)]
+public JsonLineExtractor(string path, JsonLineExtractorOptions options, ILogger&lt;JsonLineExtractor&lt;TRecord&gt;&gt;? logger = null)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>path</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.string">string</a></dt>
+    <dd><p>The path of the file to read; it is opened for reading and closed with the extractor.</p>
+</dd>
+    <dt><code>options</code> <a class="xref" href="Wolfgang.Etl.Json.JsonLineExtractorOptions.html">JsonLineExtractorOptions</a></dt>
+    <dd><p>The construction-time configuration for this stage, including the settings inherited from <span class="xref">Wolfgang.Etl.Abstractions.ExtractorOptions</span>.</p>
+</dd>
+    <dt><code>logger</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/microsoft.extensions.logging.ilogger-1">ILogger</a>&lt;<a class="xref" href="Wolfgang.Etl.Json.JsonLineExtractor-1.html">JsonLineExtractor</a>&lt;TRecord&gt;&gt;</dt>
+    <dd><p>An optional logger; <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> disables logging.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></dt>
+    <dd><p>A required argument is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a>.</p>
+</dd>
+  </dl>
+
+
+
+  <h2 class="section" id="properties">Properties
+</h2>
+
+
+  <a id="Wolfgang_Etl_Json_JsonLineExtractor_1_CurrentByteOffset_" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.CurrentByteOffset*"></a>
+
+  <h3 id="Wolfgang_Etl_Json_JsonLineExtractor_1_CurrentByteOffset" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.CurrentByteOffset">
+  CurrentByteOffset
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.11.0/src/Wolfgang.Etl.Json/JsonLineExtractor.cs/#L114"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets the byte offset of the start of the next unread line in the stream.
+Capture this value after each <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/statements/yield">yield</a> to create a resumable checkpoint.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long CurrentByteOffset { get; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+  <h4 class="section" id="Wolfgang_Etl_Json_JsonLineExtractor_1_CurrentByteOffset_remarks">Remarks</h4>
+  <div class="markdown level1 remarks"><p>On a seekable stream the offset counts the byte-order mark, uses the encoding the reader
+detects from it (or <a class="xref" href="Wolfgang.Etl.Json.JsonLineExtractor-1.html#Wolfgang_Etl_Json_JsonLineExtractor_1_Encoding">Encoding</a> when set), and sizes the line terminator from the
+first line found in the first 64 KiB. On a non-seekable stream it assumes UTF-8 (or
+<a class="xref" href="Wolfgang.Etl.Json.JsonLineExtractor-1.html#Wolfgang_Etl_Json_JsonLineExtractor_1_Encoding">Encoding</a>) without a byte-order mark and a one-byte terminator.</p>
+</div>
+
+  <h4 class="section">Exceptions</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></dt>
+    <dd><p>Thrown when <a class="xref" href="Wolfgang.Etl.Json.JsonLineExtractor-1.html#Wolfgang_Etl_Json_JsonLineExtractor_1_EnableCheckpointing">EnableCheckpointing</a> is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>. Byte offsets are
+only tracked when checkpointing is enabled.</p>
+</dd>
+  </dl>
+
+
+
+  <a id="Wolfgang_Etl_Json_JsonLineExtractor_1_EnableCheckpointing_" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.EnableCheckpointing*"></a>
+
+  <h3 id="Wolfgang_Etl_Json_JsonLineExtractor_1_EnableCheckpointing" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.EnableCheckpointing">
+  EnableCheckpointing
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.11.0/src/Wolfgang.Etl.Json/JsonLineExtractor.cs/#L84"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets a value indicating whether the extractor tracks the byte offset of each line
+so that <a class="xref" href="Wolfgang.Etl.Json.JsonLineExtractor-1.html#Wolfgang_Etl_Json_JsonLineExtractor_1_CurrentByteOffset">CurrentByteOffset</a> can be captured as a resumable checkpoint.
+Default is <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool EnableCheckpointing { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+  <h4 class="section" id="Wolfgang_Etl_Json_JsonLineExtractor_1_EnableCheckpointing_remarks">Remarks</h4>
+  <div class="markdown level1 remarks"><p>Tracking requires computing the byte length of every line, which adds measurable per-line
+overhead on the extraction hot path. It is therefore opt-in: leave this <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a>
+unless you intend to read <a class="xref" href="Wolfgang.Etl.Json.JsonLineExtractor-1.html#Wolfgang_Etl_Json_JsonLineExtractor_1_CurrentByteOffset">CurrentByteOffset</a> to create checkpoints. Resuming a
+prior run via <a class="xref" href="Wolfgang.Etl.Json.JsonLineExtractor-1.html#Wolfgang_Etl_Json_JsonLineExtractor_1_StartByteOffset">StartByteOffset</a> does not by itself require this flag — set it only
+when you also need to capture new checkpoints during the resumed run.</p>
+</div>
+
+
+
+
+  <a id="Wolfgang_Etl_Json_JsonLineExtractor_1_Encoding_" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.Encoding*"></a>
+
+  <h3 id="Wolfgang_Etl_Json_JsonLineExtractor_1_Encoding" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.Encoding">
+  Encoding
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.11.0/src/Wolfgang.Etl.Json/JsonLineExtractor.cs/#L66"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets the character encoding to use when reading the JSONL stream.
+When <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/keywords/null">null</a> (the default), the encoding is inferred from the
+stream's byte-order mark (BOM), falling back to UTF-8.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Encoding? Encoding { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.text.encoding">Encoding</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_Etl_Json_JsonLineExtractor_1_StartByteOffset_" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.StartByteOffset*"></a>
+
+  <h3 id="Wolfgang_Etl_Json_JsonLineExtractor_1_StartByteOffset" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.StartByteOffset">
+  StartByteOffset
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.11.0/src/Wolfgang.Etl.Json/JsonLineExtractor.cs/#L96"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Gets or sets the byte offset within the stream at which extraction begins.
+Set this before calling <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">ExtractAsync(CancellationToken)</a> to resume from a saved checkpoint.
+The stream must be seekable when this value is greater than zero.
+Default is <code>0</code> (start of stream).</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long StartByteOffset { get; set; }</code></pre>
+  </div>
+
+
+
+
+
+  <h4 class="section">Property Value</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.int64">long</a></dt>
+    <dd></dd>
+  </dl>
+
+
+
+
+
+
+
+
+  <h2 class="section" id="methods">Methods
+</h2>
+
+
+  <a id="Wolfgang_Etl_Json_JsonLineExtractor_1_CreateProgressReport_" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.CreateProgressReport*"></a>
+
+  <h3 id="Wolfgang_Etl_Json_JsonLineExtractor_1_CreateProgressReport" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.CreateProgressReport">
+  CreateProgressReport()
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.11.0/src/Wolfgang.Etl.Json/JsonLineExtractor.cs/#L837"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Creates a progress report of type TProgress. This gives the derived class the opportunity to
+implement a custom progress report that is specific to the extraction process.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override JsonReport CreateProgressReport()</code></pre>
+  </div>
+
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="Wolfgang.Etl.Json.JsonReport.html">JsonReport</a></dt>
+    <dd><p>Progress of type TProgress</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_Etl_Json_JsonLineExtractor_1_CreateProgressTimer_" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.CreateProgressTimer*"></a>
+
+  <h3 id="Wolfgang_Etl_Json_JsonLineExtractor_1_CreateProgressTimer_System_IProgress_Wolfgang_Etl_Json_JsonReport__" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.CreateProgressTimer(System.IProgress{Wolfgang.Etl.Json.JsonReport})">
+  CreateProgressTimer(IProgress&lt;JsonReport&gt;)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.11.0/src/Wolfgang.Etl.Json/JsonLineExtractor.cs/#L847"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Creates the <span class="xref">Wolfgang.Etl.Abstractions.IProgressTimer</span> used to drive progress callbacks.
+Override this method in a derived class to inject a custom timer
+(for example, a custom implementation that allows manual control in unit tests).</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override IProgressTimer CreateProgressTimer(IProgress&lt;JsonReport&gt; progress)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>progress</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.iprogress-1">IProgress</a>&lt;<a class="xref" href="Wolfgang.Etl.Json.JsonReport.html">JsonReport</a>&gt;</dt>
+    <dd><p>The progress sink that will receive callbacks.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><span class="xref">IProgressTimer</span></dt>
+    <dd><p>A started <span class="xref">Wolfgang.Etl.Abstractions.IProgressTimer</span> instance.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_Etl_Json_JsonLineExtractor_1_Dispose_" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.Dispose*"></a>
+
+  <h3 id="Wolfgang_Etl_Json_JsonLineExtractor_1_Dispose_System_Boolean_" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.Dispose(System.Boolean)">
+  Dispose(bool)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.11.0/src/Wolfgang.Etl.Json/JsonLineExtractor.cs/#L865"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>Releases resources held by this extractor. Override in a derived class to dispose resources
+it owns (streams, connections, etc.), then call <code>base.Dispose(disposing)</code>. The base
+implementation only marks the instance disposed and is idempotent.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override void Dispose(bool disposing)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>disposing</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.boolean">bool</a></dt>
+    <dd><p><a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">true</a> when called from <span class="xref">Wolfgang.Etl.Abstractions.ExtractorBase&lt;TSource, TProgress&gt;.Dispose()</span> or <span class="xref">Wolfgang.Etl.Abstractions.ExtractorBase&lt;TSource, TProgress&gt;.DisposeAsync()</span>
+(dispose managed resources); <a href="https://learn.microsoft.com/dotnet/csharp/language-reference/builtin-types/bool">false</a> when called from a finalizer.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
+  <a id="Wolfgang_Etl_Json_JsonLineExtractor_1_ExtractWorkerAsync_" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.ExtractWorkerAsync*"></a>
+
+  <h3 id="Wolfgang_Etl_Json_JsonLineExtractor_1_ExtractWorkerAsync_System_Threading_CancellationToken_" data-uid="Wolfgang.Etl.Json.JsonLineExtractor`1.ExtractWorkerAsync(System.Threading.CancellationToken)">
+  ExtractWorkerAsync(CancellationToken)
+  <a class="header-action link-secondary" title="View source" href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.11.0/src/Wolfgang.Etl.Json/JsonLineExtractor.cs/#L577"><i class="bi bi-code-slash"></i></a>
+  </h3>
+
+  <div class="markdown level1 summary"><p>This method is the core implementation of the extraction logic and should be
+overridden by derived classes.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override IAsyncEnumerable&lt;TRecord&gt; ExtractWorkerAsync(CancellationToken token)</code></pre>
+  </div>
+
+  <h4 class="section">Parameters</h4>
+  <dl class="parameters">
+    <dt><code>token</code> <a class="xref" href="https://learn.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></dt>
+    <dd><p>A CancellationToken to observe while waiting for the task to complete.</p>
+</dd>
+  </dl>
+
+  <h4 class="section">Returns</h4>
+  <dl class="parameters">
+    <dt><a class="xref" href="https://learn.microsoft.com/dotnet/api/system.collections.generic.iasyncenumerable-1">IAsyncEnumerable</a>&lt;TRecord&gt;</dt>
+    <dd><p>IAsyncEnumerable&lt;TSource&gt;
+The result may be an empty sequence if no data is available or if the extraction fails.</p>
+</dd>
+  </dl>
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+
+        <div class="contribution d-print-none">
+          <a href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.11.0/src/Wolfgang.Etl.Json/JsonLineExtractor.cs/#L40" class="edit-link">Edit this page</a>
+        </div>
+
+
+      </div>
+
+      <div class="affix">
+        <nav id="affix"></nav>
+      </div>
+    </main>
+
+    <div class="container-xxl search-results" id="search-results"></div>
+
+    <footer class="border-top text-secondary">
+      <div class="container-xxl">
+        <div class="flex-fill">
+          Made with DocFX <script>(function(){var r='/';if(window.location.hostname.endsWith('.github.io')){var s=window.location.pathname.split('/').filter(Boolean);if(s.length)r='/'+s[0]+'/';}var t=document.createElement('script');t.src=r+'public/version-picker.js';t.async=true;document.head.appendChild(t);})();</script>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

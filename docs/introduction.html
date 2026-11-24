@@ -16,7 +16,7 @@
       <meta name="docfx:rel" content="../">
       
       
-      <meta name="docfx:docurl" content="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.10.0/docfx_project/docs/introduction.md/#L1">
+      <meta name="docfx:docurl" content="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.11.0/docfx_project/docs/introduction.md/#L1">
       <meta name="loc:inThisArticle" content="In this article">
       <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
       <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
@@ -75,14 +75,22 @@
 
 <p>Welcome to Wolfgang.Etl.Json!</p>
 <h2 id="overview">Overview</h2>
-<p>Extractors and Loaders for reading and writing JSON files when buildig ETLs using Wolfgang.Etl pattern</p>
-<!-- Add your project overview here -->
+<p>Extractors and loaders for reading and writing JSON when building ETLs with the
+<a href="https://github.com/Chris-Wolfgang/ETL-Abstractions">Wolfgang.Etl</a> pattern. Every stage is built on
+<code>System.Text.Json</code>, streams its input and output asynchronously, and plugs into an <code>EtlPipeline</code>.</p>
 <h2 id="key-features">Key Features</h2>
-<!-- List the main features of your project. For example:
-- Feature 1: Description
-- Feature 2: Description
-- Feature 3: Description
--->
+<ul>
+<li><strong>Three formats, six stages</strong>: JSON arrays (<code>JsonSingleStreamExtractor</code> / <code>JsonSingleStreamLoader</code>),
+JSON Lines / NDJSON (<code>JsonLineExtractor</code> / <code>JsonLineLoader</code>), and one object per stream or file
+(<code>JsonMultiStreamExtractor</code> / <code>JsonMultiStreamLoader</code>).</li>
+<li><strong>Options records</strong>: one record per stage carries the serializer options and the shared settings
+(<code>SkipItemCount</code>, <code>MaximumItemCount</code>, <code>ReportingInterval</code>, <code>ErrorPolicy</code>).</li>
+<li><strong>AOT-friendly</strong>: every stage has a constructor that takes a source-generated <code>JsonTypeInfo&lt;T&gt;</code>.</li>
+<li><strong>Checkpoint and resume</strong> for JSON Lines via <code>EnableCheckpointing</code>, <code>CurrentByteOffset</code> and <code>StartByteOffset</code>.</li>
+<li><strong>Error policies</strong>: skip or dead-letter malformed records instead of failing the run.</li>
+<li><strong>Diagnostics</strong>: <code>ILogger&lt;T&gt;</code> logging, progress reporting, and the <code>Wolfgang.Etl.Json</code> metrics meter.</li>
+<li><strong>Wide reach</strong>: .NET Framework 4.6.2 through .NET 10, plus .NET Standard 2.0.</li>
+</ul>
 <h2 id="getting-help">Getting Help</h2>
 <p>If you need help with Wolfgang.Etl.Json, please:</p>
 <ul>
@@ -95,7 +103,7 @@
 </article>
 
         <div class="contribution d-print-none">
-          <a href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.10.0/docfx_project/docs/introduction.md/#L1" class="edit-link">Edit this page</a>
+          <a href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.11.0/docfx_project/docs/introduction.md/#L1" class="edit-link">Edit this page</a>
         </div>
 
         <div class="next-article d-print-none border-top" id="nextArticle"></div>

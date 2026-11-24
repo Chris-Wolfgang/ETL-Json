@@ -16,7 +16,7 @@
       <meta name="docfx:rel" content="../">
       
       
-      <meta name="docfx:docurl" content="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.10.0/docfx_project/docs/getting-started.md/#L1">
+      <meta name="docfx:docurl" content="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.11.0/docfx_project/docs/getting-started.md/#L1">
       <meta name="loc:inThisArticle" content="In this article">
       <meta name="loc:searchResultsCount" content="{count} results for &quot;{query}&quot;">
       <meta name="loc:searchNoResults" content="No results for &quot;{query}&quot;">
@@ -75,10 +75,11 @@
 
 <p>This guide will help you quickly get up and running with Wolfgang.Etl.Json.</p>
 <h2 id="prerequisites">Prerequisites</h2>
-<!-- List any prerequisites needed. For example:
-- .NET 8.0 or later
-- Visual Studio 2022 or Visual Studio Code
--->
+<ul>
+<li>A project targeting .NET Framework 4.6.2+, .NET Standard 2.0+, or .NET 5+.</li>
+<li>Familiarity with <code>IAsyncEnumerable&lt;T&gt;</code> (<code>await foreach</code>) helps; on .NET Framework the
+<code>Microsoft.Bcl.AsyncInterfaces</code> dependency provides it.</li>
+</ul>
 <h2 id="installation">Installation</h2>
 <h3 id="via-nuget-package-manager">Via NuGet Package Manager</h3>
 <pre><code class="lang-bash">dotnet add package Wolfgang.Etl.Json
@@ -87,14 +88,21 @@
 <pre><code class="lang-powershell">Install-Package Wolfgang.Etl.Json
 </code></pre>
 <h2 id="quick-start">Quick Start</h2>
-<!-- Add a quick start example. For example: -->
-<pre><code class="lang-csharp">// Add your quick start code example here
-// This should show the simplest way to use your library
+<p>Read a JSON Lines file and write the same records as a JSON array:</p>
+<pre><code class="lang-csharp">using Wolfgang.Etl.Json;
 
-using Wolfgang.Etl.Json;
+public record Person(string FirstName, string LastName, int Age);
 
-// Example usage
+await using var input = File.OpenRead(&quot;people.jsonl&quot;);
+await using var output = File.Create(&quot;people.json&quot;);
+
+var extractor = new JsonLineExtractor&lt;Person&gt;(input);
+var loader = new JsonSingleStreamLoader&lt;Person&gt;(output);
+
+await loader.LoadAsync(extractor.ExtractAsync());
 </code></pre>
+<p>Each stage takes an options record for its settings, for example
+<code>new JsonLineExtractorOptions { MaximumItemCount = 1_000 }</code>; see the README on GitHub for every option.</p>
 <h2 id="next-steps">Next Steps</h2>
 <ul>
 <li>Explore the <a href="../api/index.html">API Reference</a> for detailed documentation</li>
@@ -102,7 +110,14 @@ using Wolfgang.Etl.Json;
 <li>Check out example projects in the <a href="https://github.com/Chris-Wolfgang/ETL-Json">GitHub repository</a></li>
 </ul>
 <h2 id="common-issues">Common Issues</h2>
-<!-- Add common issues and their solutions here -->
+<ul>
+<li><strong><code>JsonException</code> on the first record</strong>: the input format does not match the stage. A JSON array
+needs <code>JsonSingleStreamExtractor</code>, one object per line needs <code>JsonLineExtractor</code>.</li>
+<li><strong>Trimming / Native AOT warnings</strong>: use the constructors that take a source-generated
+<code>JsonTypeInfo&lt;T&gt;</code> instead of the reflection-based ones.</li>
+<li><strong>A malformed record stops the run</strong>: set an <code>ErrorPolicy</code> on the options record to skip or
+dead-letter bad records. A JSON array stops at the first malformed element under every policy.</li>
+</ul>
 <h2 id="additional-resources">Additional Resources</h2>
 <ul>
 <li><a href="https://github.com/Chris-Wolfgang/ETL-Json">GitHub Repository</a></li>
@@ -113,7 +128,7 @@ using Wolfgang.Etl.Json;
 </article>
 
         <div class="contribution d-print-none">
-          <a href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.10.0/docfx_project/docs/getting-started.md/#L1" class="edit-link">Edit this page</a>
+          <a href="https://github.com/Chris-Wolfgang/ETL-Json/blob/v0.11.0/docfx_project/docs/getting-started.md/#L1" class="edit-link">Edit this page</a>
         </div>
 
         <div class="next-article d-print-none border-top" id="nextArticle"></div>

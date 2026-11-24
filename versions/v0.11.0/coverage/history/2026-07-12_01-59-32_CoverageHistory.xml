@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<coverage version="1.0" date="2026-07-12_01-59-32" tag="">
+  <assembly name="Wolfgang.Etl.Json">
+    <class name="Wolfgang.Etl.Json.JsonLineExtractor`1" coveredlines="99" coverablelines="101" totallines="276" coveredbranches="45" totalbranches="50" coveredcodeelements="10" fullcoveredcodeelements="9" totalcodeelements="10" />
+    <class name="Wolfgang.Etl.Json.JsonLineLoader`1" coveredlines="91" coverablelines="93" totallines="263" coveredbranches="41" totalbranches="46" coveredcodeelements="10" fullcoveredcodeelements="9" totalcodeelements="10" />
+    <class name="Wolfgang.Etl.Json.JsonLogMessages" coveredlines="44" coverablelines="44" totallines="103" coveredbranches="0" totalbranches="0" coveredcodeelements="1" fullcoveredcodeelements="1" totalcodeelements="1" />
+    <class name="Wolfgang.Etl.Json.JsonMultiStreamExtractor`1" coveredlines="98" coverablelines="100" totallines="274" coveredbranches="43" totalbranches="48" coveredcodeelements="10" fullcoveredcodeelements="9" totalcodeelements="10" />
+    <class name="Wolfgang.Etl.Json.JsonMultiStreamLoader`1" coveredlines="97" coverablelines="99" totallines="296" coveredbranches="43" totalbranches="48" coveredcodeelements="11" fullcoveredcodeelements="10" totalcodeelements="11" />
+    <class name="Wolfgang.Etl.Json.JsonReport" coveredlines="4" coverablelines="4" totallines="35" coveredbranches="0" totalbranches="0" coveredcodeelements="2" fullcoveredcodeelements="2" totalcodeelements="2" />
+    <class name="Wolfgang.Etl.Json.JsonSingleStreamExtractor`1" coveredlines="94" coverablelines="96" totallines="261" coveredbranches="45" totalbranches="50" coveredcodeelements="10" fullcoveredcodeelements="9" totalcodeelements="10" />
+    <class name="Wolfgang.Etl.Json.JsonSingleStreamLoader`1" coveredlines="91" coverablelines="93" totallines="257" coveredbranches="41" totalbranches="46" coveredcodeelements="10" fullcoveredcodeelements="9" totalcodeelements="10" />
+  </assembly>
+</coverage>
