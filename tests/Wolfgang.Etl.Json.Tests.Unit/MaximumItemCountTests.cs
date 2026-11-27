@@ -141,6 +141,45 @@ public class MaximumItemCountTests
 
 
 
+    [Fact]
+    public async Task ItemLimit_Until_when_limit_is_reached_disposes_the_upstream_enumerator()
+    {
+        var disposed = false;
+        var yielded = 0;
+
+        var items = await ItemLimit
+            .Until(Disposing(() => disposed = true), () => yielded == 2)
+            .Select(item =>
+            {
+                yielded++;
+                return item;
+            })
+            .ToListAsync();
+
+        Assert.Equal(new[] { 0, 1 }, items);
+        Assert.True(disposed);
+    }
+
+
+
+    private static async IAsyncEnumerable<int> Disposing(Action onDispose)
+    {
+        try
+        {
+            for (var i = 0; i < 5; i++)
+            {
+                yield return i;
+                await Task.Yield();
+            }
+        }
+        finally
+        {
+            onDispose();
+        }
+    }
+
+
+
     private static async IAsyncEnumerable<PersonRecord> Counting(int count, Action onPull)
     {
         for (var i = 0; i < count; i++)
