@@ -255,7 +255,11 @@ public class JsonArrayElementReaderTests
 
 
 
-#if !NETFRAMEWORK
+#if NETCOREAPP3_1 || NET5_0
+        // MemoryStream names this parameter 'destination' up to net5.0 and 'buffer' from net6.0 (S927).
+        public override ValueTask<int> ReadAsync(Memory<byte> destination, CancellationToken cancellationToken = default) =>
+            base.ReadAsync(destination.Slice(0, Math.Min(destination.Length, _chunk)), cancellationToken);
+#elif !NETFRAMEWORK
         public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default) =>
             base.ReadAsync(buffer.Slice(0, Math.Min(buffer.Length, _chunk)), cancellationToken);
 #endif
