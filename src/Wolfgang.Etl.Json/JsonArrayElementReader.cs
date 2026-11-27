@@ -199,10 +199,8 @@ internal sealed class JsonArrayElementReader<TRecord>
                         break;
                     case StepResult.Completed:
                         yield break;
-                    default:
-                        // StepResult.Progress: a token was consumed; take the next step.
-                        break;
                 }
+                // Any other result (StepResult.Progress): a token was consumed; take the next step.
             }
         }
         finally
