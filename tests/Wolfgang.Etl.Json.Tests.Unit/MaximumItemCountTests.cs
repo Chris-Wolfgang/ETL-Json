@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Wolfgang.Etl.Json.Tests.Unit.TestModels;
 using Xunit;
@@ -144,37 +145,47 @@ public class MaximumItemCountTests
     [Fact]
     public async Task ItemLimit_Until_when_limit_is_reached_disposes_the_upstream_enumerator()
     {
-        var disposed = false;
-        var yielded = 0;
+        var source = new EndlessDisposeTrackingSource();
 
         var items = await ItemLimit
-            .Until(Disposing(() => disposed = true), () => yielded == 2)
-            .Select(item =>
-            {
-                yielded++;
-                return item;
-            })
+            .Until(source, () => source.Current == 2)
             .ToListAsync();
 
-        Assert.Equal(new[] { 0, 1 }, items);
-        Assert.True(disposed);
+        Assert.Equal(new[] { 1, 2 }, items);
+        Assert.True(source.Disposed);
     }
 
 
 
-    private static async IAsyncEnumerable<int> Disposing(Action onDispose)
+    /// <summary>
+    /// An endless sequence 1, 2, 3, ... that records whether its enumerator was disposed.
+    /// </summary>
+    private sealed class EndlessDisposeTrackingSource : IAsyncEnumerable<int>, IAsyncEnumerator<int>
     {
-        try
+        public int Current { get; private set; }
+
+
+
+        public bool Disposed { get; private set; }
+
+
+
+        public IAsyncEnumerator<int> GetAsyncEnumerator(CancellationToken cancellationToken = default) => this;
+
+
+
+        public ValueTask<bool> MoveNextAsync()
         {
-            for (var i = 0; i < 5; i++)
-            {
-                yield return i;
-                await Task.Yield();
-            }
+            Current++;
+            return new ValueTask<bool>(true);
         }
-        finally
+
+
+
+        public ValueTask DisposeAsync()
         {
-            onDispose();
+            Disposed = true;
+            return default;
         }
     }
 
