@@ -14,6 +14,11 @@ internal sealed class RecordingLogger<T> : ILogger<T>
 
 
 
+    /// <summary>Gets the formatted message of each entry, in the order logged.</summary>
+    public List<string> Messages { get; } = new();
+
+
+
     public IDisposable? BeginScope<TState>(TState state)
         where TState : notnull => null;
 
@@ -33,5 +38,6 @@ internal sealed class RecordingLogger<T> : ILogger<T>
     )
     {
         Entries.Add((logLevel, eventId));
+        Messages.Add(formatter(state, exception));
     }
 }
