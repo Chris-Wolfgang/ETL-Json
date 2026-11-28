@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Wolfgang.Etl.Abstractions;
 using Wolfgang.Etl.Json.Tests.Unit.TestModels;
@@ -96,7 +95,7 @@ public class JsonSingleStreamLoaderLoggingTests
         Assert.Equal
         (
             "JSON single-stream loading completed. Loaded: 2, skipped: 1.",
-            logger.Messages.Last()
+            logger.Messages[logger.Messages.Count - 1]
         );
     }
 
@@ -172,7 +171,7 @@ public class JsonSingleStreamLoaderLoggingTests
     public async Task LoadAsync_when_a_record_fails_to_serialize_passes_its_one_based_position_to_the_error_policy()
     {
         var itemNumbers = new List<long>();
-        var sut = new JsonSingleStreamLoader<Node>
+        var sut = new JsonSingleStreamLoader<LoaderErrorPolicyTests.Node>
         (
             new MemoryStream(),
             new JsonSingleStreamLoaderOptions
@@ -241,24 +240,12 @@ public class JsonSingleStreamLoaderLoggingTests
 
 
 
-    private static IEnumerable<Node> Nodes()
+    private static IEnumerable<LoaderErrorPolicyTests.Node> Nodes()
     {
-        yield return new Node { Id = 1 };
-        yield return new Node { Id = 2 };
-        var cyclic = new Node { Id = 3 };
+        yield return new LoaderErrorPolicyTests.Node { Id = 1 };
+        yield return new LoaderErrorPolicyTests.Node { Id = 2 };
+        var cyclic = new LoaderErrorPolicyTests.Node { Id = 3 };
         cyclic.Next = cyclic;
         yield return cyclic;
-    }
-
-
-
-    /// <summary>A record whose self-reference makes the serializer throw a <see cref="JsonException"/>.</summary>
-    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-    public sealed class Node
-    {
-        public int Id { get; set; }
-
-        [JsonInclude]
-        public Node? Next { get; set; }
     }
 }
