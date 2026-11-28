@@ -19,7 +19,7 @@ Extractors and loaders for reading and writing JSON when building ETLs with the
 - **Checkpoint and resume** for JSON Lines via `EnableCheckpointing`, `CurrentByteOffset` and `StartByteOffset`.
 - **Error policies**: skip or dead-letter malformed records instead of failing the run.
 - **Diagnostics**: `ILogger<T>` logging, progress reporting, and the `Wolfgang.Etl.Json` metrics meter.
-- **Wide reach**: .NET Framework 4.6.2 through .NET 10, plus .NET Standard 2.0.
+- **Wide reach**: .NET Framework 4.6.2 through .NET 11, plus .NET Standard 2.0.
 
 ## Getting Help
 

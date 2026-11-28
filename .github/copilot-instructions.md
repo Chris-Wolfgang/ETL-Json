@@ -17,7 +17,7 @@ JSON for pipelines built on `Wolfgang.Etl.Abstractions`.
 ## Build and Validation
 
 ### Prerequisites
-- .NET 10 SDK (the test projects also need the .NET Framework 4.6.2-4.8.1 targeting packs on Windows).
+- .NET 11 SDK (the test projects also need the .NET Framework 4.6.2-4.8.1 targeting packs on Windows).
 - PowerShell 7+ for the scripts in `scripts/`.
 
 ### Commands
@@ -30,9 +30,9 @@ pwsh ./scripts/format.ps1        # dotnet format
 ```
 
 ### Target frameworks
-- `src/Wolfgang.Etl.Json`: `net462;net481;netstandard2.0;net5.0;net6.0;net7.0;net8.0;net10.0`.
+- `src/Wolfgang.Etl.Json`: `net462;net481;netstandard2.0;net5.0;net6.0;net7.0;net8.0;net10.0;net11.0`.
   Old-TFM code paths use `#if NETSTANDARD2_0 || NET462 || NET481`.
-- Test projects: `net462` through `net10.0` (13 TFMs). Keep `<TargetFrameworks>` on a single line; CI greps it.
+- Test projects: `net462` through `net11.0` (14 TFMs). Keep `<TargetFrameworks>` on a single line; CI greps it.
 
 ### Gates that fail the build or the PR
 - Warnings are errors; analyzers (NetAnalyzers, Roslynator, AsyncFixer, VS Threading, BannedApiAnalyzers,
