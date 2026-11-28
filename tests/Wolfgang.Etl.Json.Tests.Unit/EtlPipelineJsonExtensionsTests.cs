@@ -287,6 +287,104 @@ public sealed class EtlPipelineJsonExtensionsTests
     }
 
 
+    [Fact]
+    public void JsonLineLoader_path_sink_when_path_is_null_throws_ArgumentNullException_for_path()
+    {
+        var pipeline = EtlPipeline.Create().JsonLineExtractor<PersonRecord>(new MemoryStream());
+
+        var ex = Assert.Throws<ArgumentNullException>(() => pipeline.JsonLineLoader((string)null!));
+
+        Assert.Equal("path", ex.ParamName);
+    }
+
+
+
+    [Fact]
+    public async Task JsonLineLoader_stream_sink_when_options_are_passed_serializes_with_them()
+    {
+        var destination = new MemoryStream();
+
+        await EtlPipeline
+            .Create()
+            .JsonSingleStreamExtractor<PersonRecord>(PeopleArrayStream())
+            .JsonLineLoader(destination, CamelCase)
+            .RunAsync();
+
+        Assert.Contains("\"firstName\":\"Alice\"", Encoding.UTF8.GetString(destination.ToArray()));
+    }
+
+
+
+    [Fact]
+    public async Task JsonSingleStreamLoader_stream_sink_when_options_are_passed_serializes_with_them()
+    {
+        var destination = new MemoryStream();
+
+        await EtlPipeline
+            .Create()
+            .JsonSingleStreamExtractor<PersonRecord>(PeopleArrayStream())
+            .JsonSingleStreamLoader(destination, CamelCase)
+            .RunAsync();
+
+        Assert.Contains("\"firstName\":\"Alice\"", Encoding.UTF8.GetString(destination.ToArray()));
+    }
+
+
+
+    [Fact]
+    public async Task JsonLineLoader_path_sink_when_options_are_passed_serializes_with_them()
+    {
+        var outPath = Path.GetTempFileName();
+        try
+        {
+            await EtlPipeline
+                .Create()
+                .JsonSingleStreamExtractor<PersonRecord>(PeopleArrayStream())
+                .JsonLineLoader(outPath, CamelCase)
+                .RunAsync();
+
+            Assert.Contains("\"firstName\":\"Alice\"", File.ReadAllText(outPath));
+        }
+        finally
+        {
+            File.Delete(outPath);
+        }
+    }
+
+
+
+    [Fact]
+    public async Task JsonSingleStreamLoader_path_sink_when_options_are_passed_serializes_with_them()
+    {
+        var outPath = Path.GetTempFileName();
+        try
+        {
+            await EtlPipeline
+                .Create()
+                .JsonSingleStreamExtractor<PersonRecord>(PeopleArrayStream())
+                .JsonSingleStreamLoader(outPath, CamelCase)
+                .RunAsync();
+
+            Assert.Contains("\"firstName\":\"Alice\"", File.ReadAllText(outPath));
+        }
+        finally
+        {
+            File.Delete(outPath);
+        }
+    }
+
+
+
+    private static System.Text.Json.JsonSerializerOptions CamelCase =>
+        new() { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase };
+
+
+
+    private static MemoryStream PeopleArrayStream() =>
+        new(Encoding.UTF8.GetBytes(System.Text.Json.JsonSerializer.Serialize(People)));
+
+
+
     private static async Task<List<T>> Collect<T>(IAsyncEnumerable<T> items)
     {
         var list = new List<T>();
