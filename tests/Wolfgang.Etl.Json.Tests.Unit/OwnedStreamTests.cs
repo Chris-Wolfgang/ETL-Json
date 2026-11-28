@@ -145,7 +145,15 @@ public class OwnedStreamTests
         {
             using var stream = FileStreams.OpenRead(path);
 
-            Assert.True(stream.IsAsync);
+#if NET11_0_OR_GREATER
+            // From .NET 11, IsAsync on Unix reports whether the descriptor is non-blocking (O_NONBLOCK), which a
+            // regular file never is, so FileOptions.Asynchronous shows only on Windows (dotnet/runtime#125220).
+            var expected = OperatingSystem.IsWindows();
+#else
+            var expected = true;
+#endif
+
+            Assert.Equal(expected, stream.IsAsync);
         }
         finally
         {

@@ -207,7 +207,7 @@ This library targets:
 
 - **.NET Framework:** 4.6.2, 4.8.1
 - **.NET Standard:** 2.0
-- **.NET:** 5.0, 6.0, 7.0, 8.0, 10.0
+- **.NET:** 5.0, 6.0, 7.0, 8.0, 10.0, 11.0
 
 See the [NuGet package page](https://www.nuget.org/packages/Wolfgang.Etl.Json/) for the authoritative per-TFM compatibility matrix.
 
@@ -243,7 +243,7 @@ This library uses `BannedSymbols.txt` to prohibit synchronous APIs:
 ## 🛠️ Building from Source
 
 ### Prerequisites
-- [.NET 10.0 SDK](https://dotnet.microsoft.com/download) or later
+- [.NET 11.0 SDK](https://dotnet.microsoft.com/download) or later
 - Optional: [PowerShell Core](https://github.com/PowerShell/PowerShell) for formatting scripts
 
 ### Build Steps
