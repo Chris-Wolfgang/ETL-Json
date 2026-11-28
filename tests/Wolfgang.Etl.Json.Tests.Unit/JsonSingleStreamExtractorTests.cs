@@ -535,6 +535,31 @@ public class JsonSingleStreamExtractorTests
 
 
     [Fact]
+    public async Task ExtractAsync_when_array_contains_a_null_element_logs_that_it_was_skipped()
+    {
+        var stream = new MemoryStream(Encoding.UTF8.GetBytes("[{\"FirstName\":\"Alice\"},null]"));
+        var logger = new RecordingLogger<JsonSingleStreamExtractor<PersonRecord>>();
+        var sut = new JsonSingleStreamExtractor<PersonRecord>
+        (
+            stream,
+            new JsonSingleStreamExtractorOptions(),
+            logger
+        );
+
+        await sut.ExtractAsync().ToListAsync();
+
+        var index = logger.Entries.FindIndex(entry => entry.Level == LogLevel.Debug && entry.EventId.Id == 100);
+        Assert.True(index >= 0, "no event 100 was logged");
+        Assert.Equal
+        (
+            "Skipping null item encountered in JSON array.",
+            logger.Messages[index]
+        );
+    }
+
+
+
+    [Fact]
     public async Task ExtractAsync_when_array_is_well_formed_logs_completion_and_no_early_stop_warning()
     {
         var stream = new MemoryStream(Encoding.UTF8.GetBytes("[{\"FirstName\":\"Alice\"}]"));

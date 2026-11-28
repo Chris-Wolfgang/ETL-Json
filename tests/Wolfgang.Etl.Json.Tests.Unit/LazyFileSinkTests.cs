@@ -143,8 +143,10 @@ public class LazyFileSinkTests
                 Assert.True(sut.CanWrite);
                 Assert.False(sut.CanRead);
                 Assert.False(sut.CanSeek);
-                Assert.Throws<NotSupportedException>(() => sut.Write(new byte[1], 0, 1));
-                Assert.Throws<NotSupportedException>(() => sut.Flush());
+                var writeEx = Assert.Throws<NotSupportedException>(() => sut.Write(new byte[1], 0, 1));
+                Assert.Equal("This stream is asynchronous only; use WriteAsync.", writeEx.Message);
+                var flushEx = Assert.Throws<NotSupportedException>(() => sut.Flush());
+                Assert.Equal("This stream is asynchronous only; use FlushAsync.", flushEx.Message);
                 Assert.Throws<NotSupportedException>(() => sut.Length);
                 Assert.Throws<NotSupportedException>(() => sut.Position);
                 Assert.Throws<NotSupportedException>(() => sut.Position = 0);
